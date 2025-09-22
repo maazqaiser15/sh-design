@@ -8,7 +8,7 @@ module.exports = {
     filename: "[name].[contenthash].js",
     chunkFilename: "[name].[contenthash].js",
     clean: true,
-    publicPath: "/",
+    publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
