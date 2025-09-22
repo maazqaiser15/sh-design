@@ -1,0 +1,35 @@
+// Project feature module exports
+export { ProjectListPage } from './pages/ProjectListPage';
+export { ProjectPreparationPage } from './pages/ProjectPreparationPage';
+export { ProjectDetailsPage } from './pages/ProjectDetailsPage';
+export { ProjectListView } from './components/ProjectListView';
+export { ProjectTableView } from './components/ProjectTableView';
+export { ProjectFiltersComponent } from './components/ProjectFilters';
+export { ProjectDetailsPlaceholder } from './components/ProjectDetailsPlaceholder';
+export { ProjectSummaryCard } from './components/ProjectSummaryCard';
+export { ChecklistSection } from './components/ChecklistSection';
+export { AssignTeamCard } from './components/AssignTeamCard';
+export { AssignTrailerCard } from './components/AssignTrailerCard';
+export { TravelCard } from './components/TravelCard';
+export { DocumentsNotesCard } from './components/DocumentsNotesCard';
+export { ProjectDetailsHeader } from './components/ProjectDetailsHeader';
+export { KeyInfoSection } from './components/KeyInfoSection';
+export { ProjectChecklist } from './components/ProjectChecklist';
+export { ProjectDocuments } from './components/ProjectDocuments';
+export { ProjectNotes } from './components/ProjectNotes';
+export { AssignTeamModal } from './components/AssignTeamModal';
+export { AssignTrailerModal } from './components/AssignTrailerModal';
+export { AddLogisticsModal } from './components/AddLogisticsModal';
+export { AddTravelModal } from './components/AddTravelModal';
+export { LogisticsTravelCard } from './components/LogisticsTravelCard';
+export * from './types';
+export * from './types/preparation';
+export * from './types/logisticsTravel';
+export { MOCK_TEAM_MEMBERS } from './types/teamMembers';
+export type { TeamMember, TeamRole, TeamMemberStatus } from './types/teamMembers';
+// MOCK_TRAILERS moved to trailerDataUtils.ts
+export type { TrailerForAssignment, TrailerStatus } from './types/trailers';
+export * from './utils';
+export { getAvailableTrailersForAssignment, convertTrailerToAssignment } from './utils/trailerDataUtils';
+export { demonstrateTrailerModuleIntegration } from './utils/trailerModuleDemo';
+export { demonstrateChecklistAutoUpdate } from './utils/checklistDemo';
