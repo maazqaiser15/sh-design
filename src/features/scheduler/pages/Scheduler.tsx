@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { SchedulerView, SchedulerProject } from '../types';
-import { SchedulerHeader } from '../components/SchedulerHeader';
-import { DayView } from '../components/DayView';
-import { WeekView } from '../components/WeekView';
-import { MonthView } from '../components/MonthView';
+import { SchedulerView, SchedulerProject, SchedulerMode } from '../types';
+import { SchedulerHeader, DayView, WeekView, MonthView } from '../components';
+import { TeamSchedulerView } from '../components/TeamSchedulerView';
+import { MOCK_TEAM_MEMBERS } from '../utils/teamMockData';
+import { TeamMemberProject } from '../types/teamScheduler';
 import { MOCK_SCHEDULER_PROJECTS } from '../utils/mockData';
 
 export const Scheduler: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<SchedulerView>('month');
+  const [mode, setMode] = useState<SchedulerMode>('projects');
   const [hoveredProject, setHoveredProject] = useState<SchedulerProject | null>(null);
+  const [hoveredTeamProject, setHoveredTeamProject] = useState<TeamMemberProject | null>(null);
 
   // Handle project click
   const handleProjectClick = (project: SchedulerProject) => {
@@ -22,6 +24,17 @@ export const Scheduler: React.FC = () => {
     setHoveredProject(project);
   };
 
+  // Handle team project click
+  const handleTeamProjectClick = (project: TeamMemberProject) => {
+    console.log('Team project clicked:', project);
+    // Future implementation: navigate to project detail screen
+  };
+
+  // Handle team project hover
+  const handleTeamProjectHover = (project: TeamMemberProject | null) => {
+    setHoveredTeamProject(project);
+  };
+
   // Handle date change
   const handleDateChange = (date: Date) => {
     setCurrentDate(date);
@@ -32,6 +45,11 @@ export const Scheduler: React.FC = () => {
     setView(newView);
   };
 
+  // Handle mode change
+  const handleModeChange = (newMode: SchedulerMode) => {
+    setMode(newMode);
+  };
+
   // Handle today click
   const handleTodayClick = () => {
     setCurrentDate(new Date());
@@ -39,6 +57,21 @@ export const Scheduler: React.FC = () => {
 
   // Render the appropriate view
   const renderView = () => {
+    // If team mode is selected, show team scheduler
+    if (mode === 'team') {
+      return (
+        <TeamSchedulerView
+          currentDate={currentDate}
+          teamMembers={MOCK_TEAM_MEMBERS}
+          onProjectClick={handleTeamProjectClick}
+          onProjectHover={handleTeamProjectHover}
+          hoveredProject={hoveredTeamProject}
+        />
+      );
+    }
+
+
+    // Otherwise render project views
     const commonProps = {
       currentDate,
       projects: MOCK_SCHEDULER_PROJECTS,
@@ -65,8 +98,10 @@ export const Scheduler: React.FC = () => {
       <SchedulerHeader
         currentDate={currentDate}
         view={view}
+        mode={mode}
         onDateChange={handleDateChange}
         onViewChange={handleViewChange}
+        onModeChange={handleModeChange}
         onTodayClick={handleTodayClick}
       />
 

@@ -1,91 +1,90 @@
-# Scheduler Module
+# Team Scheduler
 
-A comprehensive project timeline scheduler with Day, Week, and Month views, designed specifically for project management with visual project bars and interactive features.
+A Gantt chart-like timeline view for managing team member project assignments and schedules.
 
 ## Features
 
-### Views
-- **Day View**: Shows all projects starting/ending on a specific day in vertical order
-- **Week View**: Projects appear as horizontal bars spanning their start → end dates within the week grid
-- **Month View**: Projects displayed as horizontal bars across multiple days (Google Calendar style)
+### Layout & Structure
+- **Left Column**: Team members list with avatars, names, and roles
+- **Right Side**: Timeline allocation with weekly calendar dates
+- **Project Bars**: Color-coded bars showing project assignments across time
 
-### Project Management
-- **Project Duration**: Minimum 4 days, maximum 15-20 days
-- **Status Badges**: UB, WB, WIP, Completed, On-Hold with color coding
-- **Project Information**: Title, VIN code, location, description, team assignments
-- **Visual Indicators**: Color-coded project bars based on status
+### Team Member Information
+- Avatar display (with fallback to initials)
+- Name and role badges
+- Role color coding:
+  - Lead: Red
+  - Supervisor: Purple  
+  - Crew Leader: Blue
+  - Project Coordinator: Green
+  - Installer: Gray
 
-### Navigation
-- **View Switching**: Toggle between Day, Week, and Month tabs
-- **Date Navigation**: Forward/backward navigation for dates/weeks/months
-- **Today Button**: Quick navigation to current date
+### Timeline Features
+- **Weekly View**: Default 7-day timeline
+- **Project Bars**: Extend from start to end date
+- **Color Coding**: By project status (PV90, UB, WB, WIP, QF, Completed)
+- **Stacking**: Overlapping projects stack vertically
+- **Tooltips**: Hover shows project name, dates, duration, and role
 
-### Interactions
-- **Project Click**: Opens detailed Project Details Panel
-- **Hover Tooltips**: Quick info tooltip showing project name, location, status, duration
-- **Responsive Design**: Handles horizontal & vertical scrolling gracefully
-- **Sticky Headers**: Keep headers (days, weeks, months) sticky while scrolling
+### Interaction
+- **Hover**: Shows detailed project information
+- **Click**: Future navigation to project details
+- **Navigation**: Week forward/backward controls
+- **Unassigned State**: Shows "Unassigned" for team members without projects
 
 ## Components
 
-### Core Components
-- `Scheduler`: Main scheduler component
-- `SchedulerHeader`: Navigation and view controls
-- `DayView`: Day-specific project display
-- `WeekView`: Week grid with horizontal project bars
-- `MonthView`: Month grid with multi-day project bars
+### TeamSchedulerView
+Main container component that orchestrates the entire team scheduler interface.
 
-### Interactive Components
-- `ProjectBar`: Individual project bar with click/hover interactions
-- `ProjectTooltip`: Hover tooltip with project details
-- `ProjectDetailsPanel`: Detailed project information panel
+### TeamMemberRow
+Individual row component for each team member, containing:
+- Member info (left column)
+- Timeline bars (right column)
+- Project stacking logic
 
-## Usage
+### TimelineBar
+Individual project bar component with:
+- Color coding by project status
+- Hover tooltips
+- Click handlers
+- Responsive positioning
 
-```tsx
-import { Scheduler } from './features/scheduler';
+## Data Structure
 
-// Basic usage
-<Scheduler />
-
-// With custom projects
-<Scheduler 
-  projects={customProjects}
-  onProjectClick={(project) => console.log('Project clicked:', project)}
-/>
-```
-
-## Project Data Structure
-
+### TeamMemberAssignment
 ```typescript
-interface SchedulerProject extends Project {
-  vinCode: string;
-  duration: number; // in days
-  color?: string;
+interface TeamMemberAssignment {
+  id: string;
+  name: string;
+  role: 'Lead' | 'Supervisor' | 'Crew Leader' | 'Installer' | 'Project Coordinator';
+  avatar?: string;
+  projects: TeamMemberProject[];
 }
 ```
 
-## Styling
+### TeamMemberProject
+```typescript
+interface TeamMemberProject {
+  id: string;
+  name: string;
+  stage: ProjectStage;
+  startDate: string; // ISO date string
+  endDate: string; // ISO date string
+  role: string; // Role in this specific project
+  color: string; // Color for the bar
+}
+```
 
-The scheduler uses Tailwind CSS classes and follows the design system:
-- Status colors are defined in `PROJECT_STATUS_COLORS`
-- Responsive grid layouts for different view types
-- Hover states and transitions for interactive elements
-- Sticky positioning for headers during scrolling
+## Usage
 
-## Utilities
+The Team Scheduler is accessible through the main Scheduler page by switching to "Team" mode using the mode toggle in the header.
 
-The module includes utility functions for:
-- Date calculations and formatting
-- Project positioning and sizing
-- Duration validation
-- Range filtering
-- Color generation
+## Future Enhancements
 
-## Responsive Design
-
-- Mobile-friendly layouts
-- Horizontal scrolling for week/month views
-- Vertical scrolling for day view
-- Sticky headers for better navigation
-- Touch-friendly interactions
+- Day View: Single-day allocation view
+- Month View: Full month timeline view
+- Drag & Drop: Reassign projects by dragging bars
+- Conflict Detection: Visual indicators for scheduling conflicts
+- Resource Utilization: Charts showing team member workload
+- Export: PDF/Excel export of schedules

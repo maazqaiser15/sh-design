@@ -1,6 +1,7 @@
-export type ProjectStage = 'PV90' | 'UB' | 'WB' | 'WIP' | 'Completed';
+export type ProjectStage = 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
 
 export type SchedulerView = 'day' | 'week' | 'month';
+export type SchedulerMode = 'projects' | 'team';
 
 export interface SchedulerProject {
   id: string;
@@ -36,7 +37,9 @@ export interface SchedulerViewProps {
 export interface SchedulerHeaderProps {
   currentDate: Date;
   view: SchedulerView;
+  mode: SchedulerMode;
   onDateChange: (date: Date) => void;
   onViewChange: (view: SchedulerView) => void;
+  onModeChange: (mode: SchedulerMode) => void;
   onTodayClick: () => void;
 }

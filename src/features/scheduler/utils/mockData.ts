@@ -1,120 +1,181 @@
 import { SchedulerProject } from '../types';
 
+// Get current date for dynamic date generation
+const today = new Date();
+const currentYear = today.getFullYear();
+const currentMonth = today.getMonth();
+const currentDay = today.getDate();
+
+// Create projects for current month and next month
+const getNextMonth = (date: Date) => {
+  const nextMonth = new Date(date);
+  nextMonth.setMonth(date.getMonth() + 1);
+  return nextMonth;
+};
+
+const currentMonthStr = String(currentMonth + 1).padStart(2, '0');
+const nextMonth = getNextMonth(today);
+const nextMonthStr = String(nextMonth.getMonth() + 1).padStart(2, '0');
+
+
+// Mock projects with specific dates for current and next month
 export const MOCK_SCHEDULER_PROJECTS: SchedulerProject[] = [
   {
     id: 'proj-001',
-    name: 'Hilton Downtown Renovation',
-    stage: 'UB',
-    startDate: '2024-09-10',
-    endDate: '2024-09-12',
-    description: 'Complete renovation of downtown Hilton hotel lobby and guest areas',
-    client: 'Hilton Hotels',
-    location: 'Downtown, New York'
+    name: 'Downtown Corporate Complex',
+    stage: 'PV90',
+    startDate: `${currentYear}-${currentMonthStr}-25`,
+    endDate: `${currentYear}-${currentMonthStr}-29`,
+    description: 'Security film installation for downtown corporate building',
+    client: 'Corporate Client',
+    location: 'Downtown District'
   },
   {
     id: 'proj-002',
-    name: 'Tesla Fremont Expansion',
-    stage: 'WIP',
-    startDate: '2024-09-11',
-    endDate: '2024-09-14',
-    description: 'Security system upgrade for Tesla Fremont manufacturing facility',
-    client: 'Tesla Inc.',
-    location: 'Fremont, California'
+    name: 'Luxury Estate Security',
+    stage: 'UB',
+    startDate: `${currentYear}-${currentMonthStr}-26`,
+    endDate: `${currentYear}-${nextMonthStr}-03`,
+    description: 'High-end security installation for luxury residential estate',
+    client: 'Private Client',
+    location: 'Residential Area'
   },
   {
     id: 'proj-003',
-    name: 'Google NYC Office Fit-Out',
-    stage: 'PV90',
-    startDate: '2024-09-13',
-    endDate: '2024-09-15',
-    description: 'Protective film installation for Google NYC office building',
-    client: 'Google LLC',
-    location: 'New York, NY'
+    name: 'Warehouse Security Installation',
+    stage: 'WB',
+    startDate: `${currentYear}-${currentMonthStr}-28`,
+    endDate: `${currentYear}-${nextMonthStr}-04`,
+    description: 'Comprehensive security system for industrial warehouse',
+    client: 'Industrial Client',
+    location: 'Industrial Zone'
   },
   {
     id: 'proj-004',
-    name: 'Walmart Distribution Center Upgrade',
-    stage: 'Completed',
-    startDate: '2024-09-18',
-    endDate: '2024-09-22',
-    description: 'Security enhancement project for Walmart distribution center',
-    client: 'Walmart Inc.',
-    location: 'Bentonville, Arkansas'
+    name: 'House Rep Illinois Residence',
+    stage: 'WIP',
+    startDate: `${currentYear}-${currentMonthStr}-30`,
+    endDate: `${currentYear}-${nextMonthStr}-07`,
+    description: 'Security film installation for Illinois state representative residence',
+    client: 'Government',
+    location: 'Springfield, IL'
   },
   {
     id: 'proj-005',
-    name: 'Marriott Resort Facade Project',
-    stage: 'WB',
-    startDate: '2024-09-20',
-    endDate: '2024-09-24',
-    description: 'Protective film installation for resort facade windows',
-    client: 'Marriott International',
-    location: 'Miami, Florida'
+    name: 'Residential Security Upgrade',
+    stage: 'PV90',
+    startDate: `${currentYear}-${nextMonthStr}-01`,
+    endDate: `${currentYear}-${nextMonthStr}-05`,
+    description: 'Security upgrade for residential complex',
+    client: 'Property Management',
+    location: 'Residential Area'
   },
   {
     id: 'proj-006',
-    name: 'Amazon Seattle HQ Retrofit',
-    stage: 'UB',
-    startDate: '2024-09-25',
-    endDate: '2024-09-28',
-    description: 'Security system retrofit for Amazon Seattle headquarters',
-    client: 'Amazon.com Inc.',
-    location: 'Seattle, Washington'
+    name: 'Corporate Headquarters Security',
+    stage: 'WIP',
+    startDate: `${currentYear}-${nextMonthStr}-03`,
+    endDate: `${currentYear}-${nextMonthStr}-10`,
+    description: 'Security system installation for corporate headquarters',
+    client: 'Fortune 500 Company',
+    location: 'Business District'
   },
   {
     id: 'proj-007',
-    name: 'Microsoft Redmond Campus',
-    stage: 'WIP',
-    startDate: '2024-09-26',
-    endDate: '2024-09-30',
-    description: 'Protective film installation for Microsoft campus buildings',
-    client: 'Microsoft Corporation',
-    location: 'Redmond, Washington'
+    name: 'Medical Center Security Upgrade',
+    stage: 'UB',
+    startDate: `${currentYear}-${nextMonthStr}-05`,
+    endDate: `${currentYear}-${nextMonthStr}-12`,
+    description: 'Security upgrade for medical center',
+    client: 'Healthcare System',
+    location: 'Medical District'
   },
   {
     id: 'proj-008',
-    name: 'Apple Park Security Upgrade',
-    stage: 'PV90',
-    startDate: '2024-10-01',
-    endDate: '2024-10-03',
-    description: 'Security system enhancement for Apple Park campus',
-    client: 'Apple Inc.',
-    location: 'Cupertino, California'
+    name: 'Financial District Security',
+    stage: 'WB',
+    startDate: `${currentYear}-${nextMonthStr}-07`,
+    endDate: `${currentYear}-${nextMonthStr}-14`,
+    description: 'Security installation for financial district buildings',
+    client: 'Banking Consortium',
+    location: 'Financial District'
   },
   {
     id: 'proj-009',
-    name: 'Facebook Menlo Park Office',
-    stage: 'WB',
-    startDate: '2024-10-02',
-    endDate: '2024-10-05',
-    description: 'Protective film installation for Facebook office complex',
-    client: 'Meta Platforms Inc.',
-    location: 'Menlo Park, California'
+    name: 'Stadium Security Reinforcement',
+    stage: 'WIP',
+    startDate: `${currentYear}-${nextMonthStr}-08`,
+    endDate: `${currentYear}-${nextMonthStr}-18`,
+    description: 'Security reinforcement for sports stadium',
+    client: 'Stadium Authority',
+    location: 'Sports Complex'
   },
   {
     id: 'proj-010',
-    name: 'Netflix Los Gatos HQ',
-    stage: 'Completed',
-    startDate: '2024-10-07',
-    endDate: '2024-10-10',
-    description: 'Security system upgrade for Netflix headquarters',
-    client: 'Netflix Inc.',
-    location: 'Los Gatos, California'
+    name: 'Tech Park Surveillance',
+    stage: 'UB',
+    startDate: `${currentYear}-${nextMonthStr}-10`,
+    endDate: `${currentYear}-${nextMonthStr}-14`,
+    description: 'Surveillance system for technology park',
+    client: 'Tech Corporation',
+    location: 'Technology District'
+  },
+  {
+    id: 'proj-011',
+    name: 'University Campus Security',
+    stage: 'PV90',
+    startDate: `${currentYear}-${nextMonthStr}-12`,
+    endDate: `${currentYear}-${nextMonthStr}-19`,
+    description: 'Security system for university campus',
+    client: 'State University',
+    location: 'Education District'
+  },
+  {
+    id: 'proj-012',
+    name: 'Airport Cargo Security',
+    stage: 'WIP',
+    startDate: `${currentYear}-${nextMonthStr}-13`,
+    endDate: `${currentYear}-${nextMonthStr}-22`,
+    description: 'Security system for airport cargo facility',
+    client: 'Airport Authority',
+    location: 'Airport'
+  },
+  {
+    id: 'proj-013',
+    name: 'Harbor Freight Security',
+    stage: 'UB',
+    startDate: `${currentYear}-${nextMonthStr}-15`,
+    endDate: `${currentYear}-${nextMonthStr}-20`,
+    description: 'Security installation for harbor freight facility',
+    client: 'Logistics Company',
+    location: 'Port Area'
+  },
+  {
+    id: 'proj-014',
+    name: 'Embassy Security Upgrade',
+    stage: 'WB',
+    startDate: `${currentYear}-${nextMonthStr}-18`,
+    endDate: `${currentYear}-${nextMonthStr}-25`,
+    description: 'Security upgrade for embassy building',
+    client: 'Diplomatic Mission',
+    location: 'Diplomatic Quarter'
   }
 ];
 
 export const PROJECT_STAGE_COLORS = {
-  'PV90': 'bg-gray-100 text-gray-800 border-gray-200',
-  'UB': 'bg-blue-50 text-blue-800 border-blue-200',
-  'WB': 'bg-teal-200 text-teal-800 border-teal-300',
-  'WIP': 'bg-amber-100 text-amber-800 border-amber-200',
+  'PV90': 'bg-gray-300 text-gray-800 border-gray-400',
+  'UB': 'bg-teal-200 text-teal-800 border-teal-300',
+  'WB': 'bg-amber-100 text-amber-800 border-amber-200',
+  'WIP': 'bg-blue-100 text-blue-800 border-blue-200',
+  'QF': 'bg-orange-400 text-orange-800 border-orange-500',
   'Completed': 'bg-green-200 text-green-800 border-green-300'
 } as const;
 
 export const PROJECT_STAGE_BADGE_COLORS = {
   'PV90': 'bg-gray-100 text-gray-700',
-  'UB': 'bg-blue-100 text-blue-700',
-  'WB': 'bg-teal-100 text-teal-700',
-  'WIP': 'bg-amber-100 text-amber-700',
+  'UB': 'bg-teal-100 text-teal-700',
+  'WB': 'bg-amber-100 text-amber-700',
+  'WIP': 'bg-blue-100 text-blue-700',
+  'QF': 'bg-orange-100 text-orange-700',
   'Completed': 'bg-green-100 text-green-700'
 } as const;
