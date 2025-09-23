@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Users, Truck, Package, Plane, Wrench, Search, CheckCircle2 } from 'lucide-react';
 import { useBreadcrumbContext } from '../../../../contexts/BreadcrumbContext';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
@@ -30,6 +30,10 @@ export const ProjectDetailsPage: React.FC = () => {
   const { setBreadcrumbs } = useBreadcrumbContext();
   const { showToast } = useToast();
   
+  // Get stage from URL search params
+  const [searchParams] = useSearchParams();
+  const urlStage = searchParams.get('stage');
+  
   // State management
   const [project] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
   const [preparationData, setPreparationData] = useState<PreparationStageData>(MOCK_PREPARATION_DATA);
@@ -46,7 +50,7 @@ export const ProjectDetailsPage: React.FC = () => {
   const [assignedTrailer, setAssignedTrailer] = useState<TrailerForAssignment | null>(null);
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
-  const [selectedStage, setSelectedStage] = useState<string>('preparation');
+  const [selectedStage, setSelectedStage] = useState<string>(urlStage || 'preparation');
 
   // Set breadcrumbs when component mounts
   useEffect(() => {
@@ -504,7 +508,13 @@ export const ProjectDetailsPage: React.FC = () => {
         showToast('Switched to Preparation stage');
         break;
       case 'wip':
-        showToast('Switched to Work in Progress stage');
+        // Update project status to WIP when switching to Work in Progress
+        const updatedProject = { ...project, status: 'WIP' as const };
+        setPreparationData(prev => ({
+          ...prev,
+          project: updatedProject
+        }));
+        showToast('Switched to Work in Progress stage - Project status updated to WIP');
         break;
       case 'quality':
         showToast('Switched to Quality Check stage');
@@ -515,6 +525,37 @@ export const ProjectDetailsPage: React.FC = () => {
       default:
         break;
     }
+  };
+
+  // Initialize stage based on URL parameter and project status
+  useEffect(() => {
+    if (urlStage) {
+      setSelectedStage(urlStage);
+      
+      // Handle special cases based on stage
+      if (urlStage === 'wip') {
+        // Mark preparation stage as completed when opening WIP stage
+        setPreparationData(prev => ({
+          ...prev,
+          checklist: prev.checklist.map(item => ({
+            ...item,
+            completed: true
+          }))
+        }));
+        showToast('Work in Progress stage - Preparation tasks marked as completed');
+      } else if (urlStage === 'quality') {
+        showToast('Quality Check stage opened');
+      } else if (urlStage === 'completed') {
+        showToast('Completed stage opened');
+      }
+    }
+  }, [urlStage]);
+
+  // Handle marking project for Quality Check
+  const handleMarkForQF = () => {
+    showToast('Project marked for Quality Check');
+    // In a real app, this would update the project status and notify relevant parties
+    console.log('Project marked for Quality Check');
   };
 
   return (
@@ -528,6 +569,7 @@ export const ProjectDetailsPage: React.FC = () => {
           onEditDates={handleEditDates}
           onToggleItem={handleToggleChecklistItem}
           onStageClick={handleStageClick}
+          onMarkForQF={handleMarkForQF}
           selectedStage={selectedStage}
           isPreparationStage={isPreparationStage}
         />
@@ -553,6 +595,29 @@ export const ProjectDetailsPage: React.FC = () => {
             onRemoveReceipt={handleRemoveReceipt}
             onMarkCompleted={handleMarkCompleted}
             onUpdatePreparationTask={handleUpdatePreparationTask}
+            selectedStage={selectedStage}
+          />
+        ) : selectedStage === 'wip' ? (
+          <KeyInfoSection
+            assignedTeam={preparationData.assignedTeam}
+            travelPlans={preparationData.logisticsTravel.travelPlans}
+            assignedTrailer={assignedTrailer}
+            projectFilmRequirements={projectFilmRequirements}
+            onViewTeam={handleViewTeam}
+            onAssignTeam={handleAssignTeam}
+            onEditTeam={handleEditTeam}
+            onRemoveTeamMember={handleRemoveTeamMember}
+            onSetupTravel={handleSetupTravel}
+            onAddTravel={handleAddTravel}
+            onEditTravel={handleEditTravel}
+            onDeleteTravel={handleDeleteTravel}
+            onAssignTrailer={handleOpenAssignTrailerModal}
+            onNotifyHouseManager={handleNotifyHouseManager}
+            onUploadReceipt={handleUploadReceipt}
+            onRemoveReceipt={handleRemoveReceipt}
+            onMarkCompleted={handleMarkCompleted}
+            onUpdatePreparationTask={handleUpdatePreparationTask}
+            selectedStage={selectedStage}
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">

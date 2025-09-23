@@ -312,14 +312,30 @@ export const ProjectListPage: React.FC = () => {
   }, [projectListItems, filters, searchQuery, sortOptions]);
 
   const handleProjectClick = (project: ProjectListItem) => {
-    // Check if project is in preparation stage (PV90, UB, WB)
-    if (project.status === 'PV90' || project.status === 'UB' || project.status === 'WB') {
-      setProjectForDateAssignment(project);
-      setIsDateModalOpen(true);
-    } else {
-      // Navigate directly to project details for other stages
-      navigate(`/projects/${project.id}`);
+    // Determine the stage based on project status
+    let stage = 'preparation'; // default stage
+    
+    switch (project.status as ProjectStatus) {
+      case 'PV90':
+      case 'UB':
+      case 'WB':
+        stage = 'preparation';
+        break;
+      case 'WIP':
+        stage = 'wip';
+        break;
+      case 'QF':
+        stage = 'quality';
+        break;
+      case 'Completed':
+        stage = 'completed';
+        break;
+      default:
+        stage = 'preparation';
     }
+    
+    // Navigate to project details with the appropriate stage
+    navigate(`/projects/${project.id}?stage=${stage}`);
   };
 
 

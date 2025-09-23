@@ -29,6 +29,7 @@ interface KeyInfoSectionProps {
   onRemoveReceipt: (receiptId: string) => void;
   onMarkCompleted: () => void;
   onUpdatePreparationTask?: (taskLabel: string, completed: boolean) => void;
+  selectedStage?: string;
 }
 
 /**
@@ -53,7 +54,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   onUploadReceipt,
   onRemoveReceipt,
   onMarkCompleted,
-  onUpdatePreparationTask
+  onUpdatePreparationTask,
+  selectedStage = 'preparation'
 }) => {
   const { showToast } = useToast();
   
@@ -256,6 +258,84 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
+      {selectedStage === 'wip' ? (
+        // Work in Progress stage - Upload take-off sheet card
+        <div className="lg:col-span-4">
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Project Setup</h3>
+              </div>
+              <span className="text-sm font-medium text-gray-500">Ready to begin</span>
+            </div>
+            
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                <FileText className="w-8 h-8 text-blue-600" />
+              </div>
+              
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Upload Take-Off Sheet
+              </h4>
+              
+              <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                Upload your take-off sheet to create window inventory and start working on the project. 
+                This will help us track progress and manage the installation process.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  variant="primary"
+                  size="md"
+                  icon={FileText}
+                  onClick={() => {
+                    // Handle file upload
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.pdf,.xlsx,.xls,.csv';
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) {
+                        showToast(`Take-off sheet "${file.name}" uploaded successfully`);
+                        // In a real app, this would process the file and create windows
+                      }
+                    };
+                    input.click();
+                  }}
+                  className="px-6 py-2"
+                >
+                  Upload Take-Off Sheet
+                </Button>
+                
+                <Button
+                  variant="secondary"
+                  size="md"
+                  icon={Edit}
+                  onClick={() => {
+                    showToast('Manual window entry opened');
+                    // In a real app, this would open a modal for manual entry
+                  }}
+                  className="px-6 py-2"
+                >
+                  Enter Manually
+                </Button>
+              </div>
+              
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-500 mb-2">
+                  <strong>Supported formats:</strong> PDF, Excel (.xlsx, .xls), CSV
+                </p>
+                <p className="text-xs text-gray-500">
+                  Once uploaded, we'll automatically create your window inventory and you can begin tracking progress.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      ) : (
+        // Preparation stage - Show original 4 cards
+        <>
       {/* Assigned Team Card */}
       <Card className="p-6 flex flex-col">
         <div className="flex items-center justify-between mb-4">
@@ -697,6 +777,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         onClose={handleCloseHotelReservationModal}
         onSave={handleSaveHotelReservationDetails}
       />
+        </>
+      )}
     </div>
   );
 };

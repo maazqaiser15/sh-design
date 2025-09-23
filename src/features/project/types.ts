@@ -1,7 +1,7 @@
 import { Project } from '../../types';
 
 // Safe Haven Defense Project Stages
-export type ProjectStage = 'PV90' | 'UB' | 'WB' | 'WIP' | 'Completed';
+export type ProjectStage = 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
 
 // Safe Haven Defense Project Status (same as stages for this implementation)
 export type ProjectStatus = ProjectStage;
@@ -53,6 +53,7 @@ export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
   'UB': 'bg-blue-100 text-blue-700',
   'WB': 'bg-yellow-100 text-yellow-700',
   'WIP': 'bg-green-100 text-green-700',
+  'QF': 'bg-orange-100 text-orange-700',
   'Completed': 'bg-gray-100 text-gray-700',
 };
 
@@ -62,5 +63,6 @@ export const PROJECT_STATUS_DESCRIPTIONS: Record<ProjectStatus, string> = {
   'UB': 'UB',
   'WB': 'WB',
   'WIP': 'WIP',
+  'QF': 'QF',
   'Completed': 'Completed',
 };

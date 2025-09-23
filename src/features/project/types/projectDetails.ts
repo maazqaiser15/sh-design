@@ -4,7 +4,7 @@ import { LogisticsTravelData } from './logisticsTravel';
 
 // Project Stages
 export type ProjectStage = 'preparation' | 'wip' | 'fer' | 'completed';
-export type ProjectStatus = 'PV90' | 'UB' | 'WB' | 'WIP' | 'Completed';
+export type ProjectStatus = 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
 
 // Project Details Types
 export interface ProjectDetails {

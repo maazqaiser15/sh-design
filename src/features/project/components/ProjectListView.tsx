@@ -21,6 +21,42 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
       .slice(0, 2);
   };
 
+  const getProgressPercentage = (status: string): number => {
+    switch (status) {
+      case 'PV90':
+      case 'UB':
+      case 'WB':
+        return 0;
+      case 'WIP':
+        return 65;
+      case 'QF':
+        return 100;
+      case 'Completed':
+        return 100;
+      default:
+        return 0;
+    }
+  };
+
+  const getProgressBarColor = (status: string): string => {
+    switch (status) {
+      case 'PV90':
+        return 'bg-purple-500';
+      case 'UB':
+        return 'bg-blue-500';
+      case 'WB':
+        return 'bg-yellow-500';
+      case 'WIP':
+        return 'bg-green-500';
+      case 'QF':
+        return 'bg-orange-500';
+      case 'Completed':
+        return 'bg-gray-500';
+      default:
+        return 'bg-gray-400';
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {projects.map((project) => (
@@ -91,11 +127,18 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
             </div>
           </div>
 
-          {/* Bottom Row: Duration */}
+          {/* Bottom Row: Progress Bar */}
           <div className="mt-auto">
-            <span className="text-sm text-gray-500">
-              {formatProjectDuration(project.startDate, project.endDate)}
-            </span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-500">Progress</span>
+              <span className="text-xs text-gray-500">{getProgressPercentage(project.status)}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-300 ${getProgressBarColor(project.status)}`}
+                style={{ width: `${getProgressPercentage(project.status)}%` }}
+              ></div>
+            </div>
           </div>
         </div>
       ))}

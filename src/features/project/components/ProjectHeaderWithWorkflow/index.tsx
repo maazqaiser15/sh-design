@@ -12,6 +12,7 @@ interface ProjectHeaderWithWorkflowProps {
   onEditDates?: () => void;
   onToggleItem: (itemId: string) => void;
   onStageClick?: (stageId: string) => void;
+  onMarkForQF?: () => void;
   selectedStage?: string;
   isPreparationStage?: boolean;
 }
@@ -27,6 +28,7 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
   onEditDates,
   onToggleItem,
   onStageClick,
+  onMarkForQF,
   selectedStage,
   isPreparationStage = false
 }) => {
@@ -116,55 +118,105 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
             </p>
           )}
 
-          {/* Preparation Tasks (mini checklist) */}
+          {/* Preparation Tasks or Project Progress */}
           <div className="mb-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-gray-700">Preparation Tasks</span>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {checklist.map(item => (
-                <div key={item.id} className="flex items-center">
-                  <button
-                    onClick={() => onToggleItem(item.id)}
-                    className="flex-shrink-0 mr-1.5 text-gray-400 hover:text-blue-600 transition-colors"
-                    aria-label={`Toggle ${item.label}`}
-                  >
-                    {item.completed ? (
-                      <CheckCircle className="w-3 h-3 text-green-500" />
-                    ) : (
-                      <Circle className="w-3 h-3" />
-                    )}
-                  </button>
-                  <span className={`text-xs font-medium ${item.completed ? 'text-green-600' : 'text-gray-600'}`}>
-                    {item.label}
-                  </span>
+            {activeStage === 'wip' ? (
+              // Project Progress for Work in Progress stage
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-gray-700">Project Progress</span>
+                  <span className="text-xs font-medium text-blue-600">10/60 windows completed</span>
                 </div>
-              ))}
-            </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: '16.67%' }} // 10/60 = 16.67%
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+            ) : (
+              // Preparation Tasks for other stages
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-gray-700">Preparation Tasks</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {checklist.map(item => (
+                    <div key={item.id} className="flex items-center">
+                      <button
+                        onClick={() => onToggleItem(item.id)}
+                        className="flex-shrink-0 mr-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                        aria-label={`Toggle ${item.label}`}
+                      >
+                        {item.completed ? (
+                          <CheckCircle className="w-3 h-3 text-green-500" />
+                        ) : (
+                          <Circle className="w-3 h-3" />
+                        )}
+                      </button>
+                      <span className={`text-xs font-medium ${item.completed ? 'text-green-600' : 'text-gray-600'}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            {isPreparationStage && onEditDates && (
-              <Button
-                variant="secondary"
-                size="sm"
-                icon={Calendar}
-                onClick={onEditDates}
-                className="text-xs px-3 py-1 h-7"
-              >
-                Edit Dates
-              </Button>
+            {activeStage === 'wip' ? (
+              // Work in Progress stage buttons
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={CheckCircle}
+                  onClick={onMarkForQF}
+                  className="text-xs px-3 py-1 h-7"
+                >
+                  Mark for QF
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={Edit}
+                  onClick={onEdit}
+                  className="text-xs px-3 py-1 h-7"
+                >
+                  Edit
+                </Button>
+              </>
+            ) : (
+              // Preparation stage buttons
+              <>
+                {isPreparationStage && onEditDates && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={Calendar}
+                    onClick={onEditDates}
+                    className="text-xs px-3 py-1 h-7"
+                  >
+                    Edit Dates
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={Edit}
+                  onClick={onEdit}
+                  className="text-xs px-3 py-1 h-7"
+                >
+                  Edit
+                </Button>
+              </>
             )}
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={Edit}
-              onClick={onEdit}
-              className="text-xs px-3 py-1 h-7"
-            >
-              Edit
-            </Button>
           </div>
         </div>
 
