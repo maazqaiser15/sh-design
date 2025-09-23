@@ -200,13 +200,19 @@ export const getProjectBarPosition = (project: Project, currentDate: Date, viewM
       return { startPosition: 0, width: 0 };
     }
     
-    const yearStart = startOfYear.getTime();
-    const yearEnd = endOfYear.getTime();
-    const projectStart = Math.max(startDate.getTime(), yearStart);
-    const projectEnd = Math.min(endDate.getTime(), yearEnd);
+    // For year view, calculate position based on month within the year
+    const projectStartMonth = startDate.getMonth();
+    const projectEndMonth = endDate.getMonth();
     
-    startPosition = ((projectStart - yearStart) / (yearEnd - yearStart)) * 100;
-    width = ((projectEnd - projectStart) / (yearEnd - yearStart)) * 100;
+    // Each month takes up 100/12 = 8.33% of the timeline
+    const monthWidth = 100 / 12;
+    
+    // Calculate start position based on the month
+    startPosition = projectStartMonth * monthWidth;
+    
+    // Calculate width based on the number of months the project spans
+    const monthsSpan = projectEndMonth - projectStartMonth + 1;
+    width = monthsSpan * monthWidth;
   }
   
   return { startPosition, width };

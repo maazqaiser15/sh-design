@@ -5,7 +5,7 @@ import { TeamRow } from './TeamRow';
 import { ProjectRow } from './ProjectRow';
 import { TrailerRow } from './TrailerRow';
 import { transformTeamDataToProjectView, transformTrailerDataToProjectView } from '../utils/dataTransform';
-import { MOCK_TRAILERS } from '../data/trailerMockData';
+import { MOCK_TRAILERS } from '../data/mockData';
 import { useSidebar } from '../../../contexts/SidebarContext';
 
 export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({

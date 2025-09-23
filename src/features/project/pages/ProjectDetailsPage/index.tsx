@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Users, Truck, Package, Plane, Wrench, Search, CheckCircle2 } from 'lucide-react';
+import { Users, Truck, Package, Plane, Wrench, Search, CheckCircle2, Plus } from 'lucide-react';
 import { useBreadcrumbContext } from '../../../../contexts/BreadcrumbContext';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectStatus } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
@@ -17,6 +17,7 @@ import { ProjectDateModal } from '../../components/ProjectDateModal';
 import { TrailerInventoryCard } from '../../components/TrailerInventoryCard';
 import { AssignTrailerModal } from '../../components/AssignTrailerModal';
 import { Modal } from '../../../../common/components/Modal';
+import { Button } from '../../../../common/components/Button';
 import { useToast } from '../../../../contexts/ToastContext';
 import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { TrailerForAssignment } from '../../types/trailers';
@@ -890,6 +891,27 @@ export const ProjectDetailsPage: React.FC = () => {
                   <div className="text-2xl font-bold text-purple-600 mb-1">✓</div>
                   <div className="text-sm text-gray-600">Quality Assured</div>
                 </div>
+              </div>
+            </div>
+            
+            {/* Create Associated Project Button */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Create Associated Project</h3>
+                  <p className="text-sm text-gray-500">Create a new project based on this completed project</p>
+                </div>
+                <Button
+                  onClick={() => {
+                    // TODO: Implement create associated project functionality
+                    console.log('Create Associated Project clicked');
+                    showToast('Create Associated Project functionality coming soon');
+                  }}
+                  icon={Plus}
+                  size="md"
+                >
+                  Create Associated Project
+                </Button>
               </div>
             </div>
           </>

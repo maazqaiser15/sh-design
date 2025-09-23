@@ -33,7 +33,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
   const [statusFilter, setStatusFilter] = useState<TrailerStatus | "">("");
   const [stateFilter, setStateFilter] = useState("");
       const [sortBy, setSortBy] = useState<
-        "trailerName" | "registrationNumber" | "city" | "state" | "parkingAddress" | "currentLocation" | "status" | "updatedAt"
+        "trailerName" | "registrationNumber" | "location" | "status" | "updatedAt"
       >("trailerName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -183,7 +183,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
             onChange={(e) => setStateFilter(e.target.value)}
             className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
           >
-            <option value="">All States</option>
+            <option value="">All Locations</option>
             {USA_STATES.map((state) => (
               <option key={state} value={state}>
                 {state}
@@ -293,10 +293,7 @@ interface TrailerTableViewProps {
     field:
       | "trailerName"
       | "registrationNumber"
-      | "parkingAddress"
-      | "state"
-      | "city"
-      | "currentLocation"
+      | "location"
       | "status"
       | "updatedAt"
   ) => void;
@@ -340,7 +337,7 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
     );
   }
 
-  const SortButton: React.FC<{ field: "trailerName" | "registrationNumber" | "parkingAddress" | "state" | "city" | "currentLocation" | "status" | "updatedAt"; children: React.ReactNode }> = ({
+  const SortButton: React.FC<{ field: "trailerName" | "registrationNumber" | "location" | "status" | "updatedAt"; children: React.ReactNode }> = ({
     field,
     children,
   }) => (
@@ -368,16 +365,7 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
                 <SortButton field="registrationNumber">Registration</SortButton>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="city">City</SortButton>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="state">State</SortButton>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="parkingAddress">Parking Address</SortButton>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="currentLocation">Current Location</SortButton>
+                <SortButton field="location">Location</SortButton>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <SortButton field="status">Status</SortButton>
@@ -406,23 +394,8 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {trailer.city}
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {trailer.state}
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {trailer.parkingAddress}
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin size={16} className="mr-1" />
-                    <span>-</span>
+                    <div className="font-medium">{trailer.city}, {trailer.state}</div>
+                    <div className="text-gray-500 text-xs">{trailer.parkingAddress}</div>
                   </div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">

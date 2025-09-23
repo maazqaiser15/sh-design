@@ -359,16 +359,25 @@ export const filterTrailers = (
  */
 export const sortTrailers = (
   trailers: Trailer[],
-  sortBy: 'trailerName' | 'registrationNumber' | 'parkingAddress' | 'state' | 'city' | 'status' | 'updatedAt',
+  sortBy: 'trailerName' | 'registrationNumber' | 'location' | 'status' | 'updatedAt',
   order: 'asc' | 'desc' = 'asc'
 ): Trailer[] => {
   return [...trailers].sort((a, b) => {
-    let aValue = a[sortBy];
-    let bValue = b[sortBy];
+    let aValue: any;
+    let bValue: any;
 
-    if (typeof aValue === 'string') {
-      aValue = aValue.toLowerCase();
-      bValue = (bValue as string).toLowerCase();
+    // Handle location sorting by combining city, state, and parking address
+    if (sortBy === 'location') {
+      aValue = `${a.city}, ${a.state} ${a.parkingAddress}`.toLowerCase();
+      bValue = `${b.city}, ${b.state} ${b.parkingAddress}`.toLowerCase();
+    } else {
+      aValue = a[sortBy];
+      bValue = b[sortBy];
+
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = (bValue as string).toLowerCase();
+      }
     }
 
     if (aValue < bValue) return order === 'asc' ? -1 : 1;

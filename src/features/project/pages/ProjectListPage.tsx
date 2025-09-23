@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid, List, Plus, Search, X } from 'lucide-react';
-import { Button } from '../../../common/components/Button';
+import { Grid, List, Search, X } from 'lucide-react';
 import { ProjectListView } from '../components/ProjectListView';
 import { ProjectTableView } from '../components/ProjectTableView';
 import { ProjectDateModal } from '../components/ProjectDateModal';
@@ -441,17 +440,6 @@ export const ProjectListPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Add Project Button */}
-            <Button
-              onClick={() => {
-                // TODO: Implement add project functionality
-                console.log('Add project clicked');
-              }}
-              icon={Plus}
-              size="md"
-            >
-              New Project
-            </Button>
           </div>
         </div>
 

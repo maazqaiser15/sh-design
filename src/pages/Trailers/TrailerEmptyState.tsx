@@ -64,7 +64,7 @@ export const TrailerEmptyState: React.FC = () => {
             className="px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
             disabled
           >
-            <option value="">All States</option>
+            <option value="">All Locations</option>
           </select>
         </div>
       </Card>
