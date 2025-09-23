@@ -57,7 +57,7 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
           <div className="flex-1">
             <div className="space-y-2">
               <p className="text-sm text-gray-900">
-                This will permanently remove <strong>Trailer {trailer.trailerNumber}</strong> and its records. 
+                This will permanently remove <strong>Trailer {trailer.trailerName}</strong> and its records. 
                 This action cannot be undone.
               </p>
               

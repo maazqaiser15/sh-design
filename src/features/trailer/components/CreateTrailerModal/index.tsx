@@ -5,11 +5,12 @@ import { Trailer, FilmSheetType } from '../../../../types';
 import { 
   TOOL_INVENTORY,
   FILM_SHEET_TYPES, 
-  TRAILER_LOCATIONS, 
+  USA_STATES,
+  USA_CITIES,
   validateTrailerForm, 
   createInitialInventory,
   createActivityLog,
-  formatTrailerNumber,
+  formatTrailerName,
   TrailerFormData
 } from '../../utils/trailerUtils';
 
@@ -31,9 +32,11 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
   existingTrailerNumbers,
 }) => {
   const [formData, setFormData] = useState<TrailerFormData>({
-    trailerNumber: '',
+    trailerName: '',
     registrationNumber: '',
-    location: '',
+    parkingAddress: '',
+    state: '',
+    city: '',
     toolThresholds: TOOL_INVENTORY.reduce((acc, tool) => ({
       ...acc,
       [tool.name]: tool.defaultThreshold,
@@ -47,6 +50,21 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState<'basic' | 'tools' | 'sheets'>('basic');
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+
+  // Update available cities when state changes
+  React.useEffect(() => {
+    if (formData.state) {
+      const cities = USA_CITIES[formData.state] || [];
+      setAvailableCities(cities);
+      // Reset city if it's not available in the new state
+      if (formData.city && !cities.includes(formData.city)) {
+        setFormData(prev => ({ ...prev, city: '' }));
+      }
+    } else {
+      setAvailableCities([]);
+    }
+  }, [formData.state]);
 
   const handleInputChange = (field: keyof Omit<TrailerFormData, 'toolThresholds' | 'filmSheetThresholds' | 'rooms' | 'totalSqFeet'>, value: string | number) => {
     setFormData(prev => ({
@@ -111,10 +129,10 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
     // Validate form
     const validation = validateTrailerForm(formData);
     
-    // Check for duplicate trailer number
-    const formattedTrailerNumber = formatTrailerNumber(formData.trailerNumber);
-    if (existingTrailerNumbers.includes(formattedTrailerNumber)) {
-      validation.errors.trailerNumber = 'Trailer number already exists';
+    // Check for duplicate trailer name
+    const formattedTrailerName = formData.trailerName.trim();
+    if (existingTrailerNumbers.includes(formattedTrailerName)) {
+      validation.errors.trailerName = 'Trailer name already exists';
       validation.isValid = false;
     }
 
@@ -130,12 +148,15 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
       const now = new Date().toISOString();
       
       const newTrailer: Omit<Trailer, 'id' | 'createdAt' | 'updatedAt'> = {
-        trailerNumber: formattedTrailerNumber,
+        trailerName: formattedTrailerName,
         registrationNumber: formData.registrationNumber.trim(),
-        location: formData.location,
+        parkingAddress: formData.parkingAddress.trim(),
+        state: formData.state,
+        city: formData.city,
         inventory,
+        status: 'available',
         activityLogs: [
-          createActivityLog('created', `Trailer ${formattedTrailerNumber} created`, undefined, true),
+          createActivityLog('created', `Trailer ${formattedTrailerName} created`, undefined, true),
         ],
       };
 
@@ -143,9 +164,11 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
       
       // Reset form
       setFormData({
-        trailerNumber: '',
+        trailerName: '',
         registrationNumber: '',
-        location: '',
+        parkingAddress: '',
+        state: '',
+        city: '',
         toolThresholds: TOOL_INVENTORY.reduce((acc, tool) => ({
           ...acc,
           [tool.name]: tool.defaultThreshold,
@@ -167,9 +190,11 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
 
   const handleCancel = () => {
     setFormData({
-      trailerNumber: '',
+      trailerName: '',
       registrationNumber: '',
-      location: '',
+      parkingAddress: '',
+      state: '',
+      city: '',
       toolThresholds: TOOL_INVENTORY.reduce((acc, tool) => ({
         ...acc,
         [tool.name]: tool.defaultThreshold,
@@ -238,21 +263,21 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="trailerNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="trailerName" className="block text-sm font-medium text-gray-700 mb-1">
                   Trailer Name *
                 </label>
                 <input
                   type="text"
-                  id="trailerNumber"
-                  value={formData.trailerNumber}
-                  onChange={(e) => handleInputChange('trailerNumber', e.target.value)}
+                  id="trailerName"
+                  value={formData.trailerName}
+                  onChange={(e) => handleInputChange('trailerName', e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                    errors.trailerNumber ? 'border-red-300' : 'border-gray-300'
+                    errors.trailerName ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="Enter trailer number"
+                  placeholder="Enter Trailer Name"
                 />
-                {errors.trailerNumber && (
-                  <p className="mt-1 text-sm text-red-600">{errors.trailerNumber}</p>
+                {errors.trailerName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.trailerName}</p>
                 )}
               </div>
 
@@ -277,24 +302,66 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-                Location *
+              <label htmlFor="parkingAddress" className="block text-sm font-medium text-gray-700 mb-1">
+                Parking Address *
+              </label>
+              <input
+                type="text"
+                id="parkingAddress"
+                value={formData.parkingAddress}
+                onChange={(e) => handleInputChange('parkingAddress', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.parkingAddress ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter parking address"
+              />
+              {errors.parkingAddress && (
+                <p className="mt-1 text-sm text-red-600">{errors.parkingAddress}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                State *
               </label>
               <select
-                id="location"
-                value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
+                id="state"
+                value={formData.state}
+                onChange={(e) => handleInputChange('state', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.location ? 'border-red-300' : 'border-gray-300'
+                  errors.state ? 'border-red-300' : 'border-gray-300'
                 }`}
               >
-                <option value="">Select location</option>
-                {TRAILER_LOCATIONS.map(location => (
-                  <option key={location} value={location}>{location}</option>
+                <option value="">Select state</option>
+                {USA_STATES.map(state => (
+                  <option key={state} value={state}>{state}</option>
                 ))}
               </select>
-              {errors.location && (
-                <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+              {errors.state && (
+                <p className="mt-1 text-sm text-red-600">{errors.state}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                City *
+              </label>
+              <select
+                id="city"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.city ? 'border-red-300' : 'border-gray-300'
+                }`}
+                disabled={!formData.state}
+              >
+                <option value="">Select city</option>
+                {availableCities.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+              {errors.city && (
+                <p className="mt-1 text-sm text-red-600">{errors.city}</p>
               )}
             </div>
           </div>

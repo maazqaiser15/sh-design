@@ -7,6 +7,8 @@ import { ProjectDetails } from '../../types/projectDetails';
 interface ProjectDetailsHeaderProps {
   project: ProjectDetails;
   onEdit: () => void;
+  onEditDates?: () => void;
+  isPreparationStage?: boolean;
 }
 
 /**
@@ -15,7 +17,9 @@ interface ProjectDetailsHeaderProps {
  */
 export const ProjectDetailsHeader: React.FC<ProjectDetailsHeaderProps> = ({
   project,
-  onEdit
+  onEdit,
+  onEditDates,
+  isPreparationStage = false
 }) => {
   const getStageDisplay = (stage: string) => {
     const stageMap = {
@@ -98,6 +102,16 @@ export const ProjectDetailsHeader: React.FC<ProjectDetailsHeaderProps> = ({
 
         {/* Right side - Actions */}
         <div className="flex items-center space-x-3">
+          {isPreparationStage && onEditDates && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Calendar}
+              onClick={onEditDates}
+            >
+              Edit Dates
+            </Button>
+          )}
           <Button
             variant="secondary"
             size="sm"

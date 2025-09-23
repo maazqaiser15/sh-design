@@ -1,32 +1,20 @@
 import React from 'react';
-import { Users, Truck, Package, Clock, Phone, Edit, Plane, Trash2 } from 'lucide-react';
+import { Users, Clock, Phone, Edit, Plane, Trash2 } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
-import { AssignedTeam, AssignedTrailer, LogisticsInfo } from '../../types/projectDetails';
+import { AssignedTeam, LogisticsInfo } from '../../types/projectDetails';
 import { TeamMember } from '../../types/teamMembers';
-import { TrailerForAssignment } from '../../types/trailers';
 import { LogisticsItem, TravelPlan } from '../../types/logisticsTravel';
-import { Trailer } from '../../../../types';
 
 interface KeyInfoSectionProps {
   assignedTeam: AssignedTeam | null;
-  assignedTrailer: AssignedTrailer | null;
   logistics: LogisticsInfo | null;
   logisticsItems: LogisticsItem[];
   travelPlans: TravelPlan[];
-  projectFilmRequirements: Array<{
-    sheetType: string;
-    required: number;
-    available: number;
-    status: 'sufficient' | 'low' | 'missing';
-  }>;
   onViewTeam: () => void;
-  onViewTrailer: () => void;
   onViewLogistics: () => void;
   onAssignTeam: () => void;
   onEditTeam: () => void;
-  onAssignTrailer: () => void;
-  onEditTrailer: () => void;
   onAssignLogistics: () => void;
   onSetupTravel: () => void;
   onAddLogistics: () => void;
@@ -35,27 +23,21 @@ interface KeyInfoSectionProps {
   onAddTravel: () => void;
   onEditTravel: (travel: TravelPlan) => void;
   onDeleteTravel: (id: string) => void;
-  onUploadShipmentReceipt: () => void;
 }
 
 /**
- * KeyInfoSection - Overview cards for team, trailer, and logistics
+ * KeyInfoSection - Overview cards for team and logistics
  * Shows key project information in a compact card format
  */
 export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   assignedTeam,
-  assignedTrailer,
   logistics,
   logisticsItems,
   travelPlans,
-  projectFilmRequirements,
   onViewTeam,
-  onViewTrailer,
   onViewLogistics,
   onAssignTeam,
   onEditTeam,
-  onAssignTrailer,
-  onEditTrailer,
   onAssignLogistics,
   onSetupTravel,
   onAddLogistics,
@@ -63,56 +45,44 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   onDeleteLogistics,
   onAddTravel,
   onEditTravel,
-  onDeleteTravel,
-  onUploadShipmentReceipt
+  onDeleteTravel
 }) => {
-  const getInventoryStatusColor = (status: string) => {
-    const colors = {
-      'available': 'text-green-600',
-      'unavailable': 'text-red-600',
-      'low': 'text-yellow-600'
-    };
-    return colors[status as keyof typeof colors] || 'text-gray-600';
-  };
-
-  const getInventoryStatusText = (status: string) => {
-    const texts = {
-      'available': 'Available',
-      'unavailable': 'Unavailable',
-      'low': 'Low Stock'
-    };
-    return texts[status as keyof typeof texts] || status;
-  };
-
-  const getFilmStatusColor = (status: 'sufficient' | 'low' | 'missing') => {
-    const colors = {
-      'sufficient': 'text-green-600',
-      'low': 'text-yellow-600',
-      'missing': 'text-red-600'
-    };
-    return colors[status];
-  };
-
-  const getFilmStatusIcon = (status: 'sufficient' | 'low' | 'missing') => {
-    const icons = {
-      'sufficient': '✓',
-      'low': '⚠',
-      'missing': '✗'
-    };
-    return icons[status];
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   };
 
+  const getTeamStatusColor = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'text-green-600 bg-green-50';
+      case 'busy':
+        return 'text-yellow-600 bg-yellow-50';
+      case 'unavailable':
+        return 'text-red-600 bg-red-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
+    }
+  };
+
+  const getTeamStatusText = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'Available';
+      case 'busy':
+        return 'Busy';
+      case 'unavailable':
+        return 'Unavailable';
+      default:
+        return status;
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Assigned Team Card */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
@@ -121,52 +91,57 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             <h3 className="text-lg font-semibold text-gray-900">Assigned Team</h3>
           </div>
           {assignedTeam && (
-            <span className="text-2xl font-bold text-blue-600">{assignedTeam.count}</span>
+            <span className="text-sm font-medium text-gray-500">
+              {assignedTeam.count} member{assignedTeam.count !== 1 ? 's' : ''}
+            </span>
           )}
         </div>
         
-        {assignedTeam ? (
+        {assignedTeam && assignedTeam.members.length > 0 ? (
           <div className="space-y-3">
-            {/* Lead Supervisor */}
-            {assignedTeam.leadMember && (
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-600">
-                    {assignedTeam.leadMember.name.charAt(0)}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{assignedTeam.leadMember.name}</p>
-                  <p className="text-xs text-gray-500">{assignedTeam.leadMember.role}</p>
-                </div>
+            <div className="flex items-center space-x-2 mb-3">
+              <div className="flex -space-x-2">
+                {assignedTeam.members.slice(0, 3).map((member, index) => (
+                  <div
+                    key={member.id}
+                    className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600"
+                    title={member.name}
+                  >
+                    {member.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                ))}
+                {assignedTeam.members.length > 3 && (
+                  <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-500">
+                    +{assignedTeam.members.length - 3}
+                  </div>
+                )}
               </div>
-            )}
-
-            {/* Crew Leader */}
-            {assignedTeam.members.find(member => member.role === 'Crew Leader') && (
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-green-600">
-                    {assignedTeam.members.find(member => member.role === 'Crew Leader')?.name.charAt(0)}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {assignedTeam.members.find(member => member.role === 'Crew Leader')?.name}
-                  </p>
-                  <p className="text-xs text-gray-500">Crew Leader</p>
-                </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">
+                  {assignedTeam.leadMember?.name || assignedTeam.members[0]?.name}
+                </p>
+                <p className="text-xs text-gray-500">Team Lead</p>
               </div>
-            )}
-
-            {/* Additional members count */}
-            {assignedTeam.count > 2 && (
-              <div className="text-sm text-gray-500">
-                +{assignedTeam.count - 2} more members
-              </div>
-            )}
+            </div>
             
-            <div className="flex space-x-2">
+            <div className="space-y-2">
+              {assignedTeam.members.slice(0, 2).map((member) => (
+                <div key={member.id} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-medium text-gray-900">{member.name}</span>
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getTeamStatusColor(member.availability)}`}>
+                      {getTeamStatusText(member.availability)}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1 text-gray-400">
+                    <Phone className="w-3 h-3" />
+                    <span className="text-xs">{member.phone}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex space-x-2 pt-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -187,169 +162,110 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-6">
-            <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-4">No team assigned yet.</p>
+          <div className="text-center py-4">
+            <Users className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p className="text-sm text-gray-500 mb-3">No team assigned yet</p>
             <Button
               variant="primary"
               size="sm"
               onClick={onAssignTeam}
               className="w-full"
             >
-              Assign Crew Members
+              Assign Team
             </Button>
           </div>
         )}
       </Card>
 
-      {/* Assigned Trailer Card */}
+      {/* Logistics Card */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Truck className="w-5 h-5 text-amber-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Assigned Trailer</h3>
-          </div>
-          {assignedTrailer && (
-            <span className={`text-sm font-medium ${getInventoryStatusColor(assignedTrailer.inventoryStatus)}`}>
-              {getInventoryStatusText(assignedTrailer.inventoryStatus)}
-            </span>
-          )}
-        </div>
-        
-        {assignedTrailer ? (
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm font-medium text-gray-900">{assignedTrailer.trailer.trailerNumber}</p>
-              <p className="text-xs text-gray-500">{assignedTrailer.trailer.registrationNumber}</p>
-            </div>
-            
-            <div className="text-xs text-gray-500">
-              <p>Location: {assignedTrailer.trailer.location}</p>
-              <p>Updated: {formatDate(assignedTrailer.lastUpdated)}</p>
-            </div>
-            
-            <div className="flex space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onViewTrailer}
-                className="flex-1 justify-start"
-              >
-                View Trailer Details
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onEditTrailer}
-                icon={Edit}
-                className="px-3"
-              >
-                <span className="sr-only">Edit Trailer</span>
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-4">No trailer assigned yet.</p>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onAssignTrailer}
-              className="w-full"
-            >
-              Assign Trailer
-            </Button>
-          </div>
-        )}
-      </Card>
-
-      {/* Logistics Card - Film Requirements */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <Package className="w-5 h-5 text-purple-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Film Requirements</h3>
+            <Clock className="w-5 h-5 text-purple-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Logistics</h3>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            onClick={onUploadShipmentReceipt}
-            icon={Package}
+            onClick={onAddLogistics}
+            icon={Edit}
           >
-            Upload Receipt
+            Add
           </Button>
         </div>
         
-        {assignedTrailer ? (
+        {logisticsItems.length > 0 ? (
           <div className="space-y-3">
             <div className="text-sm text-gray-600 mb-3">
-              Required vs Available in Trailer
+              {logisticsItems.length} logistics item{logisticsItems.length !== 1 ? 's' : ''} planned
             </div>
-            {projectFilmRequirements.map((film, index) => (
-              <div key={index} className="p-3 bg-gray-50 rounded-lg border">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <h4 className="text-sm font-medium text-gray-900">{film.sheetType}</h4>
-                    <span className={`text-sm font-medium ${getFilmStatusColor(film.status)}`}>
-                      {getFilmStatusIcon(film.status)}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {film.available}/{film.required}
+            
+            {logisticsItems.slice(0, 2).map((item) => (
+              <div key={item.id} className="p-3 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="text-sm font-medium text-gray-900">{item.itemName}</h4>
+                  <div className="flex items-center space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEditLogistics(item)}
+                      className="p-1 h-6 w-6"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDeleteLogistics(item.id)}
+                      className="p-1 h-6 w-6 text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 text-xs text-gray-500">
-                  <span>Required: {film.required}</span>
-                  <span>Available: {film.available}</span>
-                  <span className={`font-medium ${getFilmStatusColor(film.status)}`}>
-                    {film.status === 'sufficient' ? 'Sufficient' : 
-                     film.status === 'low' ? 'Low Stock' : 'Missing'}
-                  </span>
+                <div className="text-xs text-gray-500">
+                  <p>Quantity: {item.quantity}</p>
+                  <p>ETA: {formatDate(item.eta)}</p>
                 </div>
-                {film.status !== 'sufficient' && (
-                  <div className="mt-2 text-xs text-amber-600">
-                    {film.status === 'missing' 
-                      ? 'Film needs to be ordered and shipped'
-                      : 'Consider ordering additional film'
-                    }
-                  </div>
-                )}
               </div>
             ))}
             
-            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <Package className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-900">Shipment Status</span>
-              </div>
-              <p className="text-xs text-blue-700 mb-2">
-                Upload shipment receipt to confirm film delivery
+            {logisticsItems.length > 2 && (
+              <p className="text-xs text-gray-500 text-center">
+                +{logisticsItems.length - 2} more items
               </p>
+            )}
+            
+            <div className="flex space-x-2 pt-2">
               <Button
-                variant="primary"
+                variant="ghost"
                 size="sm"
-                onClick={onUploadShipmentReceipt}
-                className="w-full"
+                onClick={onViewLogistics}
+                className="flex-1 justify-start"
               >
-                Upload Shipment Receipt
+                View All Logistics
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onAssignLogistics}
+                className="px-3"
+              >
+                Manage
               </Button>
             </div>
           </div>
         ) : (
           <div className="text-center py-4">
-            <Package className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-3">No trailer assigned yet</p>
-            <p className="text-xs text-gray-400 mb-3">
-              Assign a trailer to view film requirements
-            </p>
+            <Clock className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p className="text-sm text-gray-500 mb-3">No logistics planned yet</p>
             <Button
               variant="primary"
               size="sm"
-              onClick={onAssignTrailer}
+              onClick={onAddLogistics}
               className="w-full"
             >
-              Assign Trailer First
+              Plan Logistics
             </Button>
           </div>
         )}
@@ -359,14 +275,14 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Plane className="w-5 h-5 text-indigo-600" />
+            <Plane className="w-5 h-5 text-green-600" />
             <h3 className="text-lg font-semibold text-gray-900">Travel Setup</h3>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={onAddTravel}
-            icon={Plane}
+            icon={Edit}
           >
             Add
           </Button>
@@ -374,58 +290,79 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         
         {travelPlans.length > 0 ? (
           <div className="space-y-3">
-            {travelPlans.map(plan => (
+            <div className="text-sm text-gray-600 mb-3">
+              {travelPlans.length} travel plan{travelPlans.length !== 1 ? 's' : ''} created
+            </div>
+            
+            {travelPlans.slice(0, 2).map((plan) => (
               <div key={plan.id} className="p-3 bg-gray-50 rounded-lg border">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <h4 className="text-sm font-medium text-gray-900">
-                      {plan.departureLocation} → {plan.destination}
-                    </h4>
-                    <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                      {plan.travelType}
-                    </span>
-                  </div>
-                  <div className="flex space-x-1">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="text-sm font-medium text-gray-900">
+                    {plan.travelMethod === 'flight' ? 'Flight' : 
+                     plan.travelMethod === 'road' ? 'Road Trip' : 'Other Travel'}
+                  </h4>
+                  <div className="flex items-center space-x-1">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => onEditTravel(plan)}
-                      icon={Edit}
+                      className="p-1 h-6 w-6"
                     >
-                      <span className="sr-only">Edit</span>
+                      <Edit className="w-3 h-3" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => onDeleteTravel(plan.id)}
-                      icon={Trash2}
-                      className="text-red-600 hover:text-red-700"
+                      className="p-1 h-6 w-6 text-red-500 hover:text-red-700"
                     >
-                      <span className="sr-only">Delete</span>
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 text-xs text-gray-500">
-                  <span>
-                    {formatDate(plan.departureDate)}
-                    {plan.returnDate && ` - ${formatDate(plan.returnDate)}`}
-                  </span>
-                  <span>{plan.assignedTeamMembers.length} team members</span>
+                <div className="text-xs text-gray-500">
+                  <p>People: {plan.numberOfPeople}</p>
+                  <p>Hotel: {plan.hotelBooking ? 'Booked' : 'Not booked'}</p>
                 </div>
               </div>
             ))}
+            
+            {travelPlans.length > 2 && (
+              <p className="text-xs text-gray-500 text-center">
+                +{travelPlans.length - 2} more plans
+              </p>
+            )}
+            
+            <div className="flex space-x-2 pt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onSetupTravel}
+                className="flex-1 justify-start"
+              >
+                View All Travel
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onAddTravel}
+                className="px-3"
+              >
+                Add More
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="text-center py-4">
             <Plane className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-3">No travel plans added yet</p>
+            <p className="text-sm text-gray-500 mb-3">No travel plans yet</p>
             <Button
               variant="primary"
               size="sm"
               onClick={onAddTravel}
               className="w-full"
             >
-              Add Travel Plan
+              Setup Travel
             </Button>
           </div>
         )}

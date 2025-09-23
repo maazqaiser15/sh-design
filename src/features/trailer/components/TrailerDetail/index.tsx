@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Edit2, Trash2, MapPin, Calendar, User, Activity, Package, Film, Truck, FileText, Plus } from 'lucide-react';
+import { ArrowLeft, Edit2, Trash2, MapPin, Calendar, User, Activity, Package, Film, Truck, FileText, Plus, RotateCcw } from 'lucide-react';
 import { Card } from '../../../../common/components/Card';
 import { Button } from '../../../../common/components/Button';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
@@ -10,6 +10,7 @@ interface TrailerDetailProps {
   onBack: () => void;
   onEdit: (trailer: Trailer) => void;
   onDelete: (trailer: Trailer) => void;
+  onRestock?: (trailer: Trailer) => void;
 }
 
 /**
@@ -17,12 +18,14 @@ interface TrailerDetailProps {
  * Includes basic info, inventory tabs (Tools/Film Sheets), and activity logs
  */
 export const TrailerDetail: React.FC<TrailerDetailProps> = ({
-  trailer,
+  trailer: initialTrailer,
   onBack,
   onEdit,
   onDelete,
+  onRestock,
 }) => {
   const [activeTab, setActiveTab] = useState<'tools' | 'sheets'>('tools');
+  const [trailer, setTrailer] = useState<Trailer>(initialTrailer);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -32,6 +35,40 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const handleRestock = () => {
+    const restockedTrailer: Trailer = {
+      ...trailer,
+      inventory: {
+        tools: trailer.inventory.tools.map(tool => ({
+          ...tool,
+          currentStock: tool.threshold,
+          status: 'good' as const
+        })),
+        filmSheets: trailer.inventory.filmSheets.map(sheet => ({
+          ...sheet,
+          currentStock: sheet.threshold,
+          status: 'good' as const
+        }))
+      },
+      status: 'available' as const,
+      updatedAt: new Date().toISOString(),
+      activityLogs: [
+        ...trailer.activityLogs,
+        {
+          id: `restock-${Date.now()}`,
+          type: 'inventory_updated' as const,
+          description: 'Trailer inventory restocked to threshold levels',
+          timestamp: new Date().toISOString(),
+          systemGenerated: true,
+          user: 'System'
+        }
+      ]
+    };
+
+    setTrailer(restockedTrailer);
+    onRestock?.(restockedTrailer);
   };
 
 
@@ -50,7 +87,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
           </Button>
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">
-              Trailer {trailer.trailerNumber}
+              {trailer.trailerName}
             </h1>
             <p className="text-sm text-gray-600">
               Registration: {trailer.registrationNumber}
@@ -63,7 +100,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
               variant="primary"
               onClick={() => {
                 // TODO: Implement project assignment functionality
-                console.log('Assign trailer to project:', trailer.trailerNumber);
+                console.log('Assign trailer to project:', trailer.trailerName);
               }}
               icon={Plus}
             >
@@ -96,14 +133,14 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
             <StatusBadge status={trailer.status} size="md" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Truck size={20} className="text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-600">Trailer Number</div>
-                <div className="font-medium text-gray-900">{trailer.trailerNumber}</div>
+                <div className="text-sm text-gray-600">Trailer Name</div>
+                <div className="font-medium text-gray-900">{trailer.trailerName}</div>
               </div>
             </div>
 
@@ -122,8 +159,18 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                 <MapPin size={20} className="text-purple-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-600">Location</div>
-                <div className="font-medium text-gray-900">{trailer.location}</div>
+                <div className="text-sm text-gray-600">Address</div>
+                <div className="font-medium text-gray-900">{trailer.parkingAddress}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <MapPin size={20} className="text-orange-600" />
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">Current Location</div>
+                <div className="font-medium text-gray-500">-</div>
               </div>
             </div>
           </div>
@@ -136,6 +183,14 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Inventory</h2>
+            <Button
+              variant="secondary"
+              onClick={handleRestock}
+              icon={RotateCcw}
+              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+            >
+              Mark Restocked
+            </Button>
           </div>
           
           {/* Tab Navigation */}
@@ -184,10 +239,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                       Threshold
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stock Level
+                      Status & Stock Level
                     </th>
                   </tr>
                 </thead>
@@ -216,10 +268,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                       Threshold
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stock Level
+                      Status & Stock Level
                     </th>
                   </tr>
                 </thead>
@@ -318,29 +367,29 @@ const ToolInventoryRow: React.FC<ToolInventoryRowProps> = ({ item }) => {
         <div className="text-sm text-gray-900">{item.threshold}</div>
       </td>
       <td className="px-4 py-3 whitespace-nowrap">
-        <StatusBadge status={item.status} />
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className={`h-2 rounded-full transition-all ${getStockLevelColor()}`}
-            style={{ width: `${getStockLevelWidth()}%` }}
-          />
-        </div>
-        <div className="text-xs text-gray-600 mt-1">
-          {item.currentStock > item.threshold ? (
-            <span className="text-green-600">
-              +{item.currentStock - item.threshold} above threshold
-            </span>
-          ) : item.currentStock === item.threshold ? (
-            <span className="text-amber-600">At threshold</span>
-          ) : item.currentStock === 0 ? (
-            <span className="text-red-600">Out of stock</span>
-          ) : (
-            <span className="text-red-600">
-              {item.threshold - item.currentStock} below threshold
-            </span>
-          )}
+        <div className="space-y-2">
+          <StatusBadge status={item.status} />
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full transition-all ${getStockLevelColor()}`}
+              style={{ width: `${getStockLevelWidth()}%` }}
+            />
+          </div>
+          <div className="text-xs text-gray-600">
+            {item.currentStock > item.threshold ? (
+              <span className="text-green-600">
+                +{item.currentStock - item.threshold} above threshold
+              </span>
+            ) : item.currentStock === item.threshold ? (
+              <span className="text-amber-600">At threshold</span>
+            ) : item.currentStock === 0 ? (
+              <span className="text-red-600">Out of stock</span>
+            ) : (
+              <span className="text-red-600">
+                {item.threshold - item.currentStock} below threshold
+              </span>
+            )}
+          </div>
         </div>
       </td>
     </tr>
@@ -377,29 +426,29 @@ const FilmSheetInventoryRow: React.FC<FilmSheetInventoryRowProps> = ({ item }) =
         <div className="text-sm text-gray-900">{item.threshold}</div>
       </td>
       <td className="px-4 py-3 whitespace-nowrap">
-        <StatusBadge status={item.status} />
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className={`h-2 rounded-full transition-all ${getStockLevelColor()}`}
-            style={{ width: `${getStockLevelWidth()}%` }}
-          />
-        </div>
-        <div className="text-xs text-gray-600 mt-1">
-          {item.currentStock > item.threshold ? (
-            <span className="text-green-600">
-              +{item.currentStock - item.threshold} above threshold
-            </span>
-          ) : item.currentStock === item.threshold ? (
-            <span className="text-amber-600">At threshold</span>
-          ) : item.currentStock === 0 ? (
-            <span className="text-red-600">Out of stock</span>
-          ) : (
-            <span className="text-red-600">
-              {item.threshold - item.currentStock} below threshold
-            </span>
-          )}
+        <div className="space-y-2">
+          <StatusBadge status={item.status} />
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full transition-all ${getStockLevelColor()}`}
+              style={{ width: `${getStockLevelWidth()}%` }}
+            />
+          </div>
+          <div className="text-xs text-gray-600">
+            {item.currentStock > item.threshold ? (
+              <span className="text-green-600">
+                +{item.currentStock - item.threshold} above threshold
+              </span>
+            ) : item.currentStock === item.threshold ? (
+              <span className="text-amber-600">At threshold</span>
+            ) : item.currentStock === 0 ? (
+              <span className="text-red-600">Out of stock</span>
+            ) : (
+              <span className="text-red-600">
+                {item.threshold - item.currentStock} below threshold
+              </span>
+            )}
+          </div>
         </div>
       </td>
     </tr>

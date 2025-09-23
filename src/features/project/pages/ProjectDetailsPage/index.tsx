@@ -3,18 +3,17 @@ import { useParams } from 'react-router-dom';
 import { useBreadcrumbContext } from '../../../../contexts/BreadcrumbContext';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
-import { AssignTrailerModal } from '../../components/AssignTrailerModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
 import { AddTravelModal } from '../../components/AddTravelModal';
 import { MOCK_TEAM_MEMBERS, TeamMember } from '../../types/teamMembers';
-import { TrailerForAssignment } from '../../types/trailers';
 import { LogisticsItem, TravelPlan } from '../../types/logisticsTravel';
-import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { ProjectDetailsHeader } from '../../components/ProjectDetailsHeader';
 import { KeyInfoSection } from '../../components/KeyInfoSection';
 import { ProjectChecklist } from '../../components/ProjectChecklist';
 import { ProjectDocuments } from '../../components/ProjectDocuments';
 import { ProjectNotes } from '../../components/ProjectNotes';
+import { ProjectDateModal } from '../../components/ProjectDateModal';
+import { TrailerInventoryCard } from '../../components/TrailerInventoryCard';
 import { Modal } from '../../../../common/components/Modal';
 
 /**
@@ -31,23 +30,23 @@ export const ProjectDetailsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignTeamModal, setShowAssignTeamModal] = useState(false);
   const [showEditTeamModal, setShowEditTeamModal] = useState(false);
-  const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
-  const [showEditTrailerModal, setShowEditTrailerModal] = useState(false);
   const [showAddLogisticsModal, setShowAddLogisticsModal] = useState(false);
   const [showEditLogisticsModal, setShowEditLogisticsModal] = useState(false);
   const [editingLogistics, setEditingLogistics] = useState<LogisticsItem | null>(null);
   const [showAddTravelModal, setShowAddTravelModal] = useState(false);
   const [showEditTravelModal, setShowEditTravelModal] = useState(false);
   const [editingTravel, setEditingTravel] = useState<TravelPlan | null>(null);
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [assignedTrailer, setAssignedTrailer] = useState<any>(null);
 
   // Set breadcrumbs when component mounts
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Dashboard', href: '/dashboard' },
       { label: 'Projects', href: '/projects' },
-      { label: project.name, href: `/projects/${projectId}` }
+      { label: 'Project Details', href: `/projects/${projectId}` }
     ]);
-  }, [project.name, projectId, setBreadcrumbs]);
+  }, [project.name, projectId]); // Removed setBreadcrumbs from dependencies
 
   // Handle checklist item toggle
   const handleToggleChecklistItem = (itemId: string) => {
@@ -177,60 +176,7 @@ export const ProjectDetailsPage: React.FC = () => {
     }));
   };
 
-  // Handle trailer assignment
-  const handleAssignTrailer = () => {
-    console.log('Opening trailer assignment modal');
-    const trailers = getAvailableTrailersForAssignment();
-    console.log('Available trailers:', trailers);
-    setShowAssignTrailerModal(true);
-  };
 
-  const handleEditTrailer = () => {
-    setShowEditTrailerModal(true);
-  };
-
-  const handleTrailerAssignment = (selectedTrailer: TrailerForAssignment) => {
-    console.log('Trailer assignment handler called with:', selectedTrailer);
-    const assignedTrailer = {
-      trailer: {
-        id: selectedTrailer.id,
-        trailerNumber: selectedTrailer.trailerName,
-        registrationNumber: selectedTrailer.registrationNumber,
-        location: selectedTrailer.currentLocation,
-        status: selectedTrailer.status === 'available' ? 'available' : 'unavailable' as any,
-        inventory: {
-          tools: selectedTrailer.inventory.tools.map(tool => ({
-            toolName: tool.toolName,
-            currentStock: tool.available,
-            threshold: 1,
-            status: 'good' as any
-          })),
-          filmSheets: selectedTrailer.inventory.filmSheets.map(sheet => ({
-            sheetType: sheet.sheetType,
-            currentStock: sheet.available,
-            threshold: sheet.required,
-            status: 'good' as any
-          }))
-        },
-        activityLogs: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      inventoryStatus: selectedTrailer.status === 'available' ? 'available' : 'unavailable' as any,
-      lastUpdated: new Date().toISOString()
-    };
-
-    console.log('Setting assigned trailer:', assignedTrailer);
-    setPreparationData(prev => ({
-      ...prev,
-      assignedTrailer: assignedTrailer as any,
-      checklist: prev.checklist.map(item => 
-        item.label === 'Trailer Assigned' 
-          ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
-          : item
-      )
-    }));
-  };
 
   // Handle team view
   const handleViewTeam = () => {
@@ -239,12 +185,6 @@ export const ProjectDetailsPage: React.FC = () => {
     alert('View Team Details - Coming Soon');
   };
 
-  // Handle trailer view
-  const handleViewTrailer = () => {
-    console.log('View trailer details');
-    // In a real app, this would navigate to trailer details or open a modal
-    alert('View Trailer Details - Coming Soon');
-  };
 
   // Handle logistics view
   const handleViewLogistics = () => {
@@ -404,64 +344,62 @@ export const ProjectDetailsPage: React.FC = () => {
     }));
   };
 
-  // Handle upload shipment receipt
-  const handleUploadShipmentReceipt = () => {
-    console.log('Upload shipment receipt');
-    // In a real app, this would open a file upload dialog
-    alert('Upload Shipment Receipt - Coming Soon');
-  };
-
-  // Calculate film requirements based on assigned trailer
-  const calculateFilmRequirements = () => {
-    if (!preparationData.assignedTrailer) {
-      return [];
-    }
-
-    // Mock project film requirements - in a real app, this would come from project data
-    const projectRequirements = [
-      { sheetType: 'BR', required: 30 },
-      { sheetType: 'Riot+', required: 25 },
-      { sheetType: 'Riot', required: 20 },
-      { sheetType: 'Riot -', required: 15 },
-      { sheetType: 'FER', required: 12 },
-      { sheetType: 'Smash', required: 10 },
-      { sheetType: 'Tint NI', required: 8 },
-      { sheetType: 'Tint Incl', required: 6 },
-      { sheetType: 'Anchoring', required: 5 },
-      { sheetType: 'Kevlar', required: 3 },
-      { sheetType: 'Stripping', required: 2 }
-    ];
-
-    return projectRequirements.map(req => {
-      const availableFilm = preparationData.assignedTrailer?.trailer.inventory.filmSheets.find(
-        film => film.sheetType === req.sheetType
-      );
-      
-      const available = availableFilm?.currentStock || 0;
-      const required = req.required;
-      
-      let status: 'sufficient' | 'low' | 'missing';
-      if (available >= required) {
-        status = 'sufficient';
-      } else if (available > 0) {
-        status = 'low';
-      } else {
-        status = 'missing';
-      }
-
-      return {
-        sheetType: req.sheetType,
-        required,
-        available,
-        status
-      };
-    });
-  };
 
   // Handle edit project
   const handleEditProject = () => {
     setShowEditModal(true);
   };
+
+  // Handle edit dates
+  const handleEditDates = () => {
+    setShowDateModal(true);
+  };
+
+  // Handle date confirmation
+  const handleDateConfirm = (startDate: string, endDate: string) => {
+    // Update project dates
+    console.log('Updating project dates:', { startDate, endDate });
+    // In a real app, you would update the project in the database here
+    setShowDateModal(false);
+  };
+
+  // Handle trailer assignment
+  const handleAssignTrailer = (trailer: any) => {
+    setAssignedTrailer(trailer);
+    setPreparationData(prev => ({
+      ...prev,
+      checklist: prev.checklist.map(item =>
+        item.label === 'Trailer Assigned' ? { ...item, completed: true } : item
+      )
+    }));
+  };
+
+  // Handle house manager notification
+  const handleNotifyHouseManager = (message: string) => {
+    console.log('Notifying house manager:', message);
+    // In a real app, this would send a notification
+  };
+
+  // Mock project film requirements
+  const projectFilmRequirements = [
+    { sheetType: 'BR', required: 30, available: 0, status: 'missing' as const },
+    { sheetType: 'Riot+', required: 25, available: 0, status: 'missing' as const },
+    { sheetType: 'Riot', required: 20, available: 0, status: 'missing' as const },
+    { sheetType: 'Riot -', required: 15, available: 0, status: 'missing' as const },
+    { sheetType: 'FER', required: 12, available: 0, status: 'missing' as const },
+    { sheetType: 'Smash', required: 10, available: 0, status: 'missing' as const },
+    { sheetType: 'Tint NI', required: 8, available: 0, status: 'missing' as const },
+    { sheetType: 'Tint Incl', required: 6, available: 0, status: 'missing' as const },
+    { sheetType: 'Anchoring', required: 5, available: 0, status: 'missing' as const },
+    { sheetType: 'Kevlar', required: 3, available: 0, status: 'missing' as const },
+    { sheetType: 'Stripping', required: 2, available: 0, status: 'missing' as const }
+  ];
+
+  // Check if project is in preparation stage
+  const isPreparationStage = project.stage === 'preparation' || 
+    project.status === 'PV90' || 
+    project.status === 'UB' || 
+    project.status === 'WB';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -469,24 +407,21 @@ export const ProjectDetailsPage: React.FC = () => {
       <ProjectDetailsHeader
         project={project}
         onEdit={handleEditProject}
+        onEditDates={handleEditDates}
+        isPreparationStage={isPreparationStage}
       />
 
       <div className="max-w-7xl mx-auto px-8 py-6">
         {/* Key Info Section */}
             <KeyInfoSection
               assignedTeam={preparationData.assignedTeam}
-              assignedTrailer={preparationData.assignedTrailer}
               logistics={preparationData.logistics}
               logisticsItems={preparationData.logisticsTravel.logistics}
               travelPlans={preparationData.logisticsTravel.travelPlans}
-              projectFilmRequirements={calculateFilmRequirements()}
               onViewTeam={handleViewTeam}
-              onViewTrailer={handleViewTrailer}
               onViewLogistics={handleViewLogistics}
               onAssignTeam={handleAssignTeam}
               onEditTeam={handleEditTeam}
-              onAssignTrailer={handleAssignTrailer}
-              onEditTrailer={handleEditTrailer}
               onAssignLogistics={handleAssignLogistics}
               onSetupTravel={handleSetupTravel}
               onAddLogistics={handleAddLogistics}
@@ -495,8 +430,19 @@ export const ProjectDetailsPage: React.FC = () => {
               onAddTravel={handleAddTravel}
               onEditTravel={handleEditTravel}
               onDeleteTravel={handleDeleteTravel}
-              onUploadShipmentReceipt={handleUploadShipmentReceipt}
             />
+
+        {/* Trailer & Project Inventory Card - Only for preparation stage */}
+        {isPreparationStage && (
+          <div className="mt-6">
+            <TrailerInventoryCard
+              assignedTrailer={assignedTrailer}
+              onAssignTrailer={handleAssignTrailer}
+              onNotifyHouseManager={handleNotifyHouseManager}
+              projectFilmRequirements={projectFilmRequirements}
+            />
+          </div>
+        )}
 
         {/* Checklist Section */}
         <ProjectChecklist
@@ -561,22 +507,6 @@ export const ProjectDetailsPage: React.FC = () => {
         assignedMemberIds={preparationData.assignedTeam?.members.map(m => m.id) || []}
       />
 
-      {/* Assign Trailer Modal */}
-      <AssignTrailerModal
-        isOpen={showAssignTrailerModal}
-        onClose={() => setShowAssignTrailerModal(false)}
-        onAssignTrailer={handleTrailerAssignment}
-        availableTrailers={getAvailableTrailersForAssignment()}
-      />
-
-          {/* Edit Trailer Modal */}
-          <AssignTrailerModal
-            isOpen={showEditTrailerModal}
-            onClose={() => setShowEditTrailerModal(false)}
-            onAssignTrailer={handleTrailerAssignment}
-            availableTrailers={getAvailableTrailersForAssignment()}
-            assignedTrailerId={preparationData.assignedTrailer?.trailer.id}
-          />
 
           {/* Add Logistics Modal */}
           <AddLogisticsModal
@@ -619,6 +549,18 @@ export const ProjectDetailsPage: React.FC = () => {
               role: member.role
             }))}
           />
+
+          {/* Project Date Modal */}
+          <ProjectDateModal
+            isOpen={showDateModal}
+            onClose={() => setShowDateModal(false)}
+            onConfirm={handleDateConfirm}
+            projectTitle={project.name}
+            projectStatus={project.status as any}
+            initialStartDate={project.startDate}
+            initialEndDate={project.endDate}
+          />
+
         </div>
       );
     };

@@ -144,7 +144,7 @@ export const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
             {data.assignedTrailer ? (
               <div className="text-right">
                 <div className="text-sm font-medium text-gray-900 mb-1">
-                  {data.assignedTrailer.trailerNumber}
+                  {data.assignedTrailer.trailerName}
                 </div>
                 <div className="text-xs text-gray-500">
                   {data.assignedTrailer.registrationNumber}

@@ -7,10 +7,11 @@ import {
   FILM_TYPES, 
   FILM_SHEET_TYPES,
   TOOL_INVENTORY,
-  TRAILER_LOCATIONS, 
+  USA_STATES,
+  USA_CITIES,
   validateTrailerForm, 
   createActivityLog,
-  formatTrailerNumber,
+  formatTrailerName,
   updateInventoryStatus,
   calculateTrailerStatus,
   TrailerFormData
@@ -36,11 +37,11 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
   existingTrailerNumbers,
 }) => {
   const [formData, setFormData] = useState<TrailerFormData>({
-    trailerNumber: '',
+    trailerName: '',
     registrationNumber: '',
-    location: '',
-    rooms: 0,
-    totalSqFeet: 0,
+    parkingAddress: '',
+    state: '',
+    city: '',
     toolThresholds: TOOL_INVENTORY.reduce((acc, tool) => ({
       ...acc,
       [tool.name]: tool.defaultThreshold,
@@ -61,16 +62,31 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+
+  // Update available cities when state changes
+  useEffect(() => {
+    if (formData.state) {
+      const cities = USA_CITIES[formData.state] || [];
+      setAvailableCities(cities);
+      // Reset city if it's not available in the new state
+      if (formData.city && !cities.includes(formData.city)) {
+        setFormData(prev => ({ ...prev, city: '' }));
+      }
+    } else {
+      setAvailableCities([]);
+    }
+  }, [formData.state]);
 
   // Initialize form data when trailer changes
   useEffect(() => {
     if (trailer) {
       setFormData({
-        trailerNumber: trailer.trailerNumber,
+        trailerName: trailer.trailerName,
         registrationNumber: trailer.registrationNumber,
-        location: trailer.location,
-        rooms: trailer.rooms,
-        totalSqFeet: trailer.totalSqFeet,
+        parkingAddress: trailer.parkingAddress || '',
+        state: trailer.state || '',
+        city: trailer.city || '',
         toolThresholds: trailer.inventory.tools.reduce((acc, item) => ({
           ...acc,
           [item.toolName]: item.threshold,
@@ -177,11 +193,11 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
     // Validate form
     const validation = validateTrailerForm(formData);
     
-    // Check for duplicate trailer number (excluding current trailer)
-    const formattedTrailerNumber = formatTrailerNumber(formData.trailerNumber);
-    const otherTrailerNumbers = existingTrailerNumbers.filter(num => num !== trailer.trailerNumber);
-    if (otherTrailerNumbers.includes(formattedTrailerNumber)) {
-      validation.errors.trailerNumber = 'Trailer number already exists';
+    // Check for duplicate trailer name (excluding current trailer)
+    const formattedTrailerName = formData.trailerName.trim();
+    const otherTrailerNames = existingTrailerNumbers.filter(name => name !== trailer.trailerName);
+    if (otherTrailerNames.includes(formattedTrailerName)) {
+      validation.errors.trailerName = 'Trailer name already exists';
       validation.isValid = false;
     }
 
@@ -224,9 +240,9 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
       // Create activity logs for changes
       const activityLogs = [...trailer.activityLogs];
       
-      if (trailer.trailerNumber !== formattedTrailerNumber) {
+      if (trailer.trailerName !== formattedTrailerName) {
         activityLogs.push(
-          createActivityLog('updated', `Trailer number changed from ${trailer.trailerNumber} to ${formattedTrailerNumber}`, undefined, true)
+          createActivityLog('updated', `Trailer name changed from ${trailer.trailerName} to ${formattedTrailerName}`, undefined, true)
         );
       }
       
@@ -236,23 +252,6 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
         );
       }
       
-      if (trailer.location !== formData.location) {
-        activityLogs.push(
-          createActivityLog('location_changed', `Location changed from ${trailer.location} to ${formData.location}`, undefined, true)
-        );
-      }
-
-      if (trailer.rooms !== formData.rooms) {
-        activityLogs.push(
-          createActivityLog('updated', `Room count changed from ${trailer.rooms} to ${formData.rooms}`, undefined, true)
-        );
-      }
-
-      if (trailer.totalSqFeet !== formData.totalSqFeet) {
-        activityLogs.push(
-          createActivityLog('updated', `Total square feet changed from ${trailer.totalSqFeet} to ${formData.totalSqFeet}`, undefined, true)
-        );
-      }
 
       if (trailer.status !== newStatus) {
         activityLogs.push(
@@ -279,11 +278,11 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
 
       const updatedTrailer: Trailer = {
         ...trailer,
-        trailerNumber: formattedTrailerNumber,
+        trailerName: formattedTrailerName,
         registrationNumber: formData.registrationNumber.trim(),
-        location: formData.location,
-        rooms: formData.rooms,
-        totalSqFeet: formData.totalSqFeet,
+        parkingAddress: formData.parkingAddress.trim(),
+        state: formData.state,
+        city: formData.city,
         inventory: updatedInventory,
         status: newStatus,
         activityLogs,
@@ -303,11 +302,11 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
   const handleCancel = () => {
     if (trailer) {
       setFormData({
-        trailerNumber: trailer.trailerNumber,
+        trailerName: trailer.trailerName,
         registrationNumber: trailer.registrationNumber,
-        location: trailer.location,
-        rooms: trailer.rooms,
-        totalSqFeet: trailer.totalSqFeet,
+        parkingAddress: trailer.parkingAddress || '',
+        state: trailer.state || '',
+        city: trailer.city || '',
         toolThresholds: trailer.inventory.tools.reduce((acc, item) => ({
           ...acc,
           [item.toolName]: item.threshold,
@@ -367,7 +366,7 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
     <SidePanel
       isOpen={isOpen}
       onClose={handleCancel}
-      title={`Edit Trailer ${trailer.trailerNumber}`}
+      title={`Edit Trailer ${trailer.trailerName}`}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Current Status */}
@@ -380,21 +379,21 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
         <CollapsibleSection title="Basic Information" defaultExpanded={true}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="edit-trailerNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="edit-trailerName" className="block text-sm font-medium text-gray-700 mb-1">
                 Trailer Name *
               </label>
               <input
                 type="text"
-                id="edit-trailerNumber"
-                value={formData.trailerNumber}
-                onChange={(e) => handleInputChange('trailerNumber', e.target.value)}
+                id="edit-trailerName"
+                value={formData.trailerName}
+                onChange={(e) => handleInputChange('trailerName', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.trailerNumber ? 'border-red-300' : 'border-gray-300'
+                  errors.trailerName ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="Enter trailer number"
+                placeholder="Enter trailer name"
               />
-              {errors.trailerNumber && (
-                <p className="mt-1 text-sm text-red-600">{errors.trailerNumber}</p>
+              {errors.trailerName && (
+                <p className="mt-1 text-sm text-red-600">{errors.trailerName}</p>
               )}
             </div>
 
@@ -418,64 +417,66 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
             </div>
 
             <div>
-              <label htmlFor="edit-location" className="block text-sm font-medium text-gray-700 mb-1">
-                Location *
+              <label htmlFor="edit-parkingAddress" className="block text-sm font-medium text-gray-700 mb-1">
+                Parking Address *
+              </label>
+              <input
+                type="text"
+                id="edit-parkingAddress"
+                value={formData.parkingAddress}
+                onChange={(e) => handleInputChange('parkingAddress', e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  errors.parkingAddress ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="Enter parking address"
+              />
+              {errors.parkingAddress && (
+                <p className="mt-1 text-sm text-red-600">{errors.parkingAddress}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="edit-state" className="block text-sm font-medium text-gray-700 mb-1">
+                State *
               </label>
               <select
-                id="edit-location"
-                value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
+                id="edit-state"
+                value={formData.state}
+                onChange={(e) => handleInputChange('state', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.location ? 'border-red-300' : 'border-gray-300'
+                  errors.state ? 'border-red-300' : 'border-gray-300'
                 }`}
               >
-                <option value="">Select location</option>
-                {TRAILER_LOCATIONS.map(location => (
-                  <option key={location} value={location}>{location}</option>
+                <option value="">Select state</option>
+                {USA_STATES.map(state => (
+                  <option key={state} value={state}>{state}</option>
                 ))}
               </select>
-              {errors.location && (
-                <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+              {errors.state && (
+                <p className="mt-1 text-sm text-red-600">{errors.state}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="edit-rooms" className="block text-sm font-medium text-gray-700 mb-1">
-                Number of Rooms
+              <label htmlFor="edit-city" className="block text-sm font-medium text-gray-700 mb-1">
+                City *
               </label>
-              <input
-                type="number"
-                id="edit-rooms"
-                value={formData.rooms}
-                onChange={(e) => handleInputChange('rooms', parseInt(e.target.value) || 0)}
+              <select
+                id="edit-city"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.rooms ? 'border-red-300' : 'border-gray-300'
+                  errors.city ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="Enter number of rooms"
-                min="0"
-              />
-              {errors.rooms && (
-                <p className="mt-1 text-sm text-red-600">{errors.rooms}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="edit-totalSqFeet" className="block text-sm font-medium text-gray-700 mb-1">
-                Total Square Feet
-              </label>
-              <input
-                type="number"
-                id="edit-totalSqFeet"
-                value={formData.totalSqFeet}
-                onChange={(e) => handleInputChange('totalSqFeet', parseInt(e.target.value) || 0)}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.totalSqFeet ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter total square feet"
-                min="0"
-              />
-              {errors.totalSqFeet && (
-                <p className="mt-1 text-sm text-red-600">{errors.totalSqFeet}</p>
+                disabled={!formData.state}
+              >
+                <option value="">Select city</option>
+                {availableCities.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+              {errors.city && (
+                <p className="mt-1 text-sm text-red-600">{errors.city}</p>
               )}
             </div>
           </div>

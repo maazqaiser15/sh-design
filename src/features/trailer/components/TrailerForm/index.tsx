@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Save, X, Menu } from 'lucide-react';
+import { ArrowLeft, Save, X } from 'lucide-react';
 import { Card } from '../../../../common/components/Card';
 import { Button } from '../../../../common/components/Button';
-import { CollapsibleSidePanel, useCollapsibleSidePanel } from '../../../../common/components/CollapsibleSidePanel';
 import { Trailer, FilmSheetType, ToolInventoryItem, FilmSheetInventoryItem } from '../../../../types';
 import { 
   TOOL_INVENTORY,
   FILM_SHEET_TYPES, 
-  TRAILER_LOCATIONS, 
+  USA_STATES,
+  USA_CITIES,
   validateTrailerForm, 
   createInitialInventory,
   createActivityLog,
-  formatTrailerNumber,
+  formatTrailerName,
   TrailerFormData,
   updateInventoryStatus
 } from '../../utils/trailerUtils';
@@ -36,9 +36,11 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
   const isEditMode = !!trailer;
   
   const [formData, setFormData] = useState<TrailerFormData>({
-    trailerNumber: '',
+    trailerName: '',
     registrationNumber: '',
-    location: '',
+    parkingAddress: '',
+    state: '',
+    city: '',
     toolThresholds: TOOL_INVENTORY.reduce((acc, tool) => ({
       ...acc,
       [tool.name]: tool.defaultThreshold,
@@ -59,17 +61,27 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-  
-  // Side panel state management
-  const { mainContentStyle } = useCollapsibleSidePanel(isSidePanelOpen, 420, 60);
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+
+  // Update available cities when state changes
+  useEffect(() => {
+    if (formData.state) {
+      setAvailableCities(USA_CITIES[formData.state] || []);
+      // Reset city when state changes
+      setFormData(prev => ({ ...prev, city: '' }));
+    } else {
+      setAvailableCities([]);
+    }
+  }, [formData.state]);
 
   // Reset form to default state
   const resetForm = () => {
     setFormData({
-      trailerNumber: '',
+      trailerName: '',
       registrationNumber: '',
-      location: '',
+      parkingAddress: '',
+      state: '',
+      city: '',
       toolThresholds: TOOL_INVENTORY.reduce((acc, tool) => ({
         ...acc,
         [tool.name]: tool.defaultThreshold,
@@ -117,9 +129,11 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       });
 
       setFormData({
-        trailerNumber: trailer.trailerNumber,
+        trailerName: trailer.trailerName,
         registrationNumber: trailer.registrationNumber,
-        location: trailer.location,
+        parkingAddress: trailer.parkingAddress || '',
+        state: trailer.state || '',
+        city: trailer.city || '',
         toolThresholds,
         filmSheetThresholds,
       });
@@ -232,14 +246,14 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
     // Validate form
     const validation = validateTrailerForm(formData);
     
-    // Check for duplicate trailer number (excluding current trailer in edit mode)
-    const formattedTrailerNumber = formatTrailerNumber(formData.trailerNumber);
-    const otherTrailerNumbers = isEditMode 
-      ? existingTrailerNumbers.filter(num => num !== trailer?.trailerNumber)
+    // Check for duplicate trailer name (excluding current trailer in edit mode)
+    const formattedTrailerName = formData.trailerName.trim();
+    const otherTrailerNames = isEditMode 
+      ? existingTrailerNumbers.filter(name => name !== trailer?.trailerName)
       : existingTrailerNumbers;
       
-    if (otherTrailerNumbers.includes(formattedTrailerNumber)) {
-      validation.errors.trailerNumber = 'Trailer number already exists';
+    if (otherTrailerNames.includes(formattedTrailerName)) {
+      validation.errors.trailerName = 'Trailer name already exists';
       validation.isValid = false;
     }
 
@@ -282,9 +296,9 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       const activityLogs = trailer ? [...trailer.activityLogs] : [];
       
       if (isEditMode && trailer) {
-        if (trailer.trailerNumber !== formattedTrailerNumber) {
+        if (trailer.trailerName !== formattedTrailerName) {
           activityLogs.push(
-            createActivityLog('updated', `Trailer number changed from ${trailer.trailerNumber} to ${formattedTrailerNumber}`, undefined, true)
+            createActivityLog('updated', `Trailer name changed from ${trailer.trailerName} to ${formattedTrailerName}`, undefined, true)
           );
         }
         
@@ -294,9 +308,22 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
           );
         }
         
-        if (trailer.location !== formData.location) {
+        // Check for address changes
+        if (trailer.parkingAddress !== formData.parkingAddress) {
           activityLogs.push(
-            createActivityLog('location_changed', `Location changed from ${trailer.location} to ${formData.location}`, undefined, true)
+            createActivityLog('address_changed', `Parking address changed from ${trailer.parkingAddress} to ${formData.parkingAddress}`, undefined, true)
+          );
+        }
+
+        if (trailer.state !== formData.state) {
+          activityLogs.push(
+            createActivityLog('state_changed', `State changed from ${trailer.state} to ${formData.state}`, undefined, true)
+          );
+        }
+
+        if (trailer.city !== formData.city) {
+          activityLogs.push(
+            createActivityLog('city_changed', `City changed from ${trailer.city} to ${formData.city}`, undefined, true)
           );
         }
 
@@ -321,14 +348,16 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       } else {
         // Create mode - add initial activity log
         activityLogs.push(
-          createActivityLog('created', `Trailer ${formattedTrailerNumber} created`, undefined, true)
+          createActivityLog('created', `Trailer ${formattedTrailerName} created`, undefined, true)
         );
       }
 
       const trailerData: Omit<Trailer, 'id' | 'createdAt' | 'updatedAt'> = {
-        trailerNumber: formattedTrailerNumber,
+        trailerName: formattedTrailerName,
         registrationNumber: formData.registrationNumber.trim(),
-        location: formData.location,
+        parkingAddress: formData.parkingAddress.trim(),
+        state: formData.state,
+        city: formData.city,
         inventory: updatedInventory,
         status: 'available',
         activityLogs,
@@ -348,27 +377,13 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content Area */}
-      <div 
-        className="max-w-7xl mx-auto px-4 py-8 transition-all duration-300 ease-in-out"
-        style={mainContentStyle}
-      >
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header with Actions */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            {/* Side Panel Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-              className="p-2"
-              icon={Menu}
-            >
-              {isSidePanelOpen ? 'Hide' : 'Show'} Panel
-            </Button>
-            
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                {isEditMode ? `Edit Trailer ${trailer?.trailerNumber}` : 'Add New Trailer'}
+                {isEditMode ? `Edit Trailer ${trailer?.trailerName}` : 'Add New Trailer'}
               </h1>
               <p className="text-gray-600 mt-1">
                 {isEditMode ? 'Update trailer information and inventory' : 'Create a new trailer with inventory configuration'}
@@ -412,21 +427,21 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                   
                   <div className="space-y-6">
                     <div>
-                      <label htmlFor="trailerNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="trailerName" className="block text-sm font-medium text-gray-700 mb-2">
                         Trailer Name *
                       </label>
                       <input
                         type="text"
-                        id="trailerNumber"
-                        value={formData.trailerNumber}
-                        onChange={(e) => handleInputChange('trailerNumber', e.target.value)}
+                        id="trailerName"
+                        value={formData.trailerName}
+                        onChange={(e) => handleInputChange('trailerName', e.target.value)}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                          errors.trailerNumber ? 'border-red-300' : 'border-gray-300'
+                          errors.trailerName ? 'border-red-300' : 'border-gray-300'
                         }`}
-                        placeholder="Enter trailer number"
+                        placeholder="Enter trailer name"
                       />
-                      {errors.trailerNumber && (
-                        <p className="mt-2 text-sm text-red-600">{errors.trailerNumber}</p>
+                      {errors.trailerName && (
+                        <p className="mt-2 text-sm text-red-600">{errors.trailerName}</p>
                       )}
                     </div>
 
@@ -450,25 +465,69 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     </div>
 
                     <div>
-                      <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                        Location *
+                      <label htmlFor="parkingAddress" className="block text-sm font-medium text-gray-700 mb-2">
+                        Parking Address *
                       </label>
-                      <select
-                        id="location"
-                        value={formData.location}
-                        onChange={(e) => handleInputChange('location', e.target.value)}
+                      <input
+                        type="text"
+                        id="parkingAddress"
+                        value={formData.parkingAddress}
+                        onChange={(e) => handleInputChange('parkingAddress', e.target.value)}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                          errors.location ? 'border-red-300' : 'border-gray-300'
+                          errors.parkingAddress ? 'border-red-300' : 'border-gray-300'
                         }`}
-                      >
-                        <option value="">Select location</option>
-                        {TRAILER_LOCATIONS.map(location => (
-                          <option key={location} value={location}>{location}</option>
-                        ))}
-                      </select>
-                      {errors.location && (
-                        <p className="mt-2 text-sm text-red-600">{errors.location}</p>
+                        placeholder="Enter parking address"
+                      />
+                      {errors.parkingAddress && (
+                        <p className="mt-2 text-sm text-red-600">{errors.parkingAddress}</p>
                       )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                          State *
+                        </label>
+                        <select
+                          id="state"
+                          value={formData.state}
+                          onChange={(e) => handleInputChange('state', e.target.value)}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                            errors.state ? 'border-red-300' : 'border-gray-300'
+                          }`}
+                        >
+                          <option value="">Select state</option>
+                          {USA_STATES.map(state => (
+                            <option key={state} value={state}>{state}</option>
+                          ))}
+                        </select>
+                        {errors.state && (
+                          <p className="mt-2 text-sm text-red-600">{errors.state}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                          City *
+                        </label>
+                        <select
+                          id="city"
+                          value={formData.city}
+                          onChange={(e) => handleInputChange('city', e.target.value)}
+                          disabled={!formData.state}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                            errors.city ? 'border-red-300' : 'border-gray-300'
+                          } ${!formData.state ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                        >
+                          <option value="">Select city</option>
+                          {availableCities.map(city => (
+                            <option key={city} value={city}>{city}</option>
+                          ))}
+                        </select>
+                        {errors.city && (
+                          <p className="mt-2 text-sm text-red-600">{errors.city}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -584,128 +643,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
         </form>
       </div>
 
-      {/* Collapsible Side Panel */}
-      <CollapsibleSidePanel
-        isOpen={isSidePanelOpen}
-        onClose={() => setIsSidePanelOpen(false)}
-        title="Quick Actions & Info"
-        width={420}
-        collapsedWidth={60}
-        position="right"
-        collapsible={true}
-      >
-        <div className="space-y-6">
-          {/* Quick Actions */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => {
-                  // Reset form
-                  resetForm();
-                }}
-              >
-                Reset Form
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => {
-                  // Save as draft functionality
-                  console.log('Save as draft');
-                }}
-              >
-                Save as Draft
-              </Button>
-            </div>
-          </div>
 
-          {/* Form Status */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Form Status</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Trailer Number:</span>
-                <span className={formData.trailerNumber ? 'text-green-600' : 'text-red-600'}>
-                  {formData.trailerNumber ? '✓' : '✗'}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Registration:</span>
-                <span className={formData.registrationNumber ? 'text-green-600' : 'text-red-600'}>
-                  {formData.registrationNumber ? '✓' : '✗'}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Location:</span>
-                <span className={formData.location ? 'text-green-600' : 'text-red-600'}>
-                  {formData.location ? '✓' : '✗'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Inventory Summary */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Inventory Summary</h3>
-            
-            {/* Tools Summary */}
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Tools</h4>
-              <div className="space-y-1">
-                {Object.entries(toolCurrentStock).slice(0, 5).map(([toolName, stock]) => (
-                  <div key={toolName} className="flex justify-between text-xs">
-                    <span className="text-gray-600 truncate">{toolName}</span>
-                    <span className="text-gray-900">{stock}</span>
-                  </div>
-                ))}
-                {Object.keys(toolCurrentStock).length > 5 && (
-                  <div className="text-xs text-gray-500">
-                    +{Object.keys(toolCurrentStock).length - 5} more tools
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Film Sheets Summary */}
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Film Sheets</h4>
-              <div className="space-y-1">
-                {Object.entries(filmSheetCurrentStock).slice(0, 5).map(([sheetType, stock]) => (
-                  <div key={sheetType} className="flex justify-between text-xs">
-                    <span className="text-gray-600 truncate">{sheetType}</span>
-                    <span className="text-gray-900">{stock}</span>
-                  </div>
-                ))}
-                {Object.keys(filmSheetCurrentStock).length > 5 && (
-                  <div className="text-xs text-gray-500">
-                    +{Object.keys(filmSheetCurrentStock).length - 5} more sheets
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Validation Errors */}
-          {Object.keys(errors).length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-red-600">Validation Errors</h3>
-              <div className="space-y-2">
-                {Object.entries(errors).map(([field, error]) => (
-                  <div key={field} className="text-sm text-red-600">
-                    <div className="font-medium">{field}:</div>
-                    <div className="text-xs">{error}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </CollapsibleSidePanel>
     </div>
   );
 };

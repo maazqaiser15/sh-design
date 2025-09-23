@@ -1,6 +1,5 @@
 // Project feature module exports
 export { ProjectListPage } from './pages/ProjectListPage';
-export { ProjectPreparationPage } from './pages/ProjectPreparationPage';
 export { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 export { ProjectListView } from './components/ProjectListView';
 export { ProjectTableView } from './components/ProjectTableView';
@@ -9,7 +8,7 @@ export { ProjectDetailsPlaceholder } from './components/ProjectDetailsPlaceholde
 export { ProjectSummaryCard } from './components/ProjectSummaryCard';
 export { ChecklistSection } from './components/ChecklistSection';
 export { AssignTeamCard } from './components/AssignTeamCard';
-export { AssignTrailerCard } from './components/AssignTrailerCard';
+export { TrailerInventoryCard } from './components/TrailerInventoryCard';
 export { TravelCard } from './components/TravelCard';
 export { DocumentsNotesCard } from './components/DocumentsNotesCard';
 export { ProjectDetailsHeader } from './components/ProjectDetailsHeader';
@@ -18,7 +17,6 @@ export { ProjectChecklist } from './components/ProjectChecklist';
 export { ProjectDocuments } from './components/ProjectDocuments';
 export { ProjectNotes } from './components/ProjectNotes';
 export { AssignTeamModal } from './components/AssignTeamModal';
-export { AssignTrailerModal } from './components/AssignTrailerModal';
 export { AddLogisticsModal } from './components/AddLogisticsModal';
 export { AddTravelModal } from './components/AddTravelModal';
 export { LogisticsTravelCard } from './components/LogisticsTravelCard';

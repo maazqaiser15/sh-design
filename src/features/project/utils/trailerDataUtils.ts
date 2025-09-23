@@ -7,7 +7,7 @@ import { TrailerForAssignment, TrailerStatus } from '../types/trailers';
 export const convertTrailerToAssignment = (trailer: Trailer): TrailerForAssignment => {
   return {
     id: trailer.id,
-    trailerName: trailer.trailerNumber,
+    trailerName: trailer.trailerName,
     registrationNumber: trailer.registrationNumber,
     homeLocation: trailer.location,
     currentLocation: trailer.location, // Using location as current location for now
@@ -43,7 +43,7 @@ export const getTrailerModuleData = (): Trailer[] => {
   return [
     {
       id: "1",
-      trailerNumber: "TRL001",
+      trailerName: "Alpha Trailer",
       registrationNumber: "REG-001-2024",
       location: "Warehouse A",
       inventory: {
@@ -116,7 +116,7 @@ export const getTrailerModuleData = (): Trailer[] => {
     },
     {
       id: "2",
-      trailerNumber: "TRL002",
+      trailerName: "Beta Trailer",
       registrationNumber: "REG-002-2024",
       location: "Field Site 1",
       inventory: {
@@ -181,7 +181,7 @@ export const getTrailerModuleData = (): Trailer[] => {
     },
     {
       id: "3",
-      trailerNumber: "TRL003",
+      trailerName: "Gamma Trailer",
       registrationNumber: "REG-003-2024",
       location: "Maintenance Bay",
       inventory: {

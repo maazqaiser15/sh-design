@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Truck } from "lucide-react";
+import { Truck, Plus, Package, Film, MapPin } from "lucide-react";
 import { TrailerList } from "../../features/trailer/components/TrailerList";
 import { TrailerDetail } from "../../features/trailer/components/TrailerDetail";
 import { TrailerForm } from "../../features/trailer/components/TrailerForm";
@@ -12,6 +12,7 @@ import {
   updateInventoryStatus,
   createActivityLog,
 } from "../../features/trailer/utils/trailerUtils";
+import { EXPANDED_TRAILER_DATA } from "./expandedTrailerData";
 
 /**
  * Main Trailer Management page component
@@ -22,211 +23,7 @@ export const Trailers: React.FC = () => {
   const navigate = useNavigate();
 
   // Sample data - in a real app, this would come from an API
-  const [trailers, setTrailers] = useState<Trailer[]>([
-    {
-      id: "1",
-      trailerNumber: "TRL001",
-      registrationNumber: "REG-001-2024",
-      location: "Warehouse A",
-      inventory: {
-        tools: [
-          { toolName: "CART", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "BEER TANK W/ HOSE", currentStock: 4, threshold: 6, status: "low" },
-          { toolName: "HARD PRESS", currentStock: 0, threshold: 6, status: "critical" },
-          { toolName: "RED CARD", currentStock: 8, threshold: 6, status: "good" },
-          { toolName: "OLFA", currentStock: 5, threshold: 6, status: "low" },
-          { toolName: "OLFA BLADE PACK", currentStock: 3, threshold: 6, status: "low" },
-          { toolName: "SCRAPERS", currentStock: 7, threshold: 6, status: "good" },
-          { toolName: "SCRAPER BLADE PACK", currentStock: 2, threshold: 6, status: "low" },
-          { toolName: "PICK KIT", currentStock: 4, threshold: 6, status: "low" },
-          { toolName: "1 QRT ACETONE", currentStock: 8, threshold: 6, status: "good" },
-          { toolName: "PHILLIPS HEAD SD", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "FLAT HEAD SD", currentStock: 5, threshold: 6, status: "low" },
-          { toolName: "WINDOW SQUEEGEE", currentStock: 3, threshold: 6, status: "low" },
-          { toolName: "CORDLESS DRILL", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "DRILL BIT KIT", currentStock: 0, threshold: 1, status: "critical" },
-          { toolName: "GENERATOR W/ CORD", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "CAULK SAUSAGE CASE", currentStock: 3, threshold: 2, status: "good" },
-          { toolName: "9 PK BLUE TAPE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "MICRO FIBER PACKAGE", currentStock: 3, threshold: 2, status: "good" },
-          { toolName: "5 GAL GAS CAN", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "12 GAL WATER", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "AIR COMP W/ HOSE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "TRASH CAN", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "55 GAL TRASH BAGS CASE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "BATH TOWEL", currentStock: 10, threshold: 8, status: "good" },
-          { toolName: "5 GAL BUCKETS", currentStock: 25, threshold: 20, status: "good" },
-          { toolName: "SHARPIE PACK", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "DRY ERASE MARKER PACK", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "CAULK GUN (Sausage)", currentStock: 3, threshold: 2, status: "good" },
-          { toolName: "PACK NITRILE GLOVES", currentStock: 1, threshold: 1, status: "good" },
-        ],
-        filmSheets: [
-          { sheetType: "BR", currentStock: 25, threshold: 20, status: "good" },
-          { sheetType: "Riot+", currentStock: 15, threshold: 20, status: "low" },
-          { sheetType: "Riot", currentStock: 0, threshold: 15, status: "critical" },
-          { sheetType: "Riot -", currentStock: 12, threshold: 10, status: "good" },
-          { sheetType: "FER", currentStock: 8, threshold: 10, status: "low" },
-          { sheetType: "Smash", currentStock: 5, threshold: 10, status: "low" },
-          { sheetType: "Tint NI", currentStock: 3, threshold: 10, status: "low" },
-          { sheetType: "Tint Incl", currentStock: 7, threshold: 10, status: "low" },
-          { sheetType: "Anchoring", currentStock: 2, threshold: 10, status: "low" },
-          { sheetType: "Kevlar", currentStock: 1, threshold: 10, status: "low" },
-          { sheetType: "Stripping", currentStock: 4, threshold: 10, status: "low" },
-        ],
-      },
-      status: "unavailable",
-      activityLogs: [
-        {
-          id: "1",
-          timestamp: "2024-01-15T10:30:00Z",
-          type: "created",
-          description: "Trailer TRL001 created",
-          systemGenerated: true,
-        },
-        {
-          id: "2",
-          timestamp: "2024-01-16T14:20:00Z",
-          type: "inventory_updated",
-          description: "Inventory levels updated",
-          user: "John Doe",
-          systemGenerated: false,
-        },
-      ],
-      createdAt: "2024-01-15T10:30:00Z",
-      updatedAt: "2024-01-16T14:20:00Z",
-    },
-    {
-      id: "2",
-      trailerNumber: "TRL002",
-      registrationNumber: "REG-002-2024",
-      location: "Field Site 1",
-      inventory: {
-        tools: [
-          { toolName: "CART", currentStock: 8, threshold: 6, status: "good" },
-          { toolName: "BEER TANK W/ HOSE", currentStock: 7, threshold: 6, status: "good" },
-          { toolName: "HARD PRESS", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "RED CARD", currentStock: 10, threshold: 6, status: "good" },
-          { toolName: "OLFA", currentStock: 8, threshold: 6, status: "good" },
-          { toolName: "OLFA BLADE PACK", currentStock: 7, threshold: 6, status: "good" },
-          { toolName: "SCRAPERS", currentStock: 9, threshold: 6, status: "good" },
-          { toolName: "SCRAPER BLADE PACK", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "PICK KIT", currentStock: 8, threshold: 6, status: "good" },
-          { toolName: "1 QRT ACETONE", currentStock: 10, threshold: 6, status: "good" },
-          { toolName: "PHILLIPS HEAD SD", currentStock: 8, threshold: 6, status: "good" },
-          { toolName: "FLAT HEAD SD", currentStock: 7, threshold: 6, status: "good" },
-          { toolName: "WINDOW SQUEEGEE", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "CORDLESS DRILL", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "DRILL BIT KIT", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "GENERATOR W/ CORD", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "CAULK SAUSAGE CASE", currentStock: 3, threshold: 2, status: "good" },
-          { toolName: "9 PK BLUE TAPE", currentStock: 2, threshold: 1, status: "good" },
-          { toolName: "MICRO FIBER PACKAGE", currentStock: 4, threshold: 2, status: "good" },
-          { toolName: "5 GAL GAS CAN", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "12 GAL WATER", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "AIR COMP W/ HOSE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "TRASH CAN", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "55 GAL TRASH BAGS CASE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "BATH TOWEL", currentStock: 12, threshold: 8, status: "good" },
-          { toolName: "5 GAL BUCKETS", currentStock: 30, threshold: 20, status: "good" },
-          { toolName: "SHARPIE PACK", currentStock: 2, threshold: 1, status: "good" },
-          { toolName: "DRY ERASE MARKER PACK", currentStock: 2, threshold: 1, status: "good" },
-          { toolName: "CAULK GUN (Sausage)", currentStock: 4, threshold: 2, status: "good" },
-          { toolName: "PACK NITRILE GLOVES", currentStock: 2, threshold: 1, status: "good" },
-        ],
-        filmSheets: [
-          { sheetType: "BR", currentStock: 35, threshold: 20, status: "good" },
-          { sheetType: "Riot+", currentStock: 28, threshold: 20, status: "good" },
-          { sheetType: "Riot", currentStock: 18, threshold: 15, status: "good" },
-          { sheetType: "Riot -", currentStock: 15, threshold: 10, status: "good" },
-          { sheetType: "FER", currentStock: 12, threshold: 10, status: "good" },
-          { sheetType: "Smash", currentStock: 15, threshold: 10, status: "good" },
-          { sheetType: "Tint NI", currentStock: 12, threshold: 10, status: "good" },
-          { sheetType: "Tint Incl", currentStock: 10, threshold: 10, status: "good" },
-          { sheetType: "Anchoring", currentStock: 8, threshold: 10, status: "low" },
-          { sheetType: "Kevlar", currentStock: 6, threshold: 10, status: "low" },
-          { sheetType: "Stripping", currentStock: 9, threshold: 10, status: "low" },
-        ],
-      },
-      status: "available",
-      activityLogs: [
-        {
-          id: "3",
-          timestamp: "2024-01-14T09:15:00Z",
-          type: "created",
-          description: "Trailer TRL002 created",
-          systemGenerated: true,
-        },
-      ],
-      createdAt: "2024-01-14T09:15:00Z",
-      updatedAt: "2024-01-14T09:15:00Z",
-    },
-    {
-      id: "3",
-      trailerNumber: "TRL003",
-      registrationNumber: "REG-003-2024",
-      location: "Maintenance Bay",
-      inventory: {
-        tools: [
-          { toolName: "CART", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "BEER TANK W/ HOSE", currentStock: 6, threshold: 6, status: "good" },
-          { toolName: "HARD PRESS", currentStock: 5, threshold: 6, status: "low" },
-          { toolName: "RED CARD", currentStock: 4, threshold: 6, status: "low" },
-          { toolName: "OLFA", currentStock: 3, threshold: 6, status: "low" },
-          { toolName: "OLFA BLADE PACK", currentStock: 2, threshold: 6, status: "low" },
-          { toolName: "SCRAPERS", currentStock: 4, threshold: 6, status: "low" },
-          { toolName: "SCRAPER BLADE PACK", currentStock: 1, threshold: 6, status: "low" },
-          { toolName: "PICK KIT", currentStock: 3, threshold: 6, status: "low" },
-          { toolName: "1 QRT ACETONE", currentStock: 5, threshold: 6, status: "low" },
-          { toolName: "PHILLIPS HEAD SD", currentStock: 4, threshold: 6, status: "low" },
-          { toolName: "FLAT HEAD SD", currentStock: 3, threshold: 6, status: "low" },
-          { toolName: "WINDOW SQUEEGEE", currentStock: 2, threshold: 6, status: "low" },
-          { toolName: "CORDLESS DRILL", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "DRILL BIT KIT", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "GENERATOR W/ CORD", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "CAULK SAUSAGE CASE", currentStock: 2, threshold: 2, status: "good" },
-          { toolName: "9 PK BLUE TAPE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "MICRO FIBER PACKAGE", currentStock: 2, threshold: 2, status: "good" },
-          { toolName: "5 GAL GAS CAN", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "12 GAL WATER", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "AIR COMP W/ HOSE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "TRASH CAN", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "55 GAL TRASH BAGS CASE", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "BATH TOWEL", currentStock: 6, threshold: 8, status: "low" },
-          { toolName: "5 GAL BUCKETS", currentStock: 15, threshold: 20, status: "low" },
-          { toolName: "SHARPIE PACK", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "DRY ERASE MARKER PACK", currentStock: 1, threshold: 1, status: "good" },
-          { toolName: "CAULK GUN (Sausage)", currentStock: 2, threshold: 2, status: "good" },
-          { toolName: "PACK NITRILE GLOVES", currentStock: 1, threshold: 1, status: "good" },
-        ],
-        filmSheets: [
-          { sheetType: "BR", currentStock: 20, threshold: 20, status: "good" },
-          { sheetType: "Riot+", currentStock: 20, threshold: 20, status: "good" },
-          { sheetType: "Riot", currentStock: 15, threshold: 15, status: "good" },
-          { sheetType: "Riot -", currentStock: 8, threshold: 10, status: "low" },
-          { sheetType: "FER", currentStock: 5, threshold: 10, status: "low" },
-          { sheetType: "Smash", currentStock: 6, threshold: 10, status: "low" },
-          { sheetType: "Tint NI", currentStock: 4, threshold: 10, status: "low" },
-          { sheetType: "Tint Incl", currentStock: 5, threshold: 10, status: "low" },
-          { sheetType: "Anchoring", currentStock: 3, threshold: 10, status: "low" },
-          { sheetType: "Kevlar", currentStock: 2, threshold: 10, status: "low" },
-          { sheetType: "Stripping", currentStock: 4, threshold: 10, status: "low" },
-        ],
-      },
-      status: "low",
-      activityLogs: [
-        {
-          id: "4",
-          timestamp: "2024-01-13T16:45:00Z",
-          type: "created",
-          description: "Trailer TRL003 created",
-          systemGenerated: true,
-        },
-      ],
-      createdAt: "2024-01-13T16:45:00Z",
-      updatedAt: "2024-01-13T16:45:00Z",
-    },
-  ]);
+  const [trailers, setTrailers] = useState<Trailer[]>(EXPANDED_TRAILER_DATA);
 
   // UI State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -235,8 +32,8 @@ export const Trailers: React.FC = () => {
   const [trailerToEdit, setTrailerToEdit] = useState<Trailer | null>(null);
 
   // Get existing trailer numbers for validation
-  const existingTrailerNumbers = trailers.map(
-    (trailer) => trailer.trailerNumber
+  const existingTrailerNames = trailers.map(
+    (trailer) => trailer.trailerName
   );
 
   // Find selected trailer based on URL parameter
@@ -264,7 +61,7 @@ export const Trailers: React.FC = () => {
     currentView === 'detail' && selectedTrailer
       ? [
           { label: "Trailers", href: "/trailers", icon: Truck },
-          { label: `Trailer ${selectedTrailer.trailerNumber}` },
+          { label: `Trailer ${selectedTrailer.trailerName}` },
         ]
       : currentView === 'create'
       ? [
@@ -274,7 +71,7 @@ export const Trailers: React.FC = () => {
       : currentView === 'edit' && trailerToEdit
       ? [
           { label: "Trailers", href: "/trailers", icon: Truck },
-          { label: `Edit Trailer ${trailerToEdit.trailerNumber}` },
+          { label: `Edit Trailer ${trailerToEdit.trailerName}` },
         ]
       : [{ label: "Trailers", icon: Truck }],
     [currentView, selectedTrailer, trailerToEdit]
@@ -379,6 +176,113 @@ export const Trailers: React.FC = () => {
     setTrailerToDelete(null);
   }, []);
 
+  // Show empty state if no trailers exist
+  if (trailers.length === 0 && currentView === 'list') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-2xl w-full">
+          {/* Main Empty State Card */}
+          <Card className="text-center py-12">
+            {/* Icon */}
+            <div className="mx-auto w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+              <Truck size={48} className="text-blue-600" />
+            </div>
+
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              No Trailers Yet
+            </h1>
+
+            {/* Description */}
+            <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+              Get started by adding your first trailer to manage inventory, track locations, and streamline your operations.
+            </p>
+
+            {/* CTA Button */}
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleCreateNew}
+              icon={Plus}
+              className="mb-8"
+            >
+              Create Your First Trailer
+            </Button>
+
+            {/* Features Preview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Package size={24} className="text-green-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Tool Management</h3>
+                <p className="text-sm text-gray-600">
+                  Track tools and equipment with real-time inventory levels
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Film size={24} className="text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Film Inventory</h3>
+                <p className="text-sm text-gray-600">
+                  Monitor film sheet stock and get low inventory alerts
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <MapPin size={24} className="text-orange-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Location Tracking</h3>
+                <p className="text-sm text-gray-600">
+                  Keep track of trailer locations and parking addresses
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Quick Tips */}
+          <Card className="mt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Getting Started Tips</h2>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-600 text-sm font-semibold">1</span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-900 font-medium">Set up basic information</p>
+                  <p className="text-sm text-gray-600">Add trailer name, registration number, and parking address</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-600 text-sm font-semibold">2</span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-900 font-medium">Configure inventory thresholds</p>
+                  <p className="text-sm text-gray-600">Set minimum stock levels for tools and film sheets</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-600 text-sm font-semibold">3</span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-900 font-medium">Start tracking</p>
+                  <p className="text-sm text-gray-600">Monitor inventory levels and get automated alerts</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {currentView === 'detail' && selectedTrailer ? (
@@ -387,21 +291,27 @@ export const Trailers: React.FC = () => {
           onBack={handleBackToList}
           onEdit={handleEditTrailer}
           onDelete={handleDeleteTrailer}
+          onRestock={(restockedTrailer) => {
+            // Update the trailer in the list
+            setTrailers(prev => 
+              prev.map(t => t.id === restockedTrailer.id ? restockedTrailer : t)
+            );
+          }}
         />
       ) : currentView === 'create' ? (
         <TrailerForm
           trailer={null}
           onSave={handleCreateTrailer}
           onCancel={handleCancelForm}
-          existingTrailerNumbers={existingTrailerNumbers}
+          existingTrailerNumbers={existingTrailerNames}
         />
       ) : currentView === 'edit' && trailerToEdit ? (
         <TrailerForm
           trailer={trailerToEdit}
           onSave={handleUpdateTrailer}
           onCancel={handleCancelForm}
-          existingTrailerNumbers={existingTrailerNumbers.filter(
-            (num) => num !== trailerToEdit?.trailerNumber
+          existingTrailerNumbers={existingTrailerNames.filter(
+            (name) => name !== trailerToEdit?.trailerName
           )}
         />
       ) : (

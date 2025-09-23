@@ -44,9 +44,11 @@ export type MemberStatus = 'available' | 'busy' | 'unavailable';
 
 export interface Trailer {
   id: string;
-  trailerNumber: string;
+  trailerName: string;
   registrationNumber: string;
-  location: string;
+  parkingAddress: string;
+  state: string;
+  city: string;
   inventory: {
     tools: ToolInventoryItem[];
     filmSheets: FilmSheetInventoryItem[];
@@ -112,6 +114,9 @@ export type ActivityLogType =
   | 'updated'
   | 'inventory_updated'
   | 'location_changed'
+  | 'address_changed'
+  | 'state_changed'
+  | 'city_changed'
   | 'status_changed'
   | 'note_added';
 

@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { Search, Grid, List, Plus, Edit2, Trash2, Eye } from "lucide-react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { Search, Plus, Edit2, Trash2, Eye, MoreVertical, Truck, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { Card } from "../../../../common/components/Card";
 import { Button } from "../../../../common/components/Button";
 import { StatusBadge } from "../../../../common/components/StatusBadge";
@@ -7,7 +7,7 @@ import { Trailer, TrailerStatus } from "../../../../types";
 import {
   filterTrailers,
   sortTrailers,
-  TRAILER_LOCATIONS,
+  USA_STATES,
 } from "../../utils/trailerUtils";
 
 interface TrailerListProps {
@@ -18,10 +18,8 @@ interface TrailerListProps {
   onDeleteTrailer: (trailer: Trailer) => void;
 }
 
-type ViewMode = "card" | "table";
-
 /**
- * Trailer list component with card and table view modes
+ * Trailer list component with table view
  * Includes filtering, sorting, and search functionality
  */
 export const TrailerList: React.FC<TrailerListProps> = ({
@@ -31,24 +29,53 @@ export const TrailerList: React.FC<TrailerListProps> = ({
   onEditTrailer,
   onDeleteTrailer,
 }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>("card");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TrailerStatus | "">("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [sortBy, setSortBy] = useState<
-    "trailerNumber" | "registrationNumber" | "location" | "status" | "updatedAt"
-  >("trailerNumber");
+  const [stateFilter, setStateFilter] = useState("");
+      const [sortBy, setSortBy] = useState<
+        "trailerName" | "registrationNumber" | "city" | "state" | "parkingAddress" | "currentLocation" | "status" | "updatedAt"
+      >("trailerName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const filteredAndSortedTrailers = useMemo(() => {
     const filtered = filterTrailers(trailers, {
       status: statusFilter || undefined,
-      location: locationFilter || undefined,
+      state: stateFilter || undefined,
       search: searchTerm || undefined,
     });
 
-    return sortTrailers(filtered, sortBy, sortOrder);
-  }, [trailers, searchTerm, statusFilter, locationFilter, sortBy, sortOrder]);
+        return sortTrailers(filtered, sortBy as any, sortOrder);
+  }, [trailers, searchTerm, statusFilter, stateFilter, sortBy, sortOrder]);
+
+  // Pagination calculations
+  const totalItems = filteredAndSortedTrailers.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTrailers = filteredAndSortedTrailers.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, stateFilter]);
 
   const handleSort = (field: typeof sortBy) => {
     if (sortBy === field) {
@@ -56,6 +83,46 @@ export const TrailerList: React.FC<TrailerListProps> = ({
     } else {
       setSortBy(field);
       setSortOrder("asc");
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handleDropdownToggle = (trailerId: string) => {
+    setActiveDropdown(activeDropdown === trailerId ? null : trailerId);
+  };
+
+  const handleMenuAction = (action: string, trailer: Trailer) => {
+    setActiveDropdown(null);
+    switch (action) {
+      case 'view':
+        onViewTrailer(trailer);
+        break;
+      case 'edit':
+        onEditTrailer(trailer);
+        break;
+      case 'delete':
+        onDeleteTrailer(trailer);
+        break;
     }
   };
 
@@ -110,141 +177,113 @@ export const TrailerList: React.FC<TrailerListProps> = ({
             <option value="unavailable">Unavailable</option>
           </select>
 
-          {/* Location Filter */}
+          {/* State Filter */}
           <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
+            value={stateFilter}
+            onChange={(e) => setStateFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
           >
-            <option value="">All Locations</option>
-            {TRAILER_LOCATIONS.map((location) => (
-              <option key={location} value={location}>
-                {location}
+            <option value="">All States</option>
+            {USA_STATES.map((state) => (
+              <option key={state} value={state}>
+                {state}
               </option>
             ))}
           </select>
 
-          {/* View Mode Toggle */}
-          <div className="flex rounded-md border border-gray-300">
-            <button
-              onClick={() => setViewMode("card")}
-              className={`px-3 py-2 rounded-l-md flex items-center gap-2 transition-colors ${
-                viewMode === "card"
-                  ? "bg-primary text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              <Grid size={16} />
-              Cards
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`px-3 py-2 rounded-r-md flex items-center gap-2 transition-colors border-l ${
-                viewMode === "table"
-                  ? "bg-primary text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              <List size={16} />
-              Table
-            </button>
-          </div>
         </div>
       </Card>
 
-      {/* Results Count */}
-      <div className="text-sm text-gray-600">
-        Showing {filteredAndSortedTrailers.length} of {trailers.length} trailers
-      </div>
+      {/* Table View */}
+      <TrailerTableView
+        trailers={paginatedTrailers}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+        onViewTrailer={onViewTrailer}
+        onEditTrailer={onEditTrailer}
+        onDeleteTrailer={onDeleteTrailer}
+        activeDropdown={activeDropdown}
+        onDropdownToggle={handleDropdownToggle}
+        onMenuAction={handleMenuAction}
+        dropdownRef={dropdownRef}
+      />
 
-      {/* Content */}
-      {viewMode === "card" ? (
-        <TrailerCardView
-          trailers={filteredAndSortedTrailers}
-          onViewTrailer={onViewTrailer}
-          onEditTrailer={onEditTrailer}
-          onDeleteTrailer={onDeleteTrailer}
-        />
-      ) : (
-        <TrailerTableView
-          trailers={filteredAndSortedTrailers}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-          onViewTrailer={onViewTrailer}
-          onEditTrailer={onEditTrailer}
-          onDeleteTrailer={onDeleteTrailer}
-        />
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <Card>
+          <div className="flex items-center justify-between px-4 py-3">
+            {/* Left side: Items per page and showing count */}
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <label htmlFor="itemsPerPage" className="text-sm text-gray-600">
+                  Items per page:
+                </label>
+                <select
+                  id="itemsPerPage"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+              <div className="text-sm text-gray-600">
+                Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} trailers
+              </div>
+            </div>
+
+            {/* Right side: Navigation controls */}
+            <div className="flex items-center space-x-2">
+              {/* Previous button */}
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className="p-2"
+              >
+                <ChevronLeft size={16} />
+              </Button>
+
+              {/* Page numbers */}
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-1 text-sm rounded ${
+                      currentPage === page
+                        ? "bg-primary text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              {/* Next button */}
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="p-2"
+              >
+                <ChevronRight size={16} />
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );
 };
 
-interface TrailerCardViewProps {
-  trailers: Trailer[];
-  onViewTrailer: (trailer: Trailer) => void;
-  onEditTrailer: (trailer: Trailer) => void;
-  onDeleteTrailer: (trailer: Trailer) => void;
-}
-
-const TrailerCardView: React.FC<TrailerCardViewProps> = ({
-  trailers,
-  onViewTrailer,
-  onEditTrailer,
-  onDeleteTrailer,
-}) => {
-  if (trailers.length === 0) {
-    return (
-      <Card>
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <Grid size={48} className="mx-auto" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No trailers found
-          </h3>
-          <p className="text-gray-600">
-            Try adjusting your search or filter criteria.
-          </p>
-        </div>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {trailers.map((trailer) => (
-        <Card
-          key={trailer.id}
-          hover
-          className="relative cursor-pointer transition-transform hover:scale-[1.02]"
-          onClick={() => onViewTrailer(trailer)}
-        >
-          <div className="space-y-4">
-            {/* Header */}
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {trailer.trailerNumber}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {trailer.registrationNumber}
-                </p>
-              </div>
-              <StatusBadge status={trailer.status} />
-            </div>
-
-            {/* Location */}
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Location:</span> {trailer.location}
-            </div>
-
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-};
 
 interface TrailerTableViewProps {
   trailers: Trailer[];
@@ -252,15 +291,22 @@ interface TrailerTableViewProps {
   sortOrder: "asc" | "desc";
   onSort: (
     field:
-      | "trailerNumber"
+      | "trailerName"
       | "registrationNumber"
-      | "location"
+      | "parkingAddress"
+      | "state"
+      | "city"
+      | "currentLocation"
       | "status"
       | "updatedAt"
   ) => void;
   onViewTrailer: (trailer: Trailer) => void;
   onEditTrailer: (trailer: Trailer) => void;
   onDeleteTrailer: (trailer: Trailer) => void;
+  activeDropdown: string | null;
+  onDropdownToggle: (trailerId: string) => void;
+  onMenuAction: (action: string, trailer: Trailer) => void;
+  dropdownRef: React.RefObject<HTMLDivElement>;
 }
 
 const TrailerTableView: React.FC<TrailerTableViewProps> = ({
@@ -271,13 +317,17 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
   onViewTrailer,
   onEditTrailer,
   onDeleteTrailer,
+  activeDropdown,
+  onDropdownToggle,
+  onMenuAction,
+  dropdownRef,
 }) => {
   if (trailers.length === 0) {
     return (
       <Card>
         <div className="text-center py-12">
           <div className="text-gray-400 mb-4">
-            <List size={48} className="mx-auto" />
+            <Truck size={48} className="mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             No trailers found
@@ -290,12 +340,12 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
     );
   }
 
-  const SortButton: React.FC<{ field: string; children: React.ReactNode }> = ({
+  const SortButton: React.FC<{ field: "trailerName" | "registrationNumber" | "parkingAddress" | "state" | "city" | "currentLocation" | "status" | "updatedAt"; children: React.ReactNode }> = ({
     field,
     children,
   }) => (
     <button
-      onClick={() => onSort(field as any)}
+      onClick={() => onSort(field)}
       className="flex items-center gap-1 text-left hover:text-primary transition-colors"
     >
       {children}
@@ -312,13 +362,22 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="trailerNumber">Trailer Number</SortButton>
+                <SortButton field="trailerName">Trailer Name</SortButton>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <SortButton field="registrationNumber">Registration</SortButton>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="location">Location</SortButton>
+                <SortButton field="city">City</SortButton>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <SortButton field="state">State</SortButton>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <SortButton field="parkingAddress">Parking Address</SortButton>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <SortButton field="currentLocation">Current Location</SortButton>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <SortButton field="status">Status</SortButton>
@@ -330,10 +389,14 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {trailers.map((trailer) => (
-              <tr key={trailer.id} className="hover:bg-gray-50">
+              <tr 
+                key={trailer.id} 
+                className="hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => onViewTrailer(trailer)}
+              >
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {trailer.trailerNumber}
+                    {trailer.trailerName}
                   </div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
@@ -343,39 +406,87 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {trailer.location}
+                    {trailer.city}
+                  </div>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {trailer.state}
+                  </div>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {trailer.parkingAddress}
+                  </div>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin size={16} className="mr-1" />
+                    <span>-</span>
                   </div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <StatusBadge status={trailer.status} />
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onViewTrailer(trailer)}
-                      icon={Eye}
+                  <div 
+                    className="relative inline-block text-left" 
+                    ref={activeDropdown === trailer.id ? dropdownRef : null}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      className="flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDropdownToggle(trailer.id);
+                      }}
+                      id={`menu-button-${trailer.id}`}
+                      aria-expanded={activeDropdown === trailer.id}
+                      aria-haspopup="true"
                     >
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEditTrailer(trailer)}
-                      icon={Edit2}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDeleteTrailer(trailer)}
-                      icon={Trash2}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      Delete
-                    </Button>
+                      <MoreVertical size={20} />
+                    </button>
+                    
+                    {activeDropdown === trailer.id && (
+                      <div 
+                        className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="py-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onMenuAction('view', trailer);
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <Eye size={16} className="mr-2" />
+                            View Details
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onMenuAction('edit', trailer);
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <Edit2 size={16} className="mr-2" />
+                            Edit Trailer
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onMenuAction('delete', trailer);
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={16} className="mr-2" />
+                            Delete Trailer
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </td>
               </tr>

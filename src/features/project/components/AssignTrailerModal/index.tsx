@@ -1,117 +1,111 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, X, CheckCircle, AlertTriangle, Circle, Truck, MapPin, Calendar } from 'lucide-react';
-import { Modal } from '../../../../common/components/Modal';
+import React, { useState, useMemo } from 'react';
+import { Search, X, Check, AlertTriangle, Circle, Truck, MapPin, Package } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
-import { TrailerForAssignment, TrailerStatus } from '../../types/trailers';
+import { Modal } from '../../../../common/components/Modal';
+import { TrailerForAssignment } from '../TrailerAssignmentModal';
 
 interface AssignTrailerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAssignTrailer: (selectedTrailer: TrailerForAssignment) => void;
   availableTrailers: TrailerForAssignment[];
-  assignedTrailerId?: string; // Optional: for pre-selecting trailer in edit mode
+  assignedTrailerId?: string;
 }
 
+/**
+ * AssignTrailerModal - Modal for assigning a trailer to a project
+ * Includes search, filters, and single-select functionality
+ */
 export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
   isOpen,
   onClose,
   onAssignTrailer,
   availableTrailers,
-  assignedTrailerId,
+  assignedTrailerId
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<TrailerStatus | ''>('');
-  const [filterLocation, setFilterLocation] = useState<string>('');
-  const [selectedTrailer, setSelectedTrailer] = useState<TrailerForAssignment | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'available' | 'low_stock' | 'unavailable' | ''>('');
+  const [selectedTrailer, setSelectedTrailer] = useState<string | null>(assignedTrailerId || null);
 
-  useEffect(() => {
-    if (isOpen) {
-      // Reset filters and search when modal opens
-      setSearchQuery('');
-      setFilterStatus('');
-      setFilterLocation('');
-      // Pre-select trailer if assignedTrailerId is provided
-      if (assignedTrailerId) {
-        const preSelected = availableTrailers.find(trailer => trailer.id === assignedTrailerId);
-        setSelectedTrailer(preSelected || null);
-      } else {
-        setSelectedTrailer(null);
-      }
-      
-      // Debug: Log available trailers
-      console.log('Available trailers for assignment:', availableTrailers);
-    }
-  }, [isOpen, availableTrailers, assignedTrailerId]);
-
+  // Filter trailers based on search and filters
   const filteredTrailers = useMemo(() => {
-    let filtered = availableTrailers;
-
-    if (searchQuery) {
-      filtered = filtered.filter(trailer =>
-        trailer.trailerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        trailer.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (filterStatus) {
-      filtered = filtered.filter(trailer => trailer.status === filterStatus);
-    }
-
-    if (filterLocation) {
-      filtered = filtered.filter(trailer => 
-        trailer.homeLocation.toLowerCase().includes(filterLocation.toLowerCase()) ||
-        trailer.currentLocation.toLowerCase().includes(filterLocation.toLowerCase())
-      );
-    }
-
-    return filtered;
-  }, [availableTrailers, searchQuery, filterStatus, filterLocation]);
-
-  const handleSelectTrailer = (trailer: TrailerForAssignment) => {
-    console.log('Trailer selected:', trailer);
-    setSelectedTrailer(trailer);
-  };
-
-  const handleAssignClick = () => {
-    console.log('Assign button clicked, selectedTrailer:', selectedTrailer);
-    if (selectedTrailer) {
-      console.log('Calling onAssignTrailer with:', selectedTrailer);
-      onAssignTrailer(selectedTrailer);
-      onClose();
-    } else {
-      console.log('No trailer selected');
-    }
-  };
-
-  const getStatusDisplay = (status: TrailerStatus, unavailableUntil?: string) => {
-    switch (status) {
-      case 'available': 
-        return <span className="text-green-600 flex items-center"><CheckCircle size={14} className="mr-1" /> Available</span>;
-      case 'unavailable': 
-        return <span className="text-red-600 flex items-center"><X size={14} className="mr-1" /> Unavailable {unavailableUntil ? `until ${new Date(unavailableUntil).toLocaleDateString()}` : ''}</span>;
-      case 'in-use': 
-        return <span className="text-blue-600 flex items-center"><AlertTriangle size={14} className="mr-1" /> In Use {unavailableUntil ? `until ${new Date(unavailableUntil).toLocaleDateString()}` : ''}</span>;
-      case 'maintenance': 
-        return <span className="text-amber-600 flex items-center"><AlertTriangle size={14} className="mr-1" /> Maintenance {unavailableUntil ? `until ${new Date(unavailableUntil).toLocaleDateString()}` : ''}</span>;
-      default: 
-        return <span className="text-gray-600">{status}</span>;
-    }
-  };
-
-  const getUniqueLocations = () => {
-    const locations = new Set<string>();
-    availableTrailers.forEach(trailer => {
-      locations.add(trailer.homeLocation);
-      locations.add(trailer.currentLocation);
+    return availableTrailers.filter(trailer => {
+      const matchesSearch = trailer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           trailer.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           trailer.currentLocation.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = !statusFilter || trailer.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
     });
-    return Array.from(locations).sort();
+  }, [availableTrailers, searchQuery, statusFilter]);
+
+  const handleTrailerSelect = (trailerId: string) => {
+    setSelectedTrailer(trailerId);
+  };
+
+  const handleAssign = () => {
+    const trailer = availableTrailers.find(t => t.id === selectedTrailer);
+    if (trailer) {
+      onAssignTrailer(trailer);
+      onClose();
+    }
+  };
+
+  const handleClose = () => {
+    onClose();
+    setSearchQuery('');
+    setStatusFilter('');
+    setSelectedTrailer(assignedTrailerId || null);
+  };
+
+  const getStatusDisplay = (trailer: TrailerForAssignment) => {
+    switch (trailer.status) {
+      case 'available':
+        return (
+          <span className="text-green-600 flex items-center">
+            <Check size={14} className="mr-1" />
+            Available
+          </span>
+        );
+      case 'low_stock':
+        return (
+          <span className="text-yellow-600 flex items-center">
+            <AlertTriangle size={14} className="mr-1" />
+            Low Stock
+          </span>
+        );
+      case 'unavailable':
+        return (
+          <span className="text-red-600 flex items-center">
+            <X size={14} className="mr-1" />
+            Unavailable until {trailer.unavailableUntil}
+          </span>
+        );
+      default:
+        return <span className="text-gray-600">{trailer.status}</span>;
+    }
+  };
+
+  const getInventorySummary = (trailer: TrailerForAssignment) => {
+    const totalFilm = trailer.inventory.filmSheets.reduce((sum, film) => sum + film.currentStock, 0);
+    const goodTools = trailer.inventory.tools.filter(tool => tool.status === 'good').length;
+    const totalTools = trailer.inventory.tools.length;
+
+    return {
+      filmSqFt: totalFilm,
+      toolsStatus: goodTools === totalTools ? 'good' : 'needs_attention'
+    };
+  };
+
+  const isTrailerSelectable = (trailer: TrailerForAssignment) => {
+    return trailer.status === 'available';
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
-      title="Assign Trailer"
+      onClose={handleClose}
+      title="Assign Trailer to Project"
       size="lg"
     >
       <div className="p-6">
@@ -121,7 +115,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by trailer name or registration number..."
+              placeholder="Search by trailer name, registration, or location..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -138,25 +132,13 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
 
           <select
             className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as TrailerStatus | '')}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
           >
             <option value="">All Status</option>
             <option value="available">Available</option>
+            <option value="low_stock">Low Stock</option>
             <option value="unavailable">Unavailable</option>
-            <option value="in-use">In Use</option>
-            <option value="maintenance">Maintenance</option>
-          </select>
-
-          <select
-            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-            value={filterLocation}
-            onChange={(e) => setFilterLocation(e.target.value)}
-          >
-            <option value="">All Locations</option>
-            {getUniqueLocations().map(location => (
-              <option key={location} value={location}>{location}</option>
-            ))}
           </select>
         </div>
 
@@ -169,70 +151,133 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {filteredTrailers.map(trailer => (
-                <div
-                  key={trailer.id}
-                  className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                    selectedTrailer?.id === trailer.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                  }`}
-                  onClick={() => handleSelectTrailer(trailer)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0">
-                        {selectedTrailer?.id === trailer.id ? (
-                          <CheckCircle className="w-5 h-5 text-blue-600" />
-                        ) : (
-                          <Circle className="w-5 h-5 text-gray-300" />
+              {filteredTrailers.map(trailer => {
+                const isSelectable = isTrailerSelectable(trailer);
+                const isSelected = selectedTrailer === trailer.id;
+                const inventory = getInventorySummary(trailer);
+
+                return (
+                  <div
+                    key={trailer.id}
+                    className={`p-4 transition-colors ${
+                      isSelectable
+                        ? 'hover:bg-gray-50 cursor-pointer'
+                        : 'bg-gray-50 cursor-not-allowed opacity-60'
+                    } ${
+                      isSelected ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                    }`}
+                    onClick={() => isSelectable && handleTrailerSelect(trailer.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          {isSelectable ? (
+                            isSelected ? (
+                              <Check className="w-5 h-5 text-blue-600" />
+                            ) : (
+                              <Circle className="w-5 h-5 text-gray-300" />
+                            )
+                          ) : (
+                            <X className="w-5 h-5 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <h3 className={`text-sm font-medium ${
+                              isSelectable ? 'text-gray-900' : 'text-gray-500'
+                            }`}>
+                              {trailer.name}
+                            </h3>
+                            <span className={`text-xs ${
+                              isSelectable ? 'text-gray-500' : 'text-gray-400'
+                            }`}>
+                              {trailer.registrationNumber}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center space-x-4 text-xs text-gray-500">
+                            <div className="flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              <span>{trailer.currentLocation}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 text-right">
+                        <div className="text-sm mb-1">
+                          {getStatusDisplay(trailer)}
+                        </div>
+                        {isSelectable && (
+                          <div className="text-xs text-gray-500">
+                            <div className="flex items-center space-x-2">
+                              <Package className="w-3 h-3" />
+                              <span>Film: {inventory.filmSqFt} sq ft</span>
+                            </div>
+                          </div>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="text-sm font-medium text-gray-900 truncate">
-                            {trailer.trailerName}
-                          </h3>
-                          <span className="text-xs text-gray-500">
-                            {trailer.registrationNumber}
-                          </span>
-                        </div>
-                        <div className="mt-1 flex items-center space-x-4 text-xs text-gray-500">
-                          <div className="flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            <span>Home: {trailer.homeLocation}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            <span>Current: {trailer.currentLocation}</span>
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                    <div className="flex-shrink-0 text-right">
-                      <div className="text-sm">
-                        {getStatusDisplay(trailer.status, trailer.unavailableUntil)}
+
+                    {/* Inventory Details - Only show for selected trailer */}
+                    {isSelected && (
+                      <div className="mt-3 p-3 bg-white rounded border">
+                        <div className="text-xs font-medium text-gray-700 mb-2">Inventory Details</div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Tools */}
+                          <div>
+                            <div className="text-xs font-medium text-gray-600 mb-1">Tools</div>
+                            <div className="space-y-1">
+                              {trailer.inventory.tools.map((tool, index) => (
+                                <div key={index} className="flex justify-between text-xs">
+                                  <span className="text-gray-600">{tool.name}</span>
+                                  <span className={`font-medium ${
+                                    tool.status === 'good' ? 'text-green-600' :
+                                    tool.status === 'low' ? 'text-yellow-600' : 'text-red-600'
+                                  }`}>
+                                    {tool.currentStock}/{tool.threshold}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Film Sheets */}
+                          <div>
+                            <div className="text-xs font-medium text-gray-600 mb-1">Film Sheets</div>
+                            <div className="space-y-1">
+                              {trailer.inventory.filmSheets.map((film, index) => (
+                                <div key={index} className="flex justify-between text-xs">
+                                  <span className="text-gray-600">{film.sheetType}</span>
+                                  <span className={`font-medium ${
+                                    film.status === 'good' ? 'text-green-600' :
+                                    film.status === 'low' ? 'text-yellow-600' : 'text-red-600'
+                                  }`}>
+                                    {film.currentStock} sq ft
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Capacity: {trailer.currentLoad}/{trailer.capacity}
-                      </div>
-                    </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
         {/* Footer */}
         <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
           <Button
             variant="primary"
-            onClick={handleAssignClick}
+            onClick={handleAssign}
             disabled={!selectedTrailer}
           >
-            {assignedTrailerId ? 'Update Trailer' : 'Add Trailer'}
+            {assignedTrailerId ? 'Update Trailer' : 'Assign Trailer'}
           </Button>
         </div>
       </div>

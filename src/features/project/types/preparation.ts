@@ -20,7 +20,7 @@ export interface ProjectPreparationData {
 
 export interface AssignedTrailer {
   id: string;
-  trailerNumber: string;
+  trailerName: string;
   registrationNumber: string;
   location: string;
   inventory: {
@@ -115,7 +115,7 @@ export const MOCK_PREPARATION_DATA: ProjectPreparationData = {
   ],
   assignedTrailer: {
     id: 'trailer-001',
-    trailerNumber: 'TR-2024-001',
+    trailerName: 'Alpha Trailer',
     registrationNumber: 'ABC-123',
     location: 'Warehouse A',
     inventory: {
@@ -127,7 +127,7 @@ export const MOCK_PREPARATION_DATA: ProjectPreparationData = {
   },
   checklist: [
     { id: 'check-1', label: 'Team Assigned', completed: true, required: true },
-    { id: 'check-2', label: 'Trailer Assigned', completed: true, required: true },
+    { id: 'check-2', label: 'Trailer Assigned', completed: false, required: true },
     { id: 'check-3', label: 'Logistics Planned', completed: false, required: true },
     { id: 'check-4', label: 'Travel Confirmed', completed: false, required: true },
     { id: 'check-5', label: 'Documents Added', completed: false, required: true },
@@ -193,7 +193,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
 export const MOCK_TRAILERS: Trailer[] = [
   {
     id: 'trailer-001',
-    trailerNumber: 'TR-2024-001',
+    trailerName: 'Alpha Trailer',
     registrationNumber: 'ABC-123',
     location: 'Warehouse A',
     inventory: {
@@ -213,7 +213,7 @@ export const MOCK_TRAILERS: Trailer[] = [
   },
   {
     id: 'trailer-002',
-    trailerNumber: 'TR-2024-002',
+    trailerName: 'Beta Trailer',
     registrationNumber: 'DEF-456',
     location: 'Warehouse B',
     inventory: {

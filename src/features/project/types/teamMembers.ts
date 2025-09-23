@@ -1,5 +1,5 @@
-// Team Member Types for Assignment
-export type TeamRole = 'Lead Supervisor' | 'Crew Leader' | 'Installer';
+// Team Member Types for Team Management Module
+export type TeamRole = 'Lead Supervisor' | 'Crew Leader' | 'Installer' | 'Project Coordinator';
 export type TeamMemberStatus = 'Available' | 'Unavailable';
 
 export interface TeamMember {
@@ -7,14 +7,30 @@ export interface TeamMember {
   name: string;
   role: TeamRole;
   status: TeamMemberStatus;
-  availableUntil?: string; // DD/MM/YYYY format
-  efficiencyBadge?: string; // e.g., "Efficient Installer"
+  unavailableUntil?: string; // DD/MM/YYYY format for unavailable status
+  phone: string;
+  email: string;
   avatar?: string;
-  phone?: string;
-  email?: string;
-  location?: string;
   experience?: number; // years of experience
   specializations?: string[];
+  projects?: TeamMemberProject[];
+  activityLog?: TeamMemberActivity[];
+}
+
+export interface TeamMemberProject {
+  id: string;
+  name: string;
+  stage: string;
+  timeline: string;
+  assignedDate: string;
+}
+
+export interface TeamMemberActivity {
+  id: string;
+  type: 'assignment' | 'status_change' | 'project_update' | 'other';
+  description: string;
+  date: string;
+  details?: string;
 }
 
 export interface AssignedTeamMember extends TeamMember {
@@ -29,202 +45,245 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'John Smith',
     role: 'Lead Supervisor',
     status: 'Available',
-    availableUntil: '15/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/john.jpg',
     phone: '+1-555-0123',
     email: 'john@company.com',
-    location: 'Downtown',
+    avatar: 'JS',
     experience: 8,
-    specializations: ['Security Film', 'Window Installation', 'Team Management']
+    specializations: ['Security Film', 'Window Installation', 'Team Management'],
+    projects: [
+      {
+        id: 'proj-001',
+        name: 'Downtown Office Complex',
+        stage: 'Installation',
+        timeline: 'Mar 15 - Mar 25, 2024',
+        assignedDate: '2024-03-01'
+      },
+      {
+        id: 'proj-002',
+        name: 'Residential Security Upgrade',
+        stage: 'Planning',
+        timeline: 'Apr 1 - Apr 15, 2024',
+        assignedDate: '2024-03-10'
+      }
+    ],
+    activityLog: [
+      {
+        id: 'act-001',
+        type: 'assignment',
+        description: 'Assigned to Downtown Office Complex',
+        date: '2024-03-01',
+        details: 'Lead supervisor role for 10-day installation project'
+      },
+      {
+        id: 'act-002',
+        type: 'project_update',
+        description: 'Project status updated to Installation phase',
+        date: '2024-03-05',
+        details: 'All planning completed, installation started'
+      }
+    ]
   },
   {
     id: 'tm-002',
     name: 'Sarah Johnson',
     role: 'Crew Leader',
     status: 'Available',
-    availableUntil: '20/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/sarah.jpg',
     phone: '+1-555-0124',
     email: 'sarah@company.com',
-    location: 'Midtown',
+    avatar: 'SJ',
     experience: 6,
-    specializations: ['Quality Control', 'Safety Protocols']
+    specializations: ['Quality Control', 'Safety Protocols'],
+    projects: [
+      {
+        id: 'proj-003',
+        name: 'Midtown Retail Security',
+        stage: 'Quality Check',
+        timeline: 'Mar 20 - Mar 30, 2024',
+        assignedDate: '2024-03-15'
+      }
+    ],
+    activityLog: [
+      {
+        id: 'act-003',
+        type: 'assignment',
+        description: 'Assigned to Midtown Retail Security',
+        date: '2024-03-15',
+        details: 'Crew leader for quality control phase'
+      }
+    ]
   },
   {
     id: 'tm-003',
     name: 'Mike Wilson',
     role: 'Installer',
     status: 'Available',
-    availableUntil: '25/03/2024',
-    avatar: '/avatars/mike.jpg',
     phone: '+1-555-0125',
     email: 'mike@company.com',
-    location: 'Uptown',
+    avatar: 'MW',
     experience: 4,
-    specializations: ['Precision Installation']
+    specializations: ['Precision Installation'],
+    projects: [
+      {
+        id: 'proj-001',
+        name: 'Downtown Office Complex',
+        stage: 'Installation',
+        timeline: 'Mar 15 - Mar 25, 2024',
+        assignedDate: '2024-03-01'
+      }
+    ],
+    activityLog: [
+      {
+        id: 'act-004',
+        type: 'assignment',
+        description: 'Assigned to Downtown Office Complex',
+        date: '2024-03-01',
+        details: 'Installation team member'
+      }
+    ]
   },
   {
     id: 'tm-004',
     name: 'Emily Davis',
     role: 'Installer',
     status: 'Unavailable',
-    availableUntil: '10/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/emily.jpg',
+    unavailableUntil: '10/03/2024',
     phone: '+1-555-0126',
     email: 'emily@company.com',
-    location: 'Westside',
+    avatar: 'ED',
     experience: 5,
-    specializations: ['Commercial Projects']
+    specializations: ['Commercial Projects'],
+    projects: [],
+    activityLog: [
+      {
+        id: 'act-005',
+        type: 'status_change',
+        description: 'Status changed to unavailable',
+        date: '2024-03-01',
+        details: 'Personal leave until 10/03/2024'
+      }
+    ]
   },
   {
     id: 'tm-005',
     name: 'David Brown',
     role: 'Crew Leader',
     status: 'Available',
-    availableUntil: '30/03/2024',
-    avatar: '/avatars/david.jpg',
     phone: '+1-555-0127',
     email: 'david@company.com',
-    location: 'Eastside',
+    avatar: 'DB',
     experience: 7,
-    specializations: ['Large Scale Projects', 'Equipment Management']
+    specializations: ['Large Scale Projects', 'Equipment Management'],
+    projects: [
+      {
+        id: 'proj-004',
+        name: 'Industrial Complex Security',
+        stage: 'Planning',
+        timeline: 'Apr 1 - May 15, 2024',
+        assignedDate: '2024-03-20'
+      }
+    ],
+    activityLog: [
+      {
+        id: 'act-006',
+        type: 'assignment',
+        description: 'Assigned to Industrial Complex Security',
+        date: '2024-03-20',
+        details: 'Crew leader for large-scale project'
+      }
+    ]
   },
   {
     id: 'tm-006',
     name: 'Lisa Garcia',
     role: 'Installer',
     status: 'Available',
-    availableUntil: '18/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/lisa.jpg',
     phone: '+1-555-0128',
     email: 'lisa@company.com',
-    location: 'Northside',
+    avatar: 'LG',
     experience: 3,
-    specializations: ['Residential Projects']
+    specializations: ['Residential Projects'],
+    projects: [
+      {
+        id: 'proj-005',
+        name: 'Residential Security Upgrade',
+        stage: 'Installation',
+        timeline: 'Mar 18 - Mar 28, 2024',
+        assignedDate: '2024-03-10'
+      }
+    ],
+    activityLog: [
+      {
+        id: 'act-007',
+        type: 'assignment',
+        description: 'Assigned to Residential Security Upgrade',
+        date: '2024-03-10',
+        details: 'Installation team member for residential project'
+      }
+    ]
   },
   {
     id: 'tm-007',
     name: 'Robert Taylor',
     role: 'Lead Supervisor',
     status: 'Unavailable',
-    availableUntil: '05/03/2024',
-    avatar: '/avatars/robert.jpg',
+    unavailableUntil: '05/03/2024',
     phone: '+1-555-0129',
     email: 'robert@company.com',
-    location: 'Southside',
+    avatar: 'RT',
     experience: 10,
-    specializations: ['Project Management', 'Client Relations']
+    specializations: ['Project Management', 'Client Relations'],
+    projects: [],
+    activityLog: [
+      {
+        id: 'act-008',
+        type: 'status_change',
+        description: 'Status changed to unavailable',
+        date: '2024-02-25',
+        details: 'Medical leave until 05/03/2024'
+      }
+    ]
   },
   {
     id: 'tm-008',
     name: 'Jennifer White',
-    role: 'Installer',
+    role: 'Project Coordinator',
     status: 'Available',
-    availableUntil: '22/03/2024',
-    avatar: '/avatars/jennifer.jpg',
     phone: '+1-555-0130',
     email: 'jennifer@company.com',
-    location: 'Central',
+    avatar: 'JW',
     experience: 2,
-    specializations: ['Detail Work']
-  },
-  {
-    id: 'tm-009',
-    name: 'Michael Anderson',
-    role: 'Crew Leader',
-    status: 'Available',
-    availableUntil: '28/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/michael.jpg',
-    phone: '+1-555-0131',
-    email: 'michael@company.com',
-    location: 'Downtown',
-    experience: 9,
-    specializations: ['Complex Installations', 'Training']
-  },
-  {
-    id: 'tm-010',
-    name: 'Amanda Clark',
-    role: 'Installer',
-    status: 'Available',
-    availableUntil: '12/03/2024',
-    avatar: '/avatars/amanda.jpg',
-    phone: '+1-555-0132',
-    email: 'amanda@company.com',
-    location: 'Midtown',
-    experience: 4,
-    specializations: ['Safety Focus']
-  },
-  {
-    id: 'tm-011',
-    name: 'James Rodriguez',
-    role: 'Lead Supervisor',
-    status: 'Available',
-    availableUntil: '31/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/james.jpg',
-    phone: '+1-555-0133',
-    email: 'james@company.com',
-    location: 'Uptown',
-    experience: 12,
-    specializations: ['Strategic Planning', 'Team Leadership']
-  },
-  {
-    id: 'tm-012',
-    name: 'Maria Martinez',
-    role: 'Installer',
-    status: 'Unavailable',
-    availableUntil: '08/03/2024',
-    avatar: '/avatars/maria.jpg',
-    phone: '+1-555-0134',
-    email: 'maria@company.com',
-    location: 'Westside',
-    experience: 6,
-    specializations: ['Quality Assurance']
-  },
-  {
-    id: 'tm-013',
-    name: 'Kevin Lee',
-    role: 'Crew Leader',
-    status: 'Available',
-    availableUntil: '26/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/kevin.jpg',
-    phone: '+1-555-0135',
-    email: 'kevin@company.com',
-    location: 'Eastside',
-    experience: 8,
-    specializations: ['Efficiency Optimization', 'Process Improvement']
-  },
-  {
-    id: 'tm-014',
-    name: 'Rachel Green',
-    role: 'Installer',
-    status: 'Available',
-    availableUntil: '19/03/2024',
-    avatar: '/avatars/rachel.jpg',
-    phone: '+1-555-0136',
-    email: 'rachel@company.com',
-    location: 'Northside',
-    experience: 3,
-    specializations: ['Attention to Detail']
-  },
-  {
-    id: 'tm-015',
-    name: 'Daniel Kim',
-    role: 'Installer',
-    status: 'Available',
-    availableUntil: '24/03/2024',
-    efficiencyBadge: 'Efficient Installer',
-    avatar: '/avatars/daniel.jpg',
-    phone: '+1-555-0137',
-    email: 'daniel@company.com',
-    location: 'Southside',
-    experience: 5,
-    specializations: ['Technical Expertise']
+    specializations: ['Project Coordination', 'Client Communication'],
+    projects: [
+      {
+        id: 'proj-001',
+        name: 'Downtown Office Complex',
+        stage: 'Installation',
+        timeline: 'Mar 15 - Mar 25, 2024',
+        assignedDate: '2024-03-01'
+      },
+      {
+        id: 'proj-002',
+        name: 'Residential Security Upgrade',
+        stage: 'Planning',
+        timeline: 'Apr 1 - Apr 15, 2024',
+        assignedDate: '2024-03-10'
+      }
+    ],
+    activityLog: [
+      {
+        id: 'act-009',
+        type: 'assignment',
+        description: 'Assigned to Downtown Office Complex',
+        date: '2024-03-01',
+        details: 'Project coordinator for installation phase'
+      },
+      {
+        id: 'act-010',
+        type: 'assignment',
+        description: 'Assigned to Residential Security Upgrade',
+        date: '2024-03-10',
+        details: 'Project coordinator for planning phase'
+      }
+    ]
   }
 ];

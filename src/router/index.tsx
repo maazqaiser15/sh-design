@@ -71,15 +71,6 @@ export const routes: RouteObject[] = [
             },
           },
           {
-            path: "projects/:projectId/preparation",
-            async lazy() {
-              const { ProjectPreparationPage } = await import(
-                "../features/project/pages/ProjectPreparationPage"
-              );
-              return { element: <ProjectPreparationPage /> };
-            },
-          },
-          {
             path: "projects/:projectId",
             async lazy() {
               const { ProjectDetailsPage } = await import(
@@ -89,13 +80,25 @@ export const routes: RouteObject[] = [
             },
           },
 
-          // Team Route
+          // Team Routes
           {
             path: "team",
-            async lazy() {
-              const { Team } = await import("../pages/Team");
-              return { element: <Team /> };
-            },
+            children: [
+              {
+                index: true,
+                async lazy() {
+                  const { Team } = await import("../pages/Team");
+                  return { element: <Team /> };
+                },
+              },
+              {
+                path: ":memberId",
+                async lazy() {
+                  const { TeamMemberDetail } = await import("../pages/Team/TeamMemberDetail");
+                  return { element: <TeamMemberDetail /> };
+                },
+              },
+            ],
           },
 
           // Trailers Routes
@@ -107,6 +110,13 @@ export const routes: RouteObject[] = [
                 async lazy() {
                   const { Trailers } = await import("../pages/Trailers");
                   return { element: <Trailers /> };
+                },
+              },
+              {
+                path: "empty",
+                async lazy() {
+                  const { TrailerEmptyState } = await import("../pages/Trailers/TrailerEmptyState");
+                  return { element: <TrailerEmptyState /> };
                 },
               },
               {
@@ -127,13 +137,6 @@ export const routes: RouteObject[] = [
         {
           path: "design-system",
           element: <DesignSystemLibrary />,
-        },
-        {
-          path: "project-preparation-demo",
-          async lazy() {
-            const { ProjectPreparationDemo } = await import("../pages/ProjectPreparationDemo");
-            return { element: <ProjectPreparationDemo /> };
-          },
         },
         {
           path: "project-details-demo",

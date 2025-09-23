@@ -100,7 +100,7 @@ describe('ProjectSummaryCard', () => {
       />
     );
 
-    expect(screen.getByText(MOCK_PREPARATION_DATA.assignedTrailer!.trailerNumber)).toBeInTheDocument();
+    expect(screen.getByText(MOCK_PREPARATION_DATA.assignedTrailer!.trailerName)).toBeInTheDocument();
     expect(screen.getByText(MOCK_PREPARATION_DATA.assignedTrailer!.registrationNumber)).toBeInTheDocument();
   });
 });

@@ -1,6 +1,6 @@
-# Project Preparation Components
+# Project Management Components
 
-This directory contains all the components for the project preparation workflow, designed for SafeHavenDefense security film installation projects.
+This directory contains all the components for the project management workflow, designed for SafeHavenDefense security film installation projects. These components are used in both the Project List and Project Details pages.
 
 ## Components Overview
 
@@ -33,15 +33,15 @@ This directory contains all the components for the project preparation workflow,
 - Multi-select functionality
 - Productivity badges and status indicators
 
-### AssignTrailerCard
-**Location**: `AssignTrailerCard/index.tsx`
-**Purpose**: Card with CTA to assign trailer and manage logistics
+### TrailerInventoryCard
+**Location**: `TrailerInventoryCard/index.tsx`
+**Purpose**: Card with CTA to assign trailer and manage project inventory
 **Features**:
 - Modal with trailer list showing inventory
-- Film requirement toggle
-- Inventory status (tools, film quantity)
-- Shipment receipt upload
-- Film quantity comparison (required vs available)
+- Search and filter functionality
+- Status handling (Available, Unavailable, Low Stock)
+- Project film requirements comparison
+- House manager notifications for low stock
 
 ### TravelCard
 **Location**: `TravelCard/index.tsx`
@@ -69,10 +69,10 @@ This directory contains all the components for the project preparation workflow,
 
 ### Basic Implementation
 ```tsx
-import { ProjectPreparationPage } from '../pages/ProjectPreparationPage';
+import { ProjectDetailsPage } from '../pages/ProjectDetailsPage';
 
 // Use in routing
-<Route path="/projects/:projectId/preparation" element={<ProjectPreparationPage />} />
+<Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
 ```
 
 ### Individual Components
@@ -90,11 +90,12 @@ import { ChecklistSection } from './ChecklistSection';
 
 ## Data Flow
 
-1. **ProjectPreparationPage** manages the overall state
+1. **ProjectDetailsPage** manages the overall state for individual projects
 2. **ProjectSummaryCard** displays project overview and handles trailer assignment
-3. **ChecklistSection** tracks preparation task completion
+3. **ChecklistSection** tracks preparation task completion (for preparation stage projects)
 4. **Action Cards** (Team, Trailer, Travel, Documents) handle specific preparation tasks
 5. All components update the central state through callback functions
+6. **TrailerInventoryCard** handles trailer assignment and inventory management
 
 ## Styling
 

@@ -15,7 +15,7 @@ export const demonstrateTrailerModuleIntegration = () => {
   const firstTrailer = trailerModuleData[0];
   console.log('First Trailer from Module:', {
     id: firstTrailer.id,
-    trailerNumber: firstTrailer.trailerNumber,
+    trailerName: firstTrailer.trailerName,
     registrationNumber: firstTrailer.registrationNumber,
     location: firstTrailer.location,
     status: firstTrailer.status,

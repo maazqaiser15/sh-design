@@ -77,16 +77,69 @@ export const FILM_SHEET_TYPES: FilmSheetType[] = [
 /**
  * Common locations for trailers
  */
-export const TRAILER_LOCATIONS = [
-  'Warehouse A',
-  'Warehouse B',
-  'Field Site 1',
-  'Field Site 2',
-  'Maintenance Bay',
-  'Storage Yard',
-  'Transit Hub',
-  'Client Location',
+// USA States data
+export const USA_STATES = [
+  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware',
+  'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky',
+  'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
+  'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina',
+  'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
 ];
+
+// USA Cities data (major cities for each state)
+export const USA_CITIES: Record<string, string[]> = {
+  'Alabama': ['Birmingham', 'Montgomery', 'Mobile', 'Huntsville', 'Tuscaloosa'],
+  'Alaska': ['Anchorage', 'Fairbanks', 'Juneau', 'Sitka', 'Ketchikan'],
+  'Arizona': ['Phoenix', 'Tucson', 'Mesa', 'Chandler', 'Scottsdale'],
+  'Arkansas': ['Little Rock', 'Fort Smith', 'Fayetteville', 'Springdale', 'Jonesboro'],
+  'California': ['Los Angeles', 'San Diego', 'San Jose', 'San Francisco', 'Fresno', 'Sacramento', 'Long Beach', 'Oakland'],
+  'Colorado': ['Denver', 'Colorado Springs', 'Aurora', 'Fort Collins', 'Lakewood'],
+  'Connecticut': ['Bridgeport', 'New Haven', 'Hartford', 'Stamford', 'Waterbury'],
+  'Delaware': ['Wilmington', 'Dover', 'Newark', 'Middletown', 'Smyrna'],
+  'Florida': ['Jacksonville', 'Miami', 'Tampa', 'Orlando', 'St. Petersburg', 'Hialeah', 'Tallahassee', 'Fort Lauderdale'],
+  'Georgia': ['Atlanta', 'Augusta', 'Columbus', 'Savannah', 'Athens'],
+  'Hawaii': ['Honolulu', 'Pearl City', 'Hilo', 'Kailua', 'Kaneohe'],
+  'Idaho': ['Boise', 'Nampa', 'Meridian', 'Idaho Falls', 'Pocatello'],
+  'Illinois': ['Chicago', 'Aurora', 'Rockford', 'Joliet', 'Naperville', 'Springfield', 'Peoria', 'Elgin'],
+  'Indiana': ['Indianapolis', 'Fort Wayne', 'Evansville', 'South Bend', 'Carmel'],
+  'Iowa': ['Des Moines', 'Cedar Rapids', 'Davenport', 'Sioux City', 'Iowa City'],
+  'Kansas': ['Wichita', 'Overland Park', 'Kansas City', 'Topeka', 'Olathe'],
+  'Kentucky': ['Louisville', 'Lexington', 'Bowling Green', 'Owensboro', 'Covington'],
+  'Louisiana': ['New Orleans', 'Baton Rouge', 'Shreveport', 'Lafayette', 'Lake Charles'],
+  'Maine': ['Portland', 'Lewiston', 'Bangor', 'South Portland', 'Auburn'],
+  'Maryland': ['Baltimore', 'Frederick', 'Rockville', 'Gaithersburg', 'Bowie'],
+  'Massachusetts': ['Boston', 'Worcester', 'Springfield', 'Cambridge', 'Lowell'],
+  'Michigan': ['Detroit', 'Grand Rapids', 'Warren', 'Sterling Heights', 'Lansing'],
+  'Minnesota': ['Minneapolis', 'Saint Paul', 'Rochester', 'Duluth', 'Bloomington'],
+  'Mississippi': ['Jackson', 'Gulfport', 'Southaven', 'Hattiesburg', 'Biloxi'],
+  'Missouri': ['Kansas City', 'Saint Louis', 'Springfield', 'Independence', 'Columbia'],
+  'Montana': ['Billings', 'Missoula', 'Great Falls', 'Bozeman', 'Butte'],
+  'Nebraska': ['Omaha', 'Lincoln', 'Bellevue', 'Grand Island', 'Kearney'],
+  'Nevada': ['Las Vegas', 'Henderson', 'Reno', 'North Las Vegas', 'Sparks'],
+  'New Hampshire': ['Manchester', 'Nashua', 'Concord', 'Derry', 'Rochester'],
+  'New Jersey': ['Newark', 'Jersey City', 'Paterson', 'Elizabeth', 'Edison'],
+  'New Mexico': ['Albuquerque', 'Las Cruces', 'Rio Rancho', 'Santa Fe', 'Roswell'],
+  'New York': ['New York City', 'Buffalo', 'Rochester', 'Yonkers', 'Syracuse', 'Albany', 'New Rochelle', 'Mount Vernon'],
+  'North Carolina': ['Charlotte', 'Raleigh', 'Greensboro', 'Durham', 'Winston-Salem'],
+  'North Dakota': ['Fargo', 'Bismarck', 'Grand Forks', 'Minot', 'West Fargo'],
+  'Ohio': ['Columbus', 'Cleveland', 'Cincinnati', 'Toledo', 'Akron', 'Dayton', 'Parma', 'Canton'],
+  'Oklahoma': ['Oklahoma City', 'Tulsa', 'Norman', 'Broken Arrow', 'Lawton'],
+  'Oregon': ['Portland', 'Salem', 'Eugene', 'Gresham', 'Hillsboro'],
+  'Pennsylvania': ['Philadelphia', 'Pittsburgh', 'Allentown', 'Erie', 'Reading'],
+  'Rhode Island': ['Providence', 'Warwick', 'Cranston', 'Pawtucket', 'East Providence'],
+  'South Carolina': ['Columbia', 'Charleston', 'North Charleston', 'Mount Pleasant', 'Rock Hill'],
+  'South Dakota': ['Sioux Falls', 'Rapid City', 'Aberdeen', 'Brookings', 'Watertown'],
+  'Tennessee': ['Nashville', 'Memphis', 'Knoxville', 'Chattanooga', 'Clarksville'],
+  'Texas': ['Houston', 'San Antonio', 'Dallas', 'Austin', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi'],
+  'Utah': ['Salt Lake City', 'West Valley City', 'Provo', 'West Jordan', 'Orem'],
+  'Vermont': ['Burlington', 'Essex', 'South Burlington', 'Colchester', 'Rutland'],
+  'Virginia': ['Virginia Beach', 'Norfolk', 'Chesapeake', 'Richmond', 'Newport News'],
+  'Washington': ['Seattle', 'Spokane', 'Tacoma', 'Vancouver', 'Bellevue'],
+  'West Virginia': ['Charleston', 'Huntington', 'Parkersburg', 'Morgantown', 'Wheeling'],
+  'Wisconsin': ['Milwaukee', 'Madison', 'Green Bay', 'Kenosha', 'Racine'],
+  'Wyoming': ['Cheyenne', 'Casper', 'Laramie', 'Gillette', 'Rock Springs']
+};
 
 /**
  * Calculate the status of individual film stock based on current stock and threshold
@@ -182,19 +235,21 @@ export const createActivityLog = (
 });
 
 /**
- * Format trailer number for display
+ * Format trailer name for display
  */
-export const formatTrailerNumber = (trailerNumber: string): string => {
-  return trailerNumber.toUpperCase().replace(/[^A-Z0-9]/g, '');
+export const formatTrailerName = (trailerName: string): string => {
+  return trailerName.trim();
 };
 
 /**
  * Validate trailer form data
  */
 export interface TrailerFormData {
-  trailerNumber: string;
+  trailerName: string;
   registrationNumber: string;
-  location: string;
+  parkingAddress: string;
+  state: string;
+  city: string;
   toolThresholds: Record<string, number>;
   filmSheetThresholds: Record<FilmSheetType, number>;
 }
@@ -202,16 +257,24 @@ export interface TrailerFormData {
 export const validateTrailerForm = (data: TrailerFormData): { isValid: boolean; errors: Record<string, string> } => {
   const errors: Record<string, string> = {};
 
-  if (!data.trailerNumber.trim()) {
-    errors.trailerNumber = 'Trailer number is required';
+  if (!data.trailerName.trim()) {
+    errors.trailerName = 'Trailer name is required';
   }
 
   if (!data.registrationNumber.trim()) {
     errors.registrationNumber = 'Registration number is required';
   }
 
-  if (!data.location.trim()) {
-    errors.location = 'Location is required';
+  if (!data.parkingAddress.trim()) {
+    errors.parkingAddress = 'Parking address is required';
+  }
+
+  if (!data.state.trim()) {
+    errors.state = 'State is required';
+  }
+
+  if (!data.city.trim()) {
+    errors.city = 'City is required';
   }
 
   // Validate tool thresholds
@@ -258,7 +321,8 @@ export const filterTrailers = (
   trailers: Trailer[],
   filters: {
     status?: TrailerStatus;
-    location?: string;
+    state?: string;
+    city?: string;
     search?: string;
   }
 ): Trailer[] => {
@@ -267,16 +331,22 @@ export const filterTrailers = (
       return false;
     }
 
-    if (filters.location && trailer.location !== filters.location) {
+    if (filters.state && trailer.state !== filters.state) {
+      return false;
+    }
+
+    if (filters.city && trailer.city !== filters.city) {
       return false;
     }
 
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       return (
-        trailer.trailerNumber.toLowerCase().includes(searchTerm) ||
+        trailer.trailerName.toLowerCase().includes(searchTerm) ||
         trailer.registrationNumber.toLowerCase().includes(searchTerm) ||
-        trailer.location.toLowerCase().includes(searchTerm)
+        trailer.parkingAddress.toLowerCase().includes(searchTerm) ||
+        trailer.state.toLowerCase().includes(searchTerm) ||
+        trailer.city.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -289,7 +359,7 @@ export const filterTrailers = (
  */
 export const sortTrailers = (
   trailers: Trailer[],
-  sortBy: 'trailerNumber' | 'registrationNumber' | 'location' | 'status' | 'updatedAt',
+  sortBy: 'trailerName' | 'registrationNumber' | 'parkingAddress' | 'state' | 'city' | 'status' | 'updatedAt',
   order: 'asc' | 'desc' = 'asc'
 ): Trailer[] => {
   return [...trailers].sort((a, b) => {

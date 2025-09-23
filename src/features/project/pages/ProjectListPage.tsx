@@ -4,6 +4,7 @@ import { Grid, List, Plus, Search, X } from 'lucide-react';
 import { Button } from '../../../common/components/Button';
 import { ProjectListView } from '../components/ProjectListView';
 import { ProjectTableView } from '../components/ProjectTableView';
+import { ProjectDateModal } from '../components/ProjectDateModal';
 import { 
   SafeHavenProject, 
   ProjectListItem, 
@@ -13,6 +14,86 @@ import {
   ProjectStatus 
 } from '../types';
 import { projectToListItem, filterProjects, sortProjects } from '../utils';
+import { Trailer } from '../../../types';
+
+// Mock trailer data
+const mockTrailers: Trailer[] = [
+  {
+    id: "1",
+    trailerName: "Alpha Trailer",
+    registrationNumber: "REG-001-2024",
+    parkingAddress: "123 Main Street",
+    state: "California",
+    city: "Los Angeles",
+    inventory: {
+      tools: [
+        { toolName: "CART", currentStock: 6, threshold: 6, status: "good" },
+        { toolName: "BEER TANK W/ HOSE", currentStock: 4, threshold: 6, status: "low" },
+        { toolName: "HARD PRESS", currentStock: 0, threshold: 6, status: "critical" },
+        { toolName: "RED CARD", currentStock: 8, threshold: 6, status: "good" },
+      ],
+      filmSheets: [
+        { sheetType: "BR", currentStock: 25, threshold: 20, status: "good" },
+        { sheetType: "Riot+", currentStock: 15, threshold: 20, status: "low" },
+        { sheetType: "Riot", currentStock: 0, threshold: 15, status: "critical" },
+      ],
+    },
+    status: "unavailable",
+    activityLogs: [],
+    createdAt: "2024-01-15T10:30:00Z",
+    updatedAt: "2024-01-16T14:20:00Z",
+  },
+  {
+    id: "2",
+    trailerName: "Beta Trailer",
+    registrationNumber: "REG-002-2024",
+    parkingAddress: "456 Industrial Blvd",
+    state: "Texas",
+    city: "Houston",
+    inventory: {
+      tools: [
+        { toolName: "CART", currentStock: 8, threshold: 6, status: "good" },
+        { toolName: "BEER TANK W/ HOSE", currentStock: 7, threshold: 6, status: "good" },
+        { toolName: "HARD PRESS", currentStock: 6, threshold: 6, status: "good" },
+        { toolName: "RED CARD", currentStock: 10, threshold: 6, status: "good" },
+      ],
+      filmSheets: [
+        { sheetType: "BR", currentStock: 35, threshold: 20, status: "good" },
+        { sheetType: "Riot+", currentStock: 28, threshold: 20, status: "good" },
+        { sheetType: "Riot", currentStock: 18, threshold: 15, status: "good" },
+      ],
+    },
+    status: "available",
+    activityLogs: [],
+    createdAt: "2024-01-14T09:15:00Z",
+    updatedAt: "2024-01-14T09:15:00Z",
+  },
+  {
+    id: "3",
+    trailerName: "Gamma Trailer",
+    registrationNumber: "REG-003-2024",
+    parkingAddress: "789 Service Road",
+    state: "Florida",
+    city: "Miami",
+    inventory: {
+      tools: [
+        { toolName: "CART", currentStock: 6, threshold: 6, status: "good" },
+        { toolName: "BEER TANK W/ HOSE", currentStock: 6, threshold: 6, status: "good" },
+        { toolName: "HARD PRESS", currentStock: 5, threshold: 6, status: "low" },
+        { toolName: "RED CARD", currentStock: 4, threshold: 6, status: "low" },
+      ],
+      filmSheets: [
+        { sheetType: "BR", currentStock: 20, threshold: 20, status: "good" },
+        { sheetType: "Riot+", currentStock: 20, threshold: 20, status: "good" },
+        { sheetType: "Riot", currentStock: 15, threshold: 15, status: "good" },
+      ],
+    },
+    status: "low",
+    activityLogs: [],
+    createdAt: "2024-01-13T16:45:00Z",
+    updatedAt: "2024-01-13T16:45:00Z",
+  },
+];
 
 // Mock data for Safe Haven Defense projects
 const mockProjects: SafeHavenProject[] = [
@@ -32,9 +113,39 @@ const mockProjects: SafeHavenProject[] = [
     progress: 65,
     vinCode: 'SHD-001',
     crew: [
-      { id: '1', name: 'John Smith', role: 'Lead Installer', avatar: undefined },
-      { id: '2', name: 'Sarah Johnson', role: 'Technician', avatar: undefined },
-      { id: '3', name: 'Mike Davis', role: 'Assistant', avatar: undefined },
+      { 
+        id: '1', 
+        name: 'John Smith', 
+        role: 'Lead Installer', 
+        designation: 'Lead Installer',
+        location: 'Seattle, WA',
+        phone: '+1-555-0101',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '2', 
+        name: 'Sarah Johnson', 
+        role: 'Technician', 
+        designation: 'Technician',
+        location: 'Seattle, WA',
+        phone: '+1-555-0102',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '3', 
+        name: 'Mike Davis', 
+        role: 'Assistant', 
+        designation: 'Assistant',
+        location: 'Seattle, WA',
+        phone: '+1-555-0103',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
     ],
     assignedTrailer: 'Trailer Alpha',
   },
@@ -54,8 +165,28 @@ const mockProjects: SafeHavenProject[] = [
     progress: 25,
     vinCode: 'SHD-002',
     crew: [
-      { id: '4', name: 'Lisa Wilson', role: 'Project Manager', avatar: undefined },
-      { id: '5', name: 'Tom Brown', role: 'Installer', avatar: undefined },
+      { 
+        id: '4', 
+        name: 'Lisa Wilson', 
+        role: 'Project Manager', 
+        designation: 'Project Manager',
+        location: 'Bellevue, WA',
+        phone: '+1-555-0104',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '5', 
+        name: 'Tom Brown', 
+        role: 'Installer', 
+        designation: 'Installer',
+        location: 'Bellevue, WA',
+        phone: '+1-555-0105',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
     ],
     assignedTrailer: 'Trailer Beta',
   },
@@ -93,9 +224,39 @@ const mockProjects: SafeHavenProject[] = [
     progress: 100,
     vinCode: 'SHD-004',
     crew: [
-      { id: '6', name: 'Alex Rodriguez', role: 'Lead Installer', avatar: undefined },
-      { id: '7', name: 'Emma Thompson', role: 'Technician', avatar: undefined },
-      { id: '8', name: 'David Lee', role: 'Assistant', avatar: undefined },
+      { 
+        id: '6', 
+        name: 'Alex Rodriguez', 
+        role: 'Lead Installer', 
+        designation: 'Lead Installer',
+        location: 'Tacoma, WA',
+        phone: '+1-555-0106',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '7', 
+        name: 'Emma Thompson', 
+        role: 'Technician', 
+        designation: 'Technician',
+        location: 'Tacoma, WA',
+        phone: '+1-555-0107',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '8', 
+        name: 'David Lee', 
+        role: 'Assistant', 
+        designation: 'Assistant',
+        location: 'Tacoma, WA',
+        phone: '+1-555-0108',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
     ],
     assignedTrailer: 'Trailer Gamma',
   },
@@ -130,6 +291,10 @@ export const ProjectListPage: React.FC = () => {
     field: 'title',
     direction: 'asc',
   });
+  
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [projectForDateAssignment, setProjectForDateAssignment] = useState<ProjectListItem | null>(null);
+  
 
   // Convert projects to list items
   const projectListItems = useMemo(() => {
@@ -147,9 +312,34 @@ export const ProjectListPage: React.FC = () => {
   }, [projectListItems, filters, searchQuery, sortOptions]);
 
   const handleProjectClick = (project: ProjectListItem) => {
-    // Navigate to project details page
-    navigate(`/projects/${project.id}`);
+    // Check if project is in preparation stage (PV90, UB, WB)
+    if (project.status === 'PV90' || project.status === 'UB' || project.status === 'WB') {
+      setProjectForDateAssignment(project);
+      setIsDateModalOpen(true);
+    } else {
+      // Navigate directly to project details for other stages
+      navigate(`/projects/${project.id}`);
+    }
   };
+
+
+
+  const handleDateConfirm = (startDate: string, endDate: string) => {
+    if (projectForDateAssignment) {
+      // Update the project with new dates
+      console.log(`Setting dates for project ${projectForDateAssignment.title}:`, { startDate, endDate });
+      
+      // In a real app, you would update the project in the database here
+      // For now, we'll just navigate to the project details page
+      navigate(`/projects/${projectForDateAssignment.id}`);
+    }
+  };
+
+  const handleDateModalClose = () => {
+    setIsDateModalOpen(false);
+    setProjectForDateAssignment(null);
+  };
+
 
   const handleSort = (field: ProjectSortOptions['field']) => {
     setSortOptions(prev => ({
@@ -261,6 +451,21 @@ export const ProjectListPage: React.FC = () => {
             onProjectClick={handleProjectClick}
             sortOptions={sortOptions}
             onSort={handleSort}
+          />
+        )}
+
+
+
+        {/* Project Date Modal */}
+        {projectForDateAssignment && (
+          <ProjectDateModal
+            isOpen={isDateModalOpen}
+            onClose={handleDateModalClose}
+            onConfirm={handleDateConfirm}
+            projectTitle={projectForDateAssignment.title}
+            projectStatus={projectForDateAssignment.status}
+            initialStartDate={projectForDateAssignment.startDate}
+            initialEndDate={projectForDateAssignment.endDate}
           />
         )}
 
