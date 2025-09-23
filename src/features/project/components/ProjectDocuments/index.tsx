@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Trash2, File, Plus } from 'lucide-react';
+import { Upload, Download, Trash2, File } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { ProjectDocument } from '../../types/projectDetails';
@@ -92,16 +92,8 @@ export const ProjectDocuments: React.FC<ProjectDocumentsProps> = ({
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Project Documents</h3>
-        <Button
-          variant="primary"
-          size="sm"
-          icon={Plus}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          Upload Document
-        </Button>
       </div>
 
       {/* Upload Area */}

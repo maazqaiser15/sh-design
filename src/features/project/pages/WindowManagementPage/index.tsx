@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, Grid, List, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
@@ -13,6 +13,11 @@ import {
   WINDOW_STATUS_COLORS,
   WINDOW_STATUS_DESCRIPTIONS
 } from '../../types/windows';
+
+interface WindowManagementPageProps {
+  windows?: Window[];
+  onWindowUpdate?: (updatedWindow: Window) => void;
+}
 import { AddWindowModal } from '../../components/AddWindowModal';
 import { EditWindowModal } from '../../components/EditWindowModal';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
@@ -20,12 +25,20 @@ import { WindowGridView } from '../../components/WindowGridView';
 import { WindowListView } from '../../components/WindowListView';
 import { useToast } from '../../../../contexts/ToastContext';
 
-export const WindowManagementPage: React.FC = () => {
+export const WindowManagementPage: React.FC<WindowManagementPageProps> = ({ 
+  windows: propWindows = MOCK_WINDOWS, 
+  onWindowUpdate 
+}) => {
   const { showToast } = useToast();
   
   // State management
-  const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
+  const [windows, setWindows] = useState<Window[]>(propWindows);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Sync windows state when prop changes
+  useEffect(() => {
+    setWindows(propWindows);
+  }, [propWindows]);
   const [filters, setFilters] = useState<WindowFilters>({
     filmType: 'All',
     status: 'All',
@@ -107,6 +120,7 @@ export const WindowManagementPage: React.FC = () => {
     };
     
     setWindows(prev => prev.map(w => w.id === editingWindow.id ? updatedWindow : w));
+    onWindowUpdate?.(updatedWindow);
     setShowEditModal(false);
     setEditingWindow(null);
     showToast('Window updated successfully');
@@ -393,6 +407,7 @@ export const WindowManagementPage: React.FC = () => {
           window={selectedWindow}
           onUpdate={(updatedWindow) => {
             setWindows(prev => prev.map(w => w.id === updatedWindow.id ? updatedWindow : w));
+            onWindowUpdate?.(updatedWindow);
             setSelectedWindow(updatedWindow);
           }}
         />

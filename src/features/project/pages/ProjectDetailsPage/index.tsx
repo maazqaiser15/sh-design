@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Users, Truck, Package, Plane, Wrench, Search, CheckCircle2 } from 'lucide-react';
 import { useBreadcrumbContext } from '../../../../contexts/BreadcrumbContext';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectStatus } from '../../types/projectDetails';
@@ -20,6 +20,10 @@ import { Modal } from '../../../../common/components/Modal';
 import { useToast } from '../../../../contexts/ToastContext';
 import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { TrailerForAssignment } from '../../types/trailers';
+import { Window, MOCK_WINDOWS } from '../../types/windows';
+import { TodayProgressCard } from '../../components/TodayProgressCard';
+import { CrewPerformanceCard } from '../../components/CrewPerformanceCard';
+import { QualityAssuranceModal, QualityAssuranceFormData } from '../../components/QualityAssuranceModal';
 
 /**
  * ProjectDetailsPage - Main project details page with stage-based layout
@@ -29,6 +33,7 @@ export const ProjectDetailsPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { setBreadcrumbs } = useBreadcrumbContext();
   const { showToast } = useToast();
+  const navigate = useNavigate();
   
   // Get stage from URL search params
   const [searchParams] = useSearchParams();
@@ -51,6 +56,44 @@ export const ProjectDetailsPage: React.FC = () => {
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [selectedStage, setSelectedStage] = useState<string>(urlStage || 'preparation');
+  const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
+  const [completedStages, setCompletedStages] = useState<Set<string>>(new Set());
+  const [showQualityAssuranceModal, setShowQualityAssuranceModal] = useState(false);
+  const [qualityAssuranceNotes, setQualityAssuranceNotes] = useState<string>('');
+
+  // Mock data for WIP stage cards
+  const todayProgressData = {
+    windowsStarted: 8,
+    windowsCompleted: 5,
+    issuesReported: 2
+  };
+
+  const crewPerformanceData = [
+    {
+      id: 'tm-001',
+      name: 'John Smith',
+      role: 'Installer',
+      done: 12,
+      active: 3,
+      issues: 1
+    },
+    {
+      id: 'tm-002',
+      name: 'Sarah Johnson',
+      role: 'Installer',
+      done: 15,
+      active: 2,
+      issues: 0
+    },
+    {
+      id: 'tm-003',
+      name: 'Mike Davis',
+      role: 'Installer',
+      done: 8,
+      active: 4,
+      issues: 2
+    }
+  ];
 
   // Set breadcrumbs when component mounts
   useEffect(() => {
@@ -435,6 +478,67 @@ export const ProjectDetailsPage: React.FC = () => {
     // In a real app, this would update the project status in the database
   };
 
+  // Window completion functions
+  const getWindowProgress = () => {
+    const completedWindows = windows.filter(window => window.status === 'Complete').length;
+    const totalWindows = windows.length;
+    const percentage = totalWindows > 0 ? Math.round((completedWindows / totalWindows) * 100) : 0;
+    return { completed: completedWindows, total: totalWindows, percentage };
+  };
+
+  const markAllWindowsCompleted = () => {
+    const updatedWindows = windows.map(window => ({
+      ...window,
+      status: 'Complete' as const,
+      updatedAt: new Date().toISOString(),
+      installationBreakdown: window.installationBreakdown.length > 0 ? window.installationBreakdown : 
+        Array.from({ length: window.layers }, (_, index) => ({
+          layerNumber: index + 1,
+          layerName: `Layer ${index + 1}`,
+          installerName: 'System Auto-Complete',
+          installerId: 'system',
+          installedAt: new Date().toISOString(),
+          status: 'installed' as const
+        }))
+    }));
+    
+    setWindows(updatedWindows);
+    
+    // Mark WIP stage as completed
+    setCompletedStages(prev => new Set([...prev, 'wip']));
+    showToast('All windows completed! WIP stage marked as complete.');
+  };
+
+  const handleWindowUpdate = (updatedWindow: Window) => {
+    setWindows(prev => prev.map(w => w.id === updatedWindow.id ? updatedWindow : w));
+  };
+
+  // Auto-complete WIP stage when all windows are completed
+  useEffect(() => {
+    const completedWindows = windows.filter(window => window.status === 'Complete').length;
+    const totalWindows = windows.length;
+    
+    if (completedWindows === totalWindows && totalWindows > 0 && project.status === 'WIP') {
+      // All windows are complete, mark WIP stage as completed (without changing project status)
+      setCompletedStages(prev => new Set([...prev, 'wip']));
+      showToast('All windows completed! WIP stage marked as complete.');
+    }
+  }, [windows, project.status, showToast]);
+
+  // Auto-complete all preparation tasks when project is completed
+  useEffect(() => {
+    if (project.status === 'Completed') {
+      // Mark all preparation tasks as completed
+      setPreparationData(prev => ({
+        ...prev,
+        checklist: prev.checklist.map(item => ({
+          ...item,
+          completed: true
+        }))
+      }));
+    }
+  }, [project.status]);
+
   // Handle preparation task updates
   const handleUpdatePreparationTask = (taskLabel: string, completed: boolean) => {
     setPreparationData(prev => {
@@ -600,9 +704,66 @@ export const ProjectDetailsPage: React.FC = () => {
 
   // Handle marking project for Quality Check
   const handleMarkForQF = () => {
-    showToast('Project marked for Quality Check');
-    // In a real app, this would update the project status and notify relevant parties
-    console.log('Project marked for Quality Check');
+    // Complete all windows
+    const updatedWindows = windows.map(window => ({
+      ...window,
+      status: 'Complete' as const,
+      updatedAt: new Date().toISOString(),
+      installationBreakdown: window.installationBreakdown.length > 0 ? window.installationBreakdown : 
+        Array.from({ length: window.layers }, (_, index) => ({
+          layerNumber: index + 1,
+          layerName: `Layer ${index + 1}`,
+          installerName: 'System Auto-Complete',
+          installerId: 'system',
+          installedAt: new Date().toISOString(),
+          status: 'installed' as const
+        }))
+    }));
+    
+    setWindows(updatedWindows);
+    
+    // Mark WIP stage as completed
+    setCompletedStages(prev => new Set([...prev, 'wip']));
+    
+    // Update project status to QF
+    setProject(prev => ({
+      ...prev,
+      status: 'QF' as ProjectStatus,
+      updatedAt: new Date().toISOString()
+    }));
+    
+    // Navigate to Quality Check stage
+    navigate(`/projects/${projectId}?stage=quality`);
+    
+    showToast('Project marked for Quality Check. All windows completed and moved to Quality Check stage.');
+  };
+
+  // Handle signing client quality check form
+  const handleSignClientQualityCheck = () => {
+    setShowQualityAssuranceModal(true);
+  };
+
+  // Handle saving quality assurance form
+  const handleSaveQualityAssurance = (formData: QualityAssuranceFormData) => {
+    // Update project status to Completed
+    setProject(prev => ({
+      ...prev,
+      status: 'Completed' as ProjectStatus,
+      updatedAt: new Date().toISOString()
+    }));
+    
+    // Mark quality stage as completed
+    setCompletedStages(prev => new Set([...prev, 'quality']));
+    
+    // If additional notes were added, save them for display in completed stage
+    if (formData.hasAdditionalNotes && formData.additionalNotes.trim()) {
+      setQualityAssuranceNotes(formData.additionalNotes);
+    }
+    
+    // Navigate to completed stage
+    navigate(`/projects/${projectId}?stage=completed`);
+    
+    showToast(`Quality Assurance Form signed by ${formData.clientName}! Project marked as completed.`);
   };
 
   return (
@@ -617,8 +778,12 @@ export const ProjectDetailsPage: React.FC = () => {
           onToggleItem={handleToggleChecklistItem}
           onStageClick={handleStageClick}
           onMarkForQF={handleMarkForQF}
+          onSignClientQualityCheck={handleSignClientQualityCheck}
           selectedStage={selectedStage}
           isPreparationStage={isPreparationStage}
+          windowProgress={getWindowProgress()}
+          onMarkAllWindowsCompleted={markAllWindowsCompleted}
+          completedStages={completedStages}
         />
 
         {/* Key Info Section - Conditional rendering based on selected stage */}
@@ -645,27 +810,89 @@ export const ProjectDetailsPage: React.FC = () => {
             selectedStage={selectedStage}
           />
         ) : selectedStage === 'wip' ? (
-          <KeyInfoSection
-            assignedTeam={preparationData.assignedTeam}
-            travelPlans={preparationData.logisticsTravel.travelPlans}
-            assignedTrailer={assignedTrailer}
-            projectFilmRequirements={projectFilmRequirements}
-            onViewTeam={handleViewTeam}
-            onAssignTeam={handleAssignTeam}
-            onEditTeam={handleEditTeam}
-            onRemoveTeamMember={handleRemoveTeamMember}
-            onSetupTravel={handleSetupTravel}
-            onAddTravel={handleAddTravel}
-            onEditTravel={handleEditTravel}
-            onDeleteTravel={handleDeleteTravel}
-            onAssignTrailer={handleOpenAssignTrailerModal}
-            onNotifyHouseManager={handleNotifyHouseManager}
-            onUploadReceipt={handleUploadReceipt}
-            onRemoveReceipt={handleRemoveReceipt}
-            onMarkCompleted={handleMarkCompleted}
-            onUpdatePreparationTask={handleUpdatePreparationTask}
-            selectedStage={selectedStage}
-          />
+          <>
+            <KeyInfoSection
+              assignedTeam={preparationData.assignedTeam}
+              travelPlans={preparationData.logisticsTravel.travelPlans}
+              assignedTrailer={assignedTrailer}
+              projectFilmRequirements={projectFilmRequirements}
+              onViewTeam={handleViewTeam}
+              onAssignTeam={handleAssignTeam}
+              onEditTeam={handleEditTeam}
+              onRemoveTeamMember={handleRemoveTeamMember}
+              onSetupTravel={handleSetupTravel}
+              onAddTravel={handleAddTravel}
+              onEditTravel={handleEditTravel}
+              onDeleteTravel={handleDeleteTravel}
+              onAssignTrailer={handleOpenAssignTrailerModal}
+              onNotifyHouseManager={handleNotifyHouseManager}
+              onUploadReceipt={handleUploadReceipt}
+              onRemoveReceipt={handleRemoveReceipt}
+              onMarkCompleted={handleMarkCompleted}
+              onUpdatePreparationTask={handleUpdatePreparationTask}
+              selectedStage={selectedStage}
+              windows={windows}
+              onWindowUpdate={handleWindowUpdate}
+            />
+            
+            {/* WIP Stage Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <TodayProgressCard data={todayProgressData} />
+              <CrewPerformanceCard teamMembers={crewPerformanceData} />
+            </div>
+          </>
+        ) : selectedStage === 'quality' ? (
+          // Quality Check stage - no additional cards, just the header with progress bar and sign button
+          null
+        ) : selectedStage === 'completed' ? (
+          // Completed stage - show project completion summary and quality assurance notes
+          <>
+            {qualityAssuranceNotes && (
+              <div className="mb-8">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Quality Assurance Notes</h3>
+                      <p className="text-sm text-gray-500">Additional notes from the quality assurance form</p>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-gray-700 whitespace-pre-wrap">{qualityAssuranceNotes}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Project Completion Summary */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Project Completed Successfully</h3>
+                  <p className="text-sm text-gray-500">All stages have been completed and quality assured</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600 mb-1">100%</div>
+                  <div className="text-sm text-gray-600">Windows Completed</div>
+                </div>
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">4/4</div>
+                  <div className="text-sm text-gray-600">Stages Completed</div>
+                </div>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600 mb-1">✓</div>
+                  <div className="text-sm text-gray-600">Quality Assured</div>
+                </div>
+              </div>
+            </div>
+          </>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
             <ComingSoonCard
@@ -816,6 +1043,14 @@ export const ProjectDetailsPage: React.FC = () => {
           onAssignTrailer={handleAssignTrailer}
           availableTrailers={availableTrailers}
           assignedTrailerId={assignedTrailer?.id}
+        />
+
+        {/* Quality Assurance Modal */}
+        <QualityAssuranceModal
+          isOpen={showQualityAssuranceModal}
+          onClose={() => setShowQualityAssuranceModal(false)}
+          onSave={handleSaveQualityAssurance}
+          projectName={project.name}
         />
 
       </div>

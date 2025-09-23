@@ -48,6 +48,9 @@ export interface TimelineHeaderProps {
   viewMode: ViewMode;
   currentDate: Date;
   onDateChange: (date: Date) => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  layoutMode: 'team' | 'project' | 'trailer';
 }
 
 export interface TeamGanttProps {

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { AuthProvider } from "../../contexts/AuthContext";
 import { BreadcrumbProvider } from "../../contexts/BreadcrumbContext";
 import { ToastProvider } from "../../contexts/ToastContext";
+import { SidebarProvider } from "../../contexts/SidebarContext";
 import { CollapsibleSidePanelProvider } from "../../common/components/CollapsibleSidePanel";
 
 /**
@@ -14,9 +15,11 @@ export const Root: React.FC = () => {
     <AuthProvider>
       <BreadcrumbProvider>
         <ToastProvider>
-          <CollapsibleSidePanelProvider>
-            <Outlet />
-          </CollapsibleSidePanelProvider>
+          <SidebarProvider>
+            <CollapsibleSidePanelProvider>
+              <Outlet />
+            </CollapsibleSidePanelProvider>
+          </SidebarProvider>
         </ToastProvider>
       </BreadcrumbProvider>
     </AuthProvider>

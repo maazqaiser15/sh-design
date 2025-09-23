@@ -128,7 +128,7 @@ export const routes: RouteObject[] = [
             ],
           },
 
-          // Team Gantt Chart Route
+          // Team Scheduler Route
           {
             path: "team-gantt-chart",
             async lazy() {

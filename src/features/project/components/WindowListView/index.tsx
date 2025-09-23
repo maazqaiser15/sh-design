@@ -133,13 +133,10 @@ export const WindowListView: React.FC<WindowListViewProps> = ({
               <div className="col-span-1">
                 <div className="text-xs text-gray-600">
                   {window.installationBreakdown.length > 0 ? (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {window.installationBreakdown.map((layer, index) => (
-                        <div key={index} className="flex items-center">
-                          <span className={`w-2 h-2 rounded-full mr-2 ${
-                            layer.status === 'installed' ? 'bg-green-500' : 'bg-red-500'
-                          }`}></span>
-                          <span>{layer.layerName} - {layer.installerName}</span>
+                        <div key={index} className="block">
+                          <span className="text-gray-700">{layer.layerName} - {layer.installerName}</span>
                         </div>
                       ))}
                     </div>

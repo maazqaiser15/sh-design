@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { TeamGanttProps, ViewMode, LayoutMode, Project } from '../types/ganttTypes';
+import { TeamGanttProps, ViewMode, LayoutMode, Project, TrailerView } from '../types/ganttTypes';
 import { TimelineHeader } from './TimelineHeader';
 import { TeamRow } from './TeamRow';
 import { ProjectRow } from './ProjectRow';
-import { transformTeamDataToProjectView } from '../utils/dataTransform';
+import { TrailerRow } from './TrailerRow';
+import { transformTeamDataToProjectView, transformTrailerDataToProjectView } from '../utils/dataTransform';
+import { MOCK_TRAILERS } from '../data/trailerMockData';
+import { useSidebar } from '../../../contexts/SidebarContext';
 
 export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
   teamMembers,
@@ -17,6 +20,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
   onProjectClick,
   hoveredProject
 }) => {
+  const { isCollapsed } = useSidebar();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProject, setSelectedProject] = useState<string>('');
 
@@ -24,6 +28,11 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
   const projectViewData = useMemo(() => {
     return transformTeamDataToProjectView(teamMembers);
   }, [teamMembers]);
+
+  // Transform trailer data to project view
+  const trailerProjectViewData = useMemo(() => {
+    return transformTrailerDataToProjectView(MOCK_TRAILERS);
+  }, []);
 
   // Get unique project names for filter
   const availableProjects = useMemo(() => {
@@ -33,8 +42,38 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
         projectNames.add(project.projectName);
       });
     });
+    MOCK_TRAILERS.forEach(trailer => {
+      trailer.assignedProjects.forEach(project => {
+        projectNames.add(project.projectName);
+      });
+    });
     return Array.from(projectNames).sort();
   }, [teamMembers]);
+
+  // Filter trailers based on search term and project filter
+  const filteredTrailers = useMemo(() => {
+    let filtered = MOCK_TRAILERS;
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(trailer => 
+        trailer.trailerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trailer.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trailer.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trailer.status.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by selected project
+    if (selectedProject) {
+      filtered = filtered.map(trailer => ({
+        ...trailer,
+        assignedProjects: trailer.assignedProjects.filter(project => project.projectName === selectedProject)
+      })).filter(trailer => trailer.assignedProjects.length > 0);
+    }
+
+    return filtered;
+  }, [searchTerm, selectedProject]);
 
   // Filter team members based on search term and project filter
   const filteredTeamMembers = useMemo(() => {
@@ -93,12 +132,14 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {layoutMode === 'team' ? 'Team' : 'Project'} Gantt Chart
+              {layoutMode === 'team' ? 'Team' : layoutMode === 'project' ? 'Project' : 'Trailer'} Scheduler
             </h1>
             <p className="text-gray-600 mt-1">
               {layoutMode === 'team' 
                 ? `${filteredTeamMembers.length} team member${filteredTeamMembers.length !== 1 ? 's' : ''} scheduled`
-                : `${filteredProjectData.length} project${filteredProjectData.length !== 1 ? 's' : ''} scheduled`
+                : layoutMode === 'project'
+                ? `${filteredProjectData.length} project${filteredProjectData.length !== 1 ? 's' : ''} scheduled`
+                : `${filteredTrailers.length} trailer${filteredTrailers.length !== 1 ? 's' : ''} scheduled`
               }
             </p>
           </div>
@@ -125,6 +166,16 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
                 }`}
               >
                 Project View
+              </button>
+              <button
+                onClick={() => onLayoutModeChange('trailer')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  layoutMode === 'trailer'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Trailer View
               </button>
             </div>
 
@@ -173,23 +224,6 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="mt-4 max-w-md">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder={layoutMode === 'team' ? 'Search team members...' : 'Search projects...'}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-            />
-          </div>
-        </div>
       </div>
 
       {/* Timeline Header */}
@@ -197,11 +231,14 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
         viewMode={viewMode}
         currentDate={currentDate}
         onDateChange={onDateChange}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        layoutMode={layoutMode}
       />
 
-      {/* Gantt Chart Body */}
+      {/* Scheduler Body */}
       <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto">
+        <div className="h-full overflow-y-auto pb-24">
           {layoutMode === 'team' ? (
             // Team View
             filteredTeamMembers.length === 0 ? (
@@ -235,7 +272,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
                 ))}
               </div>
             )
-          ) : (
+          ) : layoutMode === 'project' ? (
             // Project View
             filteredProjectData.length === 0 ? (
               <div className="flex items-center justify-center h-full">
@@ -268,21 +305,73 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
                 ))}
               </div>
             )
+          ) : (
+            // Trailer View
+            filteredTrailers.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="text-gray-400 mb-4">
+                    <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No trailers found
+                  </h3>
+                  <p className="text-gray-600">
+                    {searchTerm ? 'No trailers match your search criteria.' : 'No trailers are available.'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white">
+                {filteredTrailers.map((trailer) => (
+                  <TrailerRow
+                    key={trailer.trailerId}
+                    trailer={trailer}
+                    viewMode={viewMode}
+                    currentDate={currentDate}
+                    onProjectHover={onProjectHover}
+                    onProjectClick={onProjectClick}
+                    hoveredProject={hoveredProject}
+                  />
+                ))}
+              </div>
+            )
           )}
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="bg-white border-t border-gray-200 p-4">
+      {/* Fixed Legend */}
+      <div className={`fixed bottom-0 ${isCollapsed ? 'left-16' : 'left-64'} right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50 transition-all duration-300`}>
         <div className="max-w-7xl mx-auto">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Project Status Legend</h3>
+          <h3 className="text-sm font-medium text-gray-900 mb-3">
+            {layoutMode === 'trailer' ? 'Trailer & Project Status Legend' : 'Project Status Legend'}
+          </h3>
           <div className="flex flex-wrap gap-4">
+            {layoutMode === 'trailer' && (
+              <>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-green-200 rounded"></div>
+                  <span className="text-sm text-gray-700">Available</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-yellow-200 rounded"></div>
+                  <span className="text-sm text-gray-700">Low Stock</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-red-200 rounded"></div>
+                  <span className="text-sm text-gray-700">Unavailable</span>
+                </div>
+                <div className="w-px h-4 bg-gray-300"></div>
+              </>
+            )}
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-green-200 rounded"></div>
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
               <span className="text-sm text-gray-700">PV90</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-amber-200 rounded"></div>
+              <div className="w-4 h-4 bg-blue-200 rounded"></div>
               <span className="text-sm text-gray-700">UB</span>
             </div>
             <div className="flex items-center space-x-2">
@@ -290,7 +379,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
               <span className="text-sm text-gray-700">WB</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-blue-200 rounded"></div>
+              <div className="w-4 h-4 bg-amber-200 rounded"></div>
               <span className="text-sm text-gray-700">WIP</span>
             </div>
             <div className="flex items-center space-x-2">

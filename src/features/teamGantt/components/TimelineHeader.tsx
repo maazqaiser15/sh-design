@@ -4,7 +4,10 @@ import { TimelineHeaderProps, TimelineCell } from '../types';
 export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   viewMode,
   currentDate,
-  onDateChange
+  onDateChange,
+  searchTerm,
+  onSearchChange,
+  layoutMode
 }) => {
   const timelineCells = useMemo(() => {
     const cells: TimelineCell[] = [];
@@ -149,12 +152,30 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           </h2>
         </div>
         
-        <button
-          onClick={() => onDateChange(new Date())}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-        >
-          Today
-        </button>
+        <div className="flex items-center space-x-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder={layoutMode === 'team' ? 'Search team members...' : layoutMode === 'project' ? 'Search projects...' : 'Search trailers...'}
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="block w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            />
+          </div>
+          
+          <button
+            onClick={() => onDateChange(new Date())}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            Today
+          </button>
+        </div>
       </div>
 
       {/* Timeline Grid Header */}
@@ -167,21 +188,20 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </div>
         
         {/* Right Column - Timeline Header */}
-        <div className="flex-1 overflow-x-auto">
-          <div className={`flex ${viewMode === 'month' ? 'min-w-max' : 'w-full'}`}>
+        <div className="flex-1">
+          <div className="flex w-full">
             {timelineCells.map((cell, index) => (
               <div
                 key={index}
-                className={`${viewMode === 'month' ? 'flex-shrink-0' : 'flex-1'} p-3 text-center border-r border-gray-200 last:border-r-0 ${
+                className={`flex-1 ${viewMode === 'month' ? 'p-1' : 'p-2'} text-center border-r border-gray-200 last:border-r-0 ${
                   cell.isToday 
                     ? 'bg-blue-50 text-blue-900' 
                     : cell.isCurrentPeriod 
                       ? 'bg-white' 
                       : 'bg-gray-50 text-gray-500'
                 }`}
-                style={viewMode === 'month' ? { minWidth: '60px' } : {}}
               >
-                <div className={`text-sm font-medium ${
+                <div className={`${viewMode === 'month' ? 'text-xs' : 'text-sm'} font-medium ${
                   cell.isToday ? 'text-blue-900' : 'text-gray-900'
                 }`}>
                   {cell.label}
@@ -192,7 +212,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                   </div>
                 )}
                 {viewMode === 'month' && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-gray-500">
                     {cell.date.toLocaleDateString('en-US', { weekday: 'short' })}
                   </div>
                 )}

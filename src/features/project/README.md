@@ -181,7 +181,7 @@ The module is designed for easy extension:
 - **Project Details**: Full project management interface
 - **Crew Management**: Add/edit crew assignments
 - **Trailer Management**: Assign and track trailers
-- **Timeline Management**: Gantt charts and scheduling
+- **Timeline Management**: Scheduler and scheduling
 - **Reporting**: Project analytics and reporting
 - **API Integration**: Connect to backend services
 

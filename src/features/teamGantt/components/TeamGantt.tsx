@@ -62,7 +62,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Team Gantt Chart</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Team Scheduler</h1>
             <p className="text-gray-600 mt-1">
               {filteredTeamMembers.length} team member{filteredTeamMembers.length !== 1 ? 's' : ''} scheduled
             </p>
@@ -140,7 +140,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
         onDateChange={onDateChange}
       />
 
-      {/* Gantt Chart Body */}
+      {/* Scheduler Body */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto">
           {filteredTeamMembers.length === 0 ? (

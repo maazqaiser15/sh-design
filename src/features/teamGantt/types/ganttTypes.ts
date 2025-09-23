@@ -1,5 +1,5 @@
 export type ViewMode = 'day' | 'week' | 'month' | 'year';
-export type LayoutMode = 'team' | 'project';
+export type LayoutMode = 'team' | 'project' | 'trailer';
 
 export interface TeamMember {
   id: string;
@@ -32,6 +32,22 @@ export interface ProjectView {
   }[];
 }
 
+export interface TrailerView {
+  trailerId: string;
+  trailerName: string;
+  registrationNumber: string;
+  status: "available" | "low" | "unavailable";
+  location: string;
+  assignedProjects: {
+    projectId: string;
+    projectName: string;
+    projectStatus: "PV90" | "UB" | "WB" | "WIP" | "QF";
+    startDate: string;
+    endDate: string;
+    role: string;
+  }[];
+}
+
 export interface TimelineCell {
   date: Date;
   label: string;
@@ -61,6 +77,15 @@ export interface TeamRowProps {
 
 export interface ProjectRowProps {
   project: ProjectView;
+  viewMode: ViewMode;
+  currentDate: Date;
+  onProjectHover: (project: Project | null) => void;
+  onProjectClick: (project: Project) => void;
+  hoveredProject: Project | null;
+}
+
+export interface TrailerRowProps {
+  trailer: TrailerView;
   viewMode: ViewMode;
   currentDate: Date;
   onProjectHover: (project: Project | null) => void;

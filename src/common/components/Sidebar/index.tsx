@@ -8,10 +8,13 @@ import {
   BarChart3,
   Calendar,
   Settings,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft,
+  Menu
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useSidebar } from '../../../contexts/SidebarContext';
 
 interface NavigationItem {
   name: string;
@@ -66,6 +69,7 @@ const navigation: NavigationItem[] = [
  */
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
+  const { isCollapsed, toggleSidebar } = useSidebar();
   const [expandedItems, setExpandedItems] = React.useState<string[]>(['Projects']);
 
   const hasPermission = (permission?: string) => {
@@ -80,6 +84,7 @@ export const Sidebar: React.FC = () => {
         : [...prev, itemName]
     );
   };
+
 
   const renderNavItem = (item: NavigationItem, depth = 0) => {
     if (!hasPermission(item.permission)) return null;
@@ -102,12 +107,14 @@ export const Sidebar: React.FC = () => {
             >
               <div className="flex items-center space-x-3">
                 <Icon size={18} />
-                <span>{item.name}</span>
+                {!isCollapsed && <span>{item.name}</span>}
               </div>
-              <ChevronRight
-                size={16}
-                className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-              />
+              {!isCollapsed && (
+                <ChevronRight
+                  size={16}
+                  className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                />
+              )}
             </button>
           ) : (
             item.href?.startsWith('http') ? (
@@ -120,9 +127,10 @@ export const Sidebar: React.FC = () => {
                   ${depth > 0 ? 'ml-4 pl-6' : ''}
                   text-text-secondary hover:text-text-primary hover:bg-gray-100
                 `}
+                title={isCollapsed ? item.name : undefined}
               >
                 <Icon size={18} />
-                <span>{item.name}</span>
+                {!isCollapsed && <span>{item.name}</span>}
               </a>
             ) : (
               <NavLink
@@ -136,15 +144,16 @@ export const Sidebar: React.FC = () => {
                       : 'text-text-secondary hover:text-text-primary hover:bg-gray-100'
                   }
                 `}
+                title={isCollapsed ? item.name : undefined}
               >
                 <Icon size={18} />
-                <span>{item.name}</span>
+                {!isCollapsed && <span>{item.name}</span>}
               </NavLink>
             )
           )}
         </div>
 
-        {hasChildren && isExpanded && (
+        {hasChildren && isExpanded && !isCollapsed && (
           <div className="mt-1 space-y-1">
             {item.children?.map(child => renderNavItem(child, depth + 1))}
           </div>
@@ -154,43 +163,31 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className="w-64 bg-white border-r border-border h-full flex flex-col">
-      {/* Logo */}
-      <div className="px-6 py-6 border-b border-border">
-        <Logo size="md" textSize="sm" className="text-primary" />
-        <p className="text-caption text-text-muted mt-2 ml-11">
-          Project Management
-        </p>
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-border h-full flex flex-col transition-all duration-300`}>
+      {/* Header with Logo and Toggle Button */}
+      <div className="px-4 py-4 border-b border-border flex items-center justify-between">
+        {!isCollapsed && (
+          <div>
+            <Logo size="md" textSize="sm" className="text-primary" />
+            <p className="text-caption text-text-muted mt-2 ml-11">
+              Project Management
+            </p>
+          </div>
+        )}
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
+        </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
         {navigation.map(item => renderNavItem(item))}
       </nav>
 
-      {/* User Info */}
-      <div className="px-4 py-4 border-t border-border">
-        <div className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-gray-50">
-          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
-            {user?.avatar || 'U'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-text-primary truncate">
-              {user?.name}
-            </p>
-            <div className="flex items-center space-x-2">
-              <p className="text-xs text-text-muted truncate">
-                {user?.role.name}
-              </p>
-              {user?.isDemo && (
-                <span className="px-1.5 py-0.5 bg-secondary-teal/10 text-secondary-teal text-xs rounded-full">
-                  Demo
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

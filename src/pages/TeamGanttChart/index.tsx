@@ -4,7 +4,7 @@ import { MOCK_TEAM_MEMBERS } from '../../features/teamGantt/data/mockData';
 import { ViewMode, LayoutMode, Project } from '../../features/teamGantt/types/ganttTypes';
 
 export const TeamGanttChart: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date('2025-10-01')); // Set to October 2025 when projects are scheduled
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('project'); // Default to Project View
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);

@@ -13,8 +13,12 @@ interface ProjectHeaderWithWorkflowProps {
   onToggleItem: (itemId: string) => void;
   onStageClick?: (stageId: string) => void;
   onMarkForQF?: () => void;
+  onSignClientQualityCheck?: () => void;
   selectedStage?: string;
   isPreparationStage?: boolean;
+  windowProgress?: { completed: number; total: number; percentage: number };
+  onMarkAllWindowsCompleted?: () => void;
+  completedStages?: Set<string>;
 }
 
 /**
@@ -29,8 +33,12 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
   onToggleItem,
   onStageClick,
   onMarkForQF,
+  onSignClientQualityCheck,
   selectedStage,
-  isPreparationStage = false
+  isPreparationStage = false,
+  windowProgress,
+  onMarkAllWindowsCompleted,
+  completedStages = new Set()
 }) => {
   const completedCount = checklist.filter(item => item.completed).length;
   const totalCount = checklist.length;
@@ -47,9 +55,9 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
   // Define the project stages with icons
   const projectStages = [
     { id: 'preparation', label: 'Preparation', icon: Settings, completed: completedCount === totalCount },
-    { id: 'wip', label: 'Work in Progress', icon: Wrench, completed: false },
-    { id: 'quality', label: 'Quality Check', icon: Search, completed: false },
-    { id: 'completed', label: 'Completed', icon: CheckCircle2, completed: false }
+    { id: 'wip', label: 'Work in Progress', icon: Wrench, completed: completedStages.has('wip') || project.status === 'QF' || project.status === 'Completed' },
+    { id: 'quality', label: 'Quality Check', icon: Search, completed: project.status === 'Completed' },
+    { id: 'completed', label: 'Completed', icon: CheckCircle2, completed: project.status === 'Completed' }
   ];
 
   // Determine which stage is active - use selectedStage if provided, otherwise default based on project status
@@ -125,12 +133,18 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-medium text-gray-700">Project Progress</span>
-                  <span className="text-xs font-medium text-blue-600">10/60 windows completed</span>
+                  <span 
+                    className="text-xs font-medium text-blue-600 cursor-pointer hover:text-blue-700 transition-colors"
+                    onDoubleClick={onMarkAllWindowsCompleted}
+                    title="Double-click to mark all windows as completed"
+                  >
+                    {windowProgress ? `${windowProgress.completed}/${windowProgress.total} windows completed` : '0/0 windows completed'}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                    style={{ width: '16.67%' }} // 10/60 = 16.67%
+                    style={{ width: windowProgress ? `${windowProgress.percentage}%` : '0%' }}
                   ></div>
                 </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -138,6 +152,29 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
                   <span>100%</span>
                 </div>
               </div>
+            ) : activeStage === 'quality' ? (
+              // Project Progress for Quality Check stage (100% complete)
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-gray-700">Project Progress</span>
+                  <span className="text-xs font-medium text-green-600">
+                    {windowProgress ? `${windowProgress.total}/${windowProgress.total} windows completed` : '0/0 windows completed'}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: '100%' }}
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+            ) : activeStage === 'completed' ? (
+              // No preparation tasks shown in completed stage
+              null
             ) : (
               // Preparation Tasks for other stages
               <div>
@@ -192,6 +229,31 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
                   Edit
                 </Button>
               </>
+            ) : activeStage === 'quality' ? (
+              // Quality Check stage buttons
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={CheckCircle}
+                  onClick={onSignClientQualityCheck}
+                  className="text-xs px-3 py-1 h-7"
+                >
+                  Sign Client Quality Check Form
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={Edit}
+                  onClick={onEdit}
+                  className="text-xs px-3 py-1 h-7"
+                >
+                  Edit
+                </Button>
+              </>
+            ) : activeStage === 'completed' ? (
+              // No buttons shown in completed stage
+              null
             ) : (
               // Preparation stage buttons
               <>

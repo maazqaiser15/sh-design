@@ -11,6 +11,7 @@ import { AddTravelDetailsModal } from '../AddTravelDetailsModal';
 import { AddHotelReservationModal } from '../AddHotelReservationModal';
 import { UploadTakeOffSheetModal } from '../UploadTakeOffSheetModal';
 import { WindowManagementPage } from '../../pages/WindowManagementPage';
+import { Window } from '../../types/windows';
 import { useToast } from '../../../../contexts/ToastContext';
 
 interface KeyInfoSectionProps {
@@ -33,6 +34,8 @@ interface KeyInfoSectionProps {
   onMarkCompleted: () => void;
   onUpdatePreparationTask?: (taskLabel: string, completed: boolean) => void;
   selectedStage?: string;
+  windows?: Window[];
+  onWindowUpdate?: (updatedWindow: Window) => void;
 }
 
 /**
@@ -58,7 +61,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   onRemoveReceipt,
   onMarkCompleted,
   onUpdatePreparationTask,
-  selectedStage = 'preparation'
+  selectedStage = 'preparation',
+  windows = [],
+  onWindowUpdate
 }) => {
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -298,26 +303,29 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 mb-6 items-stretch">
       {selectedStage === 'wip' ? (
         // Work in Progress stage - Show upload or window management
         <div className="lg:col-span-4">
           {showWindowManagement ? (
             // Window Management Interface
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-2">
                   <FileText className="w-5 h-5 text-blue-600" />
                   <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
                 </div>
               </div>
               <div className="p-0">
-                <WindowManagementPage />
+                <WindowManagementPage 
+                  windows={windows}
+                  onWindowUpdate={onWindowUpdate}
+                />
               </div>
             </div>
           ) : (
             // Upload Take-Off Sheet Card
-            <Card className="p-6">
+            <Card className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <FileText className="w-5 h-5 text-blue-600" />
@@ -328,7 +336,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
               
               {isUploading ? (
                 // Loading state
-                <div className="text-center py-12">
+                <div className="text-center py-8">
                   <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
@@ -351,7 +359,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                 </div>
               ) : (
                 // Upload interface
-                <div className="text-center py-8">
+                <div className="text-center py-6">
                   <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
                     <FileText className="w-8 h-8 text-blue-600" />
                   </div>
@@ -360,7 +368,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     Upload Take-Off Sheet
                   </h4>
                   
-                  <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                  <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
                     Upload your take-off sheet to create window inventory and start working on the project. 
                     This will help us track progress and manage the installation process.
                   </p>
@@ -390,7 +398,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     </Button>
                   </div>
                   
-                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-500 mb-2">
                       <strong>Supported formats:</strong> PDF, Excel (.xlsx, .xls), CSV
                     </p>
@@ -406,8 +414,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
       ) : (
         <>
       {/* Assigned Team Card */}
-      <Card className="p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-4 flex flex-col">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Users className="w-5 h-5 text-blue-600" />
             <h3 className="text-lg font-semibold text-gray-900">Assigned Team</h3>
@@ -422,9 +430,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         {assignedTeam && assignedTeam.members.length > 0 ? (
           <div className="flex-1 flex flex-col h-full">
             {/* Team Members List - Scrollable */}
-            <div className="flex-1 overflow-y-auto space-y-2 mb-4 min-h-0">
+            <div className="flex-1 overflow-y-auto space-y-2 mb-3 min-h-0">
               {assignedTeam.members.map((member) => (
-                <div key={member.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div key={member.id} className="bg-gray-50 rounded-lg p-2 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-sm font-medium text-blue-600">
@@ -464,9 +472,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-8 flex-1 flex flex-col justify-center">
-            <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-6">No team assigned yet</p>
+          <div className="text-center py-6 flex-1 flex flex-col justify-center">
+            <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p className="text-sm text-gray-500 mb-4">No team assigned yet</p>
             <Button
               variant="primary"
               size="sm"
@@ -480,8 +488,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
       </Card>
 
       {/* Assign Trailer Card */}
-      <Card className="p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-4 flex flex-col">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Truck className="w-5 h-5 text-amber-600" />
             <h3 className="text-lg font-semibold text-gray-900">Assign Trailer</h3>
@@ -500,8 +508,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
         {assignedTrailer ? (
           <div className="flex-1 flex flex-col">
-            <div className="p-4 bg-gray-50 rounded-lg border flex-1">
-              <div className="flex items-center justify-between mb-3">
+            <div className="p-3 bg-gray-50 rounded-lg border flex-1">
+              <div className="flex items-center justify-between mb-2">
                 <h4 className="text-lg font-semibold text-gray-900">
                   {assignedTrailer.trailerName}
                 </h4>
@@ -510,7 +518,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                 </span>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">Location:</span>
                   <span className="text-sm text-gray-600">{assignedTrailer.location}</span>
@@ -530,7 +538,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                 </div>
                 
                 {/* Film Inventory */}
-                <div className="mt-3">
+                <div className="mt-2">
                   <span className="text-sm font-medium text-gray-700 mb-2 block">Films in Trailer:</span>
                   <div className="space-y-1">
                     {getTrailerFilmInventory().map((film, index) => (
@@ -543,7 +551,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             </div>
             
                 {assignedTrailer.notes && (
-                  <div className="mt-4 pt-3 border-t border-gray-200">
+                  <div className="mt-3 pt-2 border-t border-gray-200">
                     <span className="text-sm font-medium text-gray-700 block mb-2">Notes:</span>
                     <p className="text-sm text-gray-600">{assignedTrailer.notes}</p>
                   </div>
@@ -552,9 +560,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-8 flex-1 flex flex-col justify-center">
-            <Truck className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-6">No trailer assigned yet</p>
+          <div className="text-center py-6 flex-1 flex flex-col justify-center">
+            <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p className="text-sm text-gray-500 mb-4">No trailer assigned yet</p>
             <Button
               variant="primary"
               size="sm"
@@ -578,8 +586,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
       />
 
       {/* Travel & Accommodation Setup Card */}
-      <Card className="p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-4 flex flex-col">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Plane className="w-5 h-5 text-green-600" />
             <h3 className="text-lg font-semibold text-gray-900">Travel & Accommodation</h3>
@@ -588,7 +596,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         
         <div className="flex-1 flex flex-col">
           {/* Checkboxes */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Travel Required */}
             <div className="flex items-center space-x-3">
               <input
@@ -605,8 +613,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             
             {/* Travel Type Selection - Only show if travel details haven't been saved */}
             {travelSetup.travelRequired && !travelDetails && (
-              <div className="ml-7 space-y-3 border-l-2 border-gray-200 pl-4">
-                <div className="space-y-2">
+              <div className="ml-7 space-y-2 border-l-2 border-gray-200 pl-4">
+                <div className="space-y-1">
                   <div className="flex items-center space-x-3">
                     <input
                       type="radio"
@@ -640,7 +648,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                 {/* Road Travel Input */}
                 {travelSetup.travelType === 'road' && (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div>
                       <label htmlFor="road-members" className="block text-sm font-medium text-gray-700 mb-1">
                         Number of team members requiring road travel
@@ -660,7 +668,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                 {/* Air Travel Input */}
                 {travelSetup.travelType === 'air' && (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div>
                       <label htmlFor="air-members" className="block text-sm font-medium text-gray-700 mb-1">
                         Number of team members requiring air travel
@@ -693,7 +701,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                 {/* Add Travel Details Button - shows after travel is submitted but before details are saved */}
                 {isTravelSubmitted && travelSetup.travelType && !travelDetails && (
-                  <div className="mt-3">
+                  <div className="mt-2">
                     <Button
                       variant="secondary"
                       size="sm"
@@ -710,8 +718,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
             {/* Travel Reservation Details Card - shows after travel details are saved */}
             {travelDetails && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center justify-between mb-3">
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <FileText className="w-5 h-5 text-blue-600" />
                     <h4 className="text-sm font-medium text-blue-900">Reservation Details Added</h4>
@@ -727,7 +735,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                   </Button>
                 </div>
                 
-                <div className="space-y-2 text-sm">
+                <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-blue-700">Route:</span>
                     <span className="text-blue-900 font-medium">
@@ -782,8 +790,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
             {/* Hotel Reservation Details Card - shows after reservation details are saved */}
             {hotelReservationDetails && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center justify-between mb-3">
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <Hotel className="w-5 h-5 text-blue-600" />
                     <h4 className="text-sm font-medium text-blue-900">Hotel Reservation Details Added</h4>
@@ -799,7 +807,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
               </Button>
             </div>
                 
-                <div className="space-y-2 text-sm">
+                <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-blue-700">Hotel:</span>
                     <span className="text-blue-900 font-medium">{hotelReservationDetails.hotelName}</span>
