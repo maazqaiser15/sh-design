@@ -135,7 +135,7 @@ export const AddTravelModal: React.FC<AddTravelModalProps> = ({
             <select
               value={formData.travelType}
               onChange={(e) => handleInputChange('travelType', e.target.value as TravelType)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 pr-7 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="Flight">Flight</option>
               <option value="Vehicle">Vehicle</option>

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, Check, AlertTriangle, Circle, Truck, MapPin, Package } from 'lucide-react';
+import { Search, X, Check, AlertTriangle, Circle, Truck, MapPin, Package, Filter, Calendar, Wrench } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Modal } from '../../../../common/components/Modal';
 import { TrailerForAssignment } from '../../types/trailers';
@@ -25,7 +25,14 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'available' | 'low_stock' | 'unavailable' | ''>('');
+  const [locationFilter, setLocationFilter] = useState<string>('');
   const [selectedTrailer, setSelectedTrailer] = useState<string | null>(assignedTrailerId || null);
+
+  // Get unique locations for filter dropdown
+  const uniqueLocations = useMemo(() => {
+    const locations = availableTrailers.map(trailer => trailer.currentLocation);
+    return [...new Set(locations)].sort();
+  }, [availableTrailers]);
 
   // Filter trailers based on search and filters
   const filteredTrailers = useMemo(() => {
@@ -34,10 +41,11 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
                            trailer.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            trailer.currentLocation.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = !statusFilter || trailer.status === statusFilter;
+      const matchesLocation = !locationFilter || trailer.currentLocation === locationFilter;
       
-      return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus && matchesLocation;
     });
-  }, [availableTrailers, searchQuery, statusFilter]);
+  }, [availableTrailers, searchQuery, statusFilter, locationFilter]);
 
   const handleTrailerSelect = (trailerId: string) => {
     setSelectedTrailer(trailerId);
@@ -110,7 +118,8 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
     >
       <div className="p-6">
         {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-6">
+        <div className="flex flex-col lg:flex-row items-center space-y-3 lg:space-y-0 lg:space-x-4 mb-6">
+          {/* Search Bar */}
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -130,8 +139,9 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             )}
           </div>
 
+          {/* Status Filter */}
           <select
-            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+            className="w-full lg:w-auto px-3 py-2 pr-7 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
           >
@@ -140,17 +150,29 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             <option value="low_stock">Low Stock</option>
             <option value="unavailable">Unavailable</option>
           </select>
+
+          {/* Location Filter */}
+          <select
+            className="w-full lg:w-auto px-3 py-2 pr-7 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+          >
+            <option value="">All Locations</option>
+            {uniqueLocations.map(location => (
+              <option key={location} value={location}>{location}</option>
+            ))}
+          </select>
         </div>
 
         {/* Trailer List */}
-        <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+        <div className="max-h-96 overflow-y-auto">
           {filteredTrailers.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
               <p>No trailers found matching your criteria.</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="space-y-3">
               {filteredTrailers.map(trailer => {
                 const isSelectable = isTrailerSelectable(trailer);
                 const isSelected = selectedTrailer === trailer.id;
@@ -159,107 +181,93 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
                 return (
                   <div
                     key={trailer.id}
-                    className={`p-4 transition-colors ${
+                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 ${
                       isSelectable
-                        ? 'hover:bg-gray-50 cursor-pointer'
-                        : 'bg-gray-50 cursor-not-allowed opacity-60'
-                    } ${
-                      isSelected ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                        ? isSelected 
+                          ? 'border-blue-500 bg-blue-50 shadow-md cursor-pointer'
+                          : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm cursor-pointer'
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
                     }`}
                     onClick={() => isSelectable && handleTrailerSelect(trailer.id)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          {isSelectable ? (
-                            isSelected ? (
-                              <Check className="w-5 h-5 text-blue-600" />
-                            ) : (
-                              <Circle className="w-5 h-5 text-gray-300" />
-                            )
+                    <div className="flex items-start space-x-4">
+                      {/* Checkbox */}
+                      <div className="flex-shrink-0 pt-1">
+                        {isSelectable ? (
+                          isSelected ? (
+                            <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
                           ) : (
-                            <X className="w-5 h-5 text-gray-400" />
-                          )}
+                            <div className="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+                          )
+                        ) : (
+                          <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
+                            <X className="w-3 h-3 text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Avatar */}
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center">
+                          <Truck className="w-4 h-4 text-blue-600" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2">
-                            <h3 className={`text-sm font-medium ${
+                      </div>
+
+                      {/* Trailer Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            {/* Trailer Name */}
+                            <h3 className={`text-base font-semibold mb-1 ${
                               isSelectable ? 'text-gray-900' : 'text-gray-500'
                             }`}>
                               {trailer.trailerName}
                             </h3>
-                            <span className={`text-xs ${
-                              isSelectable ? 'text-gray-500' : 'text-gray-400'
-                            }`}>
-                              {trailer.registrationNumber}
-                            </span>
-                          </div>
-                          <div className="mt-1 flex items-center space-x-4 text-xs text-gray-500">
-                            <div className="flex items-center">
-                              <MapPin className="w-3 h-3 mr-1" />
-                              <span>{trailer.currentLocation}</span>
+
+                            {/* Registration and Location Row */}
+                            <div className="flex items-center space-x-4">
+                              <p className={`text-sm ${
+                                isSelectable ? 'text-gray-600' : 'text-gray-400'
+                              }`}>
+                                {trailer.registrationNumber}
+                              </p>
+                              <div className="flex items-center space-x-1 text-sm text-gray-600">
+                                <MapPin className="w-4 h-4 text-gray-400" />
+                                <span>{trailer.currentLocation}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="flex-shrink-0 text-right">
-                        <div className="text-sm mb-1">
-                          {getStatusDisplay(trailer)}
-                        </div>
-                        {isSelectable && (
-                          <div className="text-xs text-gray-500">
-                            <div className="flex items-center space-x-2">
-                              <Package className="w-3 h-3" />
-                              <span>Film: {inventory.filmSqFt} sq ft</span>
-                            </div>
+
+                          {/* Status Badge - Moved to right */}
+                          <div className="flex-shrink-0 ml-4 flex flex-col items-end">
+                            {trailer.status === 'available' ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <Check className="w-3 h-3 mr-1" />
+                                Available
+                              </span>
+                            ) : trailer.status === 'low_stock' ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <AlertTriangle className="w-3 h-3 mr-1" />
+                                Low Stock
+                              </span>
+                            ) : (
+                              <div className="flex flex-col items-end">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                  <X className="w-3 h-3 mr-1" />
+                                  Unavailable
+                                </span>
+                                <span className="text-xs text-red-600 mt-1">
+                                  until {trailer.unavailableUntil ? new Date(trailer.unavailableUntil).toLocaleDateString() : 'TBD'}
+                                </span>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Inventory Details - Only show for selected trailer */}
-                    {isSelected && (
-                      <div className="mt-3 p-3 bg-white rounded border">
-                        <div className="text-xs font-medium text-gray-700 mb-2">Inventory Details</div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {/* Tools */}
-                          <div>
-                            <div className="text-xs font-medium text-gray-600 mb-1">Tools</div>
-                            <div className="space-y-1">
-                              {trailer.inventory.tools.map((tool, index) => (
-                                <div key={index} className="flex justify-between text-xs">
-                                  <span className="text-gray-600">{tool.name}</span>
-                                  <span className={`font-medium ${
-                                    tool.status === 'good' ? 'text-green-600' :
-                                    tool.status === 'low' ? 'text-yellow-600' : 'text-red-600'
-                                  }`}>
-                                    {tool.currentStock}/{tool.threshold}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          {/* Film Sheets */}
-                          <div>
-                            <div className="text-xs font-medium text-gray-600 mb-1">Film Sheets</div>
-                            <div className="space-y-1">
-                              {trailer.inventory.filmSheets.map((film, index) => (
-                                <div key={index} className="flex justify-between text-xs">
-                                  <span className="text-gray-600">{film.sheetType}</span>
-                                  <span className={`font-medium ${
-                                    film.status === 'good' ? 'text-green-600' :
-                                    film.status === 'low' ? 'text-yellow-600' : 'text-red-600'
-                                  }`}>
-                                    {film.currentStock} sq ft
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 );
               })}

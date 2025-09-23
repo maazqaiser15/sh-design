@@ -11,6 +11,8 @@ interface ProjectHeaderWithWorkflowProps {
   onEdit: () => void;
   onEditDates?: () => void;
   onToggleItem: (itemId: string) => void;
+  onStageClick?: (stageId: string) => void;
+  selectedStage?: string;
   isPreparationStage?: boolean;
 }
 
@@ -24,6 +26,8 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
   onEdit,
   onEditDates,
   onToggleItem,
+  onStageClick,
+  selectedStage,
   isPreparationStage = false
 }) => {
   const completedCount = checklist.filter(item => item.completed).length;
@@ -46,6 +50,33 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
     { id: 'completed', label: 'Completed', icon: CheckCircle2, completed: false }
   ];
 
+  // Determine which stage is active - use selectedStage if provided, otherwise default based on project status
+  const getActiveStage = () => {
+    if (selectedStage) {
+      return selectedStage;
+    }
+    
+    switch (project.status) {
+      case 'PV90':
+      case 'UB':
+        return 'preparation';
+      case 'WB':
+      case 'WIP':
+        return 'wip';
+      case 'Completed':
+        return 'completed';
+      default:
+        return 'preparation';
+    }
+  };
+
+  const activeStage = getActiveStage();
+
+  // Determine if a stage is clickable - now all stages are clickable
+  const isStageClickable = (stageId: string) => {
+    return !!onStageClick; // All stages are clickable if onStageClick is provided
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8">
       <div className="flex py-6 px-6">
@@ -60,7 +91,7 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
               {project.projectId}
             </span>
             <StatusBadge
-              status={project.stage}
+              status={project.status}
               className="px-2 py-1 text-xs font-medium rounded-full border bg-blue-100 text-blue-700 border-blue-200 flex-shrink-0"
             />
           </div>
@@ -147,18 +178,27 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
             <div className="relative pl-4">
               {projectStages.map((stage, index) => {
                 const IconComponent = stage.icon;
-                const isActive = stage.id === 'preparation';
+                const isActive = stage.id === activeStage;
                 const isCompleted = stage.completed;
+                const isClickable = isStageClickable(stage.id);
                 
                 return (
-                  <div key={stage.id} className="flex items-center mb-3 last:mb-0">
+                  <div 
+                    key={stage.id} 
+                    className={`flex items-center mb-3 last:mb-0 ${
+                      isClickable ? 'cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2' : ''
+                    }`}
+                    onClick={isClickable ? () => onStageClick?.(stage.id) : undefined}
+                  >
                     {/* Step Number Circle */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 flex-shrink-0 ${
                       isCompleted 
                         ? 'bg-green-500 border-green-500 text-white' 
                         : isActive 
                           ? 'bg-blue-500 border-blue-500 text-white' 
-                          : 'bg-white border-gray-300 text-gray-500'
+                          : isClickable
+                            ? 'bg-white border-blue-300 text-blue-600 hover:border-blue-400'
+                            : 'bg-white border-gray-300 text-gray-500'
                     }`}>
                       <span className="text-xs font-semibold">
                         {isCompleted ? (
@@ -176,7 +216,9 @@ export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps>
                           ? 'text-green-600' 
                           : isActive 
                             ? 'text-blue-600' 
-                            : 'text-gray-600'
+                            : isClickable
+                              ? 'text-blue-600 hover:text-blue-700'
+                              : 'text-gray-600'
                       }`}>
                         {stage.label}
                       </div>

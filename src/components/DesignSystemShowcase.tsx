@@ -174,7 +174,7 @@ export const DesignSystemShowcase: React.FC = () => {
               
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Status</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select className="w-full px-3 py-2 pr-7 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option>All Statuses</option>
                   <option>Active</option>
                   <option>Inactive</option>
@@ -331,7 +331,7 @@ export const DesignSystemShowcase: React.FC = () => {
                   />
                 </div>
                 
-                <select className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select className="px-3 py-2 pr-7 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option>All Statuses</option>
                   <option>Active</option>
                   <option>Completed</option>

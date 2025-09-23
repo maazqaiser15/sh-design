@@ -53,7 +53,7 @@ export const ProjectFiltersComponent: React.FC<ProjectFiltersProps> = ({
           <select
             value={filters.status[0] || ''}
             onChange={(e) => handleStatusChange(e.target.value as ProjectStatus)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 pr-7 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Statuses</option>
             {statusOptions.map((status) => (

@@ -134,18 +134,6 @@ export const LogisticsCard: React.FC<LogisticsCardProps> = ({
             <span className="text-gray-600">
               {filmRequirements.reduce((sum, req) => sum + getTrailerAvailable(req.sheetType), 0)} in trailer
             </span>
-            <span className="text-gray-600">
-              {shipmentReceipts.length} attachment{shipmentReceipts.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-          <div className="text-gray-600">
-            {isCompleted ? (
-              <span className="text-green-600 font-medium">Completed</span>
-            ) : (
-              `${filmRequirements.filter(req => 
-                isRequirementMet(req.required, getTrailerAvailable(req.sheetType))
-              ).length}/${filmRequirements.length} complete`
-            )}
           </div>
         </div>
       </div>

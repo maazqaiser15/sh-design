@@ -389,7 +389,7 @@ export const ProjectListPage: React.FC = () => {
                   status: status ? [status] : [],
                 });
               }}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 pr-7 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Statuses</option>
               {['PV90', 'UB', 'WB', 'WIP', 'Completed'].map((status) => (

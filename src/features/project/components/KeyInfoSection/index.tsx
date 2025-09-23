@@ -1,11 +1,14 @@
-import React from 'react';
-import { Users, Phone, Edit, Plane, Trash2, Truck, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Phone, Edit, Plane, Trash2, Truck, RefreshCw, Car, Hotel, CheckCircle, Plus, FileText, X } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { AssignedTeam } from '../../types/projectDetails';
 import { TeamMember } from '../../types/teamMembers';
 import { TravelPlan } from '../../types/logisticsTravel';
 import { LogisticsCard } from '../LogisticsCard';
+import { AddTravelDetailsModal } from '../AddTravelDetailsModal';
+import { AddHotelReservationModal } from '../AddHotelReservationModal';
+import { useToast } from '../../../../contexts/ToastContext';
 
 interface KeyInfoSectionProps {
   assignedTeam: AssignedTeam | null;
@@ -15,6 +18,7 @@ interface KeyInfoSectionProps {
   onViewTeam: () => void;
   onAssignTeam: () => void;
   onEditTeam: () => void;
+  onRemoveTeamMember: (memberId: string) => void;
   onSetupTravel: () => void;
   onAddTravel: () => void;
   onEditTravel: (travel: TravelPlan) => void;
@@ -39,6 +43,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   onViewTeam,
   onAssignTeam,
   onEditTeam,
+  onRemoveTeamMember,
   onSetupTravel,
   onAddTravel,
   onEditTravel,
@@ -50,6 +55,36 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   onMarkCompleted,
   onUpdatePreparationTask
 }) => {
+  const { showToast } = useToast();
+  
+  // Travel & Accommodation state management
+  const [travelSetup, setTravelSetup] = useState({
+    travelRequired: false,
+    travelType: null as 'road' | 'air' | null,
+    airTravelMembers: 1,
+    roadTravelMembers: 1,
+    hotelRequired: false
+  });
+  const [isTravelExpanded, setIsTravelExpanded] = useState(false);
+  const [isTravelEditing, setIsTravelEditing] = useState(false);
+  const [isTravelSubmitted, setIsTravelSubmitted] = useState(false);
+  const [showTravelDetailsModal, setShowTravelDetailsModal] = useState(false);
+  const [showHotelReservationModal, setShowHotelReservationModal] = useState(false);
+  const [travelDetails, setTravelDetails] = useState<{
+    travelFrom: string;
+    travelTo: string;
+    travelDate: string;
+    numberOfTickets: number;
+    attachments: File[];
+  } | null>(null);
+  const [hotelReservationDetails, setHotelReservationDetails] = useState<{
+    hotelName: string;
+    checkInDate: string;
+    checkOutDate: string;
+    numberOfRooms: number;
+    reservationSlip?: File;
+  } | null>(null);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -103,8 +138,124 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
     return filmInventory.filter(film => film.quantity > 0);
   };
 
+  // Travel & Accommodation handlers
+  const handleTravelRequired = (checked: boolean) => {
+    setTravelSetup(prev => ({
+      ...prev,
+      travelRequired: checked,
+      travelType: checked ? prev.travelType : null
+    }));
+    
+    if (checked) {
+      showToast('Travel setup initiated - please select travel type');
+      setIsTravelExpanded(true);
+      setIsTravelEditing(true);
+    } else {
+      setIsTravelExpanded(false);
+    }
+  };
+
+  const handleTravelType = (type: 'road' | 'air') => {
+    setTravelSetup(prev => ({
+      ...prev,
+      travelType: type
+    }));
+  };
+
+  const handleAirTravelMembers = (count: number) => {
+    setTravelSetup(prev => ({
+      ...prev,
+      airTravelMembers: Math.max(1, Math.min(50, count))
+    }));
+  };
+
+  const handleRoadTravelMembers = (count: number) => {
+    setTravelSetup(prev => ({
+      ...prev,
+      roadTravelMembers: Math.max(1, Math.min(50, count))
+    }));
+  };
+
+  const handleHotelRequired = (checked: boolean) => {
+    setTravelSetup(prev => ({
+      ...prev,
+      hotelRequired: checked
+    }));
+
+    if (checked) {
+      showToast('Reminder sent to house manager to do arrangement');
+      onNotifyHouseManager();
+      onUpdatePreparationTask?.('Travel Setup', true);
+      // Ensure we stay in editing mode to show the button
+      setIsTravelEditing(true);
+      setIsTravelExpanded(true);
+    }
+  };
+
+  const handleTravelConfirm = () => {
+    if (travelSetup.travelType === 'road') {
+      onNotifyHouseManager();
+      showToast(`Road travel arranged for ${travelSetup.roadTravelMembers} team members`);
+    } else if (travelSetup.travelType === 'air') {
+      onNotifyHouseManager();
+      showToast(`Air travel arranged for ${travelSetup.airTravelMembers} team members`);
+    }
+    
+    onUpdatePreparationTask?.('Travel Setup', true);
+    setIsTravelSubmitted(true);
+    // Keep editing mode open to show the Add Travel Details button
+  };
+
+  const handleEditTravelSetup = () => {
+    setIsTravelEditing(true);
+    setIsTravelExpanded(true);
+  };
+
+  const handleOpenTravelDetailsModal = () => {
+    setShowTravelDetailsModal(true);
+  };
+
+  const handleCloseTravelDetailsModal = () => {
+    setShowTravelDetailsModal(false);
+  };
+
+  const handleSaveTravelDetails = (details: any) => {
+    setTravelDetails(details);
+    showToast('Travel details saved successfully');
+  };
+
+  const handleEditTravelDetails = () => {
+    setShowTravelDetailsModal(true);
+  };
+
+  const handleOpenHotelReservationModal = () => {
+    setShowHotelReservationModal(true);
+  };
+
+  const handleCloseHotelReservationModal = () => {
+    setShowHotelReservationModal(false);
+  };
+
+  const handleSaveHotelReservationDetails = (details: any) => {
+    setHotelReservationDetails(details);
+    showToast('Hotel reservation details saved successfully!');
+  };
+
+  const handleEditHotelReservationDetails = () => {
+    setShowHotelReservationModal(true);
+  };
+
+  // Handle removing team member
+  const handleRemoveTeamMember = (memberId: string) => {
+    const member = assignedTeam?.members.find(m => m.id === memberId);
+    if (member) {
+      showToast(`${member.name} removed from team`);
+      onRemoveTeamMember(memberId);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 items-stretch">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
       {/* Assigned Team Card */}
       <Card className="p-6 flex flex-col">
         <div className="flex items-center justify-between mb-4">
@@ -120,35 +271,48 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         </div>
         
         {assignedTeam && assignedTeam.members.length > 0 ? (
-          <div className="flex-1 flex flex-col">
-            {/* Team Members Grid */}
-            <div className="grid grid-cols-1 gap-3 mb-4">
+          <div className="flex-1 flex flex-col h-full">
+            {/* Team Members List - Scrollable */}
+            <div className="flex-1 overflow-y-auto space-y-2 mb-4 min-h-0">
               {assignedTeam.members.map((member) => (
                 <div key={member.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-xs font-medium text-blue-600">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-sm font-medium text-blue-600">
                         {member.name.split(' ').map(n => n[0]).join('')}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{member.name}</p>
-                        <p className="text-xs text-gray-500">{member.role}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{member.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{member.role}</p>
+                        {member.location && (
+                          <p className="text-xs text-gray-400 truncate">{member.location}</p>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getTeamStatusColor(member.availability)}`}>
-                        {getTeamStatusText(member.availability)}
-                      </span>
-                      <div className="flex items-center space-x-1 text-gray-400">
-                        <Phone className="w-3 h-3" />
-                        <span className="text-xs">{member.phone}</span>
-                      </div>
-                    </div>
+                    <button
+                      onClick={() => handleRemoveTeamMember(member.id)}
+                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                      title="Remove team member"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
             
+            {/* Add Team Button - Fixed at bottom */}
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={onAssignTeam}
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Team Member
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="text-center py-8 flex-1 flex flex-col justify-center">
@@ -264,94 +428,275 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         onUpdatePreparationTask={onUpdatePreparationTask}
       />
 
-      {/* Travel Setup Card */}
+      {/* Travel & Accommodation Setup Card */}
       <Card className="p-6 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Plane className="w-5 h-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Travel Setup</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Travel & Accommodation</h3>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onAddTravel}
-            icon={Edit}
-          >
-            Add
-          </Button>
         </div>
-        
-        {travelPlans.length > 0 ? (
-          <div className="space-y-3 flex-1">
-            <div className="text-sm text-gray-600 mb-3">
-              {travelPlans.length} travel plan{travelPlans.length !== 1 ? 's' : ''} created
+
+        <div className="flex-1 flex flex-col">
+          {/* Checkboxes */}
+          <div className="space-y-4">
+            {/* Travel Required */}
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="travel-required"
+                checked={travelSetup.travelRequired}
+                onChange={(e) => handleTravelRequired(e.target.checked)}
+                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <label htmlFor="travel-required" className="text-sm font-medium text-gray-700">
+                Travel Required
+              </label>
             </div>
-            
-            {travelPlans.slice(0, 2).map((plan) => (
-              <div key={plan.id} className="p-3 bg-gray-50 rounded-lg border">
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="text-sm font-medium text-gray-900">
-                    {plan.travelMethod === 'flight' ? 'Flight' : 
-                     plan.travelMethod === 'road' ? 'Road Trip' : 'Other Travel'}
-                  </h4>
-                  <div className="flex items-center space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEditTravel(plan)}
-                      className="p-1 h-6 w-6"
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDeleteTravel(plan.id)}
-                      className="p-1 h-6 w-6 text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+
+            {/* Travel Type Selection - Only show if travel details haven't been saved */}
+            {travelSetup.travelRequired && !travelDetails && (
+              <div className="ml-7 space-y-3 border-l-2 border-gray-200 pl-4">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="travel-road"
+                      name="travel-type"
+                      checked={travelSetup.travelType === 'road'}
+                      onChange={() => handleTravelType('road')}
+                      className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                    />
+                    <label htmlFor="travel-road" className="flex items-center space-x-2 text-sm text-gray-700">
+                      <Car className="w-4 h-4" />
+                      <span>Travel by Road</span>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id="travel-air"
+                      name="travel-type"
+                      checked={travelSetup.travelType === 'air'}
+                      onChange={() => handleTravelType('air')}
+                      className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                    />
+                    <label htmlFor="travel-air" className="flex items-center space-x-2 text-sm text-gray-700">
+                      <Plane className="w-4 h-4" />
+                      <span>Travel by Air</span>
+                    </label>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">
-                  <p>People: {plan.numberOfPeople}</p>
-                  <p>Hotel: {plan.hotelBooking ? 'Booked' : 'Not booked'}</p>
+
+                {/* Road Travel Input */}
+                {travelSetup.travelType === 'road' && (
+                  <div className="space-y-3">
+                    <div>
+                      <label htmlFor="road-members" className="block text-sm font-medium text-gray-700 mb-1">
+                        Number of team members requiring road travel
+                      </label>
+                      <input
+                        type="number"
+                        id="road-members"
+                        min="1"
+                        max="50"
+                        value={travelSetup.roadTravelMembers}
+                        onChange={(e) => handleRoadTravelMembers(parseInt(e.target.value) || 1)}
+                        className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Air Travel Input */}
+                {travelSetup.travelType === 'air' && (
+                  <div className="space-y-3">
+                    <div>
+                      <label htmlFor="air-members" className="block text-sm font-medium text-gray-700 mb-1">
+                        Number of team members requiring air travel
+                      </label>
+                      <input
+                        type="number"
+                        id="air-members"
+                        min="1"
+                        max="50"
+                        value={travelSetup.airTravelMembers}
+                        onChange={(e) => handleAirTravelMembers(parseInt(e.target.value) || 1)}
+                        className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Travel Confirm Button */}
+                {travelSetup.travelType && !isTravelSubmitted && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleTravelConfirm}
+                    className="w-full"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Submit Travel Arrangement
+                  </Button>
+                )}
+
+                {/* Add Travel Details Button - shows after travel is submitted but before details are saved */}
+                {isTravelSubmitted && travelSetup.travelType && !travelDetails && (
+                  <div className="mt-3">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleOpenTravelDetailsModal}
+                      className="w-full"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Travel Details
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Travel Reservation Details Card - shows after travel details are saved */}
+            {travelDetails && (
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5 text-blue-600" />
+                    <h4 className="text-sm font-medium text-blue-900">Reservation Details Added</h4>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleEditTravelDetails}
+                    className="text-blue-600 hover:text-blue-800 p-2"
+                    title="Edit travel details"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Route:</span>
+                    <span className="text-blue-900 font-medium">
+                      {travelDetails.travelFrom} → {travelDetails.travelTo}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Tickets:</span>
+                    <span className="text-blue-900 font-medium">
+                      {travelDetails.numberOfTickets} ticket{travelDetails.numberOfTickets !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Attachments:</span>
+                    <span className="text-blue-900 font-medium">
+                      {travelDetails.attachments.length} file{travelDetails.attachments.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
                 </div>
               </div>
-            ))}
-            
-            {travelPlans.length > 2 && (
-              <p className="text-xs text-gray-500 text-center">
-                +{travelPlans.length - 2} more plans
-              </p>
             )}
-            
-            <div className="mt-auto pt-4">
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={onSetupTravel}
-                className="w-full"
-              >
-                Setup Travel
-              </Button>
+
+            {/* Hotel Required */}
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="hotel-required"
+                checked={travelSetup.hotelRequired}
+                onChange={(e) => handleHotelRequired(e.target.checked)}
+                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <label htmlFor="hotel-required" className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                <Hotel className="w-4 h-4" />
+                <span>Hotel Reservation Required</span>
+              </label>
             </div>
+
+            {/* Add Reservation Details Button - shows when hotel is required but details not saved */}
+            {travelSetup.hotelRequired && !hotelReservationDetails && (
+              <div className="ml-7">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleOpenHotelReservationModal}
+                  className="w-full"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Reservation Details
+                </Button>
+              </div>
+            )}
+
+            {/* Hotel Reservation Details Card - shows after reservation details are saved */}
+            {hotelReservationDetails && (
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Hotel className="w-5 h-5 text-blue-600" />
+                    <h4 className="text-sm font-medium text-blue-900">Hotel Reservation Details Added</h4>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleEditHotelReservationDetails}
+                    className="text-blue-600 hover:text-blue-800 p-2"
+                    title="Edit hotel reservation details"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Hotel:</span>
+                    <span className="text-blue-900 font-medium">{hotelReservationDetails.hotelName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Check-in:</span>
+                    <span className="text-blue-900 font-medium">{formatDate(hotelReservationDetails.checkInDate)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Check-out:</span>
+                    <span className="text-blue-900 font-medium">{formatDate(hotelReservationDetails.checkOutDate)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Rooms:</span>
+                    <span className="text-blue-900 font-medium">
+                      {hotelReservationDetails.numberOfRooms} room{hotelReservationDetails.numberOfRooms !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  {hotelReservationDetails.reservationSlip && (
+                    <div className="flex justify-between">
+                      <span className="text-blue-700">Reservation Slip:</span>
+                      <span className="text-blue-900 font-medium">1 file</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="text-center py-8 flex-1 flex flex-col justify-center">
-            <Plane className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-sm text-gray-500 mb-6">No travel plans yet</p>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onAddTravel}
-              className="w-full mt-auto"
-            >
-              Setup Travel
-            </Button>
-          </div>
-        )}
+        </div>
       </Card>
+
+      {/* Add Travel Details Modal */}
+      <AddTravelDetailsModal
+        isOpen={showTravelDetailsModal}
+        onClose={handleCloseTravelDetailsModal}
+        onSave={handleSaveTravelDetails}
+        travelType={travelSetup.travelType || 'air'}
+        numberOfMembers={travelSetup.travelType === 'air' ? travelSetup.airTravelMembers : travelSetup.roadTravelMembers}
+      />
+
+      {/* Add Hotel Reservation Modal */}
+      <AddHotelReservationModal
+        isOpen={showHotelReservationModal}
+        onClose={handleCloseHotelReservationModal}
+        onSave={handleSaveHotelReservationDetails}
+      />
     </div>
   );
 };

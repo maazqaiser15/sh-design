@@ -169,7 +169,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
             onChange={(e) =>
               setStatusFilter(e.target.value as TrailerStatus | "")
             }
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option value="">All Statuses</option>
             <option value="available">Available</option>
@@ -181,7 +181,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
           <select
             value={stateFilter}
             onChange={(e) => setStateFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option value="">All States</option>
             {USA_STATES.map((state) => (
@@ -223,7 +223,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
                   id="itemsPerPage"
                   value={itemsPerPage}
                   onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="px-2 py-1 pr-6 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value={5}>5</option>
                   <option value={10}>10</option>

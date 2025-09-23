@@ -11,6 +11,7 @@ export interface TeamMember {
   phone: string;
   email: string;
   avatar?: string;
+  location?: string; // City, State format
   experience?: number; // years of experience
   specializations?: string[];
   projects?: TeamMemberProject[];
@@ -48,6 +49,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0123',
     email: 'john@company.com',
     avatar: 'JS',
+    location: 'Los Angeles, CA',
     experience: 8,
     specializations: ['Security Film', 'Window Installation', 'Team Management'],
     projects: [
@@ -91,6 +93,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0124',
     email: 'sarah@company.com',
     avatar: 'SJ',
+    location: 'Chicago, IL',
     experience: 6,
     specializations: ['Quality Control', 'Safety Protocols'],
     projects: [
@@ -120,6 +123,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0125',
     email: 'mike@company.com',
     avatar: 'MW',
+    location: 'Houston, TX',
     experience: 4,
     specializations: ['Precision Installation'],
     projects: [
@@ -150,6 +154,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0126',
     email: 'emily@company.com',
     avatar: 'ED',
+    location: 'Phoenix, AZ',
     experience: 5,
     specializations: ['Commercial Projects'],
     projects: [],
@@ -171,6 +176,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0127',
     email: 'david@company.com',
     avatar: 'DB',
+    location: 'Miami, FL',
     experience: 7,
     specializations: ['Large Scale Projects', 'Equipment Management'],
     projects: [
@@ -200,6 +206,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0128',
     email: 'lisa@company.com',
     avatar: 'LG',
+    location: 'Seattle, WA',
     experience: 3,
     specializations: ['Residential Projects'],
     projects: [
@@ -230,6 +237,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0129',
     email: 'robert@company.com',
     avatar: 'RT',
+    location: 'Denver, CO',
     experience: 10,
     specializations: ['Project Management', 'Client Relations'],
     projects: [],
@@ -251,6 +259,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     phone: '+1-555-0130',
     email: 'jennifer@company.com',
     avatar: 'JW',
+    location: 'Boston, MA',
     experience: 2,
     specializations: ['Project Coordination', 'Client Communication'],
     projects: [
@@ -285,5 +294,200 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
         details: 'Project coordinator for planning phase'
       }
     ]
+  },
+  {
+    id: 'tm-009',
+    name: 'David Martinez',
+    role: 'Installer',
+    status: 'Available',
+    phone: '+1-555-0131',
+    email: 'david@company.com',
+    avatar: 'DM',
+    location: 'Miami, FL',
+    experience: 6,
+    specializations: ['Commercial Projects', 'Security Systems'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-010',
+    name: 'Lisa Anderson',
+    role: 'Crew Leader',
+    status: 'Available',
+    phone: '+1-555-0132',
+    email: 'lisa@company.com',
+    avatar: 'LA',
+    location: 'Seattle, WA',
+    experience: 8,
+    specializations: ['Team Management', 'Quality Control'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-011',
+    name: 'James Brown',
+    role: 'Installer',
+    status: 'Unavailable',
+    unavailableUntil: '15/03/2024',
+    phone: '+1-555-0133',
+    email: 'james@company.com',
+    avatar: 'JB',
+    location: 'Denver, CO',
+    experience: 3,
+    specializations: ['Residential Projects'],
+    projects: [],
+    activityLog: [
+      {
+        id: 'act-011',
+        type: 'status_change',
+        description: 'Status changed to unavailable',
+        date: '2024-03-01',
+        details: 'Personal leave until 15/03/2024'
+      }
+    ]
+  },
+  {
+    id: 'tm-012',
+    name: 'Maria Garcia',
+    role: 'Project Coordinator',
+    status: 'Available',
+    phone: '+1-555-0134',
+    email: 'maria@company.com',
+    avatar: 'MG',
+    location: 'Austin, TX',
+    experience: 4,
+    specializations: ['Client Relations', 'Scheduling'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-013',
+    name: 'Kevin Lee',
+    role: 'Installer',
+    status: 'Available',
+    phone: '+1-555-0135',
+    email: 'kevin@company.com',
+    avatar: 'KL',
+    location: 'Portland, OR',
+    experience: 5,
+    specializations: ['Precision Installation', 'Troubleshooting'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-014',
+    name: 'Sarah Thompson',
+    role: 'Lead Supervisor',
+    status: 'Available',
+    phone: '+1-555-0136',
+    email: 'sarah@company.com',
+    avatar: 'ST',
+    location: 'Nashville, TN',
+    experience: 10,
+    specializations: ['Project Management', 'Team Leadership'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-015',
+    name: 'Michael Davis',
+    role: 'Installer',
+    status: 'Unavailable',
+    unavailableUntil: '20/03/2024',
+    phone: '+1-555-0137',
+    email: 'michael@company.com',
+    avatar: 'MD',
+    location: 'Las Vegas, NV',
+    experience: 7,
+    specializations: ['Commercial Security', 'System Integration'],
+    projects: [],
+    activityLog: [
+      {
+        id: 'act-012',
+        type: 'status_change',
+        description: 'Status changed to unavailable',
+        date: '2024-03-05',
+        details: 'Training course until 20/03/2024'
+      }
+    ]
+  },
+  {
+    id: 'tm-016',
+    name: 'Amanda Wilson',
+    role: 'Crew Leader',
+    status: 'Available',
+    phone: '+1-555-0138',
+    email: 'amanda@company.com',
+    avatar: 'AW',
+    location: 'Phoenix, AZ',
+    experience: 6,
+    specializations: ['Quality Assurance', 'Safety Protocols'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-017',
+    name: 'Christopher Taylor',
+    role: 'Installer',
+    status: 'Available',
+    phone: '+1-555-0139',
+    email: 'christopher@company.com',
+    avatar: 'CT',
+    location: 'San Diego, CA',
+    experience: 4,
+    specializations: ['Residential Security', 'Customer Service'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-018',
+    name: 'Jessica Miller',
+    role: 'Project Coordinator',
+    status: 'Available',
+    phone: '+1-555-0140',
+    email: 'jessica@company.com',
+    avatar: 'JM',
+    location: 'Tampa, FL',
+    experience: 3,
+    specializations: ['Documentation', 'Client Communication'],
+    projects: [],
+    activityLog: []
+  },
+  {
+    id: 'tm-019',
+    name: 'Daniel Rodriguez',
+    role: 'Installer',
+    status: 'Unavailable',
+    unavailableUntil: '25/03/2024',
+    phone: '+1-555-0141',
+    email: 'daniel@company.com',
+    avatar: 'DR',
+    location: 'Orlando, FL',
+    experience: 5,
+    specializations: ['Commercial Projects', 'System Maintenance'],
+    projects: [],
+    activityLog: [
+      {
+        id: 'act-013',
+        type: 'status_change',
+        description: 'Status changed to unavailable',
+        date: '2024-03-08',
+        details: 'Family emergency until 25/03/2024'
+      }
+    ]
+  },
+  {
+    id: 'tm-020',
+    name: 'Rachel Green',
+    role: 'Lead Supervisor',
+    status: 'Available',
+    phone: '+1-555-0142',
+    email: 'rachel@company.com',
+    avatar: 'RG',
+    location: 'Minneapolis, MN',
+    experience: 9,
+    specializations: ['Project Planning', 'Resource Management'],
+    projects: [],
+    activityLog: []
   }
 ];

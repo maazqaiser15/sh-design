@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { AuthProvider } from "../../contexts/AuthContext";
 import { BreadcrumbProvider } from "../../contexts/BreadcrumbContext";
+import { ToastProvider } from "../../contexts/ToastContext";
 import { CollapsibleSidePanelProvider } from "../../common/components/CollapsibleSidePanel";
 
 /**
@@ -12,9 +13,11 @@ export const Root: React.FC = () => {
   return (
     <AuthProvider>
       <BreadcrumbProvider>
-        <CollapsibleSidePanelProvider>
-          <Outlet />
-        </CollapsibleSidePanelProvider>
+        <ToastProvider>
+          <CollapsibleSidePanelProvider>
+            <Outlet />
+          </CollapsibleSidePanelProvider>
+        </ToastProvider>
       </BreadcrumbProvider>
     </AuthProvider>
   );

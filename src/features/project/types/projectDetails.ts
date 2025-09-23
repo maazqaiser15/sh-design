@@ -4,7 +4,7 @@ import { LogisticsTravelData } from './logisticsTravel';
 
 // Project Stages
 export type ProjectStage = 'preparation' | 'wip' | 'fer' | 'completed';
-export type ProjectStatus = 'active' | 'on-hold' | 'completed';
+export type ProjectStatus = 'PV90' | 'UB' | 'WB' | 'WIP' | 'Completed';
 
 // Project Details Types
 export interface ProjectDetails {
@@ -81,7 +81,7 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
   name: 'Downtown Office Complex Security Film Installation',
   projectId: 'VIN-2024-001',
   stage: 'preparation',
-  status: 'active',
+  status: 'PV90',
   description: 'Comprehensive security film installation for the new downtown office complex',
   location: '123 Main Street, Downtown',
   startDate: '2024-02-01',

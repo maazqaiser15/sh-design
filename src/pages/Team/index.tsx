@@ -84,7 +84,7 @@ export const Team: React.FC = () => {
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="px-3 py-2 pr-7 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         >
           <option value="all">All Roles</option>
           <option value="Lead Supervisor">Lead Supervisor</option>
@@ -96,7 +96,7 @@ export const Team: React.FC = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="px-3 py-2 pr-7 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         >
           <option value="all">All Status</option>
           <option value="Available">Available</option>

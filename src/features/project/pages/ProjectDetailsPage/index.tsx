@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Users, Truck, Package, Plane, Wrench, Search, CheckCircle2 } from 'lucide-react';
 import { useBreadcrumbContext } from '../../../../contexts/BreadcrumbContext';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
@@ -9,12 +10,14 @@ import { MOCK_TEAM_MEMBERS, TeamMember } from '../../types/teamMembers';
 import { LogisticsItem, TravelPlan } from '../../types/logisticsTravel';
 import { ProjectHeaderWithWorkflow } from '../../components/ProjectHeaderWithWorkflow';
 import { KeyInfoSection } from '../../components/KeyInfoSection';
+import { ComingSoonCard } from '../../components/ComingSoonCard';
 import { ProjectDocuments } from '../../components/ProjectDocuments';
 import { ProjectNotes } from '../../components/ProjectNotes';
 import { ProjectDateModal } from '../../components/ProjectDateModal';
 import { TrailerInventoryCard } from '../../components/TrailerInventoryCard';
 import { AssignTrailerModal } from '../../components/AssignTrailerModal';
 import { Modal } from '../../../../common/components/Modal';
+import { useToast } from '../../../../contexts/ToastContext';
 import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { TrailerForAssignment } from '../../types/trailers';
 
@@ -25,6 +28,7 @@ import { TrailerForAssignment } from '../../types/trailers';
 export const ProjectDetailsPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { setBreadcrumbs } = useBreadcrumbContext();
+  const { showToast } = useToast();
   
   // State management
   const [project] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
@@ -42,6 +46,7 @@ export const ProjectDetailsPage: React.FC = () => {
   const [assignedTrailer, setAssignedTrailer] = useState<TrailerForAssignment | null>(null);
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
+  const [selectedStage, setSelectedStage] = useState<string>('preparation');
 
   // Set breadcrumbs when component mounts
   useEffect(() => {
@@ -156,6 +161,23 @@ export const ProjectDetailsPage: React.FC = () => {
 
   const handleEditTeam = () => {
     setShowEditTeamModal(true);
+  };
+
+  const handleRemoveTeamMember = (memberId: string) => {
+    if (preparationData.assignedTeam) {
+      const updatedMembers = preparationData.assignedTeam.members.filter(member => member.id !== memberId);
+      const updatedTeam = {
+        ...preparationData.assignedTeam,
+        members: updatedMembers,
+        count: updatedMembers.length,
+        leadMember: updatedMembers.find(member => member.role === 'Lead Supervisor') || undefined
+      };
+
+      setPreparationData(prev => ({
+        ...prev,
+        assignedTeam: updatedMembers.length > 0 ? updatedTeam : null
+      }));
+    }
   };
 
   const handleTeamAssignment = (selectedMembers: TeamMember[]) => {
@@ -387,6 +409,7 @@ export const ProjectDetailsPage: React.FC = () => {
   // Handle house manager notification
   const handleNotifyHouseManager = (message: string) => {
     console.log('Notifying house manager:', message);
+    showToast(message);
     // In a real app, this would send a notification
   };
 
@@ -408,11 +431,10 @@ export const ProjectDetailsPage: React.FC = () => {
     // In a real app, this would update the project status in the database
   };
 
-  // Handle updating preparation task by label
+  // Handle preparation task updates
   const handleUpdatePreparationTask = (taskLabel: string, completed: boolean) => {
-    setPreparationData(prev => ({
-      ...prev,
-      checklist: prev.checklist.map(item => {
+    setPreparationData(prev => {
+      const updatedChecklist = prev.checklist.map(item => {
         if (item.label === taskLabel) {
           const updated = { ...item, completed };
           if (completed) {
@@ -425,8 +447,31 @@ export const ProjectDetailsPage: React.FC = () => {
           return updated;
         }
         return item;
-      })
-    }));
+      });
+
+      // Check if all preparation tasks are completed
+      const allTasksCompleted = updatedChecklist.every(item => item.completed);
+      
+      // If all tasks are completed and project is in PV90 status, update to WB
+      if (allTasksCompleted && project.status === 'PV90') {
+        // Update project status to WB
+        const updatedProject = { ...project, status: 'WB' as const };
+        
+        // Show success message
+        showToast('All preparation tasks completed! Project status updated to WB. Work in Progress stage is now available.');
+        
+        return {
+          ...prev,
+          checklist: updatedChecklist,
+          project: updatedProject
+        };
+      }
+
+      return {
+        ...prev,
+        checklist: updatedChecklist
+      };
+    });
   };
 
   // Mock project film requirements
@@ -450,6 +495,28 @@ export const ProjectDetailsPage: React.FC = () => {
     project.status === 'UB' || 
     project.status === 'WB';
 
+  // Handle stage navigation
+  const handleStageClick = (stageId: string) => {
+    setSelectedStage(stageId);
+    
+    switch (stageId) {
+      case 'preparation':
+        showToast('Switched to Preparation stage');
+        break;
+      case 'wip':
+        showToast('Switched to Work in Progress stage');
+        break;
+      case 'quality':
+        showToast('Switched to Quality Check stage');
+        break;
+      case 'completed':
+        showToast('Switched to Completed stage');
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full px-4 py-6">
@@ -460,29 +527,62 @@ export const ProjectDetailsPage: React.FC = () => {
           onEdit={handleEditProject}
           onEditDates={handleEditDates}
           onToggleItem={handleToggleChecklistItem}
+          onStageClick={handleStageClick}
+          selectedStage={selectedStage}
           isPreparationStage={isPreparationStage}
         />
 
-        {/* Key Info Section - Now includes Assign Trailer, Assigned Team, Travel Setup, and Logistics */}
-        <KeyInfoSection
-          assignedTeam={preparationData.assignedTeam}
-          travelPlans={preparationData.logisticsTravel.travelPlans}
-          assignedTrailer={assignedTrailer}
-          projectFilmRequirements={projectFilmRequirements}
-          onViewTeam={handleViewTeam}
-          onAssignTeam={handleAssignTeam}
-          onEditTeam={handleEditTeam}
-          onSetupTravel={handleSetupTravel}
-          onAddTravel={handleAddTravel}
-          onEditTravel={handleEditTravel}
-          onDeleteTravel={handleDeleteTravel}
-          onAssignTrailer={handleOpenAssignTrailerModal}
-          onNotifyHouseManager={handleNotifyHouseManager}
-          onUploadReceipt={handleUploadReceipt}
-          onRemoveReceipt={handleRemoveReceipt}
-          onMarkCompleted={handleMarkCompleted}
-          onUpdatePreparationTask={handleUpdatePreparationTask}
-        />
+        {/* Key Info Section - Conditional rendering based on selected stage */}
+        {selectedStage === 'preparation' ? (
+          <KeyInfoSection
+            assignedTeam={preparationData.assignedTeam}
+            travelPlans={preparationData.logisticsTravel.travelPlans}
+            assignedTrailer={assignedTrailer}
+            projectFilmRequirements={projectFilmRequirements}
+            onViewTeam={handleViewTeam}
+            onAssignTeam={handleAssignTeam}
+            onEditTeam={handleEditTeam}
+            onRemoveTeamMember={handleRemoveTeamMember}
+            onSetupTravel={handleSetupTravel}
+            onAddTravel={handleAddTravel}
+            onEditTravel={handleEditTravel}
+            onDeleteTravel={handleDeleteTravel}
+            onAssignTrailer={handleOpenAssignTrailerModal}
+            onNotifyHouseManager={handleNotifyHouseManager}
+            onUploadReceipt={handleUploadReceipt}
+            onRemoveReceipt={handleRemoveReceipt}
+            onMarkCompleted={handleMarkCompleted}
+            onUpdatePreparationTask={handleUpdatePreparationTask}
+          />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+            <ComingSoonCard
+              title="Team Management"
+              description="Manage team assignments, track progress, and coordinate team activities during project execution."
+              icon={<Users className="w-8 h-8 text-blue-600" />}
+              stageName="Work in Progress"
+            />
+            <ComingSoonCard
+              title="Equipment & Resources"
+              description="Track equipment usage, manage resources, and monitor inventory during project execution."
+              icon={<Truck className="w-8 h-8 text-amber-600" />}
+              stageName="Work in Progress"
+            />
+            <ComingSoonCard
+              title="Project Logistics"
+              description="Monitor project logistics, track deliveries, and manage supply chain during execution."
+              icon={<Package className="w-8 h-8 text-purple-600" />}
+              stageName="Work in Progress"
+            />
+            <ComingSoonCard
+              title="Progress Tracking"
+              description="Track project milestones, monitor progress, and manage timelines during execution."
+              icon={<Wrench className="w-8 h-8 text-green-600" />}
+              stageName="Work in Progress"
+            />
+          </div>
+        )}
+
 
 
         {/* Documents and Notes Section - Side by Side */}
@@ -530,6 +630,7 @@ export const ProjectDetailsPage: React.FC = () => {
           onClose={() => setShowAssignTeamModal(false)}
           onAssignTeam={handleTeamAssignment}
           availableMembers={MOCK_TEAM_MEMBERS}
+          projectDetails={project}
         />
 
         {/* Edit Team Modal */}
@@ -539,6 +640,7 @@ export const ProjectDetailsPage: React.FC = () => {
           onAssignTeam={handleTeamAssignment}
           availableMembers={MOCK_TEAM_MEMBERS}
           assignedMemberIds={preparationData.assignedTeam?.members.map(m => m.id) || []}
+          projectDetails={project}
         />
 
 
