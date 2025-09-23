@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Users, Truck, Package, Plane, Wrench, Search, CheckCircle2 } from 'lucide-react';
 import { useBreadcrumbContext } from '../../../../contexts/BreadcrumbContext';
-import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
+import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectStatus } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
 import { AddTravelModal } from '../../components/AddTravelModal';
@@ -35,7 +35,7 @@ export const ProjectDetailsPage: React.FC = () => {
   const urlStage = searchParams.get('stage');
   
   // State management
-  const [project] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
+  const [project, setProject] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
   const [preparationData, setPreparationData] = useState<PreparationStageData>(MOCK_PREPARATION_DATA);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignTeamModal, setShowAssignTeamModal] = useState(false);
@@ -532,6 +532,31 @@ export const ProjectDetailsPage: React.FC = () => {
     if (urlStage) {
       setSelectedStage(urlStage);
       
+      // Update project status based on stage
+      let newStatus: ProjectStatus;
+      switch (urlStage) {
+        case 'preparation':
+          newStatus = 'PV90'; // Default to PV90 for preparation stage
+          break;
+        case 'wip':
+          newStatus = 'WIP';
+          break;
+        case 'quality':
+          newStatus = 'QF';
+          break;
+        case 'completed':
+          newStatus = 'Completed';
+          break;
+        default:
+          newStatus = 'PV90';
+      }
+      
+      // Update project status
+      setProject(prev => ({
+        ...prev,
+        status: newStatus
+      }));
+      
       // Handle special cases based on stage
       if (urlStage === 'wip') {
         // Mark preparation stage as completed when opening WIP stage
@@ -548,8 +573,30 @@ export const ProjectDetailsPage: React.FC = () => {
       } else if (urlStage === 'completed') {
         showToast('Completed stage opened');
       }
+    } else {
+      // If no stage in URL, determine stage based on current project status
+      let stage = 'preparation';
+      switch (project.status) {
+        case 'PV90':
+        case 'UB':
+        case 'WB':
+          stage = 'preparation';
+          break;
+        case 'WIP':
+          stage = 'wip';
+          break;
+        case 'QF':
+          stage = 'quality';
+          break;
+        case 'Completed':
+          stage = 'completed';
+          break;
+        default:
+          stage = 'preparation';
+      }
+      setSelectedStage(stage);
     }
-  }, [urlStage]);
+  }, [urlStage, project.status]);
 
   // Handle marking project for Quality Check
   const handleMarkForQF = () => {

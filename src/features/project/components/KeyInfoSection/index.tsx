@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Users, Phone, Edit, Plane, Trash2, Truck, RefreshCw, Car, Hotel, CheckCircle, Plus, FileText, X } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
@@ -8,6 +9,8 @@ import { TravelPlan } from '../../types/logisticsTravel';
 import { LogisticsCard } from '../LogisticsCard';
 import { AddTravelDetailsModal } from '../AddTravelDetailsModal';
 import { AddHotelReservationModal } from '../AddHotelReservationModal';
+import { UploadTakeOffSheetModal } from '../UploadTakeOffSheetModal';
+import { WindowManagementPage } from '../../pages/WindowManagementPage';
 import { useToast } from '../../../../contexts/ToastContext';
 
 interface KeyInfoSectionProps {
@@ -58,6 +61,8 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   selectedStage = 'preparation'
 }) => {
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
   
   // Travel & Accommodation state management
   const [travelSetup, setTravelSetup] = useState({
@@ -256,85 +261,149 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
     }
   };
 
+  // Upload Take-Off Sheet modal state
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showWindowManagement, setShowWindowManagement] = useState(false);
+
+  // Handle upload take-off sheet
+  const handleUploadTakeOffSheet = (file: File) => {
+    showToast(`Take-off sheet "${file.name}" uploaded successfully! Windows created.`);
+    setShowUploadModal(false);
+    // Navigate to window management page
+    if (projectId) {
+      navigate(`/projects/${projectId}/windows`);
+    }
+  };
+
+  const handleOpenUploadModal = () => {
+    setShowUploadModal(true);
+  };
+
+  const handleCloseUploadModal = () => {
+    setShowUploadModal(false);
+  };
+
+  // Handle direct upload with loader
+  const handleDirectUpload = () => {
+    setIsUploading(true);
+    
+    // Simulate upload processing
+    setTimeout(() => {
+      showToast('Take-off sheet uploaded successfully! Windows created.');
+      setIsUploading(false);
+      // Show window management interface instead of redirecting
+      setShowWindowManagement(true);
+    }, 2000); // 2 second loader
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 items-stretch">
       {selectedStage === 'wip' ? (
-        // Work in Progress stage - Upload take-off sheet card
+        // Work in Progress stage - Show upload or window management
         <div className="lg:col-span-4">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Project Setup</h3>
+          {showWindowManagement ? (
+            // Window Management Interface
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
+                </div>
               </div>
-              <span className="text-sm font-medium text-gray-500">Ready to begin</span>
-            </div>
-            
-            <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                <FileText className="w-8 h-8 text-blue-600" />
-              </div>
-              
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                Upload Take-Off Sheet
-              </h4>
-              
-              <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
-                Upload your take-off sheet to create window inventory and start working on the project. 
-                This will help us track progress and manage the installation process.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  variant="primary"
-                  size="md"
-                  icon={FileText}
-                  onClick={() => {
-                    // Handle file upload
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = '.pdf,.xlsx,.xls,.csv';
-                    input.onchange = (e) => {
-                      const file = (e.target as HTMLInputElement).files?.[0];
-                      if (file) {
-                        showToast(`Take-off sheet "${file.name}" uploaded successfully`);
-                        // In a real app, this would process the file and create windows
-                      }
-                    };
-                    input.click();
-                  }}
-                  className="px-6 py-2"
-                >
-                  Upload Take-Off Sheet
-                </Button>
-                
-                <Button
-                  variant="secondary"
-                  size="md"
-                  icon={Edit}
-                  onClick={() => {
-                    showToast('Manual window entry opened');
-                    // In a real app, this would open a modal for manual entry
-                  }}
-                  className="px-6 py-2"
-                >
-                  Enter Manually
-                </Button>
-              </div>
-              
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-2">
-                  <strong>Supported formats:</strong> PDF, Excel (.xlsx, .xls), CSV
-                </p>
-                <p className="text-xs text-gray-500">
-                  Once uploaded, we'll automatically create your window inventory and you can begin tracking progress.
-                </p>
+              <div className="p-0">
+                <WindowManagementPage />
               </div>
             </div>
-          </Card>
+          ) : (
+            // Upload Take-Off Sheet Card
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Project Setup</h3>
+                </div>
+                <span className="text-sm font-medium text-gray-500">Ready to begin</span>
+              </div>
+              
+              {isUploading ? (
+                // Loading state
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                  
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    Processing Take-Off Sheet
+                  </h4>
+                  
+                  <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
+                    Creating window inventory and setting up project workspace...
+                  </p>
+                  
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                    <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+                  </div>
+                  
+                  <p className="text-xs text-gray-500">
+                    This may take a few moments
+                  </p>
+                </div>
+              ) : (
+                // Upload interface
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                    <FileText className="w-8 h-8 text-blue-600" />
+                  </div>
+                  
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    Upload Take-Off Sheet
+                  </h4>
+                  
+                  <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                    Upload your take-off sheet to create window inventory and start working on the project. 
+                    This will help us track progress and manage the installation process.
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button
+                      variant="primary"
+                      size="md"
+                      icon={FileText}
+                      onClick={handleDirectUpload}
+                      className="px-6 py-2"
+                    >
+                      Upload Take-Off Sheet
+                    </Button>
+                    
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      icon={Edit}
+                      onClick={() => {
+                        showToast('Manual window entry opened');
+                        // In a real app, this would open a modal for manual entry
+                      }}
+                      className="px-6 py-2"
+                    >
+                      Enter Manually
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-500 mb-2">
+                      <strong>Supported formats:</strong> PDF, Excel (.xlsx, .xls), CSV
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Once uploaded, we'll automatically create your window inventory and you can begin tracking progress.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </Card>
+          )}
         </div>
       ) : (
-        // Preparation stage - Show original 4 cards
         <>
       {/* Assigned Team Card */}
       <Card className="p-6 flex flex-col">
@@ -359,16 +428,16 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-sm font-medium text-blue-600">
-                        {member.name.split(' ').map(n => n[0]).join('')}
-                      </div>
+                    {member.name.split(' ').map(n => n[0]).join('')}
+                  </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">{member.name}</p>
                         <p className="text-xs text-gray-500 truncate">{member.role}</p>
                         {member.location && (
                           <p className="text-xs text-gray-400 truncate">{member.location}</p>
-                        )}
-                      </div>
-                    </div>
+                )}
+              </div>
+              </div>
                     <button
                       onClick={() => handleRemoveTeamMember(member.id)}
                       className="text-gray-400 hover:text-red-500 transition-colors p-1"
@@ -470,9 +539,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                         <span className="text-gray-500">{film.quantity} sheets</span>
                       </div>
                     ))}
-                  </div>
-                </div>
-                
+              </div>
+            </div>
+            
                 {assignedTrailer.notes && (
                   <div className="mt-4 pt-3 border-t border-gray-200">
                     <span className="text-sm font-medium text-gray-700 block mb-2">Notes:</span>
@@ -516,7 +585,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             <h3 className="text-lg font-semibold text-gray-900">Travel & Accommodation</h3>
           </div>
         </div>
-
+        
         <div className="flex-1 flex flex-col">
           {/* Checkboxes */}
           <div className="space-y-4">
@@ -533,7 +602,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                 Travel Required
               </label>
             </div>
-
+            
             {/* Travel Type Selection - Only show if travel details haven't been saved */}
             {travelSetup.travelRequired && !travelDetails && (
               <div className="ml-7 space-y-3 border-l-2 border-gray-200 pl-4">
@@ -611,15 +680,15 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                 {/* Travel Confirm Button */}
                 {travelSetup.travelType && !isTravelSubmitted && (
-                  <Button
+                    <Button
                     variant="primary"
-                    size="sm"
+                      size="sm"
                     onClick={handleTravelConfirm}
                     className="w-full"
-                  >
+                    >
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Submit Travel Arrangement
-                  </Button>
+                    </Button>
                 )}
 
                 {/* Add Travel Details Button - shows after travel is submitted but before details are saved */}
@@ -699,15 +768,15 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             {/* Add Reservation Details Button - shows when hotel is required but details not saved */}
             {travelSetup.hotelRequired && !hotelReservationDetails && (
               <div className="ml-7">
-                <Button
+              <Button
                   variant="secondary"
-                  size="sm"
+                size="sm"
                   onClick={handleOpenHotelReservationModal}
                   className="w-full"
-                >
+              >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Reservation Details
-                </Button>
+              </Button>
               </div>
             )}
 
@@ -719,16 +788,16 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     <Hotel className="w-5 h-5 text-blue-600" />
                     <h4 className="text-sm font-medium text-blue-900">Hotel Reservation Details Added</h4>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+              <Button
+                variant="ghost"
+                size="sm"
                     onClick={handleEditHotelReservationDetails}
                     className="text-blue-600 hover:text-blue-800 p-2"
                     title="Edit hotel reservation details"
-                  >
+              >
                     <Edit className="w-4 h-4" />
-                  </Button>
-                </div>
+              </Button>
+            </div>
                 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -759,8 +828,10 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
               </div>
             )}
           </div>
-        </div>
+          </div>
       </Card>
+        </>
+      )}
 
       {/* Add Travel Details Modal */}
       <AddTravelDetailsModal
@@ -777,8 +848,13 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         onClose={handleCloseHotelReservationModal}
         onSave={handleSaveHotelReservationDetails}
       />
-        </>
-      )}
+
+      {/* Upload Take-Off Sheet Modal */}
+      <UploadTakeOffSheetModal
+        isOpen={showUploadModal}
+        onClose={handleCloseUploadModal}
+        onUpload={handleUploadTakeOffSheet}
+      />
     </div>
   );
 };
