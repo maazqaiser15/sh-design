@@ -1,0 +1,199 @@
+import React from 'react';
+import { Edit, Calendar, MapPin, CheckCircle, Circle, ArrowRight, Settings, Wrench, Search, CheckCircle2 } from 'lucide-react';
+import { Button } from '../../../../common/components/Button';
+import { StatusBadge } from '../../../../common/components/StatusBadge';
+import { ProjectDetails } from '../../types/projectDetails';
+import { ChecklistItem } from '../../types/projectDetails';
+
+interface ProjectHeaderWithWorkflowProps {
+  project: ProjectDetails;
+  checklist: ChecklistItem[];
+  onEdit: () => void;
+  onEditDates?: () => void;
+  onToggleItem: (itemId: string) => void;
+  isPreparationStage?: boolean;
+}
+
+/**
+ * ProjectHeaderWithWorkflow - Combined header and workflow component
+ * Shows project details, workflow stages, and preparation tasks in a single card
+ */
+export const ProjectHeaderWithWorkflow: React.FC<ProjectHeaderWithWorkflowProps> = ({
+  project,
+  checklist,
+  onEdit,
+  onEditDates,
+  onToggleItem,
+  isPreparationStage = false
+}) => {
+  const completedCount = checklist.filter(item => item.completed).length;
+  const totalCount = checklist.length;
+  const progressPercentage = (completedCount / totalCount) * 100;
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  // Define the project stages with icons
+  const projectStages = [
+    { id: 'preparation', label: 'Preparation', icon: Settings, completed: completedCount === totalCount },
+    { id: 'wip', label: 'Work in Progress', icon: Wrench, completed: false },
+    { id: 'quality', label: 'Quality Check', icon: Search, completed: false },
+    { id: 'completed', label: 'Completed', icon: CheckCircle2, completed: false }
+  ];
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8">
+      <div className="flex py-6 px-6">
+        {/* Left Side - Project Information Block */}
+        <div className="flex-1 min-w-0 pr-6">
+          {/* Header Row */}
+          <div className="flex items-center space-x-3 mb-3">
+            <h1 className="text-xl font-bold text-gray-900 truncate">
+              {project.name}
+            </h1>
+            <span className="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full flex-shrink-0">
+              {project.projectId}
+            </span>
+            <StatusBadge
+              status={project.stage}
+              className="px-2 py-1 text-xs font-medium rounded-full border bg-blue-100 text-blue-700 border-blue-200 flex-shrink-0"
+            />
+          </div>
+          
+          {/* Meta Info (inline) */}
+          <div className="flex items-center text-sm text-gray-600 mb-3">
+            <div className="flex items-center space-x-1">
+              <MapPin className="w-3 h-3" />
+              <span className="truncate">{project.location}</span>
+            </div>
+            <span className="mx-2 text-gray-400">•</span>
+            <div className="flex items-center space-x-1">
+              <Calendar className="w-3 h-3" />
+              <span>{formatDate(project.startDate)} – {formatDate(project.endDate)}</span>
+            </div>
+          </div>
+
+          {/* Description */}
+          {project.description && (
+            <p className="text-sm text-gray-500 mb-3 line-clamp-1">
+              {project.description}
+            </p>
+          )}
+
+          {/* Preparation Tasks (mini checklist) */}
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-gray-700">Preparation Tasks</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {checklist.map(item => (
+                <div key={item.id} className="flex items-center">
+                  <button
+                    onClick={() => onToggleItem(item.id)}
+                    className="flex-shrink-0 mr-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                    aria-label={`Toggle ${item.label}`}
+                  >
+                    {item.completed ? (
+                      <CheckCircle className="w-3 h-3 text-green-500" />
+                    ) : (
+                      <Circle className="w-3 h-3" />
+                    )}
+                  </button>
+                  <span className={`text-xs font-medium ${item.completed ? 'text-green-600' : 'text-gray-600'}`}>
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-2">
+            {isPreparationStage && onEditDates && (
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={Calendar}
+                onClick={onEditDates}
+                className="text-xs px-3 py-1 h-7"
+              >
+                Edit Dates
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Edit}
+              onClick={onEdit}
+              className="text-xs px-3 py-1 h-7"
+            >
+              Edit
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Side - Horizontal Progress Tracker */}
+        <div className="flex-shrink-0" style={{ width: '360px' }}>
+          <div className="flex flex-col h-full">
+            {/* Left border line */}
+            <div className="absolute left-0 top-0 w-0.5 h-full bg-gray-200"></div>
+            
+            {/* Horizontal Progress Steps */}
+            <div className="relative pl-4">
+              {projectStages.map((stage, index) => {
+                const IconComponent = stage.icon;
+                const isActive = stage.id === 'preparation';
+                const isCompleted = stage.completed;
+                
+                return (
+                  <div key={stage.id} className="flex items-center mb-3 last:mb-0">
+                    {/* Step Number Circle */}
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 flex-shrink-0 ${
+                      isCompleted 
+                        ? 'bg-green-500 border-green-500 text-white' 
+                        : isActive 
+                          ? 'bg-blue-500 border-blue-500 text-white' 
+                          : 'bg-white border-gray-300 text-gray-500'
+                    }`}>
+                      <span className="text-xs font-semibold">
+                        {isCompleted ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          index + 1
+                        )}
+                      </span>
+                    </div>
+                    
+                    {/* Step Content */}
+                    <div className="ml-3 flex-1">
+                      <div className={`text-sm font-bold ${
+                        isCompleted 
+                          ? 'text-green-600' 
+                          : isActive 
+                            ? 'text-blue-600' 
+                            : 'text-gray-600'
+                      }`}>
+                        {stage.label}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {stage.id === 'preparation' && 'Complete all preparation tasks'}
+                        {stage.id === 'wip' && 'Begin project execution and installation'}
+                        {stage.id === 'quality' && 'Review and verify installation quality'}
+                        {stage.id === 'completed' && 'Project successfully completed'}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

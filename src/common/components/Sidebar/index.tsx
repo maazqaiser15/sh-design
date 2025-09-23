@@ -5,6 +5,7 @@ import {
   FolderOpen,
   Users,
   Truck,
+  BarChart3,
   Calendar,
   Settings,
   ChevronRight
@@ -46,16 +47,16 @@ const navigation: NavigationItem[] = [
     permission: 'trailers',
   },
   {
-    name: 'Scheduler',
-    href: '/scheduler',
-    icon: Calendar,
-    permission: 'scheduler',
-  },
-  {
     name: 'Settings',
     href: '/settings',
     icon: Settings,
     permission: 'settings',
+  },
+  {
+    name: 'Schedular',
+    href: '/team-gantt-chart',
+    icon: Calendar,
+    permission: 'scheduler',
   },
 ];
 
@@ -109,21 +110,37 @@ export const Sidebar: React.FC = () => {
               />
             </button>
           ) : (
-            <NavLink
-              to={item.href}
-              className={({ isActive }) => `
-                flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors
-                ${depth > 0 ? 'ml-4 pl-6' : ''}
-                ${
-                  isActive
-                    ? 'bg-primary text-white'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-gray-100'
-                }
-              `}
-            >
-              <Icon size={18} />
-              <span>{item.name}</span>
-            </NavLink>
+            item.href?.startsWith('http') ? (
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`
+                  flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                  ${depth > 0 ? 'ml-4 pl-6' : ''}
+                  text-text-secondary hover:text-text-primary hover:bg-gray-100
+                `}
+              >
+                <Icon size={18} />
+                <span>{item.name}</span>
+              </a>
+            ) : (
+              <NavLink
+                to={item.href || '#'}
+                className={({ isActive }) => `
+                  flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                  ${depth > 0 ? 'ml-4 pl-6' : ''}
+                  ${
+                    isActive
+                      ? 'bg-primary text-white'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-gray-100'
+                  }
+                `}
+              >
+                <Icon size={18} />
+                <span>{item.name}</span>
+              </NavLink>
+            )
           )}
         </div>
 

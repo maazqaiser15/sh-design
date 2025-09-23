@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, X, Check, AlertTriangle, Circle, Truck, MapPin, Package } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Modal } from '../../../../common/components/Modal';
-import { TrailerForAssignment } from '../TrailerAssignmentModal';
+import { TrailerForAssignment } from '../../types/trailers';
 
 interface AssignTrailerModalProps {
   isOpen: boolean;
@@ -30,7 +30,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
   // Filter trailers based on search and filters
   const filteredTrailers = useMemo(() => {
     return availableTrailers.filter(trailer => {
-      const matchesSearch = trailer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = trailer.trailerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            trailer.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            trailer.currentLocation.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = !statusFilter || trailer.status === statusFilter;
@@ -186,7 +186,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
                             <h3 className={`text-sm font-medium ${
                               isSelectable ? 'text-gray-900' : 'text-gray-500'
                             }`}>
-                              {trailer.name}
+                              {trailer.trailerName}
                             </h3>
                             <span className={`text-xs ${
                               isSelectable ? 'text-gray-500' : 'text-gray-400'

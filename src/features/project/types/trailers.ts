@@ -2,23 +2,26 @@ export type TrailerStatus = 'available' | 'unavailable' | 'low_stock';
 
 export interface TrailerForAssignment {
   id: string;
-  name: string;
+  trailerName: string;
   registrationNumber: string;
+  homeLocation: string;
   currentLocation: string;
   status: TrailerStatus;
   unavailableUntil?: string; // Date string if unavailable
+  capacity: number;
+  currentLoad: number;
+  lastMaintenance: string;
+  nextMaintenance: string;
+  assignedProject: string | null;
   inventory: {
-    tools: {
-      name: string;
-      currentStock: number;
-      threshold: number;
-      status: 'good' | 'low' | 'critical';
-    }[];
     filmSheets: {
       sheetType: string;
-      currentStock: number;
-      threshold: number;
-      status: 'good' | 'low' | 'critical';
+      required: number;
+      available: number;
+    }[];
+    tools: {
+      toolName: string;
+      available: number;
     }[];
   };
 }

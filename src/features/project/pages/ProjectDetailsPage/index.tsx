@@ -7,14 +7,16 @@ import { AddLogisticsModal } from '../../components/AddLogisticsModal';
 import { AddTravelModal } from '../../components/AddTravelModal';
 import { MOCK_TEAM_MEMBERS, TeamMember } from '../../types/teamMembers';
 import { LogisticsItem, TravelPlan } from '../../types/logisticsTravel';
-import { ProjectDetailsHeader } from '../../components/ProjectDetailsHeader';
+import { ProjectHeaderWithWorkflow } from '../../components/ProjectHeaderWithWorkflow';
 import { KeyInfoSection } from '../../components/KeyInfoSection';
-import { ProjectChecklist } from '../../components/ProjectChecklist';
 import { ProjectDocuments } from '../../components/ProjectDocuments';
 import { ProjectNotes } from '../../components/ProjectNotes';
 import { ProjectDateModal } from '../../components/ProjectDateModal';
 import { TrailerInventoryCard } from '../../components/TrailerInventoryCard';
+import { AssignTrailerModal } from '../../components/AssignTrailerModal';
 import { Modal } from '../../../../common/components/Modal';
+import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
+import { TrailerForAssignment } from '../../types/trailers';
 
 /**
  * ProjectDetailsPage - Main project details page with stage-based layout
@@ -37,7 +39,9 @@ export const ProjectDetailsPage: React.FC = () => {
   const [showEditTravelModal, setShowEditTravelModal] = useState(false);
   const [editingTravel, setEditingTravel] = useState<TravelPlan | null>(null);
   const [showDateModal, setShowDateModal] = useState(false);
-  const [assignedTrailer, setAssignedTrailer] = useState<any>(null);
+  const [assignedTrailer, setAssignedTrailer] = useState<TrailerForAssignment | null>(null);
+  const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
+  const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
 
   // Set breadcrumbs when component mounts
   useEffect(() => {
@@ -364,7 +368,7 @@ export const ProjectDetailsPage: React.FC = () => {
   };
 
   // Handle trailer assignment
-  const handleAssignTrailer = (trailer: any) => {
+  const handleAssignTrailer = (trailer: TrailerForAssignment) => {
     setAssignedTrailer(trailer);
     setPreparationData(prev => ({
       ...prev,
@@ -372,12 +376,57 @@ export const ProjectDetailsPage: React.FC = () => {
         item.label === 'Trailer Assigned' ? { ...item, completed: true } : item
       )
     }));
+    setShowAssignTrailerModal(false);
+  };
+
+  // Handle opening trailer assignment modal
+  const handleOpenAssignTrailerModal = () => {
+    setShowAssignTrailerModal(true);
   };
 
   // Handle house manager notification
   const handleNotifyHouseManager = (message: string) => {
     console.log('Notifying house manager:', message);
     // In a real app, this would send a notification
+  };
+
+  // Handle receipt upload
+  const handleUploadReceipt = (file: File) => {
+    console.log('Uploading shipment receipt:', file.name);
+    // In a real app, this would upload the file and update the database
+  };
+
+  // Handle receipt removal
+  const handleRemoveReceipt = (receiptId: string) => {
+    console.log('Removing receipt:', receiptId);
+    // In a real app, this would remove the receipt from the database
+  };
+
+  // Handle mark inventory as completed
+  const handleMarkCompleted = () => {
+    console.log('Marking inventory as completed');
+    // In a real app, this would update the project status in the database
+  };
+
+  // Handle updating preparation task by label
+  const handleUpdatePreparationTask = (taskLabel: string, completed: boolean) => {
+    setPreparationData(prev => ({
+      ...prev,
+      checklist: prev.checklist.map(item => {
+        if (item.label === taskLabel) {
+          const updated = { ...item, completed };
+          if (completed) {
+            updated.completedAt = new Date().toISOString();
+            updated.completedBy = 'Current User';
+          } else {
+            updated.completedAt = undefined;
+            updated.completedBy = undefined;
+          }
+          return updated;
+        }
+        return item;
+      })
+    }));
   };
 
   // Mock project film requirements
@@ -403,164 +452,159 @@ export const ProjectDetailsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <ProjectDetailsHeader
-        project={project}
-        onEdit={handleEditProject}
-        onEditDates={handleEditDates}
-        isPreparationStage={isPreparationStage}
-      />
-
-      <div className="max-w-7xl mx-auto px-8 py-6">
-        {/* Key Info Section */}
-            <KeyInfoSection
-              assignedTeam={preparationData.assignedTeam}
-              logistics={preparationData.logistics}
-              logisticsItems={preparationData.logisticsTravel.logistics}
-              travelPlans={preparationData.logisticsTravel.travelPlans}
-              onViewTeam={handleViewTeam}
-              onViewLogistics={handleViewLogistics}
-              onAssignTeam={handleAssignTeam}
-              onEditTeam={handleEditTeam}
-              onAssignLogistics={handleAssignLogistics}
-              onSetupTravel={handleSetupTravel}
-              onAddLogistics={handleAddLogistics}
-              onEditLogistics={handleEditLogistics}
-              onDeleteLogistics={handleDeleteLogistics}
-              onAddTravel={handleAddTravel}
-              onEditTravel={handleEditTravel}
-              onDeleteTravel={handleDeleteTravel}
-            />
-
-        {/* Trailer & Project Inventory Card - Only for preparation stage */}
-        {isPreparationStage && (
-          <div className="mt-6">
-            <TrailerInventoryCard
-              assignedTrailer={assignedTrailer}
-              onAssignTrailer={handleAssignTrailer}
-              onNotifyHouseManager={handleNotifyHouseManager}
-              projectFilmRequirements={projectFilmRequirements}
-            />
-          </div>
-        )}
-
-        {/* Checklist Section */}
-        <ProjectChecklist
+      <div className="w-full px-4 py-6">
+        {/* Project Overview Card */}
+        <ProjectHeaderWithWorkflow
+          project={project}
           checklist={preparationData.checklist}
+          onEdit={handleEditProject}
+          onEditDates={handleEditDates}
           onToggleItem={handleToggleChecklistItem}
+          isPreparationStage={isPreparationStage}
+        />
+
+        {/* Key Info Section - Now includes Assign Trailer, Assigned Team, Travel Setup, and Logistics */}
+        <KeyInfoSection
+          assignedTeam={preparationData.assignedTeam}
+          travelPlans={preparationData.logisticsTravel.travelPlans}
+          assignedTrailer={assignedTrailer}
+          projectFilmRequirements={projectFilmRequirements}
+          onViewTeam={handleViewTeam}
+          onAssignTeam={handleAssignTeam}
+          onEditTeam={handleEditTeam}
+          onSetupTravel={handleSetupTravel}
+          onAddTravel={handleAddTravel}
+          onEditTravel={handleEditTravel}
+          onDeleteTravel={handleDeleteTravel}
+          onAssignTrailer={handleOpenAssignTrailerModal}
+          onNotifyHouseManager={handleNotifyHouseManager}
+          onUploadReceipt={handleUploadReceipt}
+          onRemoveReceipt={handleRemoveReceipt}
+          onMarkCompleted={handleMarkCompleted}
+          onUpdatePreparationTask={handleUpdatePreparationTask}
         />
 
 
-        {/* Documents Section */}
-        <ProjectDocuments
-          documents={preparationData.documents}
-          onUploadDocument={handleUploadDocument}
-          onDeleteDocument={handleDeleteDocument}
-          onDownloadDocument={handleDownloadDocument}
-        />
+        {/* Documents and Notes Section - Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ProjectDocuments
+            documents={preparationData.documents}
+            onUploadDocument={handleUploadDocument}
+            onDeleteDocument={handleDeleteDocument}
+            onDownloadDocument={handleDownloadDocument}
+          />
+          
+          <ProjectNotes
+            notes={preparationData.notes}
+            onAddNote={handleAddNote}
+            onEditNote={handleEditNote}
+            onDeleteNote={handleDeleteNote}
+          />
+        </div>
 
-        {/* Notes Section */}
-        <ProjectNotes
-          notes={preparationData.notes}
-          onAddNote={handleAddNote}
-          onEditNote={handleEditNote}
-          onDeleteNote={handleDeleteNote}
-        />
-      </div>
-
-      {/* Edit Project Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        title="Edit Project"
-        size="md"
-      >
-        <div className="p-6">
-          <p className="text-gray-600 mb-4">
-            Project editing functionality will be implemented in the next phase.
-          </p>
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={() => setShowEditModal(false)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Close
-            </button>
+        {/* Edit Project Modal */}
+        <Modal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          title="Edit Project"
+          size="md"
+        >
+          <div className="p-6">
+            <p className="text-gray-600 mb-4">
+              Project editing functionality will be implemented in the next phase.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
 
-      {/* Assign Team Modal */}
-      <AssignTeamModal
-        isOpen={showAssignTeamModal}
-        onClose={() => setShowAssignTeamModal(false)}
-        onAssignTeam={handleTeamAssignment}
-        availableMembers={MOCK_TEAM_MEMBERS}
-      />
+        {/* Assign Team Modal */}
+        <AssignTeamModal
+          isOpen={showAssignTeamModal}
+          onClose={() => setShowAssignTeamModal(false)}
+          onAssignTeam={handleTeamAssignment}
+          availableMembers={MOCK_TEAM_MEMBERS}
+        />
 
-      {/* Edit Team Modal */}
-      <AssignTeamModal
-        isOpen={showEditTeamModal}
-        onClose={() => setShowEditTeamModal(false)}
-        onAssignTeam={handleTeamAssignment}
-        availableMembers={MOCK_TEAM_MEMBERS}
-        assignedMemberIds={preparationData.assignedTeam?.members.map(m => m.id) || []}
-      />
+        {/* Edit Team Modal */}
+        <AssignTeamModal
+          isOpen={showEditTeamModal}
+          onClose={() => setShowEditTeamModal(false)}
+          onAssignTeam={handleTeamAssignment}
+          availableMembers={MOCK_TEAM_MEMBERS}
+          assignedMemberIds={preparationData.assignedTeam?.members.map(m => m.id) || []}
+        />
 
 
-          {/* Add Logistics Modal */}
-          <AddLogisticsModal
-            isOpen={showAddLogisticsModal}
-            onClose={() => setShowAddLogisticsModal(false)}
-            onSave={handleSaveLogistics}
-          />
+        {/* Add Logistics Modal */}
+        <AddLogisticsModal
+          isOpen={showAddLogisticsModal}
+          onClose={() => setShowAddLogisticsModal(false)}
+          onSave={handleSaveLogistics}
+        />
 
-          {/* Edit Logistics Modal */}
-          <AddLogisticsModal
-            isOpen={showEditLogisticsModal}
-            onClose={() => setShowEditLogisticsModal(false)}
-            onSave={handleSaveLogistics}
-            onEdit={handleUpdateLogistics}
-            editingLogistics={editingLogistics}
-          />
+        {/* Edit Logistics Modal */}
+        <AddLogisticsModal
+          isOpen={showEditLogisticsModal}
+          onClose={() => setShowEditLogisticsModal(false)}
+          onSave={handleSaveLogistics}
+          onEdit={handleUpdateLogistics}
+          editingLogistics={editingLogistics}
+        />
 
-          {/* Add Travel Modal */}
-          <AddTravelModal
-            isOpen={showAddTravelModal}
-            onClose={() => setShowAddTravelModal(false)}
-            onSave={handleSaveTravel}
-            availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
-              id: member.id,
-              name: member.name,
-              role: member.role
-            }))}
-          />
+        {/* Add Travel Modal */}
+        <AddTravelModal
+          isOpen={showAddTravelModal}
+          onClose={() => setShowAddTravelModal(false)}
+          onSave={handleSaveTravel}
+          availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
+            id: member.id,
+            name: member.name,
+            role: member.role
+          }))}
+        />
 
-          {/* Edit Travel Modal */}
-          <AddTravelModal
-            isOpen={showEditTravelModal}
-            onClose={() => setShowEditTravelModal(false)}
-            onSave={handleSaveTravel}
-            onEdit={handleUpdateTravel}
-            editingTravel={editingTravel}
-            availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
-              id: member.id,
-              name: member.name,
-              role: member.role
-            }))}
-          />
+        {/* Edit Travel Modal */}
+        <AddTravelModal
+          isOpen={showEditTravelModal}
+          onClose={() => setShowEditTravelModal(false)}
+          onSave={handleSaveTravel}
+          onEdit={handleUpdateTravel}
+          editingTravel={editingTravel}
+          availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
+            id: member.id,
+            name: member.name,
+            role: member.role
+          }))}
+        />
 
-          {/* Project Date Modal */}
-          <ProjectDateModal
-            isOpen={showDateModal}
-            onClose={() => setShowDateModal(false)}
-            onConfirm={handleDateConfirm}
-            projectTitle={project.name}
-            projectStatus={project.status as any}
-            initialStartDate={project.startDate}
-            initialEndDate={project.endDate}
-          />
+        {/* Project Date Modal */}
+        <ProjectDateModal
+          isOpen={showDateModal}
+          onClose={() => setShowDateModal(false)}
+          onConfirm={handleDateConfirm}
+          projectTitle={project.name}
+          projectStatus={project.status as any}
+          initialStartDate={project.startDate}
+          initialEndDate={project.endDate}
+        />
 
-        </div>
-      );
-    };
+        {/* Assign Trailer Modal */}
+        <AssignTrailerModal
+          isOpen={showAssignTrailerModal}
+          onClose={() => setShowAssignTrailerModal(false)}
+          onAssignTrailer={handleAssignTrailer}
+          availableTrailers={availableTrailers}
+          assignedTrailerId={assignedTrailer?.id}
+        />
+
+      </div>
+    </div>
+  );
+};

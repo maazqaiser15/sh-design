@@ -21,24 +21,6 @@ export const ProjectDetailsHeader: React.FC<ProjectDetailsHeaderProps> = ({
   onEditDates,
   isPreparationStage = false
 }) => {
-  const getStageDisplay = (stage: string) => {
-    const stageMap = {
-      'preparation': 'Preparation',
-      'wip': 'Work in Progress',
-      'fer': 'Finishing & Execution',
-      'completed': 'Completed'
-    };
-    return stageMap[stage as keyof typeof stageMap] || stage;
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors = {
-      'active': 'bg-green-100 text-green-800 border-green-200',
-      'on-hold': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'completed': 'bg-gray-100 text-gray-800 border-gray-200'
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200';
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -63,7 +45,7 @@ export const ProjectDetailsHeader: React.FC<ProjectDetailsHeaderProps> = ({
               </span>
               <StatusBadge
                 status={project.stage}
-                className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(project.status)}`}
+                className="px-3 py-1 text-xs font-medium rounded-full border bg-gray-100 text-gray-800 border-gray-200"
               />
             </div>
           </div>
@@ -80,17 +62,6 @@ export const ProjectDetailsHeader: React.FC<ProjectDetailsHeaderProps> = ({
             </div>
           </div>
 
-          {/* Stage and Status */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Stage:</span>
-              <span className="text-sm text-gray-900">{getStageDisplay(project.stage)}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Status:</span>
-              <span className="text-sm text-gray-900 capitalize">{project.status.replace('-', ' ')}</span>
-            </div>
-          </div>
 
           {/* Description */}
           {project.description && (

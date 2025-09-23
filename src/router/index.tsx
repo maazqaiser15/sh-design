@@ -3,7 +3,6 @@ import { RouteObject } from "react-router-dom";
 import { Root } from "../components/Root";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ProtectedLayout } from "../components/ProtectedLayout";
-import { Scheduler } from "../pages/Scheduler";
 import DesignSystemLibrary from "../components/DesignSystemLibrary";
 
 /**
@@ -129,11 +128,15 @@ export const routes: RouteObject[] = [
             ],
           },
 
-          // Scheduler Route
-        {
-          path: "scheduler",
-          element: <Scheduler />,
-        },
+          // Team Gantt Chart Route
+          {
+            path: "team-gantt-chart",
+            async lazy() {
+              const { TeamGanttChart } = await import("../pages/TeamGanttChart");
+              return { element: <TeamGanttChart /> };
+            },
+          },
+
         {
           path: "design-system",
           element: <DesignSystemLibrary />,

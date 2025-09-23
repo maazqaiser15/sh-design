@@ -1,0 +1,47 @@
+import React, { useState } from 'react';
+import { TeamGanttWithViews } from '../../features/teamGantt/components/TeamGanttWithViews';
+import { MOCK_TEAM_MEMBERS } from '../../features/teamGantt/data/mockData';
+import { ViewMode, LayoutMode, Project } from '../../features/teamGantt/types/ganttTypes';
+
+export const TeamGanttChart: React.FC = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('project'); // Default to Project View
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+
+  const handleDateChange = (newDate: Date) => {
+    setCurrentDate(newDate);
+  };
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+  };
+
+  const handleLayoutModeChange = (mode: LayoutMode) => {
+    setLayoutMode(mode);
+  };
+
+  const handleProjectHover = (project: Project | null) => {
+    setHoveredProject(project);
+  };
+
+  const handleProjectClick = (project: Project) => {
+    console.log('Project clicked:', project);
+    // TODO: Navigate to project details or show modal
+  };
+
+  return (
+    <TeamGanttWithViews
+      teamMembers={MOCK_TEAM_MEMBERS}
+      currentDate={currentDate}
+      viewMode={viewMode}
+      layoutMode={layoutMode}
+      onDateChange={handleDateChange}
+      onViewModeChange={handleViewModeChange}
+      onLayoutModeChange={handleLayoutModeChange}
+      onProjectHover={handleProjectHover}
+      onProjectClick={handleProjectClick}
+      hoveredProject={hoveredProject}
+    />
+  );
+};

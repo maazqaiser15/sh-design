@@ -27,97 +27,127 @@ interface TrailerAssignmentModalProps {
 const MOCK_TRAILERS: TrailerForAssignment[] = [
   {
     id: '1',
-    name: 'Trailer Alpha',
+    trailerName: 'Trailer Alpha',
     registrationNumber: 'REG-001-2024',
+    homeLocation: 'Warehouse A',
     currentLocation: 'Warehouse A',
     status: 'available',
+    capacity: 1000,
+    currentLoad: 0,
+    lastMaintenance: '2024-01-01T00:00:00Z',
+    nextMaintenance: '2024-07-01T00:00:00Z',
+    assignedProject: null,
     inventory: {
       tools: [
-        { name: 'CART', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'BEER TANK W/ HOSE', currentStock: 4, threshold: 6, status: 'low' },
-        { name: 'HARD PRESS', currentStock: 0, threshold: 6, status: 'critical' }
+        { toolName: 'CART', available: 6 },
+        { toolName: 'BEER TANK W/ HOSE', available: 4 },
+        { toolName: 'HARD PRESS', available: 0 }
       ],
       filmSheets: [
-        { sheetType: 'BR', currentStock: 50, threshold: 30, status: 'good' },
-        { sheetType: 'Riot+', currentStock: 15, threshold: 25, status: 'low' },
-        { sheetType: 'Riot', currentStock: 30, threshold: 20, status: 'good' }
+        { sheetType: 'BR', required: 30, available: 50 },
+        { sheetType: 'Riot+', required: 25, available: 15 },
+        { sheetType: 'Riot', required: 20, available: 30 }
       ]
     }
   },
   {
     id: '2',
-    name: 'Trailer Beta',
+    trailerName: 'Trailer Beta',
     registrationNumber: 'REG-002-2024',
+    homeLocation: 'Warehouse B',
     currentLocation: 'Warehouse B',
     status: 'unavailable',
     unavailableUntil: '2024-12-25',
+    capacity: 1000,
+    currentLoad: 0,
+    lastMaintenance: '2024-01-01T00:00:00Z',
+    nextMaintenance: '2024-07-01T00:00:00Z',
+    assignedProject: null,
     inventory: {
       tools: [
-        { name: 'CART', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'BEER TANK W/ HOSE', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'HARD PRESS', currentStock: 6, threshold: 6, status: 'good' }
+        { toolName: 'CART', available: 6 },
+        { toolName: 'BEER TANK W/ HOSE', available: 6 },
+        { toolName: 'HARD PRESS', available: 6 }
       ],
       filmSheets: [
-        { sheetType: 'BR', currentStock: 100, threshold: 30, status: 'good' },
-        { sheetType: 'Riot+', currentStock: 50, threshold: 25, status: 'good' },
-        { sheetType: 'Riot', currentStock: 40, threshold: 20, status: 'good' }
+        { sheetType: 'BR', required: 30, available: 100 },
+        { sheetType: 'Riot+', required: 25, available: 50 },
+        { sheetType: 'Riot', required: 20, available: 40 }
       ]
     }
   },
   {
     id: '3',
-    name: 'Trailer Gamma',
+    trailerName: 'Trailer Gamma',
     registrationNumber: 'REG-003-2024',
+    homeLocation: 'Warehouse A',
     currentLocation: 'Warehouse A',
     status: 'low_stock',
+    capacity: 1000,
+    currentLoad: 0,
+    lastMaintenance: '2024-01-01T00:00:00Z',
+    nextMaintenance: '2024-07-01T00:00:00Z',
+    assignedProject: null,
     inventory: {
       tools: [
-        { name: 'CART', currentStock: 3, threshold: 6, status: 'low' },
-        { name: 'BEER TANK W/ HOSE', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'HARD PRESS', currentStock: 6, threshold: 6, status: 'good' }
+        { toolName: 'CART', available: 3 },
+        { toolName: 'BEER TANK W/ HOSE', available: 6 },
+        { toolName: 'HARD PRESS', available: 6 }
       ],
       filmSheets: [
-        { sheetType: 'BR', currentStock: 20, threshold: 30, status: 'low' },
-        { sheetType: 'Riot+', currentStock: 10, threshold: 25, status: 'low' },
-        { sheetType: 'Riot', currentStock: 15, threshold: 20, status: 'low' }
+        { sheetType: 'BR', required: 30, available: 20 },
+        { sheetType: 'Riot+', required: 25, available: 10 },
+        { sheetType: 'Riot', required: 20, available: 15 }
       ]
     }
   },
   {
     id: '4',
-    name: 'Trailer Delta',
+    trailerName: 'Trailer Delta',
     registrationNumber: 'REG-004-2024',
+    homeLocation: 'Warehouse C',
     currentLocation: 'Warehouse C',
     status: 'available',
+    capacity: 1000,
+    currentLoad: 0,
+    lastMaintenance: '2024-01-01T00:00:00Z',
+    nextMaintenance: '2024-07-01T00:00:00Z',
+    assignedProject: null,
     inventory: {
       tools: [
-        { name: 'CART', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'BEER TANK W/ HOSE', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'HARD PRESS', currentStock: 6, threshold: 6, status: 'good' }
+        { toolName: 'CART', available: 6 },
+        { toolName: 'BEER TANK W/ HOSE', available: 6 },
+        { toolName: 'HARD PRESS', available: 6 }
       ],
       filmSheets: [
-        { sheetType: 'BR', currentStock: 80, threshold: 30, status: 'good' },
-        { sheetType: 'Riot+', currentStock: 40, threshold: 25, status: 'good' },
-        { sheetType: 'Riot', currentStock: 35, threshold: 20, status: 'good' }
+        { sheetType: 'BR', required: 30, available: 80 },
+        { sheetType: 'Riot+', required: 25, available: 40 },
+        { sheetType: 'Riot', required: 20, available: 35 }
       ]
     }
   },
   {
     id: '5',
-    name: 'Trailer Epsilon',
+    trailerName: 'Trailer Epsilon',
     registrationNumber: 'REG-005-2024',
+    homeLocation: 'Warehouse A',
     currentLocation: 'Warehouse A',
     status: 'available',
+    capacity: 1000,
+    currentLoad: 0,
+    lastMaintenance: '2024-01-01T00:00:00Z',
+    nextMaintenance: '2024-07-01T00:00:00Z',
+    assignedProject: null,
     inventory: {
       tools: [
-        { name: 'CART', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'BEER TANK W/ HOSE', currentStock: 6, threshold: 6, status: 'good' },
-        { name: 'HARD PRESS', currentStock: 6, threshold: 6, status: 'good' }
+        { toolName: 'CART', available: 6 },
+        { toolName: 'BEER TANK W/ HOSE', available: 6 },
+        { toolName: 'HARD PRESS', available: 6 }
       ],
       filmSheets: [
-        { sheetType: 'BR', currentStock: 60, threshold: 30, status: 'good' },
-        { sheetType: 'Riot+', currentStock: 30, threshold: 25, status: 'good' },
-        { sheetType: 'Riot', currentStock: 25, threshold: 20, status: 'good' }
+        { sheetType: 'BR', required: 30, available: 60 },
+        { sheetType: 'Riot+', required: 25, available: 30 },
+        { sheetType: 'Riot', required: 20, available: 25 }
       ]
     }
   }
@@ -222,7 +252,7 @@ const TrailerAssignmentModal: React.FC<TrailerAssignmentModalProps> = ({
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                      {trailer.name}
+                      {trailer.trailerName}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500">
                       {trailer.registrationNumber}
@@ -308,7 +338,7 @@ export const TrailerInventoryCard: React.FC<TrailerInventoryCardProps> = ({
     // Show toast notification for low stock trailers
     if (trailer.status === 'low_stock') {
       showToastNotification('House Manager notified to restock trailer inventory.');
-      onNotifyHouseManager(`Trailer ${trailer.name} (${trailer.registrationNumber}) needs restocking for project assignment.`);
+      onNotifyHouseManager(`Trailer ${trailer.trailerName} (${trailer.registrationNumber}) needs restocking for project assignment.`);
     }
   };
 
