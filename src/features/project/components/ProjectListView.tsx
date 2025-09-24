@@ -23,14 +23,18 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
 
   const getProgressPercentage = (status: string): number => {
     switch (status) {
+      case 'PV75':
+        return 5;
       case 'PV90':
+        return 15;
       case 'UB':
+        return 25;
       case 'WB':
-        return 0;
+        return 40;
       case 'WIP':
-        return 65;
+        return 75;
       case 'QF':
-        return 100;
+        return 90;
       case 'Completed':
         return 100;
       default:
@@ -40,6 +44,8 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
 
   const getProgressBarColor = (status: string): string => {
     switch (status) {
+      case 'PV75':
+        return 'bg-gray-500';
       case 'PV90':
         return 'bg-purple-500';
       case 'UB':
@@ -47,54 +53,52 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
       case 'WB':
         return 'bg-yellow-500';
       case 'WIP':
-        return 'bg-green-500';
+        return 'bg-blue-500';
       case 'QF':
         return 'bg-orange-500';
       case 'Completed':
-        return 'bg-gray-500';
+        return 'bg-green-500';
       default:
         return 'bg-gray-400';
     }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {projects.map((project) => (
         <div
           key={project.id}
           onClick={() => onProjectClick(project)}
-          className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col"
+          className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer h-full flex flex-col min-h-[280px]"
         >
-          {/* Top Row: Title + Badges */}
+          {/* Top Row: Title */}
           <div className="flex items-start justify-between mb-3">
-            <h3 className="text-base font-medium text-gray-900 flex-1 pr-2">
-              {project.title}
-            </h3>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex-1 pr-3">
+              <h3 className="text-lg font-semibold text-gray-900 leading-tight mb-2">
+                {project.title}
+              </h3>
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
                 {project.vinCode}
-              </span>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${PROJECT_STATUS_COLORS[project.status]}`}>
-                {PROJECT_STATUS_DESCRIPTIONS[project.status]}
               </span>
             </div>
           </div>
 
           {/* Location Row */}
-          <div className="flex items-center text-gray-500 mb-3">
-            <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-            <span className="text-sm truncate">{project.location}</span>
+          <div className="flex items-center text-gray-500 mb-4">
+            <MapPin className="w-5 h-5 mr-3 flex-shrink-0" />
+            <span className="text-base truncate">{project.location}</span>
           </div>
 
           {/* Crew & Trailer Row */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <Users className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0" />
-              <div className="flex items-center -space-x-1">
+              <Users className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
+              <div className="flex items-center -space-x-2">
                 {project.crew.slice(0, 3).map((member, index) => (
                   <div
                     key={member.id}
-                    className="w-6 h-6 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-700"
+                    className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-sm font-medium text-gray-700"
                     title={member.name}
                   >
                     {member.avatar ? (
@@ -109,39 +113,42 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                   </div>
                 ))}
                 {project.crewCount > 3 && (
-                  <div className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-sm font-medium text-gray-600">
                     +{project.crewCount - 3}
                   </div>
                 )}
               </div>
               {project.crewCount === 0 && (
-                <span className="text-xs text-gray-400 ml-2">No crew</span>
+                <span className="text-sm text-gray-400 ml-3">No crew</span>
               )}
             </div>
             
             <div className="flex items-center text-gray-500">
-              <Truck className="w-4 h-4 mr-1 flex-shrink-0" />
-              <span className="text-sm truncate max-w-24">
+              <Truck className="w-5 h-5 mr-2 flex-shrink-0" />
+              <span className="text-base truncate max-w-32">
                 {project.assignedTrailer || 'Not Assigned'}
               </span>
             </div>
           </div>
 
-          {/* Bottom Row: Progress Bar */}
-          <div className="mt-auto">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-gray-500">Progress</span>
-              <span className="text-xs text-gray-500">{getProgressPercentage(project.status)}%</span>
+          {/* Bottom Row: Progress Bar - Only show for WIP, QF, and Completed */}
+          {['WIP', 'QF', 'Completed'].includes(project.status) && (
+            <div className="mt-auto">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-600">Progress</span>
+                <span className="text-sm font-semibold text-gray-700">{getProgressPercentage(project.status)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className={`h-3 rounded-full transition-all duration-300 ${getProgressBarColor(project.status)}`}
+                  style={{ width: `${getProgressPercentage(project.status)}%` }}
+                ></div>
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full transition-all duration-300 ${getProgressBarColor(project.status)}`}
-                style={{ width: `${getProgressPercentage(project.status)}%` }}
-              ></div>
-            </div>
-          </div>
+          )}
         </div>
       ))}
+      </div>
     </div>
   );
 };

@@ -372,7 +372,7 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
         {/* Current Status */}
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
           <span className="text-sm font-medium text-gray-700">Current Status</span>
-          <StatusBadge status={previewStatus} />
+          <StatusBadge status={previewStatus} unavailableUntil={trailer?.unavailableUntil} />
         </div>
 
         {/* Basic Information Section */}

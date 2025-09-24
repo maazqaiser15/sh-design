@@ -28,7 +28,7 @@ const MOCK_TRAILERS: TrailerForAssignment[] = [
   {
     id: '1',
     trailerName: 'Trailer Alpha',
-    registrationNumber: 'REG-001-2024',
+    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10001',
     homeLocation: 'Warehouse A',
     currentLocation: 'Warehouse A',
     status: 'available',
@@ -53,7 +53,7 @@ const MOCK_TRAILERS: TrailerForAssignment[] = [
   {
     id: '2',
     trailerName: 'Trailer Beta',
-    registrationNumber: 'REG-002-2024',
+    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10002',
     homeLocation: 'Warehouse B',
     currentLocation: 'Warehouse B',
     status: 'unavailable',
@@ -79,7 +79,7 @@ const MOCK_TRAILERS: TrailerForAssignment[] = [
   {
     id: '3',
     trailerName: 'Trailer Gamma',
-    registrationNumber: 'REG-003-2024',
+    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10003',
     homeLocation: 'Warehouse A',
     currentLocation: 'Warehouse A',
     status: 'low_stock',
@@ -104,7 +104,7 @@ const MOCK_TRAILERS: TrailerForAssignment[] = [
   {
     id: '4',
     trailerName: 'Trailer Delta',
-    registrationNumber: 'REG-004-2024',
+    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10004',
     homeLocation: 'Warehouse C',
     currentLocation: 'Warehouse C',
     status: 'available',
@@ -129,7 +129,7 @@ const MOCK_TRAILERS: TrailerForAssignment[] = [
   {
     id: '5',
     trailerName: 'Trailer Epsilon',
-    registrationNumber: 'REG-005-2024',
+    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10005',
     homeLocation: 'Warehouse A',
     currentLocation: 'Warehouse A',
     status: 'available',

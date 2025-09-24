@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid, List, Search, X } from 'lucide-react';
+import { Grid, List, Search, X, Calendar } from 'lucide-react';
 import { ProjectListView } from '../components/ProjectListView';
 import { ProjectTableView } from '../components/ProjectTableView';
+import { ProjectGanttView } from '../components/ProjectGanttView';
 import { ProjectDateModal } from '../components/ProjectDateModal';
 import { 
   SafeHavenProject, 
@@ -20,7 +21,7 @@ const mockTrailers: Trailer[] = [
   {
     id: "1",
     trailerName: "Alpha Trailer",
-    registrationNumber: "REG-001-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10001",
     parkingAddress: "123 Main Street",
     state: "California",
     city: "Los Angeles",
@@ -45,7 +46,7 @@ const mockTrailers: Trailer[] = [
   {
     id: "2",
     trailerName: "Beta Trailer",
-    registrationNumber: "REG-002-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10002",
     parkingAddress: "456 Industrial Blvd",
     state: "Texas",
     city: "Houston",
@@ -70,7 +71,7 @@ const mockTrailers: Trailer[] = [
   {
     id: "3",
     trailerName: "Gamma Trailer",
-    registrationNumber: "REG-003-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10003",
     parkingAddress: "789 Service Road",
     state: "Florida",
     city: "Miami",
@@ -100,17 +101,17 @@ const mockProjects: SafeHavenProject[] = [
     id: '1',
     title: 'Downtown Office Complex Security',
     description: 'Complete security film installation for 15-story office complex downtown',
-    status: 'WIP',
-    stage: 'WIP',
-    startDate: '2024-12-15',
-    endDate: '2024-12-30',
+    status: 'PV75',
+    stage: 'PV75',
+    startDate: '2025-09-15',
+    endDate: '2025-09-30',
     location: 'Downtown Seattle, WA',
     createdAt: '2024-12-01T00:00:00Z',
     updatedAt: '2024-12-15T00:00:00Z',
     assignedTeam: ['1', '2', '3'],
     assignedTrailers: ['1'],
-    progress: 65,
-    vinCode: 'SHD-001',
+    progress: 5,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20001',
     crew: [
       { 
         id: '1', 
@@ -154,15 +155,15 @@ const mockProjects: SafeHavenProject[] = [
     description: 'Security film installation for luxury residential community',
     status: 'WB',
     stage: 'WB',
-    startDate: '2024-12-20',
-    endDate: '2024-12-25',
+    startDate: '2025-09-20',
+    endDate: '2025-09-25',
     location: 'Bellevue, WA',
     createdAt: '2024-12-01T00:00:00Z',
     updatedAt: '2024-12-01T00:00:00Z',
     assignedTeam: ['4', '5'],
     assignedTrailers: ['2'],
-    progress: 25,
-    vinCode: 'SHD-002',
+    progress: 40,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20002',
     crew: [
       { 
         id: '4', 
@@ -195,15 +196,15 @@ const mockProjects: SafeHavenProject[] = [
     description: 'High-security film installation for government facility',
     status: 'UB',
     stage: 'UB',
-    startDate: '2025-01-15',
-    endDate: '2025-01-30',
+    startDate: '2025-09-10',
+    endDate: '2025-09-18',
     location: 'Olympia, WA',
     createdAt: '2024-12-01T00:00:00Z',
     updatedAt: '2024-12-01T00:00:00Z',
     assignedTeam: [],
     assignedTrailers: [],
-    progress: 0,
-    vinCode: 'SHD-003',
+    progress: 25,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20003',
     crew: [],
     assignedTrailer: null,
   },
@@ -213,15 +214,15 @@ const mockProjects: SafeHavenProject[] = [
     description: 'Security film installation for retail chain stores',
     status: 'Completed',
     stage: 'Completed',
-    startDate: '2024-11-01',
-    endDate: '2024-11-15',
+    startDate: '2025-09-05',
+    endDate: '2025-09-12',
     location: 'Tacoma, WA',
     createdAt: '2024-10-15T00:00:00Z',
     updatedAt: '2024-11-15T00:00:00Z',
     assignedTeam: ['6', '7', '8'],
     assignedTrailers: ['3'],
     progress: 100,
-    vinCode: 'SHD-004',
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20004',
     crew: [
       { 
         id: '6', 
@@ -265,17 +266,140 @@ const mockProjects: SafeHavenProject[] = [
     description: 'Security film installation for school district buildings',
     status: 'PV90',
     stage: 'PV90',
-    startDate: '2025-02-01',
-    endDate: '2025-02-20',
+    startDate: '2025-09-25',
+    endDate: '2025-10-05',
     location: 'Spokane, WA',
     createdAt: '2024-12-01T00:00:00Z',
     updatedAt: '2024-12-01T00:00:00Z',
     assignedTeam: [],
     assignedTrailers: [],
-    progress: 0,
-    vinCode: 'SHD-005',
+    progress: 15,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20005',
     crew: [],
     assignedTrailer: null,
+  },
+  {
+    id: '6',
+    title: 'Hospital Security Upgrade',
+    description: 'Security film installation for medical facility',
+    status: 'WIP',
+    stage: 'WIP',
+    startDate: '2025-09-08',
+    endDate: '2025-09-15',
+    location: 'Portland, OR',
+    createdAt: '2024-12-01T00:00:00Z',
+    updatedAt: '2024-12-01T00:00:00Z',
+    assignedTeam: ['9', '10'],
+    assignedTrailers: ['4'],
+    progress: 75,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20006',
+    crew: [
+      { 
+        id: '9', 
+        name: 'Jennifer Taylor', 
+        role: 'Installer', 
+        designation: 'Installer',
+        location: 'Portland, OR',
+        phone: '+1-555-0109',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '10', 
+        name: 'Robert Garcia', 
+        role: 'Coordinator', 
+        designation: 'Coordinator',
+        location: 'Portland, OR',
+        phone: '+1-555-0110',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+    ],
+    assignedTrailer: 'Trailer Delta',
+  },
+  {
+    id: '7',
+    title: 'Shopping Mall Protection',
+    description: 'Security film installation for retail complex',
+    status: 'UB',
+    stage: 'UB',
+    startDate: '2025-09-22',
+    endDate: '2025-09-28',
+    location: 'San Francisco, CA',
+    createdAt: '2024-12-01T00:00:00Z',
+    updatedAt: '2024-12-01T00:00:00Z',
+    assignedTeam: ['11', '12'],
+    assignedTrailers: ['5'],
+    progress: 25,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20007',
+    crew: [
+      { 
+        id: '11', 
+        name: 'Amanda Lee', 
+        role: 'Lead', 
+        designation: 'Lead',
+        location: 'San Francisco, CA',
+        phone: '+1-555-0111',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '12', 
+        name: 'Christopher Davis', 
+        role: 'Installer', 
+        designation: 'Installer',
+        location: 'San Francisco, CA',
+        phone: '+1-555-0112',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+    ],
+    assignedTrailer: 'Trailer Echo',
+  },
+  {
+    id: '8',
+    title: 'Quality Assurance Project',
+    description: 'Security film installation ready for quality check',
+    status: 'QF',
+    stage: 'QF',
+    startDate: '2025-09-12',
+    endDate: '2025-09-18',
+    location: 'Portland, OR',
+    createdAt: '2024-12-01T00:00:00Z',
+    updatedAt: '2024-12-15T00:00:00Z',
+    assignedTeam: ['1', '2'],
+    assignedTrailers: ['1'],
+    progress: 90,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20008',
+    crew: [
+      { 
+        id: '1', 
+        name: 'John Smith', 
+        role: 'Lead Installer', 
+        designation: 'Lead Installer',
+        location: 'Portland, OR',
+        phone: '+1-555-0101',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      },
+      { 
+        id: '2', 
+        name: 'Sarah Johnson', 
+        role: 'Technician', 
+        designation: 'Technician',
+        location: 'Portland, OR',
+        phone: '+1-555-0102',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: undefined 
+      }
+    ],
+    assignedTrailer: 'Trailer Alpha',
   },
 ];
 
@@ -285,6 +409,7 @@ export const ProjectListPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<ProjectFilters>({
     status: [],
+    assignedUsers: [],
   });
   const [sortOptions, setSortOptions] = useState<ProjectSortOptions>({
     field: 'title',
@@ -366,22 +491,23 @@ export const ProjectListPage: React.FC = () => {
   const handleClearFilters = () => {
     setFilters({
       status: [],
+      assignedUsers: [],
     });
     setSearchQuery('');
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 md:px-0 py-0">
-        {/* Header Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+      <div className="w-full px-4 py-0">
+        {/* First Row - Page Heading and Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
           {/* Left side - Title and count */}
-          <div className="mb-4 md:mb-0">
-            <h1 className="text-xl font-semibold text-gray-900">Projects</h1>
-            <p className="text-sm text-gray-500">{projectListItems.length} Projects</p>
+          <div className="mb-6 lg:mb-0">
+            <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+            <p className="text-lg text-gray-500 mt-1">{projectListItems.length} Projects</p>
           </div>
           
-          {/* Right side - Controls */}
+          {/* Right side - Search and View Controls */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Search Bar */}
             <div className="relative w-full sm:w-64">
@@ -395,24 +521,6 @@ export const ProjectListPage: React.FC = () => {
               />
             </div>
 
-            {/* Status Filter Dropdown */}
-            <select
-              value={filters.status[0] || ''}
-              onChange={(e) => {
-                const status = e.target.value as ProjectStatus;
-                setFilters({
-                  status: status ? [status] : [],
-                });
-              }}
-              className="px-3 py-2 pr-7 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Statuses</option>
-              {['PV90', 'UB', 'WB', 'WIP', 'Completed'].map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
 
             {/* View Toggle - Icons Only */}
             <div className="flex bg-gray-100 rounded-lg p-1">
@@ -438,8 +546,44 @@ export const ProjectListPage: React.FC = () => {
               >
                 <List className="w-4 h-4" />
               </button>
+              <button
+                onClick={() => setViewMode({ type: 'gantt' })}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode.type === 'gantt'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="Gantt Chart View"
+              >
+                <Calendar className="w-4 h-4" />
+              </button>
             </div>
 
+          </div>
+        </div>
+
+        {/* Second Row - Status Filter Tabs */}
+        <div className="mb-6">
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+            {['All', 'PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'].map((status) => (
+              <button
+                key={status}
+                onClick={() => {
+                  const projectStatus = status === 'All' ? '' : status as ProjectStatus;
+                  setFilters({
+                    status: projectStatus ? [projectStatus] : [],
+                  });
+                }}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  (status === 'All' && filters.status.length === 0) || 
+                  (status !== 'All' && filters.status.includes(status as ProjectStatus))
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {status}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -449,30 +593,34 @@ export const ProjectListPage: React.FC = () => {
             projects={filteredAndSortedProjects}
             onProjectClick={handleProjectClick}
           />
-        ) : (
+        ) : viewMode.type === 'table' ? (
           <ProjectTableView
             projects={filteredAndSortedProjects}
             onProjectClick={handleProjectClick}
             sortOptions={sortOptions}
             onSort={handleSort}
           />
-        )}
-
-
-
-        {/* Project Date Modal */}
-        {projectForDateAssignment && (
-          <ProjectDateModal
-            isOpen={isDateModalOpen}
-            onClose={handleDateModalClose}
-            onConfirm={handleDateConfirm}
-            projectTitle={projectForDateAssignment.title}
-            projectStatus={projectForDateAssignment.status}
-            initialStartDate={projectForDateAssignment.startDate}
-            initialEndDate={projectForDateAssignment.endDate}
+        ) : (
+          <ProjectGanttView
+            projects={filteredAndSortedProjects}
+            onProjectClick={handleProjectClick}
+            filters={filters}
+            onFiltersChange={setFilters}
           />
         )}
 
+      {/* Project Date Modal */}
+      {projectForDateAssignment && (
+        <ProjectDateModal
+          isOpen={isDateModalOpen}
+          onClose={handleDateModalClose}
+          onConfirm={handleDateConfirm}
+          projectTitle={projectForDateAssignment.title}
+          projectStatus={projectForDateAssignment.status}
+          initialStartDate={projectForDateAssignment.startDate}
+          initialEndDate={projectForDateAssignment.endDate}
+        />
+      )}
       </div>
     </div>
   );

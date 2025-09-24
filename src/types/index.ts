@@ -54,6 +54,7 @@ export interface Trailer {
     filmSheets: FilmSheetInventoryItem[];
   };
   status: TrailerStatus;
+  unavailableUntil?: string; // Date string if unavailable
   activityLogs: ActivityLog[];
   createdAt: string;
   updatedAt: string;

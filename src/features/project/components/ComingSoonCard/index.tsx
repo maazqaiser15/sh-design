@@ -6,17 +6,15 @@ interface ComingSoonCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
-  stageName: string;
 }
 
 /**
- * ComingSoonCard - Shows a coming soon message for stages not yet implemented
+ * ComingSoonCard - Shows a coming soon message for features not yet implemented
  */
 export const ComingSoonCard: React.FC<ComingSoonCardProps> = ({
   title,
   description,
-  icon,
-  stageName
+  icon
 }) => {
   return (
     <Card className="p-6 flex flex-col items-center justify-center text-center min-h-[300px]">
@@ -32,7 +30,7 @@ export const ComingSoonCard: React.FC<ComingSoonCardProps> = ({
       
       <div className="flex items-center space-x-2 text-blue-600">
         <Clock className="w-4 h-4" />
-        <span className="text-sm font-medium">Coming Soon in {stageName}</span>
+        <span className="text-sm font-medium">Coming Soon</span>
         <ArrowRight className="w-4 h-4" />
       </div>
     </Card>

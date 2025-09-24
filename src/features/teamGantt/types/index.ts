@@ -3,19 +3,20 @@ export interface TeamMember {
   name: string;
   avatar: string;
   role: "Lead" | "Supervisor" | "Crew Leader" | "Installer" | "Coordinator";
+  availability: "available" | "unavailable";
   projects: Project[];
 }
 
 export interface Project {
   projectId: string;
   projectName: string;
-  status: "PV90" | "UB" | "WB" | "WIP" | "Completed";
+  status: "PV75" | "PV90" | "UB" | "WB" | "WIP" | "QF" | "Completed";
   startDate: string; // ISO format
   endDate: string;   // ISO format
   role: string;      // Role in the project
 }
 
-export type ViewMode = 'day' | 'week' | 'month';
+export type ViewMode = 'day' | 'week' | 'month' | 'year';
 
 export interface TimelineCell {
   date: Date;

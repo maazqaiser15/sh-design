@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { TimelineHeaderProps, TimelineCell } from '../types';
+import { TimelineHeaderProps, TimelineCell } from '../types/ganttTypes';
 
 export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   viewMode,

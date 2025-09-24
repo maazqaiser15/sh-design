@@ -1,29 +1,39 @@
 export type ViewMode = 'day' | 'week' | 'month' | 'year';
 export type LayoutMode = 'team' | 'project' | 'trailer';
 
+export interface TeamGanttFilters {
+  status: string[];
+  assignedUsers: string[];
+  trailerProjects: string[];
+  trailerAvailability: string[];
+}
+
 export interface TeamMember {
   id: string;
   name: string;
   avatar: string;
   role: "Lead" | "Supervisor" | "Crew Leader" | "Installer" | "Coordinator";
+  availability: "available" | "unavailable";
   projects: Project[];
 }
 
 export interface Project {
   projectId: string;
   projectName: string;
-  status: "PV90" | "UB" | "WB" | "WIP" | "QF";
+  status: "PV75" | "PV90" | "UB" | "WB" | "WIP" | "QF" | "Completed";
   startDate: string; // ISO format
   endDate: string;   // ISO format
   role: string;      // Role in the project
+  vinCode?: string;  // VIN code for the project
 }
 
 export interface ProjectView {
   projectId: string;
   projectName: string;
-  status: "PV90" | "UB" | "WB" | "WIP" | "QF";
+  status: "PV75" | "PV90" | "UB" | "WB" | "WIP" | "QF" | "Completed";
   startDate: string;
   endDate: string;
+  vinCode?: string;
   assignedMembers: {
     memberId: string;
     memberName: string;
@@ -37,11 +47,12 @@ export interface TrailerView {
   trailerName: string;
   registrationNumber: string;
   status: "available" | "low" | "unavailable";
+  unavailableUntil?: string; // Date string if unavailable
   location: string;
   assignedProjects: {
     projectId: string;
     projectName: string;
-    projectStatus: "PV90" | "UB" | "WB" | "WIP" | "QF";
+    projectStatus: "PV75" | "PV90" | "UB" | "WB" | "WIP" | "QF" | "Completed";
     startDate: string;
     endDate: string;
     role: string;
@@ -97,6 +108,9 @@ export interface TimelineHeaderProps {
   viewMode: ViewMode;
   currentDate: Date;
   onDateChange: (date: Date) => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  layoutMode: 'team' | 'project' | 'trailer';
 }
 
 export interface TeamGanttProps {
@@ -110,4 +124,6 @@ export interface TeamGanttProps {
   onProjectHover: (project: Project | null) => void;
   onProjectClick: (project: Project) => void;
   hoveredProject: Project | null;
+  filters?: TeamGanttFilters;
+  onFiltersChange?: (filters: TeamGanttFilters) => void;
 }

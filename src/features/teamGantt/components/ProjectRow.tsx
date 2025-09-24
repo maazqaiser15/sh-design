@@ -4,6 +4,7 @@ import { ProjectBar } from './ProjectBar';
 
 const PROJECT_STATUS_COLORS = {
   'PV90': 'bg-green-200 text-green-800 border-green-300',
+  'PV75': 'bg-green-100 text-green-700 border-green-200',
   'UB': 'bg-amber-200 text-amber-800 border-amber-300',
   'WB': 'bg-teal-200 text-teal-800 border-teal-300',
   'WIP': 'bg-blue-200 text-blue-800 border-blue-300',
@@ -71,12 +72,12 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
     return {
       startPosition: Math.max(0, startPosition),
       width: Math.max(2, width),
-      top: 4,
-      height: 28
+      top: 0,
+      height: 80 // Full height of the container (h-20 = 80px)
     };
   }, [project, viewMode, currentDate]);
 
-  const statusColors = PROJECT_STATUS_COLORS[project.status];
+  const statusColors = PROJECT_STATUS_COLORS[project.status] || 'bg-gray-200 text-gray-800 border-gray-300';
   const [bgClass, textClass, borderClass] = statusColors.split(' ');
 
   return (
@@ -84,23 +85,15 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
       {/* Left Column - Project Info */}
       <div className="w-80 p-4 flex-shrink-0 border-r border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0 flex items-center justify-center">
-            <div className={`w-8 h-8 rounded ${bgClass} flex items-center justify-center`}>
-              <span className={`text-xs font-bold ${textClass}`}>
-                {project.projectName.charAt(0)}
-              </span>
-            </div>
-          </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-gray-900 truncate">
               {project.projectName}
             </div>
-            <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors}`}>
-              {project.status}
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {project.assignedMembers.length} member{project.assignedMembers.length !== 1 ? 's' : ''} assigned
-            </div>
+            {project.vinCode && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 mt-1">
+                {project.vinCode}
+              </span>
+            )}
           </div>
         </div>
       </div>

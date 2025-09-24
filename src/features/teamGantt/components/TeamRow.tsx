@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { TeamRowProps, Project } from '../types';
+import { TeamRowProps, Project } from '../types/ganttTypes';
 import { ProjectBar } from './ProjectBar';
-import { PROJECT_STATUS_COLORS, ROLE_COLORS } from '../data/mockData';
+import { PROJECT_STATUS_COLORS, ROLE_COLORS, AVAILABILITY_COLORS } from '../data/mockData';
 
 export const TeamRow: React.FC<TeamRowProps> = ({
   member,
@@ -111,8 +111,8 @@ export const TeamRow: React.FC<TeamRowProps> = ({
         const width = ((endOffset - startOffset) / timelineDuration) * 100;
 
         // Stack projects vertically within the group
-        const top = 4 + (projectIndex * 32); // 4px padding + 32px per project
-        const height = 28; // Fixed height for project bars
+        const top = 0; // Start from top of container
+        const height = 80; // Full height of the container (h-20 = 80px)
 
         bars.push({
           project,
@@ -128,7 +128,7 @@ export const TeamRow: React.FC<TeamRowProps> = ({
   }, [member.projects, viewMode, currentDate]);
 
   const roleColors = ROLE_COLORS[member.role];
-  const [bgClass, textClass, borderClass] = roleColors.split(' ');
+  const availabilityColors = AVAILABILITY_COLORS[member.availability];
 
   return (
     <div className="flex border-b border-gray-200 hover:bg-gray-50 transition-colors">
@@ -152,8 +152,13 @@ export const TeamRow: React.FC<TeamRowProps> = ({
             <div className="text-sm font-medium text-gray-900 truncate">
               {member.name}
             </div>
-            <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${roleColors}`}>
-              {member.role}
+            <div className="flex items-center space-x-2 mt-1">
+              <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${roleColors}`}>
+                {member.role}
+              </div>
+              <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${availabilityColors}`}>
+                {member.availability}
+              </div>
             </div>
           </div>
         </div>

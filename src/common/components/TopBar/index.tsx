@@ -32,7 +32,7 @@ export const TopBar: React.FC = () => {
     {
       id: '2',
       title: 'Team Assignment Complete',
-      message: '3 team members have been assigned to Project VIN-2024-001',
+      message: '3 team members have been assigned to Project TXDA-SJ1BR1-EETUSC01-P20001',
       type: 'success',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
       read: false,
@@ -50,7 +50,7 @@ export const TopBar: React.FC = () => {
     {
       id: '4',
       title: 'Document Upload Required',
-      message: 'Site map document is required for Project VIN-2024-003',
+      message: 'Site map document is required for Project TXDA-SJ1BR1-EETUSC01-P20003',
       type: 'error',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
       read: true,

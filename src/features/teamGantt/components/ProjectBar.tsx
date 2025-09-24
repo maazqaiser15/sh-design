@@ -12,7 +12,7 @@ export const ProjectBar: React.FC<ProjectBarProps> = ({
   onClick,
   isHovered
 }) => {
-  const statusColors = PROJECT_STATUS_COLORS[project.status];
+  const statusColors = PROJECT_STATUS_COLORS[project.status] || 'bg-gray-200 text-gray-800 border-gray-300';
   const [bgClass, textClass, borderClass] = statusColors.split(' ');
 
   const formatDate = (dateString: string) => {
@@ -40,19 +40,24 @@ export const ProjectBar: React.FC<ProjectBarProps> = ({
       onMouseLeave={() => onHover(null)}
     >
       {/* Project Bar Content */}
-      <div className="flex items-center h-full px-2">
-        <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium truncate">
-            {project.projectName}
+      <div className="flex flex-col justify-center h-full px-3 py-2">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium truncate">
+              {project.projectName}
+            </div>
+            <div className="text-xs opacity-90 truncate">
+              {project.role}
+            </div>
           </div>
-          <div className="text-xs opacity-90 truncate">
-            {project.role}
+          <div className="flex-shrink-0 ml-2">
+            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${statusColors}`}>
+              {project.status}
+            </span>
           </div>
         </div>
-        <div className="flex-shrink-0 ml-1">
-          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${statusColors}`}>
-            {project.status}
-          </span>
+        <div className="text-xs opacity-75 truncate">
+          {formatDate(project.startDate)} - {formatDate(project.endDate)}
         </div>
       </div>
 

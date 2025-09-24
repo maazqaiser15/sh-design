@@ -88,7 +88,7 @@ export interface PreparationActionCard {
 export const MOCK_PREPARATION_DATA: ProjectPreparationData = {
   projectId: 'proj-001',
   projectName: 'Downtown Office Complex Security Film Installation',
-  vinCode: 'VIN-2024-001',
+  vinCode: 'TXDA-SJ1BR1-EETUSC01-P20001',
   status: 'WB',
   location: '123 Main Street, Downtown',
   crew: [

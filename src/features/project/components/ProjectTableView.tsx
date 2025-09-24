@@ -43,7 +43,8 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="p-4">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -55,15 +56,6 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                 <div className="flex items-center">
                   Project Name
                   {getSortIcon('title')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => onSort('vinCode')}
-              >
-                <div className="flex items-center">
-                  VIN
-                  {getSortIcon('vinCode')}
                 </div>
               </th>
               <th
@@ -133,14 +125,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                   <div className="text-sm font-medium text-gray-900">
                     {project.title}
                   </div>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 mt-1">
+                    {project.vinCode}
+                  </span>
                   <div className="text-sm text-gray-500">
                     {project.description}
                   </div>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                    {project.vinCode}
-                  </span>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${PROJECT_STATUS_COLORS[project.status]}`}>
@@ -218,6 +208,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
           <p className="text-gray-600">Try adjusting your filters or search criteria.</p>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -130,7 +130,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
-            <StatusBadge status={trailer.status} size="md" />
+            <StatusBadge status={trailer.status} size="md" unavailableUntil={trailer.unavailableUntil} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

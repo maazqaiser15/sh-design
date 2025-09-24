@@ -25,7 +25,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "1",
     trailerName: "Alpha Trailer",
-    registrationNumber: "REG-001-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10001",
     parkingAddress: "123 Main Street",
     state: "California",
     city: "Los Angeles",
@@ -34,6 +34,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
       filmSheets: generateFilmSheetInventory(),
     },
     status: "unavailable",
+    unavailableUntil: "2024-12-25T00:00:00Z",
     activityLogs: [],
     createdAt: "2024-01-15T10:30:00Z",
     updatedAt: "2024-01-16T14:20:00Z",
@@ -41,7 +42,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "2",
     trailerName: "Beta Trailer",
-    registrationNumber: "REG-002-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10002",
     parkingAddress: "456 Industrial Blvd",
     state: "Texas",
     city: "Houston",
@@ -57,7 +58,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "3",
     trailerName: "Gamma Trailer",
-    registrationNumber: "REG-003-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10003",
     parkingAddress: "789 Service Road",
     state: "Florida",
     city: "Miami",
@@ -73,7 +74,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "4",
     trailerName: "Delta Trailer",
-    registrationNumber: "REG-004-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10004",
     parkingAddress: "321 Oak Avenue",
     state: "New York",
     city: "New York",
@@ -89,7 +90,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "5",
     trailerName: "Echo Trailer",
-    registrationNumber: "REG-005-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10005",
     parkingAddress: "654 Pine Street",
     state: "Illinois",
     city: "Chicago",
@@ -105,7 +106,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "6",
     trailerName: "Foxtrot Trailer",
-    registrationNumber: "REG-006-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10006",
     parkingAddress: "987 Elm Drive",
     state: "Arizona",
     city: "Phoenix",
@@ -121,7 +122,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "7",
     trailerName: "Golf Trailer",
-    registrationNumber: "REG-007-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10007",
     parkingAddress: "147 Cedar Lane",
     state: "Colorado",
     city: "Denver",
@@ -137,7 +138,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "8",
     trailerName: "Hotel Trailer",
-    registrationNumber: "REG-008-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10008",
     parkingAddress: "258 Maple Court",
     state: "Washington",
     city: "Seattle",
@@ -153,7 +154,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "9",
     trailerName: "India Trailer",
-    registrationNumber: "REG-009-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10009",
     parkingAddress: "369 Birch Street",
     state: "Oregon",
     city: "Portland",
@@ -169,7 +170,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "10",
     trailerName: "Juliet Trailer",
-    registrationNumber: "REG-010-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10010",
     parkingAddress: "741 Spruce Avenue",
     state: "Nevada",
     city: "Las Vegas",
@@ -194,7 +195,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "11",
     trailerName: "Kilo Trailer",
-    registrationNumber: "REG-011-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10011",
     parkingAddress: "852 Willow Way",
     state: "Utah",
     city: "Salt Lake City",
@@ -219,7 +220,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "12",
     trailerName: "Lima Trailer",
-    registrationNumber: "REG-012-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10012",
     parkingAddress: "963 Poplar Drive",
     state: "Montana",
     city: "Billings",
@@ -244,7 +245,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "13",
     trailerName: "Mike Trailer",
-    registrationNumber: "REG-013-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10013",
     parkingAddress: "159 Ash Street",
     state: "Wyoming",
     city: "Cheyenne",
@@ -269,7 +270,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "14",
     trailerName: "November Trailer",
-    registrationNumber: "REG-014-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10014",
     parkingAddress: "357 Hickory Lane",
     state: "Idaho",
     city: "Boise",
@@ -294,7 +295,7 @@ export const EXPANDED_TRAILER_DATA: Trailer[] = [
   {
     id: "15",
     trailerName: "Oscar Trailer",
-    registrationNumber: "REG-015-2024",
+    registrationNumber: "TXDA-SJ1BR1-EETUSC01-P10015",
     parkingAddress: "468 Chestnut Road",
     state: "New Mexico",
     city: "Albuquerque",

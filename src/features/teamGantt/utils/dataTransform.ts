@@ -12,6 +12,7 @@ export const transformTeamDataToProjectView = (teamMembers: TeamMember[]): Proje
           status: project.status,
           startDate: project.startDate,
           endDate: project.endDate,
+          vinCode: project.vinCode,
           assignedMembers: []
         });
       }
@@ -43,6 +44,7 @@ export const transformTrailerDataToProjectView = (trailers: TrailerView[]): Proj
           status: project.projectStatus,
           startDate: project.startDate,
           endDate: project.endDate,
+          vinCode: project.vinCode,
           assignedMembers: []
         });
       }

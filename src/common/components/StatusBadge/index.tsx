@@ -5,6 +5,7 @@ interface StatusBadgeProps {
   status: ProjectStatus | MemberStatus | TrailerStatus | FilmStockStatus | string;
   size?: 'sm' | 'md';
   className?: string;
+  unavailableUntil?: string; // Date string for unavailable status
 }
 
 /**
@@ -14,7 +15,8 @@ interface StatusBadgeProps {
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   status,
   size = 'sm',
-  className = ''
+  className = '',
+  unavailableUntil
 }) => {
   const getStatusConfig = (status: string) => {
     const configs: Record<string, { bg: string; text: string; label: string }> = {
@@ -49,9 +51,27 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   const config = getStatusConfig(status);
   const sizeClass = size === 'sm' ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm';
 
+  // Format date for unavailable status
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const displayText = status === 'unavailable' && unavailableUntil 
+    ? `${config.label} until ${formatDate(unavailableUntil)}`
+    : config.label;
+
   return (
     <span className={`inline-flex items-center rounded-full font-medium ${config.bg} ${config.text} ${sizeClass} ${className}`}>
-      {config.label}
+      {displayText}
     </span>
   );
 };

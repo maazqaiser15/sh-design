@@ -3,8 +3,8 @@ import { TeamMember } from './teamMembers';
 import { LogisticsTravelData } from './logisticsTravel';
 
 // Project Stages
-export type ProjectStage = 'preparation' | 'wip' | 'fer' | 'completed';
-export type ProjectStatus = 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
+export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
+export type ProjectStatus = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
 
 // Project Details Types
 export interface ProjectDetails {
@@ -79,9 +79,9 @@ export interface PreparationStageData {
 export const MOCK_PROJECT_DETAILS: ProjectDetails = {
   id: 'proj-001',
   name: 'Downtown Office Complex Security Film Installation',
-  projectId: 'VIN-2024-001',
-  stage: 'preparation',
-  status: 'PV90',
+  projectId: 'TXDA-SJ1BR1-EETUSC01-P20001',
+  stage: 'PV75',
+  status: 'PV75',
   description: 'Comprehensive security film installation for the new downtown office complex',
   location: '123 Main Street, Downtown',
   startDate: '2024-02-01',
@@ -91,7 +91,7 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
 };
 
 export const MOCK_PREPARATION_DATA: PreparationStageData = {
-  assignedTeam: null, // Initially no team assigned for PV90, UB, WB stages
+  assignedTeam: null, // Start with empty team
   assignedTrailer: null, // Initially no trailer assigned for PV90, UB, WB stages
   logistics: {
     partner: 'LogiCorp Solutions',

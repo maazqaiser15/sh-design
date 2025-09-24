@@ -148,6 +148,13 @@ export const routes: RouteObject[] = [
             return { element: <ProjectDetailsDemo /> };
           },
         },
+        {
+          path: "project-date-setup-demo",
+          async lazy() {
+            const { ProjectDateSetupDemo } = await import("../pages/ProjectDateSetupDemo");
+            return { element: <ProjectDateSetupDemo /> };
+          },
+        },
 
           // Coming Soon Routes
           {

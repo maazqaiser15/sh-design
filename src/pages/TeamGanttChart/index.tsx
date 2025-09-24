@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { TeamGanttWithViews } from '../../features/teamGantt/components/TeamGanttWithViews';
 import { MOCK_TEAM_MEMBERS } from '../../features/teamGantt/data/mockData';
-import { ViewMode, LayoutMode, Project } from '../../features/teamGantt/types/ganttTypes';
+import { ViewMode, LayoutMode, Project, TeamGanttFilters, TeamMember } from '../../features/teamGantt/types/ganttTypes';
 
 export const TeamGanttChart: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date('2025-10-01')); // Set to October 2025 when projects are scheduled
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('project'); // Default to Project View
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [filters, setFilters] = useState<TeamGanttFilters>({
+    status: [],
+    assignedUsers: [],
+    trailerProjects: [],
+    trailerAvailability: [],
+  });
 
   const handleDateChange = (newDate: Date) => {
     setCurrentDate(newDate);
@@ -32,7 +38,7 @@ export const TeamGanttChart: React.FC = () => {
 
   return (
     <TeamGanttWithViews
-      teamMembers={MOCK_TEAM_MEMBERS}
+      teamMembers={MOCK_TEAM_MEMBERS as TeamMember[]}
       currentDate={currentDate}
       viewMode={viewMode}
       layoutMode={layoutMode}
@@ -42,6 +48,8 @@ export const TeamGanttChart: React.FC = () => {
       onProjectHover={handleProjectHover}
       onProjectClick={handleProjectClick}
       hoveredProject={hoveredProject}
+      filters={filters}
+      onFiltersChange={setFilters}
     />
   );
 };

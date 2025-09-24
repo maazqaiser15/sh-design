@@ -399,7 +399,7 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
                   </div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <StatusBadge status={trailer.status} />
+                  <StatusBadge status={trailer.status} unavailableUntil={trailer.unavailableUntil} />
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                   <div 
