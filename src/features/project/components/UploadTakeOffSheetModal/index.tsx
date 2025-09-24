@@ -1,186 +1,296 @@
-import React, { useState } from 'react';
-import { X, Upload, FileText, Loader2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Upload, FileText, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { useToast } from '../../../../contexts/ToastContext';
+import { TakeOffSheet } from '../../types/windowManagement';
 
 interface UploadTakeOffSheetModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (file: File) => void;
+  onUploadComplete: (sheet: TakeOffSheet) => void;
 }
+
+type UploadState = 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
 
 export const UploadTakeOffSheetModal: React.FC<UploadTakeOffSheetModalProps> = ({
   isOpen,
   onClose,
-  onUpload
+  onUploadComplete
 }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingStep, setProcessingStep] = useState<string>('');
+  const { showToast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadState, setUploadState] = useState<UploadState>('idle');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-  };
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = [
+        'text/csv',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      ];
+      
+      if (!validTypes.includes(file.type)) {
+        setErrorMessage('Please upload a CSV or Excel file (.csv, .xls, .xlsx)');
+        return;
+      }
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMessage('File size must be less than 10MB');
+        return;
+      }
 
-    setIsProcessing(true);
-    setProcessingStep('Processing take-off sheet and creating windows…');
-
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setProcessingStep('Generating windows… Please wait');
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Call the upload handler
-    onUpload(selectedFile);
-    
-    // Reset state
-    setSelectedFile(null);
-    setIsProcessing(false);
-    setProcessingStep('');
-  };
-
-  const handleManualEntry = () => {
-    onClose();
-    // Navigate to manual entry or open manual entry modal
-    console.log('Manual entry clicked');
-  };
-
-  const handleClose = () => {
-    if (!isProcessing) {
-      setSelectedFile(null);
-      onClose();
+      setUploadedFile(file);
+      setErrorMessage('');
     }
   };
 
-  return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-            <FileText className="w-6 h-6 mr-2 text-blue-600" />
-            Project Setup
-          </h2>
-          <div className="text-sm text-gray-500">Ready to begin</div>
-        </div>
+  const handleUpload = async () => {
+    if (!uploadedFile) return;
 
-        {isProcessing ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Processing Your File</h3>
-            <p className="text-gray-600 mb-4">{processingStep}</p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            {/* Upload Icon */}
-            <div className="w-20 h-20 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <FileText className="w-10 h-10 text-blue-600" />
-            </div>
+    setUploadState('uploading');
+    setProcessingProgress(0);
 
-            {/* Title */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Upload Take-Off Sheet
-            </h3>
+    try {
+      // Simulate upload progress
+      for (let i = 0; i <= 100; i += 10) {
+        setProcessingProgress(i);
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
 
-            {/* Description */}
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Upload your take-off sheet to create window inventory and start working on the project. 
-              This will help us track progress and manage the installation process.
-            </p>
+      setUploadState('processing');
+      
+      // Simulate processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-              <div className="relative">
-                <input
-                  type="file"
-                  id="file-upload"
-                  accept=".pdf,.xlsx,.xls,.csv"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleFileSelect(file);
-                    }
-                  }}
-                  className="hidden"
-                />
-                <label htmlFor="file-upload">
-                  <Button
-                    variant="primary"
-                    className="flex items-center space-x-2 px-6 py-3"
-                    disabled={!selectedFile}
-                    onClick={handleUpload}
-                  >
-                    <Upload className="w-5 h-5" />
-                    <span>
-                      {selectedFile ? `Upload ${selectedFile.name}` : 'Upload Take-Off Sheet'}
-                    </span>
-                  </Button>
-                </label>
-              </div>
+      // Create mock sheet data
+      const mockSheet: TakeOffSheet = {
+        id: `sheet-${Date.now()}`,
+        fileName: uploadedFile.name,
+        uploadedAt: new Date(),
+        processedAt: new Date(),
+        status: 'Completed',
+        windowsCreated: 7,
+        totalRows: 7
+      };
 
-              <Button
-                variant="outline"
-                onClick={handleManualEntry}
-                className="flex items-center space-x-2 px-6 py-3"
-              >
-                <FileText className="w-5 h-5" />
-                <span>Enter Manually</span>
-              </Button>
-            </div>
+      setUploadState('completed');
+      showToast('Windows created successfully from sheet', 'success');
+      
+      // Close modal after a short delay
+      setTimeout(() => {
+        onUploadComplete(mockSheet);
+        handleClose();
+      }, 1500);
 
-            {/* Supported Formats */}
-            <p className="text-sm text-gray-500 mb-4">
-              Supported formats: PDF, Excel (.xlsx, .xls), CSV
-            </p>
+    } catch (error) {
+      setUploadState('error');
+      setErrorMessage('Failed to process the take-off sheet. Please try again.');
+    }
+  };
 
-            {/* Post-Upload Message */}
-            <p className="text-sm text-gray-600">
-              Once uploaded, we'll automatically create your window inventory and you can begin tracking progress.
-            </p>
+  const handleClose = () => {
+    setUploadState('idle');
+    setUploadedFile(null);
+    setProcessingProgress(0);
+    setErrorMessage('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    onClose();
+  };
 
-            {/* Selected File Preview */}
-            {selectedFile && (
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-3">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-blue-900">{selectedFile.name}</p>
-                    <p className="text-xs text-blue-700">
-                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setSelectedFile(null)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setUploadedFile(file);
+      setErrorMessage('');
+    }
+  };
+
+  const renderContent = () => {
+    if (uploadState === 'uploading' || uploadState === 'processing') {
+      return (
+        <div className="text-center py-8">
+          <div className="mb-4">
+            {uploadState === 'uploading' ? (
+              <Upload className="w-12 h-12 text-blue-500 mx-auto animate-pulse" />
+            ) : (
+              <Loader2 className="w-12 h-12 text-blue-500 mx-auto animate-spin" />
             )}
           </div>
-        )}
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {uploadState === 'uploading' ? 'Uploading...' : 'Processing take-off sheet'}
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {uploadState === 'uploading' 
+              ? 'Uploading your file...' 
+              : 'Generating windows… Please wait'
+            }
+          </p>
+          
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+            <div 
+              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${processingProgress}%` }}
+            />
+          </div>
+          <p className="text-sm text-gray-500">{processingProgress}% complete</p>
+        </div>
+      );
+    }
 
-        {/* Action Buttons */}
-        {!isProcessing && (
-          <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
+    if (uploadState === 'completed') {
+      return (
+        <div className="text-center py-8">
+          <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Upload Complete!
+          </h3>
+          <p className="text-gray-600">
+            Windows created successfully from sheet
+          </p>
+        </div>
+      );
+    }
+
+    if (uploadState === 'error') {
+      return (
+        <div className="text-center py-8">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Upload Failed
+          </h3>
+          <p className="text-gray-600 mb-4">{errorMessage}</p>
+          <Button
+            variant="primary"
+            onClick={() => setUploadState('idle')}
+          >
+            Try Again
+          </Button>
+        </div>
+      );
+    }
+
+    // Default upload state
+    return (
+      <div className="py-6">
+        <div className="text-center mb-6">
+          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Upload Take-off Sheet
+          </h3>
+          <p className="text-gray-600">
+            Upload a CSV or Excel file to automatically create windows
+          </p>
+        </div>
+
+        {/* File Upload Area */}
+        <div
+          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.xls,.xlsx"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          
+          {uploadedFile ? (
+            <div className="flex items-center justify-center gap-3">
+              <FileText className="w-8 h-8 text-blue-500" />
+              <div className="text-left">
+                <p className="font-medium text-gray-900">{uploadedFile.name}</p>
+                <p className="text-sm text-gray-500">
+                  {(uploadedFile.size / (1024 * 1024)).toFixed(2)} MB
+                </p>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUploadedFile(null);
+                  setErrorMessage('');
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          ) : (
+            <div>
+              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600 mb-1">
+                Click to upload or drag and drop
+              </p>
+              <p className="text-sm text-gray-500">
+                CSV, XLS, XLSX (max 10MB)
+              </p>
+            </div>
+          )}
+        </div>
+
+        {errorMessage && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm text-red-600">{errorMessage}</p>
           </div>
         )}
+
+        {/* File Requirements */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <h4 className="font-medium text-gray-900 mb-2">File Requirements:</h4>
+          <ul className="text-sm text-gray-600 space-y-1">
+            <li>• CSV or Excel format (.csv, .xls, .xlsx)</li>
+            <li>• Maximum file size: 10MB</li>
+            <li>• Required columns: Window Name, Film Type, Length, Width, Layers</li>
+            <li>• First row should contain column headers</li>
+          </ul>
+        </div>
       </div>
+    );
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Upload Take-off Sheet"
+      size="lg"
+    >
+      {renderContent()}
+      
+      {uploadState === 'idle' && (
+        <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleUpload}
+            disabled={!uploadedFile}
+          >
+            Upload & Process
+          </Button>
+        </div>
+      )}
     </Modal>
   );
 };

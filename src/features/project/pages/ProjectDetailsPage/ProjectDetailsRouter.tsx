@@ -7,7 +7,9 @@ import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 /**
  * ProjectDetailsRouter - Routes to different project detail layouts based on status
  * - PV75, PV90, UB, WB: Shows preparation stage layout
- * - WIP, QF, Completed: Shows work-in-progress layout
+ * - WIP: Shows work-in-progress layout
+ * - QF: Shows quality check layout
+ * - Completed: Shows completion layout
  */
 export const ProjectDetailsRouter: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -20,7 +22,9 @@ export const ProjectDetailsRouter: React.FC = () => {
 
   // Determine which layout to show based on status
   const isPreparationStage = ['PV75', 'PV90', 'UB', 'WB'].includes(projectStatus);
-  const isWorkInProgressStage = ['WIP', 'QF', 'Completed'].includes(projectStatus);
+  const isWorkInProgressStage = projectStatus === 'WIP';
+  const isQualityCheckStage = projectStatus === 'QF';
+  const isCompletedStage = projectStatus === 'Completed';
 
   // In a real app, you would fetch the project data based on projectId
   useEffect(() => {
@@ -39,7 +43,15 @@ export const ProjectDetailsRouter: React.FC = () => {
   }
   
   if (isWorkInProgressStage) {
-    return <ProjectDetailsWIP projectStatus={projectStatus as 'WIP' | 'QF' | 'Completed'} />;
+    return <ProjectDetailsWIP projectStatus="WIP" />;
+  }
+
+  if (isQualityCheckStage) {
+    return <ProjectDetailsWIP projectStatus="QF" />;
+  }
+
+  if (isCompletedStage) {
+    return <ProjectDetailsWIP projectStatus="Completed" />;
   }
 
   // Default fallback to preparation stage
