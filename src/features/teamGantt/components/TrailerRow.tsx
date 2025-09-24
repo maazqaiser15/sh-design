@@ -20,7 +20,7 @@ export const TrailerRow: React.FC<TrailerRowProps> = ({
 
 
   // Calculate row height based on number of assigned projects (same as TeamRow)
-  const projectBarHeight = 80; // Full height of container (h-20 = 80px)
+  const projectBarHeight = 60; // Reduced height for better appearance
   const projectSpacing = 32; // Same as TeamRow
   const projectsCount = trailer.assignedProjects.length;
   const calculatedHeight = Math.max(64, 32 + (projectsCount * projectSpacing));
@@ -80,7 +80,7 @@ export const TrailerRow: React.FC<TrailerRowProps> = ({
               );
 
               // Simple vertical positioning like TeamRow
-              const top = 0; // Start from top of container
+              const top = 10; // Center vertically (80px container - 60px bar = 20px, 20px/2 = 10px)
 
               return (
                 <ProjectBar

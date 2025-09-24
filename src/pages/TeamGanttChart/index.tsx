@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TeamGanttWithViews } from '../../features/teamGantt/components/TeamGanttWithViews';
 import { MOCK_TEAM_MEMBERS } from '../../features/teamGantt/data/mockData';
 import { ViewMode, LayoutMode, Project, TeamGanttFilters, TeamMember } from '../../features/teamGantt/types/ganttTypes';
 
 export const TeamGanttChart: React.FC = () => {
+  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date('2025-10-01')); // Set to October 2025 when projects are scheduled
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('project'); // Default to Project View
@@ -33,7 +35,7 @@ export const TeamGanttChart: React.FC = () => {
 
   const handleProjectClick = (project: Project) => {
     console.log('Project clicked:', project);
-    // TODO: Navigate to project details or show modal
+    navigate(`/projects/${project.projectId}`);
   };
 
   return (

@@ -170,7 +170,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
     return filtered;
   }, [teamMembers, searchTerm, selectedProject, selectedAvailability, layoutMode]);
 
-  // Filter project view data based on search term, project filter, and new filters
+  // Filter project view data based on search term and new filters
   const filteredProjectData = useMemo(() => {
     let filtered = projectViewData;
 
@@ -180,11 +180,6 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
         project.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         project.status.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    }
-
-    // Filter by selected project
-    if (selectedProject) {
-      filtered = filtered.filter(project => project.projectName === selectedProject);
     }
 
     // Filter by status (only apply in project view mode)
@@ -202,59 +197,9 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
     }
 
     return filtered;
-  }, [projectViewData, searchTerm, selectedProject, layoutMode, filters]);
+  }, [projectViewData, searchTerm, layoutMode, filters]);
 
-  const handleStatusFilter = (status: string) => {
-    if (!onFiltersChange) return;
-    
-    const newStatusFilters = filters.status.includes(status)
-      ? filters.status.filter(s => s !== status)
-      : [...filters.status, status];
-    
-    onFiltersChange({
-      ...filters,
-      status: newStatusFilters,
-    });
-  };
 
-  const handleUserFilter = (userId: string) => {
-    if (!onFiltersChange) return;
-    
-    const newUserFilters = filters.assignedUsers.includes(userId)
-      ? filters.assignedUsers.filter(id => id !== userId)
-      : [...filters.assignedUsers, userId];
-    
-    onFiltersChange({
-      ...filters,
-      assignedUsers: newUserFilters,
-    });
-  };
-
-  const handleTrailerProjectFilter = (projectName: string) => {
-    if (!onFiltersChange) return;
-    
-    const newProjectFilters = filters.trailerProjects.includes(projectName)
-      ? filters.trailerProjects.filter(p => p !== projectName)
-      : [...filters.trailerProjects, projectName];
-    
-    onFiltersChange({
-      ...filters,
-      trailerProjects: newProjectFilters,
-    });
-  };
-
-  const handleTrailerAvailabilityFilter = (availability: string) => {
-    if (!onFiltersChange) return;
-    
-    const newAvailabilityFilters = filters.trailerAvailability.includes(availability)
-      ? filters.trailerAvailability.filter(a => a !== availability)
-      : [...filters.trailerAvailability, availability];
-    
-    onFiltersChange({
-      ...filters,
-      trailerAvailability: newAvailabilityFilters,
-    });
-  };
 
   const clearAllFilters = () => {
     if (!onFiltersChange) return;
@@ -327,30 +272,6 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
               </button>
             </div>
 
-            {/* Filter Button - Show in Project View and Trailer View */}
-            {(layoutMode === 'project' || layoutMode === 'trailer') && (
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  (layoutMode === 'project' && (filters.status.length > 0 || filters.assignedUsers.length > 0)) ||
-                  (layoutMode === 'trailer' && (filters.trailerProjects.length > 0 || filters.trailerAvailability.length > 0))
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Filter className="w-4 h-4" />
-                <span>Filters</span>
-                {((layoutMode === 'project' && (filters.status.length > 0 || filters.assignedUsers.length > 0)) ||
-                  (layoutMode === 'trailer' && (filters.trailerProjects.length > 0 || filters.trailerAvailability.length > 0))) && (
-                  <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5">
-                    {layoutMode === 'project' 
-                      ? filters.status.length + filters.assignedUsers.length
-                      : filters.trailerProjects.length + filters.trailerAvailability.length
-                    }
-                  </span>
-                )}
-              </button>
-            )}
 
             {/* View Mode Switcher */}
             <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
@@ -369,198 +290,14 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
               ))}
             </div>
 
-            {/* Project/Role Filter */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-                </svg>
-              </div>
-              <select
-                value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
-                className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
-              >
-                <option value="">
-                  {layoutMode === 'team' ? 'All Roles' : 'All Projects'}
-                </option>
-                {layoutMode === 'team' ? (
-                  availableRoles.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))
-                ) : (
-                  availableProjects.map((project) => (
-                    <option key={project} value={project}>
-                      {project}
-                    </option>
-                  ))
-                )}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
 
-            {/* Availability Filter - Only for Team View */}
-            {layoutMode === 'team' && (
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <select
-                  value={selectedAvailability}
-                  onChange={(e) => setSelectedAvailability(e.target.value)}
-                  className="block w-40 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
-                >
-                  <option value="">All Status</option>
-                  <option value="available">Available</option>
-                  <option value="unavailable">Unavailable</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            )}
+
+
           </div>
         </div>
 
       </div>
 
-      {/* Filter Panel - Show in Project View and Trailer View */}
-      {(layoutMode === 'project' || layoutMode === 'trailer') && showFilters && (
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">
-              {layoutMode === 'project' ? 'Filter Projects' : 'Filter Trailers'}
-            </h3>
-            <div className="flex items-center space-x-2">
-              {((layoutMode === 'project' && (filters.status.length > 0 || filters.assignedUsers.length > 0)) ||
-                (layoutMode === 'trailer' && (filters.trailerProjects.length > 0 || filters.trailerAvailability.length > 0))) && (
-                <button
-                  onClick={clearAllFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Clear All
-                </button>
-              )}
-              <button
-                onClick={() => setShowFilters(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {layoutMode === 'project' ? (
-              <>
-                {/* Status Filter */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Filter by Status</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'].map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => handleStatusFilter(status)}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                          filters.status.includes(status)
-                            ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                            : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                        }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* User Filter */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Filter by Assigned User</h4>
-                  <div className="max-h-32 overflow-y-auto">
-                    {allUsers.length === 0 ? (
-                      <p className="text-sm text-gray-500">No users assigned to projects</p>
-                    ) : (
-                      <div className="space-y-1">
-                        {allUsers.map((user) => (
-                          <button
-                            key={user.id}
-                            onClick={() => handleUserFilter(user.id)}
-                            className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
-                              filters.assignedUsers.includes(user.id)
-                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                            }`}
-                          >
-                            {user.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Trailer Project Filter */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Filter by Project</h4>
-                  <div className="max-h-32 overflow-y-auto">
-                    {trailerProjects.length === 0 ? (
-                      <p className="text-sm text-gray-500">No projects assigned to trailers</p>
-                    ) : (
-                      <div className="space-y-1">
-                        {trailerProjects.map((projectName) => (
-                          <button
-                            key={projectName}
-                            onClick={() => handleTrailerProjectFilter(projectName)}
-                            className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
-                              filters.trailerProjects.includes(projectName)
-                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                            }`}
-                          >
-                            {projectName}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Trailer Availability Filter */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Filter by Availability</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {trailerAvailabilityOptions.map((availability) => (
-                      <button
-                        key={availability}
-                        onClick={() => handleTrailerAvailabilityFilter(availability)}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                          filters.trailerAvailability.includes(availability)
-                            ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                            : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                        }`}
-                      >
-                        {availability.charAt(0).toUpperCase() + availability.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Timeline Header */}
       <TimelineHeader
@@ -570,6 +307,9 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         layoutMode={layoutMode}
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+        allUsers={allUsers}
       />
 
       {/* Scheduler Body */}

@@ -111,8 +111,8 @@ export const TeamRow: React.FC<TeamRowProps> = ({
         const width = ((endOffset - startOffset) / timelineDuration) * 100;
 
         // Stack projects vertically within the group
-        const top = 0; // Start from top of container
-        const height = 80; // Full height of the container (h-20 = 80px)
+        const top = 10; // Center vertically (80px container - 60px bar = 20px, 20px/2 = 10px)
+        const height = 60; // Reduced height for better appearance
 
         bars.push({
           project,

@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { Plane, Hotel, Upload, Calendar, Users, MapPin } from 'lucide-react';
 
 export interface TravelAccommodationData {
   travel: {
-    enabled: boolean;
-    method: 'air' | 'road';
-    teamMembers: number;
+    travelFrom: string;
+    travelTo: string;
+    travelDate: string;
+    numberOfTeamMembers: number;
+    ticketsAttachment?: File[];
   };
   accommodation: {
-    enabled: boolean;
-    teamMembers: number;
+    hotelName: string;
+    numberOfRooms: number;
+    checkInDate: string;
+    checkOutDate: string;
+    reservationSlipsAttachment?: File[];
   };
 }
 
@@ -25,23 +31,53 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   onClose,
   onSubmit,
 }) => {
-  const [travelEnabled, setTravelEnabled] = useState(false);
-  const [travelMethod, setTravelMethod] = useState<'air' | 'road'>('air');
-  const [travelTeamMembers, setTravelTeamMembers] = useState(1);
+  // Travel form state
+  const [travelFrom, setTravelFrom] = useState('');
+  const [travelTo, setTravelTo] = useState('');
+  const [travelDate, setTravelDate] = useState('');
+  const [numberOfTeamMembers, setNumberOfTeamMembers] = useState(1);
+  const [ticketsFiles, setTicketsFiles] = useState<File[]>([]);
 
-  const [accommodationEnabled, setAccommodationEnabled] = useState(false);
-  const [accommodationTeamMembers, setAccommodationTeamMembers] = useState(1);
+  // Accommodation form state
+  const [hotelName, setHotelName] = useState('');
+  const [numberOfRooms, setNumberOfRooms] = useState(1);
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const [reservationSlipsFiles, setReservationSlipsFiles] = useState<File[]>([]);
+
+  const handleTicketsUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setTicketsFiles(prev => [...prev, ...files]);
+  };
+
+  const handleReservationSlipsUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setReservationSlipsFiles(prev => [...prev, ...files]);
+  };
+
+  const removeTicketFile = (index: number) => {
+    setTicketsFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeReservationSlipFile = (index: number) => {
+    setReservationSlipsFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = () => {
     const data: TravelAccommodationData = {
       travel: {
-        enabled: travelEnabled,
-        method: travelMethod,
-        teamMembers: travelEnabled ? travelTeamMembers : 0,
+        travelFrom,
+        travelTo,
+        travelDate,
+        numberOfTeamMembers,
+        ticketsAttachment: ticketsFiles,
       },
       accommodation: {
-        enabled: accommodationEnabled,
-        teamMembers: accommodationEnabled ? accommodationTeamMembers : 0,
+        hotelName,
+        numberOfRooms,
+        checkInDate,
+        checkOutDate,
+        reservationSlipsAttachment: reservationSlipsFiles,
       },
     };
     onSubmit(data);
@@ -52,120 +88,252 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
     onClose();
   };
 
+  const isFormValid = () => {
+    return travelFrom && travelTo && travelDate && hotelName && checkInDate && checkOutDate;
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="large">
-      <div className="w-full max-w-[540px] mx-auto p-6">
-        {/* Modal Header */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Request Travel & Accommodation
-          </h2>
-        </div>
-
-        {/* Modal Content */}
-        <div className="flex gap-6 mb-6">
-          {/* Travel Details Section */}
-          <div className="flex-1">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-900">Travel Details</h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={travelEnabled}
-                    onChange={(e) => setTravelEnabled(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
+    <Modal isOpen={isOpen} onClose={onClose} title="Add Travel & Accommodation Details" size="xl">
+      <div className="space-y-6">
+        {/* Travel Details Section */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Plane className="w-5 h-5 text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Travel Details</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Travel From */}
+            <div>
+              <label htmlFor="travelFrom" className="block text-sm font-medium text-gray-700 mb-1">
+                Travel From
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  id="travelFrom"
+                  value={travelFrom}
+                  onChange={(e) => setTravelFrom(e.target.value)}
+                  placeholder="Enter departure location"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
+            </div>
 
-              {travelEnabled && (
-                <div className="space-y-3 pl-2">
-                  {/* Travel Method Radio Buttons */}
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="travelMethod"
-                        value="air"
-                        checked={travelMethod === 'air'}
-                        onChange={() => setTravelMethod('air')}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">Travel by Air</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="travelMethod"
-                        value="road"
-                        checked={travelMethod === 'road'}
-                        onChange={() => setTravelMethod('road')}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">Travel by Road</span>
-                    </label>
-                  </div>
+            {/* Travel To */}
+            <div>
+              <label htmlFor="travelTo" className="block text-sm font-medium text-gray-700 mb-1">
+                Travel To
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  id="travelTo"
+                  value={travelTo}
+                  onChange={(e) => setTravelTo(e.target.value)}
+                  placeholder="Enter destination"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
 
-                  {/* Team Members Input */}
-                  <div>
-                    <label htmlFor="travelTeamMembers" className="block text-sm font-medium text-gray-700 mb-1">
-                      Number of Team Members
-                    </label>
-                    <input
-                      type="number"
-                      id="travelTeamMembers"
-                      value={travelTeamMembers}
-                      onChange={(e) => setTravelTeamMembers(Math.max(1, Math.min(50, Number(e.target.value))))}
-                      min="1"
-                      max="50"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                    />
-                  </div>
-                </div>
-              )}
+            {/* Travel Date */}
+            <div>
+              <label htmlFor="travelDate" className="block text-sm font-medium text-gray-700 mb-1">
+                Travel Date
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="date"
+                  id="travelDate"
+                  value={travelDate}
+                  onChange={(e) => setTravelDate(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Number of Team Members */}
+            <div>
+              <label htmlFor="numberOfTeamMembers" className="block text-sm font-medium text-gray-700 mb-1">
+                Number of Team Members
+              </label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="number"
+                  id="numberOfTeamMembers"
+                  value={numberOfTeamMembers}
+                  onChange={(e) => setNumberOfTeamMembers(Math.max(1, Number(e.target.value)))}
+                  min="1"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Divider Line */}
-          <div className="w-px bg-gray-200"></div>
-
-          {/* Accommodation Request Section */}
-          <div className="flex-1">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-900">Accommodation Request</h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={accommodationEnabled}
-                    onChange={(e) => setAccommodationEnabled(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              {accommodationEnabled && (
-                <div className="pl-2">
-                  <div>
-                    <label htmlFor="accommodationTeamMembers" className="block text-sm font-medium text-gray-700 mb-1">
-                      Number of Team Members
-                    </label>
-                    <input
-                      type="number"
-                      id="accommodationTeamMembers"
-                      value={accommodationTeamMembers}
-                      onChange={(e) => setAccommodationTeamMembers(Math.max(1, Math.min(50, Number(e.target.value))))}
-                      min="1"
-                      max="50"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                    />
-                  </div>
-                </div>
-              )}
+          {/* Attach Tickets */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Attach Tickets
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <input
+                type="file"
+                id="ticketsUpload"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                onChange={handleTicketsUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="ticketsUpload"
+                className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 rounded-lg p-4 transition-colors"
+              >
+                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-600">Click to upload tickets or drag and drop</span>
+                <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
+              </label>
             </div>
+            
+            {/* Display uploaded files */}
+            {ticketsFiles.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {ticketsFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-white border border-gray-200 rounded-md p-2">
+                    <span className="text-sm text-gray-700 truncate">{file.name}</span>
+                    <button
+                      onClick={() => removeTicketFile(index)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Accommodation Details Section */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Hotel className="w-5 h-5 text-green-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Accommodation Details</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Hotel Name */}
+            <div>
+              <label htmlFor="hotelName" className="block text-sm font-medium text-gray-700 mb-1">
+                Hotel Name
+              </label>
+              <div className="relative">
+                <Hotel className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  id="hotelName"
+                  value={hotelName}
+                  onChange={(e) => setHotelName(e.target.value)}
+                  placeholder="Enter hotel name"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Number of Rooms */}
+            <div>
+              <label htmlFor="numberOfRooms" className="block text-sm font-medium text-gray-700 mb-1">
+                Number of Rooms
+              </label>
+              <input
+                type="number"
+                id="numberOfRooms"
+                value={numberOfRooms}
+                onChange={(e) => setNumberOfRooms(Math.max(1, Number(e.target.value)))}
+                min="1"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Check-in Date */}
+            <div>
+              <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700 mb-1">
+                Check-in Date
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="date"
+                  id="checkInDate"
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Check-out Date */}
+            <div>
+              <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700 mb-1">
+                Check-out Date
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="date"
+                  id="checkOutDate"
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Attach Reservation Slips */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Attach Reservation Slips
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <input
+                type="file"
+                id="reservationSlipsUpload"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                onChange={handleReservationSlipsUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="reservationSlipsUpload"
+                className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 rounded-lg p-4 transition-colors"
+              >
+                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-600">Click to upload reservation slips or drag and drop</span>
+                <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
+              </label>
+            </div>
+            
+            {/* Display uploaded files */}
+            {reservationSlipsFiles.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {reservationSlipsFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-white border border-gray-200 rounded-md p-2">
+                    <span className="text-sm text-gray-700 truncate">{file.name}</span>
+                    <button
+                      onClick={() => removeReservationSlipFile(index)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -180,9 +348,10 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
           </Button>
           <Button
             onClick={handleSubmit}
+            disabled={!isFormValid()}
             className="px-6 py-2"
           >
-            Submit Request
+            Submit Details
           </Button>
         </div>
       </div>

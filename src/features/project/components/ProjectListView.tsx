@@ -72,15 +72,20 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
           onClick={() => onProjectClick(project)}
           className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer h-full flex flex-col min-h-[280px]"
         >
-          {/* Top Row: Title */}
+          {/* Top Row: Title and Status */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1 pr-3">
               <h3 className="text-lg font-semibold text-gray-900 leading-tight mb-2">
                 {project.title}
               </h3>
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                {project.vinCode}
-              </span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  {project.vinCode}
+                </span>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${PROJECT_STATUS_COLORS[project.status]}`}>
+                  {PROJECT_STATUS_DESCRIPTIONS[project.status]}
+                </span>
+              </div>
             </div>
           </div>
 

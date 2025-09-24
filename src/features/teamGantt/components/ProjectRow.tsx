@@ -72,8 +72,8 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
     return {
       startPosition: Math.max(0, startPosition),
       width: Math.max(2, width),
-      top: 0,
-      height: 80 // Full height of the container (h-20 = 80px)
+      top: 10, // Center vertically (80px container - 60px bar = 20px, 20px/2 = 10px)
+      height: 60 // Reduced height for better appearance
     };
   }, [project, viewMode, currentDate]);
 
@@ -119,11 +119,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
               onClick={onProjectClick}
               isHovered={hoveredProject?.projectId === project.projectId}
             />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-              Outside timeline
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ import { useToast } from '../../../../contexts/ToastContext';
 import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { TrailerForAssignment } from '../../types/trailers';
 import { Window, MOCK_WINDOWS } from '../../types/windows';
+import { WIPStatusPage } from './WIPStatusPage';
 
 // Icons from Figma design
 
@@ -214,7 +215,6 @@ export const ProjectDetailsPage: React.FC = () => {
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
   const [showTravelAccommodationModal, setShowTravelAccommodationModal] = useState(false);
   const [travelAccommodationRequestSubmitted, setTravelAccommodationRequestSubmitted] = useState(false);
-  const [submittedTravelAccommodationData, setSubmittedTravelAccommodationData] = useState<TravelAccommodationData | null>(null);
   const [uploadedDocuments, setUploadedDocuments] = useState<File[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
@@ -349,9 +349,8 @@ export const ProjectDetailsPage: React.FC = () => {
 
   const handleTravelAccommodationSubmit = (data: TravelAccommodationData) => {
     console.log('Travel & Accommodation Request:', data);
-    setSubmittedTravelAccommodationData(data);
     setTravelAccommodationRequestSubmitted(true);
-    showToast('Travel & accommodation details submitted successfully!');
+    showToast('Request submitted to logistics manager successfully!');
     // Here you would typically save the data to your backend
   };
 
@@ -736,6 +735,11 @@ export const ProjectDetailsPage: React.FC = () => {
     console.log('Mark stage as complete');
   };
 
+  // If project status is WIP, render the WIP status page
+  if (project.status === 'WIP') {
+    return <WIPStatusPage />;
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen">
 
@@ -856,7 +860,7 @@ export const ProjectDetailsPage: React.FC = () => {
                     ) : (
                       /* Add Details Button - shows after request submission */
                       <Button
-                        onClick={handleOpenTravelAccommodationModal}
+                        onClick={() => console.log('Add travel details')}
                         className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
                       >
                         <Plus className="w-4 h-4" />

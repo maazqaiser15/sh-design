@@ -436,30 +436,25 @@ export const ProjectListPage: React.FC = () => {
   }, [projectListItems, filters, searchQuery, sortOptions]);
 
   const handleProjectClick = (project: ProjectListItem) => {
-    // Determine the stage based on project status
-    let stage = 'preparation'; // default stage
-    
+    // Route based on project status
     switch (project.status as ProjectStatus) {
+      case 'PV75':
       case 'PV90':
       case 'UB':
       case 'WB':
-        stage = 'preparation';
+        // Navigate to existing project details page for preparation stages
+        navigate(`/projects/${project.id}?stage=preparation`);
         break;
       case 'WIP':
-        stage = 'wip';
-        break;
       case 'QF':
-        stage = 'quality';
-        break;
       case 'Completed':
-        stage = 'completed';
+        // Navigate to coming soon page for these statuses
+        navigate(`/projects/${project.id}/coming-soon?status=${project.status}&title=${encodeURIComponent(project.title)}`);
         break;
       default:
-        stage = 'preparation';
+        // Default to preparation stage
+        navigate(`/projects/${project.id}?stage=preparation`);
     }
-    
-    // Navigate to project details with the appropriate stage
-    navigate(`/projects/${project.id}?stage=${stage}`);
   };
 
 

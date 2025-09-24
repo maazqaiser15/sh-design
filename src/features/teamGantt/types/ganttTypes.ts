@@ -111,6 +111,9 @@ export interface TimelineHeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   layoutMode: 'team' | 'project' | 'trailer';
+  filters?: TeamGanttFilters;
+  onFiltersChange?: (filters: TeamGanttFilters) => void;
+  allUsers?: Array<{ id: string; name: string }>;
 }
 
 export interface TeamGanttProps {

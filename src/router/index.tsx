@@ -78,6 +78,15 @@ export const routes: RouteObject[] = [
               return { element: <ProjectDetailsPage /> };
             },
           },
+          {
+            path: "projects/:projectId/coming-soon",
+            async lazy() {
+              const { ComingSoonPage } = await import(
+                "../features/project/components/ComingSoonPage"
+              );
+              return { element: <ComingSoonPage /> };
+            },
+          },
 
           // Team Routes
           {
