@@ -17,7 +17,6 @@ import { useToast } from '../../../../contexts/ToastContext';
 import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { TrailerForAssignment } from '../../types/trailers';
 import { Window, MOCK_WINDOWS } from '../../types/windows';
-import { WIPStatusPage } from './WIPStatusPage';
 
 // Icons from Figma design
 
@@ -194,7 +193,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, actionBu
  * ProjectDetailsPage - Main project details page
  * Shows project information, team assignments, logistics, and documents
  */
-export const ProjectDetailsPage: React.FC = () => {
+export const ProjectDetailsPrep: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { showToast } = useToast();
   const navigate = useNavigate();

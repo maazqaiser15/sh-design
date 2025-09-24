@@ -81,10 +81,10 @@ export const routes: RouteObject[] = [
           {
             path: "projects/:projectId/coming-soon",
             async lazy() {
-              const { ComingSoonPage } = await import(
-                "../features/project/components/ComingSoonPage"
+              const { ProjectComingSoon } = await import(
+                "../pages/ProjectComingSoon"
               );
-              return { element: <ComingSoonPage /> };
+              return { element: <ProjectComingSoon /> };
             },
           },
 

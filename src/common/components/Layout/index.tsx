@@ -26,7 +26,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="px-8 py-6">{children}</div>
+          <div className="py-6">{children}</div>
         </main>
       </div>
     </div>
