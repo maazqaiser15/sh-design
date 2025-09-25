@@ -43,6 +43,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       // Film stock statuses
       'good': { bg: 'bg-green-100', text: 'text-green-800', label: 'Good' },
       'critical': { bg: 'bg-red-100', text: 'text-red-800', label: 'Critical' },
+
+      // Window statuses
+      'Complete': { bg: 'bg-green-100', text: 'text-green-800', label: 'Complete' },
+      'In Progress': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'In Progress' },
+      'Reinstallation Needed': { bg: 'bg-red-100', text: 'text-red-800', label: 'Reinstallation Needed' },
+      'Pending': { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Pending' },
+      'Updated': { bg: 'bg-amber-100', text: 'text-amber-800', label: 'Updated' },
     };
 
     return configs[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status };

@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
 import { ProjectDetailsPrep } from './ProjectDetailsPrep';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
+import { ProjectDetailsQF } from './ProjectDetailsQF';
 
 /**
  * ProjectDetailsRouter - Routes to different project detail layouts based on status
@@ -47,7 +48,7 @@ export const ProjectDetailsRouter: React.FC = () => {
   }
 
   if (isQualityCheckStage) {
-    return <ProjectDetailsWIP projectStatus="QF" />;
+    return <ProjectDetailsQF projectStatus="QF" />;
   }
 
   if (isCompletedStage) {

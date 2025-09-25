@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -59,6 +59,25 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const [editingWindow, setEditingWindow] = useState<WindowType | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<WindowType | null>(null);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.dropdown-container')) {
+        // Close all dropdowns
+        const dropdowns = document.querySelectorAll('[id^="dropdown-"]');
+        dropdowns.forEach(dropdown => {
+          dropdown.classList.add('hidden');
+        });
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Get project data with default values for missing properties
   const project = {
     ...MOCK_PROJECT_DETAILS,
@@ -87,6 +106,44 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         type: 'document',
         fileName: 'site-measurements.pdf',
         fileSize: '1.8 MB'
+      },
+      {
+        id: '3',
+        user: 'Mike Lee',
+        action: 'completed window installation for Marriot Windows Installation',
+        time: '6 hours ago',
+        type: 'completion',
+        fileName: null,
+        fileSize: null,
+        note: 'Windows 1-5 successfully installed with BR film'
+      },
+      {
+        id: '4',
+        user: 'Emily Rodriguez',
+        action: 'uploaded document for Marriot Windows Installation',
+        time: '1 day ago',
+        type: 'document',
+        fileName: 'safety-checklist.pdf',
+        fileSize: '0.9 MB'
+      },
+      {
+        id: '5',
+        user: 'David Chen',
+        action: 'updated Marriot Windows Installation project',
+        time: '1 day ago',
+        type: 'update',
+        fileName: null,
+        fileSize: null,
+        note: 'Site preparation completed, ready for installation'
+      },
+      {
+        id: '6',
+        user: 'Ayesha Khan',
+        action: 'uploaded document for Marriot Windows Installation',
+        time: '2 days ago',
+        type: 'document',
+        fileName: 'architectural-plans.pdf',
+        fileSize: '3.2 MB'
       }
     ]
   };
@@ -445,7 +502,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             <div className="border-b border-gray-200 mb-6">
               <nav className="flex space-x-8">
                 {(projectStatus === 'WIP' ? [
-                  { id: 'job-brief', label: 'Job brief' },
+                  { id: 'job-brief', label: 'Window Management' },
                   { id: 'team', label: 'Team' },
                   { id: 'travel-hotel', label: 'Travel & Hotel' },
                   { id: 'document', label: 'Document' },
@@ -481,23 +538,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             {/* Tab Content */}
             {activeTab === 'job-brief' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Brief</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900">Project Overview</h4>
-                      <p className="text-gray-600 mt-1">{project.description}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">Requirements</h4>
-                      <p className="text-gray-600 mt-1">Installation of window film for Marriott hotel project</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">Timeline</h4>
-                      <p className="text-gray-600 mt-1">Project duration: {project.startDate} to {project.endDate}</p>
-                    </div>
-                  </div>
-                </div>
                 
                 {/* Window Management Section */}
                 <div className="space-y-6">
@@ -645,25 +685,58 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                       <StatusBadge status={window.status} />
                                     </td>
                                     <td className="py-4 px-4">
-                                      <div className="flex items-center justify-end gap-2">
-                                        <button 
-                                          onClick={() => handleViewWindow(window)}
-                                          className="text-gray-400 hover:text-blue-600"
-                                        >
-                                          <Eye className="w-4 h-4" />
-                                        </button>
-                                        <button 
-                                          onClick={() => handleEditWindow(window)}
-                                          className="text-gray-400 hover:text-blue-600"
-                                        >
-                                          <Edit className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                          onClick={() => handleDeleteWindow(window.id)}
-                                          className="text-gray-400 hover:text-red-600"
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </button>
+                                      <div className="flex items-center justify-end">
+                                        <div className="relative dropdown-container">
+                                          <button 
+                                            onClick={() => {
+                                              // Toggle dropdown for this specific window
+                                              const dropdown = document.getElementById(`dropdown-${window.id}`);
+                                              if (dropdown) {
+                                                dropdown.classList.toggle('hidden');
+                                              }
+                                            }}
+                                            className="text-gray-400 hover:text-gray-600 p-1"
+                                          >
+                                            <MoreVertical className="w-4 h-4" />
+                                          </button>
+                                          <div 
+                                            id={`dropdown-${window.id}`}
+                                            className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                                          >
+                                            <div className="py-1">
+                                              <button
+                                                onClick={() => {
+                                                  handleViewWindow(window);
+                                                  document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                }}
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                              >
+                                                <Eye className="w-4 h-4" />
+                                                View Details
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  handleEditWindow(window);
+                                                  document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                }}
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                              >
+                                                <Edit className="w-4 h-4" />
+                                                Edit Window
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  handleDeleteWindow(window.id);
+                                                  document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                }}
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                              >
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete Window
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
                                       </div>
                                     </td>
                                   </tr>
@@ -687,25 +760,61 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                   <div>Dimensions: {window.length} x {window.width} cm</div>
                                   <div>Layers: {window.layers.length}</div>
                                 </div>
-                                <div className="flex items-center justify-end gap-2 mt-4">
-                                  <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleEditWindow(window);
-                                    }}
-                                    className="text-gray-400 hover:text-blue-600"
-                                  >
-                                    <Edit className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDeleteWindow(window.id);
-                                    }}
-                                    className="text-gray-400 hover:text-red-600"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                                <div className="flex items-center justify-end mt-4">
+                                  <div className="relative dropdown-container">
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const dropdown = document.getElementById(`dropdown-grid-${window.id}`);
+                                        if (dropdown) {
+                                          dropdown.classList.toggle('hidden');
+                                        }
+                                      }}
+                                      className="text-gray-400 hover:text-gray-600 p-1"
+                                    >
+                                      <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                    <div 
+                                      id={`dropdown-grid-${window.id}`}
+                                      className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                                    >
+                                      <div className="py-1">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleViewWindow(window);
+                                            document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                          }}
+                                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                          <Eye className="w-4 h-4" />
+                                          View Details
+                                        </button>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditWindow(window);
+                                            document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                          }}
+                                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                          <Edit className="w-4 h-4" />
+                                          Edit Window
+                                        </button>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteWindow(window.id);
+                                            document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                          }}
+                                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                          Delete Window
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </Card>
                             ))}
@@ -748,16 +857,26 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Members</h3>
                   <div className="space-y-4">
-                    {MOCK_TEAM_MEMBERS.map((member, index) => (
+                    {[
+                      { name: 'John Smith', role: 'Lead Supervisor', phone: '+1-555-0123' },
+                      { name: 'Ayesha Khan', role: 'Crew Leader', phone: '+1-555-0124' },
+                      { name: 'Mike Lee', role: 'Senior Installer', phone: '+1-555-0125' },
+                      { name: 'Sarah Johnson', role: 'Installer', phone: '+1-555-0126' },
+                      { name: 'David Chen', role: 'Installer', phone: '+1-555-0127' },
+                      { name: 'Emily Rodriguez', role: 'Safety Coordinator', phone: '+1-555-0128' }
+                    ].map((member, index) => (
                       <div key={index} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg">
                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                           <span className="text-sm font-medium text-gray-600">
-                            {member.split(' ').map(n => n[0]).join('')}
+                            {member.name.split(' ').map(n => n[0]).join('')}
                           </span>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{member}</p>
-                          <p className="text-sm text-gray-500">Team Member</p>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{member.name}</p>
+                          <p className="text-sm text-gray-500">{member.role}</p>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {member.phone}
                         </div>
                       </div>
                     ))}
@@ -770,14 +889,51 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
               <div className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Travel & Hotel</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">Accommodation</h4>
-                      <p className="text-gray-600 mt-1">Hotel arrangements for team members</p>
+                  <div className="space-y-6">
+                    {/* Travel Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Travel details</h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">Lahore → Miami</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                            <span>2 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">Travel</h4>
-                      <p className="text-gray-600 mt-1">Transportation and logistics</p>
+
+                    {/* Hotel Reservation Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Hotel Reservation Details</h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">Hotel Picaso · Sep 25 → Sep 26, 2025</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                            <span>3 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -786,17 +942,113 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
             {activeTab === 'document' && (
               <div className="space-y-6">
+                {/* Project Documents Section */}
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Documents</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Project Documents</h3>
+                      <p className="text-sm text-gray-500 mt-1">2 documents</p>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      icon={Upload}
+                      onClick={() => showToast('Upload document functionality coming soon', 'info')}
+                      className="px-4 py-2"
+                    >
+                      Upload document
+                    </Button>
+                  </div>
+                  
                   <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">Project Documents</h4>
-                      <p className="text-gray-600 mt-1">Technical specifications and requirements</p>
+                    {/* Document 1 */}
+                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xs font-medium text-blue-600">DOC</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">Site Map - Floor Plan.pdf</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span>1.95 MB</span>
+                            <span>•</span>
+                            <span>Jan 15, 2024, 02:00 PM</span>
+                            <span>•</span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">John Doe</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => showToast('Downloading Site Map - Floor Plan.pdf', 'info')}
+                          className="p-2 text-gray-400 hover:text-gray-600"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => showToast('Delete document functionality coming soon', 'info')}
+                          className="p-2 text-gray-400 hover:text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">Installation Guides</h4>
-                      <p className="text-gray-600 mt-1">Step-by-step installation procedures</p>
+
+                    {/* Document 2 */}
+                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xs font-medium text-gray-600">TXT</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">Architectural Plan.txt</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span>1.95 MB</span>
+                            <span>•</span>
+                            <span>Jan 15, 2024, 02:00 PM</span>
+                            <span>•</span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Ema Will</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => showToast('Downloading Architectural Plan.txt', 'info')}
+                          className="p-2 text-gray-400 hover:text-gray-600"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => showToast('Delete document functionality coming soon', 'info')}
+                          className="p-2 text-gray-400 hover:text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Installation Guides Section */}
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Installation Guides</h3>
+                      <p className="text-sm text-gray-500 mt-1">Step-by-step installation procedures</p>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      icon={Upload}
+                      onClick={() => showToast('Upload installation guide functionality coming soon', 'info')}
+                      className="px-4 py-2"
+                    >
+                      Upload document
+                    </Button>
+                  </div>
+                  
+                  <div className="text-center py-8">
+                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No installation guides uploaded yet</p>
+                    <p className="text-sm text-gray-400 mt-1">Upload guides to help your team with installation procedures</p>
                   </div>
                 </div>
               </div>
@@ -893,15 +1145,72 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             {activeTab === 'notes' && (
               <div className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Notes</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">Project Notes</h4>
-                      <p className="text-gray-600 mt-1">Important notes and observations</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Project Notes</h3>
+                      <p className="text-sm text-gray-500 mt-1">2 notes</p>
                     </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">Issues & Resolutions</h4>
-                      <p className="text-gray-600 mt-1">Track issues and their solutions</p>
+                    <button 
+                      onClick={() => showToast('Add note functionality coming soon', 'info')}
+                      className="w-8 h-8 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center hover:border-gray-400 hover:bg-gray-50"
+                    >
+                      <Plus className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* Note 1 */}
+                    <div className="py-4 border-b border-gray-100 last:border-b-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-medium text-gray-900">John Smith</span>
+                            <span className="text-sm text-gray-500">Jan 20, 2024, 03:15 PM</span>
+                          </div>
+                          <p className="text-gray-700">"Client requested additional security measures for the main entrance."</p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <button 
+                            onClick={() => showToast('Edit note functionality coming soon', 'info')}
+                            className="p-1 text-gray-400 hover:text-gray-600"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => showToast('Delete note functionality coming soon', 'info')}
+                            className="p-1 text-gray-400 hover:text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Note 2 */}
+                    <div className="py-4 border-b border-gray-100 last:border-b-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-medium text-gray-900">Maria Will</span>
+                            <span className="text-sm text-gray-500">Jan 11, 2024, 03:15 PM</span>
+                          </div>
+                          <p className="text-gray-700">"Site visit completed. All measurements confirmed."</p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <button 
+                            onClick={() => showToast('Edit note functionality coming soon', 'info')}
+                            className="p-1 text-gray-400 hover:text-gray-600"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => showToast('Delete note functionality coming soon', 'info')}
+                            className="p-1 text-gray-400 hover:text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -915,7 +1224,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
               <div className="flex flex-col gap-5">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Activity Log</h3>
-                  <p className="text-sm text-gray-500">2 new updates</p>
+                  <p className="text-sm text-gray-500">6 recent updates</p>
                 </div>
 
                 <div className="space-y-4">
@@ -923,7 +1232,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     <div key={activity.id} className="relative">
                       <div className="flex gap-3">
                         <div className="flex-shrink-0">
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
                             <span className="text-xs font-medium text-gray-600">
                               {activity.user.split(' ').map(n => n[0]).join('')}
                             </span>
@@ -931,17 +1240,17 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-gray-700">{activity.user}</span>
+                            <span className="text-sm font-medium text-gray-900">{activity.user}</span>
                             <span className="text-xs text-gray-500">{activity.time}</span>
                           </div>
                           <p className="text-sm text-gray-600">
                             {activity.action.split('Marriot Windows Installation')[0]}
-                            <span className="font-medium text-blue-600">Marriot Windows Installation</span>
+                            <span className="font-semibold text-blue-600 underline">Marriot Windows Installation</span>
                             {activity.action.split('Marriot Windows Installation')[1]}
                           </p>
-                          {activity.type === 'document' && (
+                          {activity.type === 'document' && activity.fileName && (
                             <div className="mt-2 flex items-center gap-2">
-                              <div className="w-7 h-7 bg-blue-50 rounded-full flex items-center justify-center">
+                              <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
                                 <FileText className="w-3 h-3 text-blue-600" />
                               </div>
                               <div>
@@ -950,16 +1259,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                               </div>
                             </div>
                           )}
-                          {activity.type === 'note' && activity.note && (
+                          {(activity.type === 'update' || activity.type === 'completion') && activity.note && (
                             <div className="mt-2 p-3 bg-gray-50 rounded-lg">
                               <p className="text-sm text-gray-600 italic">"{activity.note}"</p>
                             </div>
                           )}
                         </div>
                       </div>
-                      {activity.isNew && (
-                        <div className="absolute -right-1 -top-1 w-2 h-2 bg-blue-500 rounded-full"></div>
-                      )}
                     </div>
                   ))}
                 </div>
