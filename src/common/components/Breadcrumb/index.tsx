@@ -117,6 +117,8 @@ function formatSegmentLabel(segment: string, allSegments: string[], index: numbe
     'scheduler': 'Scheduler',
     'documents': 'Documents',
     'settings': 'Settings',
+    'coming-soon': 'Coming Soon',
+    'team-gantt-chart': 'Team Gantt Chart',
   };
 
   // Check if it's a UUID or ID (for dynamic routes)
@@ -131,6 +133,9 @@ function formatSegmentLabel(segment: string, allSegments: string[], index: numbe
     }
     if (previousSegment === 'trailers') {
       return isUuid ? `Trailer ${segment.substring(0, 8)}...` : `Trailer ${segment}`;
+    }
+    if (previousSegment === 'team') {
+      return isUuid ? `Member ${segment.substring(0, 8)}...` : `Member ${segment}`;
     }
     return isUuid ? `${segment.substring(0, 8)}...` : segment;
   }

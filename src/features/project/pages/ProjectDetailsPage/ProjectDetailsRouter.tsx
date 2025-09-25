@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
+import { useSetBreadcrumbs } from '../../../../contexts/BreadcrumbContext';
 import { ProjectDetailsPrep } from './ProjectDetailsPrep';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 import { ProjectDetailsQF } from './ProjectDetailsQF';
@@ -18,9 +19,16 @@ export const ProjectDetailsRouter: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [project, setProject] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
   
-  // Get project status from URL params or project data
+  // Get project status and title from URL params or project data
   const statusFromUrl = searchParams.get('status');
+  const projectTitle = searchParams.get('title');
   const projectStatus = statusFromUrl || project.status;
+  
+  // Set breadcrumbs for project details
+  useSetBreadcrumbs([
+    { label: 'Projects', href: '/projects' },
+    { label: projectTitle || project.title || `Project ${projectId}`, href: undefined }
+  ], [projectId, projectTitle, project.title]);
 
   // Determine which layout to show based on status
   const isPreparationStage = ['PV75', 'PV90', 'UB', 'WB'].includes(projectStatus);

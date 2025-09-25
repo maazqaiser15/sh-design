@@ -249,7 +249,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     <div className="bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-[60px] py-6">
+        <div className="py-6">
           <div className="flex flex-col gap-6">
             {/* Page Header */}
             <div className="flex flex-col gap-5">
@@ -494,7 +494,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       </div>
 
       {/* Main Content */}
-      <div className="px-[60px] py-6">
+      <div className="py-6">
         <div className="flex gap-6">
           {/* Left Content */}
           <div className="flex-1">

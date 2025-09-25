@@ -175,7 +175,7 @@ const ProjectDetailsTabs: React.FC<ProjectDetailsTabsProps> = ({
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="px-[60px] py-6">
+      <div className="py-6">
         {/* Project Header */}
         <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
           <div className="flex flex-col gap-6">

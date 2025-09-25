@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '../../common/components/Button';
 import { Card } from '../../common/components/Card';
+import { useSetBreadcrumbs } from '../../contexts/BreadcrumbContext';
 
 export const ProjectComingSoon: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -11,6 +12,12 @@ export const ProjectComingSoon: React.FC = () => {
   
   const status = searchParams.get('status') || 'WIP';
   const title = searchParams.get('title') || 'Project';
+
+  // Set breadcrumbs
+  useSetBreadcrumbs([
+    { label: 'Projects', href: '/projects' },
+    { label: title || `Project ${projectId}` }
+  ], [projectId, title]);
 
   const getStatusInfo = (status: string) => {
     switch (status) {

@@ -4,7 +4,6 @@ import { useSetBreadcrumbs } from "../../../contexts/BreadcrumbContext";
 
 export const ProjectList: React.FC = () => {
   useSetBreadcrumbs([
-    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
   ]);
 

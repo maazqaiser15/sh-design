@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { TeamGanttWithViews } from '../../features/teamGantt/components/TeamGanttWithViews';
 import { MOCK_TEAM_MEMBERS } from '../../features/teamGantt/data/mockData';
 import { ViewMode, LayoutMode, Project, TeamGanttFilters, TeamMember } from '../../features/teamGantt/types/ganttTypes';
+import { useSetBreadcrumbs } from '../../contexts/BreadcrumbContext';
 
 export const TeamGanttChart: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +17,11 @@ export const TeamGanttChart: React.FC = () => {
     trailerProjects: [],
     trailerAvailability: [],
   });
+
+  // Set breadcrumbs
+  useSetBreadcrumbs([
+    { label: 'Team Gantt Chart' }
+  ]);
 
   const handleDateChange = (newDate: Date) => {
     setCurrentDate(newDate);
