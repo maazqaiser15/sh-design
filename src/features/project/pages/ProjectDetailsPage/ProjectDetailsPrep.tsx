@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, CheckCircle } from 'lucide-react';
+import { Plus, CheckCircle, Hotel } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
@@ -11,6 +11,7 @@ import { ProjectDateModal } from '../../components/ProjectDateModal';
 import { AssignTrailerModal } from '../../components/AssignTrailerModal';
 import { AssignedTeamCard } from '../../components/AssignedTeamCard';
 import { TravelAccommodationModal, TravelAccommodationData } from '../../components/TravelAccommodationModal';
+import { TravelAccommodationRequestModal, TravelAccommodationRequestData } from '../../components/TravelAccommodationRequestModal';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -212,12 +213,37 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [assignedTrailer, setAssignedTrailer] = useState<TrailerForAssignment | null>(null);
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
-  const [showTravelAccommodationModal, setShowTravelAccommodationModal] = useState(false);
+  const [isTrailerCompleted, setIsTrailerCompleted] = useState(false);
+  const [isTravelAccommodationCompleted, setIsTravelAccommodationCompleted] = useState(false);
+  const [showTravelAccommodationRequestModal, setShowTravelAccommodationRequestModal] = useState(false);
+  const [showTravelAccommodationDetailsModal, setShowTravelAccommodationDetailsModal] = useState(false);
   const [travelAccommodationRequestSubmitted, setTravelAccommodationRequestSubmitted] = useState(false);
+  const [travelAccommodationNotRequired, setTravelAccommodationNotRequired] = useState(false);
+  const [travelAccommodationDetailsAdded, setTravelAccommodationDetailsAdded] = useState(false);
+  const [travelAccommodationRequestData, setTravelAccommodationRequestData] = useState<TravelAccommodationRequestData | null>(null);
+  const [travelAccommodationDetailsData, setTravelAccommodationDetailsData] = useState<TravelAccommodationData | null>(null);
   const [uploadedDocuments, setUploadedDocuments] = useState<File[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
+  
+  // Trailer & Logistics State
+  const [inventoryItems, setInventoryItems] = useState([
+    { id: 'br', name: 'BR', required: 30, inTrailer: 15, needToShip: 15 },
+    { id: 'riot-plus', name: 'Riot+', required: 10, inTrailer: 5, needToShip: 5 },
+    { id: 'smash', name: 'Smash', required: 5, inTrailer: 2, needToShip: 3 },
+    { id: 'fer', name: 'FER', required: 4, inTrailer: 3, needToShip: 1 },
+    { id: 'riot', name: 'Riot', required: 8, inTrailer: 3, needToShip: 5 },
+    { id: 'riot-minus', name: 'Riot -', required: 6, inTrailer: 2, needToShip: 4 },
+    { id: 'tint-ni', name: 'Tint NI', required: 3, inTrailer: 1, needToShip: 2 },
+    { id: 'tint-incl', name: 'Tint Incl', required: 2, inTrailer: 1, needToShip: 1 },
+    { id: 'anchoring', name: 'Anchoring', required: 4, inTrailer: 2, needToShip: 2 },
+    { id: 'kevlar', name: 'Kevlar', required: 2, inTrailer: 1, needToShip: 1 },
+    { id: 'stripping', name: 'Stripping', required: 1, inTrailer: 0, needToShip: 1 }
+  ]);
+  const [showAllFilmTypes, setShowAllFilmTypes] = useState(false);
+  const [uploadedReceipts, setUploadedReceipts] = useState<File[]>([]);
+  const [showReceiptUploadModal, setShowReceiptUploadModal] = useState(false);
 
 
 
@@ -341,17 +367,92 @@ export const ProjectDetailsPrep: React.FC = () => {
     });
   };
 
-  // Handle travel accommodation modal
-  const handleOpenTravelAccommodationModal = () => {
-    setShowTravelAccommodationModal(true);
+  // Handle travel accommodation request modal
+  const handleOpenTravelAccommodationRequestModal = () => {
+    setShowTravelAccommodationRequestModal(true);
   };
 
-  const handleTravelAccommodationSubmit = (data: TravelAccommodationData) => {
+  const handleTravelAccommodationRequestSubmit = (data: TravelAccommodationRequestData) => {
     console.log('Travel & Accommodation Request:', data);
+    setTravelAccommodationRequestData(data);
     setTravelAccommodationRequestSubmitted(true);
     showToast('Request submitted to logistics manager successfully!');
     // Here you would typically save the data to your backend
   };
+
+  // Handle travel accommodation details modal
+  const handleOpenTravelAccommodationDetailsModal = () => {
+    setShowTravelAccommodationDetailsModal(true);
+  };
+
+  const handleTravelAccommodationDetailsSubmit = (data: TravelAccommodationData) => {
+    console.log('Travel & Accommodation Details:', data);
+    setTravelAccommodationDetailsData(data);
+    setTravelAccommodationDetailsAdded(true);
+    setIsTravelAccommodationCompleted(true);
+    showToast('Travel details added successfully!');
+    // Here you would typically save the data to your backend
+  };
+
+  // Handle marking travel as not required
+  const handleMarkTravelNotRequired = () => {
+    setTravelAccommodationNotRequired(true);
+    setIsTravelAccommodationCompleted(true);
+    showToast('Travel marked as not required for this project');
+  };
+
+  // Handle marking trailer as complete
+  const handleMarkTrailerComplete = () => {
+    setIsTrailerCompleted(true);
+    showToast('Trailer & Logistics marked as complete');
+  };
+
+  // Handle trailer assignment
+  const handleOpenAssignTrailerModal = () => {
+    setShowAssignTrailerModal(true);
+  };
+
+
+  // Handle receipt upload
+  const handleOpenReceiptUploadModal = () => {
+    setShowReceiptUploadModal(true);
+  };
+
+  const handleReceiptUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setUploadedReceipts(prev => [...prev, ...newFiles]);
+      showToast(`${newFiles.length} receipt(s) uploaded successfully!`);
+    }
+    event.target.value = '';
+  };
+
+  const handleRemoveReceipt = (index: number) => {
+    setUploadedReceipts(prev => prev.filter((_, i) => i !== index));
+    showToast('Receipt removed successfully!');
+  };
+
+  // Handle inventory updates
+  const handleUpdateInventoryItem = (itemId: string, field: 'required' | 'inTrailer', value: number) => {
+    setInventoryItems(prev => prev.map(item => {
+      if (item.id === itemId) {
+        const updated = { ...item, [field]: value };
+        updated.needToShip = Math.max(0, updated.required - updated.inTrailer);
+        return updated;
+      }
+      return item;
+    }));
+  };
+
+  // Calculate totals
+  const totalRequired = inventoryItems.reduce((sum, item) => sum + item.required, 0);
+  const totalInTrailer = inventoryItems.reduce((sum, item) => sum + item.inTrailer, 0);
+  const totalNeedToShip = inventoryItems.reduce((sum, item) => sum + item.needToShip, 0);
+
+  // Get visible film types
+  const visibleFilmTypes = showAllFilmTypes ? inventoryItems : inventoryItems.slice(0, 4);
+  const hiddenFilmTypesCount = inventoryItems.length - 4;
 
   const handleEditTeam = () => {
     setShowEditTeamModal(true);
@@ -629,10 +730,6 @@ export const ProjectDetailsPrep: React.FC = () => {
     setShowAssignTrailerModal(false);
   };
 
-  // Handle opening trailer assignment modal
-  const handleOpenAssignTrailerModal = () => {
-    setShowAssignTrailerModal(true);
-  };
 
   // Handle house manager notification
   const handleNotifyHouseManager = (message: string) => {
@@ -647,11 +744,6 @@ export const ProjectDetailsPrep: React.FC = () => {
     // In a real app, this would upload the file and update the database
   };
 
-  // Handle receipt removal
-  const handleRemoveReceipt = (receiptId: string) => {
-    console.log('Removing receipt:', receiptId);
-    // In a real app, this would remove the receipt from the database
-  };
 
   // Handle mark inventory as completed
   const handleMarkCompleted = () => {
@@ -800,13 +892,13 @@ export const ProjectDetailsPrep: React.FC = () => {
               />
               <ProgressStep
                 title="Travel & Accommodation"
-                status="current"
-                description="In Progress"
+                status={isTravelAccommodationCompleted ? "completed" : "current"}
+                description={isTravelAccommodationCompleted ? "Completed" : "In Progress"}
               />
               <ProgressStep
                 title="Trailer & Logistics"
-                status="incomplete"
-                description="In Progress"
+                status={isTrailerCompleted ? "completed" : "incomplete"}
+                description={isTrailerCompleted ? "Completed" : "In Progress"}
               />
             </div>
           </div>
@@ -833,47 +925,182 @@ export const ProjectDetailsPrep: React.FC = () => {
                   <div className="flex flex-col gap-1 flex-1">
                     <h3 className="font-semibold text-lg text-[#101828] leading-7">Travel & Accommodation</h3>
                     <p className="font-normal text-sm text-[#475467] leading-5">
-                      {travelAccommodationRequestSubmitted ? 'Request submitted to logistics manager' : 'Assign travel & accommodation'}
+                      {travelAccommodationNotRequired 
+                        ? 'Travel not required for this project'
+                        : travelAccommodationDetailsAdded 
+                        ? 'Travel & accommodation details added'
+                        : travelAccommodationRequestSubmitted 
+                        ? 'Request submitted to logistics manager' 
+                        : 'Assign travel & accommodation'
+                      }
                     </p>
                   </div>
                   <div className="flex gap-2 items-center">
-                    {!travelAccommodationRequestSubmitted ? (
+                    {travelAccommodationNotRequired ? (
+                      /* Not Required State - Allow changing mind */
+                      <Button
+                        onClick={() => {
+                          setTravelAccommodationNotRequired(false);
+                          showToast('You can now add travel requirements');
+                        }}
+                        className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Travel
+                      </Button>
+                    ) : travelAccommodationDetailsAdded ? (
+                      /* Details Added State - Show edit option */
+                      <Button
+                        onClick={handleOpenTravelAccommodationDetailsModal}
+                        className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+                      >
+                        <EditIcon />
+                        Edit Details
+                      </Button>
+                    ) : travelAccommodationRequestSubmitted ? (
+                      /* Request Submitted State - Add Details Button */
+                      <Button
+                        onClick={handleOpenTravelAccommodationDetailsModal}
+                        className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Details
+                      </Button>
+                    ) : (
+                      /* Initial State - Not Required and Add Buttons */
                       <>
                         {/* Not Required Button */}
                         <button
-                          onClick={() => console.log('Mark as not required')}
+                          onClick={handleMarkTravelNotRequired}
                           className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
                         >
                           <CheckCircleIcon />
                           Not Required
                         </button>
 
-                        {/* Add/Remove Button */}
+                        {/* Add Request Button */}
                         <button
-                          onClick={handleOpenTravelAccommodationModal}
+                          onClick={handleOpenTravelAccommodationRequestModal}
                           className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
                         >
                           <PlusIcon />
                         </button>
                       </>
-                    ) : (
-                      /* Add Details Button - shows after request submission */
-                      <Button
-                        onClick={() => console.log('Add travel details')}
-                        className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Details
-                      </Button>
                     )}
                   </div>
                 </div>
-                {!travelAccommodationRequestSubmitted ? (
-                  <EmptyState
-                    icon={<TruckIcon />}
-                    message="No travel & accommodation assigned yet"
-                  />
-                ) : (
+                {travelAccommodationNotRequired ? (
+                  /* Not Required State */
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircleIcon />
+                      <span className="text-sm font-medium text-gray-800">
+                        Travel not required for this project
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      You can add travel requirements later if needed
+                    </p>
+                  </div>
+                ) : travelAccommodationDetailsAdded ? (
+                  /* Details Added State - Show travel details */
+                  <div className="space-y-4">
+                    {/* Travel Details */}
+                    {travelAccommodationDetailsData?.travel && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <TruckIcon />
+                          <h4 className="text-sm font-medium text-blue-900">Travel Details</h4>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-blue-700">Route:</span>
+                            <span className="text-blue-900 font-medium">
+                              {travelAccommodationDetailsData.travel.travelFrom} → {travelAccommodationDetailsData.travel.travelTo}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-blue-700">Date:</span>
+                            <span className="text-blue-900 font-medium">
+                              {new Date(travelAccommodationDetailsData.travel.travelDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-blue-700">Team Members:</span>
+                            <span className="text-blue-900 font-medium">
+                              {travelAccommodationDetailsData.travel.numberOfTeamMembers}
+                            </span>
+                          </div>
+                          {travelAccommodationDetailsData.travel.ticketsAttachment && travelAccommodationDetailsData.travel.ticketsAttachment.length > 0 && (
+                            <div className="flex justify-between">
+                              <span className="text-blue-700">Attachments:</span>
+                              <span className="text-blue-900 font-medium underline cursor-pointer">
+                                {travelAccommodationDetailsData.travel.ticketsAttachment.length} file(s)
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Accommodation Details */}
+                    {travelAccommodationDetailsData?.accommodation && (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Hotel className="w-5 h-5 text-green-600" />
+                          <h4 className="text-sm font-medium text-green-900">Accommodation Details</h4>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-green-700">Hotel:</span>
+                            <span className="text-green-900 font-medium">
+                              {travelAccommodationDetailsData.accommodation.hotelName}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-green-700">Rooms:</span>
+                            <span className="text-green-900 font-medium">
+                              {travelAccommodationDetailsData.accommodation.numberOfRooms}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-green-700">Check-in:</span>
+                            <span className="text-green-900 font-medium">
+                              {new Date(travelAccommodationDetailsData.accommodation.checkInDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-green-700">Check-out:</span>
+                            <span className="text-green-900 font-medium">
+                              {new Date(travelAccommodationDetailsData.accommodation.checkOutDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          {travelAccommodationDetailsData.accommodation.reservationSlipsAttachment && travelAccommodationDetailsData.accommodation.reservationSlipsAttachment.length > 0 && (
+                            <div className="flex justify-between">
+                              <span className="text-green-700">Attachments:</span>
+                              <span className="text-green-900 font-medium underline cursor-pointer">
+                                {travelAccommodationDetailsData.accommodation.reservationSlipsAttachment.length} file(s)
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : travelAccommodationRequestSubmitted ? (
+                  /* Request Submitted State */
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div className="flex items-center gap-2">
                       <CheckCircleIcon />
@@ -884,7 +1111,23 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <p className="text-xs text-green-600 mt-1">
                       Logistics manager will review and provide details
                     </p>
+                    {travelAccommodationRequestData && (
+                      <div className="mt-3 text-xs text-green-700">
+                        <p><strong>Travel Required:</strong> {travelAccommodationRequestData.travelRequired ? 'Yes' : 'No'}</p>
+                        <p><strong>Accommodation Required:</strong> {travelAccommodationRequestData.accommodationRequired ? 'Yes' : 'No'}</p>
+                        {travelAccommodationRequestData.travelMethod && (
+                          <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
+                        )}
+                        <p><strong>Team Members:</strong> {travelAccommodationRequestData.numberOfTeamMembers}</p>
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  /* Initial Empty State */
+                  <EmptyState
+                    icon={<TruckIcon />}
+                    message="No travel & accommodation assigned yet"
+                  />
                 )}
               </div>
             </div>
@@ -1003,15 +1246,26 @@ export const ProjectDetailsPrep: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <SectionHeader
                   title="Trailer & Logistics"
-                  subtitle="136 required • 45 in trailer"
+                  subtitle={`${totalRequired} required • ${totalInTrailer} in trailer`}
                   actionButton={
-                    <Button
-                      variant="outline"
-                      className="bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 opacity-0"
-                    >
-                      <CheckCircleIcon />
-                      Mark as Complete
-                    </Button>
+                    assignedTrailer && !isTrailerCompleted ? (
+                      <button
+                        onClick={handleMarkTrailerComplete}
+                        className="bg-gray-50 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="w-4 h-4 rounded-full border border-gray-600 flex items-center justify-center">
+                          <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 3L3 5L7 1" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        Mark as Complete
+                      </button>
+                    ) : assignedTrailer && isTrailerCompleted ? (
+                      <div className="bg-green-100 text-green-800 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5">
+                        <CheckCircleIcon />
+                        Completed
+                      </div>
+                    ) : null
                   }
                   secondaryButton={
                     <Button
@@ -1028,16 +1282,28 @@ export const ProjectDetailsPrep: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <TruckIcon />
-                      <p className="font-normal text-xs text-[#475467] leading-4">No trailer assigned yet</p>
+                      <p className="font-normal text-xs text-[#475467] leading-4">
+                        {assignedTrailer ? `Trailer ${assignedTrailer.trailerNumber} assigned` : 'No trailer assigned yet'}
+                      </p>
                     </div>
                     <Button
                       variant="outline"
+                      onClick={handleOpenAssignTrailerModal}
                       className="bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5"
                     >
-                      <XIcon />
-                      Add trailer
+                      <PlusIcon />
+                      {assignedTrailer ? 'Change trailer' : 'Add trailer'}
                     </Button>
                   </div>
+                  {assignedTrailer && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="text-xs text-blue-700">
+                        <p><strong>Trailer:</strong> {assignedTrailer.trailerNumber}</p>
+                        <p><strong>Capacity:</strong> {assignedTrailer.capacity}</p>
+                        <p><strong>Status:</strong> {assignedTrailer.status}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Inventory Table */}
@@ -1048,22 +1314,12 @@ export const ProjectDetailsPrep: React.FC = () => {
                       <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
                         <p className="font-medium text-xs text-[#475467] leading-4.5">Required</p>
                       </div>
-                      <div className="px-4 py-2 border-b border-gray-200 h-14 flex flex-col justify-center">
-                        <p className="font-medium text-sm text-[#101828] leading-5">BR</p>
-                        <p className="font-normal text-xs text-[#475467] leading-5">30 Sheets</p>
-                      </div>
-                      <div className="px-4 py-2 border-b border-gray-200 h-14 flex flex-col justify-center">
-                        <p className="font-medium text-sm text-[#101828] leading-5">Riot+</p>
-                        <p className="font-normal text-xs text-[#475467] leading-5">10 Sheets</p>
-                      </div>
-                      <div className="px-4 py-2 border-b border-gray-200 h-14 flex flex-col justify-center">
-                        <p className="font-medium text-sm text-[#101828] leading-5">Smash</p>
-                        <p className="font-normal text-xs text-[#475467] leading-5">5</p>
-                      </div>
-                      <div className="px-4 py-2 h-14 flex flex-col justify-center">
-                        <p className="font-medium text-sm text-[#101828] leading-5">FER</p>
-                        <p className="font-normal text-xs text-[#475467] leading-5">4 Sheets</p>
-                      </div>
+                      {visibleFilmTypes.map((item, index) => (
+                        <div key={item.id} className={`px-4 py-2 ${index < visibleFilmTypes.length - 1 ? 'border-b border-gray-200' : ''} h-14 flex flex-col justify-center`}>
+                          <p className="font-medium text-sm text-[#101828] leading-5">{item.name}</p>
+                          <p className="font-normal text-xs text-[#475467] leading-5">{item.required} Sheets</p>
+                        </div>
+                      ))}
                     </div>
 
                     {/* In Trailer Column */}
@@ -1071,18 +1327,11 @@ export const ProjectDetailsPrep: React.FC = () => {
                       <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
                         <p className="font-medium text-xs text-[#475467] leading-4.5">In Trailer</p>
                       </div>
-                      <div className="px-4 py-2 border-b border-gray-200 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">15 sheets</p>
-                      </div>
-                      <div className="px-4 py-2 border-b border-gray-200 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">5 sheets</p>
-                      </div>
-                      <div className="px-4 py-2 border-b border-gray-200 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">2 sheets</p>
-                      </div>
-                      <div className="px-4 py-2 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">3 sheets</p>
-                      </div>
+                      {visibleFilmTypes.map((item, index) => (
+                        <div key={item.id} className={`px-4 py-2 ${index < visibleFilmTypes.length - 1 ? 'border-b border-gray-200' : ''} flex items-center h-14`}>
+                          <p className="font-normal text-sm text-[#475467] leading-5">{item.inTrailer} sheets</p>
+                        </div>
+                      ))}
                     </div>
 
                     {/* Need to Ship Column */}
@@ -1090,48 +1339,92 @@ export const ProjectDetailsPrep: React.FC = () => {
                       <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
                         <p className="font-medium text-xs text-[#475467] leading-4.5">Need to Ship</p>
                       </div>
-                      <div className="px-4 py-2 border-b border-gray-200 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">15 sheets</p>
-                      </div>
-                      <div className="px-4 py-2 border-b border-gray-200 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">5 sheets</p>
-                      </div>
-                      <div className="px-4 py-2 border-b border-gray-200 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">3 sheets</p>
-                      </div>
-                      <div className="px-4 py-2 flex items-center h-14">
-                        <p className="font-normal text-sm text-[#475467] leading-5">1 sheets</p>
-                      </div>
+                      {visibleFilmTypes.map((item, index) => (
+                        <div key={item.id} className={`px-4 py-2 ${index < visibleFilmTypes.length - 1 ? 'border-b border-gray-200' : ''} flex items-center h-14`}>
+                          <p className={`font-normal text-sm leading-5 ${item.needToShip > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {item.needToShip} sheets
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
 
                 {/* More Film Types Button */}
-                <div className="flex items-center justify-center">
-                  <Button
-                    variant="ghost"
-                    className="text-[#0d76bf] font-semibold text-sm leading-5 flex items-center gap-2"
-                  >
-                    <XIcon />
-                    7 more film types
-                  </Button>
-                </div>
+                {hiddenFilmTypesCount > 0 && (
+                  <div className="flex items-center justify-center">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowAllFilmTypes(!showAllFilmTypes)}
+                      className="text-[#0d76bf] font-semibold text-sm leading-5 flex items-center gap-2"
+                    >
+                      <XIcon />
+                      {showAllFilmTypes ? 'Show less' : `${hiddenFilmTypesCount} more film types`}
+                    </Button>
+                  </div>
+                )}
 
                 {/* Receipt Section */}
                 <div className="bg-white rounded-xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <StickerIcon />
-                      <p className="font-normal text-xs text-[#475467] leading-4">No receipt attached yet</p>
+                      <p className="font-normal text-xs text-[#475467] leading-4">
+                        {uploadedReceipts.length === 0 ? 'No receipt attached yet' : `${uploadedReceipts.length} receipt(s) attached`}
+                      </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5"
-                    >
-                      <PaperclipIcon />
-                      Add attachment
-                    </Button>
+                    <div className="flex gap-2">
+                      {/* Hidden file input */}
+                      <input
+                        type="file"
+                        id="receipt-upload"
+                        multiple
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        onChange={handleReceiptUpload}
+                        className="hidden"
+                      />
+                      {/* Upload Receipt Button */}
+                      <label
+                        htmlFor="receipt-upload"
+                        className="bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors cursor-pointer"
+                      >
+                        <PaperclipIcon />
+                        Add attachment
+                      </label>
+                    </div>
                   </div>
+                  
+                  {/* Receipt List */}
+                  {uploadedReceipts.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {uploadedReceipts.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                              <StickerIcon />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {file.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {formatFileSize(file.size)}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRemoveReceipt(index)}
+                            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                            title="Remove receipt"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1242,11 +1535,18 @@ export const ProjectDetailsPrep: React.FC = () => {
           assignedTrailerId={assignedTrailer?.id}
         />
 
-        {/* Travel & Accommodation Modal */}
+        {/* Travel & Accommodation Request Modal */}
+        <TravelAccommodationRequestModal
+          isOpen={showTravelAccommodationRequestModal}
+          onClose={() => setShowTravelAccommodationRequestModal(false)}
+          onSubmit={handleTravelAccommodationRequestSubmit}
+        />
+
+        {/* Travel & Accommodation Details Modal */}
         <TravelAccommodationModal
-          isOpen={showTravelAccommodationModal}
-          onClose={() => setShowTravelAccommodationModal(false)}
-          onSubmit={handleTravelAccommodationSubmit}
+          isOpen={showTravelAccommodationDetailsModal}
+          onClose={() => setShowTravelAccommodationDetailsModal(false)}
+          onSubmit={handleTravelAccommodationDetailsSubmit}
         />
     </div>
   );

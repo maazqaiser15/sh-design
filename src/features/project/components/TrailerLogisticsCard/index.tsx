@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Truck, X, Paperclip, FileText } from 'lucide-react';
+import { Truck, X, Plus, Paperclip, FileText, CheckCircle } from 'lucide-react';
 import { AssignTrailerModal } from '../AssignTrailerModal';
 import { TrailerForAssignment } from '../../types/trailers';
 
@@ -14,8 +14,10 @@ interface TrailerLogisticsCardProps {
   assignedTrailer?: TrailerForAssignment | null;
   onAssignTrailer: (trailer: TrailerForAssignment) => void;
   onAddAttachment?: () => void;
+  onMarkComplete?: () => void;
   filmTypes?: FilmType[];
   hasReceipt?: boolean;
+  isCompleted?: boolean;
   availableTrailers?: TrailerForAssignment[];
 }
 
@@ -23,6 +25,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
   assignedTrailer,
   onAssignTrailer,
   onAddAttachment,
+  onMarkComplete,
   filmTypes = [
     { name: 'BR', required: 30, inTrailer: 15, needToShip: 15 },
     { name: 'Riot+', required: 10, inTrailer: 5, needToShip: 5 },
@@ -30,6 +33,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
     { name: 'FER', required: 4, inTrailer: 3, needToShip: 1 },
   ],
   hasReceipt = false,
+  isCompleted = false,
   availableTrailers = []
 }) => {
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
@@ -47,6 +51,12 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
   const handleAddAttachment = () => {
     if (onAddAttachment) {
       onAddAttachment();
+    }
+  };
+
+  const handleMarkComplete = () => {
+    if (onMarkComplete) {
+      onMarkComplete();
     }
   };
 
@@ -76,7 +86,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
               onClick={() => setShowAssignTrailerModal(true)}
               className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
             >
-              <X className="w-4 h-4" />
+              <Plus className="w-4 h-4" />
               Add trailer
             </button>
           </div>
@@ -132,6 +142,37 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
               Add attachment
             </button>
           </div>
+
+          {/* Mark as Complete Section - Only show when trailer is assigned */}
+          {assignedTrailer && (
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+              <div className="flex items-center gap-2">
+                <CheckCircle className={`w-5 h-5 ${isCompleted ? 'text-green-600' : 'text-gray-400'}`} />
+                <span className={`text-sm ${isCompleted ? 'text-green-700' : 'text-gray-700'}`}>
+                  {isCompleted ? 'Trailer & Logistics completed' : 'Ready to mark as complete'}
+                </span>
+              </div>
+              {!isCompleted && (
+                <button
+                  onClick={handleMarkComplete}
+                  className="bg-gray-50 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-4 h-4 rounded-full border border-gray-600 flex items-center justify-center">
+                    <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 3L3 5L7 1" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  Mark as complete
+                </button>
+              )}
+              {isCompleted && (
+                <div className="bg-green-100 text-green-800 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4" />
+                  Completed
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
