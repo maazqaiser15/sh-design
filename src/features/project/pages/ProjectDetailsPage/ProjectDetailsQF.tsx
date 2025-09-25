@@ -33,10 +33,11 @@ import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { useToast } from '../../../../contexts/ToastContext';
 import { UploadTakeOffSheetModal } from '../../components/UploadTakeOffSheetModal';
+import { UploadRecutSheetModal } from '../../components/UploadRecutSheetModal';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
 import { QualityCheckFormModal, QualityCheckFormData } from '../../components/QualityCheckFormModal';
-import { WindowType, MOCK_WINDOWS, MOCK_TEAM_MEMBERS } from '../../types/windowManagement';
+import { Window, MOCK_WINDOWS, MOCK_TEAM_MEMBERS } from '../../types/windowManagement';
 
 interface ProjectDetailsQFProps {
   projectStatus?: 'WIP' | 'QF' | 'Completed';
@@ -49,7 +50,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
   const [activeTab, setActiveTab] = useState('window-management');
   
   // Window Management State - All windows set to completed status
-  const [windows, setWindows] = useState<WindowType[]>(
+  const [windows, setWindows] = useState<Window[]>(
     MOCK_WINDOWS.map(window => ({ ...window, status: 'Complete' as const }))
   );
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,8 +65,9 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
   const [showQualityCheckModal, setShowQualityCheckModal] = useState(false);
   const [isQualityCheckSigned, setIsQualityCheckSigned] = useState(false);
-  const [editingWindow, setEditingWindow] = useState<WindowType | null>(null);
-  const [selectedWindow, setSelectedWindow] = useState<WindowType | null>(null);
+  const [editingWindow, setEditingWindow] = useState<Window | null>(null);
+  const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
+  const [showRecutSheetModal, setShowRecutSheetModal] = useState(false);
 
   // Quality Check State
   const [qualityChecks, setQualityChecks] = useState([
@@ -228,10 +230,20 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     showToast('Edit project functionality coming soon');
   };
 
-  const handleUploadComplete = (newWindows: WindowType[]) => {
-    setWindows(prev => [...prev, ...newWindows]);
+  const handleUploadRecutSheet = () => {
+    setShowRecutSheetModal(true);
+  };
+
+  const handleRecutSheetUploadComplete = (sheet: any) => {
+    setShowRecutSheetModal(false);
+    showToast('Recut sheet uploaded and processed successfully');
+    console.log('Recut Sheet Data:', sheet);
+  };
+
+  const handleTakeOffSheetUploadComplete = (sheet: any) => {
     setShowUploadModal(false);
     showToast('Windows created successfully from sheet');
+    console.log('Take-off Sheet Data:', sheet);
   };
 
   const handleAddWindow = () => {
@@ -239,12 +251,12 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     setShowAddEditModal(true);
   };
 
-  const handleEditWindow = (window: WindowType) => {
+  const handleEditWindow = (window: Window) => {
     setEditingWindow(window);
     setShowAddEditModal(true);
   };
 
-  const handleViewWindow = (window: WindowType) => {
+  const handleViewWindow = (window: Window) => {
     setSelectedWindow(window);
     setShowWindowDetailModal(true);
   };
@@ -256,7 +268,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     }
   };
 
-  const handleSaveWindow = (windowData: Partial<WindowType>) => {
+  const handleSaveWindow = (windowData: Partial<Window>) => {
     if (editingWindow) {
       // Update existing window
       setWindows(prev => prev.map(w => 
@@ -267,7 +279,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
       showToast('Window updated successfully');
     } else {
       // Add new window
-      const newWindow: WindowType = {
+      const newWindow: Window = {
         id: Date.now().toString(),
         windowName: windowData.windowName || '',
         filmType: windowData.filmType || 'BR',
@@ -287,7 +299,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     setEditingWindow(null);
   };
 
-  const handleUpdateWindow = (windowData: Partial<WindowType>) => {
+  const handleUpdateWindow = (windowData: Partial<Window>) => {
     if (selectedWindow) {
       setWindows(prev => prev.map(w => 
         w.id === selectedWindow.id 
@@ -356,6 +368,14 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     disabled={isQualityCheckSigned}
                   >
                     {isQualityCheckSigned ? 'QF Signed' : 'Sign Quality Check Form'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handleUploadRecutSheet}
+                    icon={Upload}
+                    className="px-3 py-2"
+                  >
+                    Add Recut Sheet
                   </Button>
                   <Button
                     variant="secondary"
@@ -1091,7 +1111,13 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
       <UploadTakeOffSheetModal
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
-        onUploadComplete={handleUploadComplete}
+        onUploadComplete={handleTakeOffSheetUploadComplete}
+      />
+
+      <UploadRecutSheetModal
+        isOpen={showRecutSheetModal}
+        onClose={() => setShowRecutSheetModal(false)}
+        onUploadComplete={handleRecutSheetUploadComplete}
       />
 
       <AddEditWindowModal

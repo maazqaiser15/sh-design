@@ -4,6 +4,7 @@ import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails
 import { ProjectDetailsPrep } from './ProjectDetailsPrep';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 import { ProjectDetailsQF } from './ProjectDetailsQF';
+import { ProjectDetailsComplete } from './ProjectDetailsComplete';
 
 /**
  * ProjectDetailsRouter - Routes to different project detail layouts based on status
@@ -52,7 +53,7 @@ export const ProjectDetailsRouter: React.FC = () => {
   }
 
   if (isCompletedStage) {
-    return <ProjectDetailsWIP projectStatus="Completed" />;
+    return <ProjectDetailsComplete projectStatus="Completed" />;
   }
 
   // Default fallback to preparation stage
