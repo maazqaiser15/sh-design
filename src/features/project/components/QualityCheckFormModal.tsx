@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, AlertCircle, FileText } from 'lucide-react';
+import { CheckCircle2, AlertCircle, FileText } from 'lucide-react';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
+import { Modal } from '../../../common/components/Modal';
 
 interface QualityCheckFormModalProps {
   isOpen: boolean;
@@ -14,13 +15,6 @@ export interface QualityCheckFormData {
   projectName: string;
   siteLocation: string;
   ownersRep: string;
-  qualityWalkCompleted: boolean;
-  windowsFreeFromDebris: boolean;
-  curingTimeAcknowledged: boolean;
-  inspectionDistance: boolean;
-  visualInspectionCompleted: boolean;
-  workmanshipApproved: boolean;
-  professionalismApproved: boolean;
   signature: string;
   comments: string;
 }
@@ -35,13 +29,6 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
     projectName: 'Marriot Windows Installation',
     siteLocation: '123 Main Street, Downtown',
     ownersRep: '',
-    qualityWalkCompleted: false,
-    windowsFreeFromDebris: false,
-    curingTimeAcknowledged: false,
-    inspectionDistance: false,
-    visualInspectionCompleted: false,
-    workmanshipApproved: false,
-    professionalismApproved: false,
     signature: '',
     comments: ''
   });
@@ -50,9 +37,6 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleCheckboxChange = (field: keyof QualityCheckFormData, checked: boolean) => {
-    setFormData(prev => ({ ...prev, [field]: checked }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,24 +50,15 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
       projectName: 'Marriot Windows Installation',
       siteLocation: '123 Main Street, Downtown',
       ownersRep: '',
-      qualityWalkCompleted: false,
-      windowsFreeFromDebris: false,
-      curingTimeAcknowledged: false,
-      inspectionDistance: false,
-      visualInspectionCompleted: false,
-      workmanshipApproved: false,
-      professionalismApproved: false,
       signature: '',
       comments: ''
     });
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <Modal isOpen={isOpen} onClose={handleClose} size="xl" title="Quality Walk Form">
+      <div className="w-full">
         {/* Header with Safe Haven Defense Branding */}
         <div className="bg-blue-600 text-white p-6">
           <div className="flex items-center justify-between">
@@ -175,7 +150,6 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
           </div>
 
 
-
           {/* Comments Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Additional Comments</h3>
@@ -210,42 +184,24 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-            <button
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+            <Button
               type="button"
+              variant="secondary"
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 p-2"
             >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={
-                  !formData.signature ||
-                  !formData.qualityWalkCompleted ||
-                  !formData.windowsFreeFromDebris ||
-                  !formData.curingTimeAcknowledged ||
-                  !formData.inspectionDistance ||
-                  !formData.visualInspectionCompleted ||
-                  !formData.workmanshipApproved ||
-                  !formData.professionalismApproved
-                }
-              >
-                Submit Quality Walk Form
-              </Button>
-            </div>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={!formData.signature}
+            >
+              Submit Quality Walk Form
+            </Button>
           </div>
         </form>
       </div>
-    </div>
+    </Modal>
   );
 };

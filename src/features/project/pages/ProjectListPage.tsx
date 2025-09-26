@@ -15,6 +15,8 @@ import {
 } from '../types';
 import { projectToListItem, filterProjects, sortProjects } from '../utils';
 import { Trailer } from '../../../types';
+import { useAuth } from '../../../contexts/AuthContext';
+import { filterProjectsByUserRole, getAvailableProjectStatuses } from '../../../services/projectFilterService';
 
 // Mock trailer data
 const mockTrailers: Trailer[] = [
@@ -405,6 +407,7 @@ const mockProjects: SafeHavenProject[] = [
 
 export const ProjectListPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [viewMode, setViewMode] = useState<ProjectViewMode>({ type: 'list' });
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<ProjectFilters>({
@@ -425,15 +428,21 @@ export const ProjectListPage: React.FC = () => {
     return mockProjects.map(projectToListItem);
   }, []);
 
-  // Filter and sort projects
+  // Filter projects by user role first, then apply other filters
   const filteredAndSortedProjects = useMemo(() => {
-    const filtered = filterProjects(projectListItems, {
+    // First filter by user role (hide certain statuses for Execution Team)
+    const roleFilteredProjects = user?.userType 
+      ? filterProjectsByUserRole(projectListItems, user.userType)
+      : projectListItems;
+    
+    // Then apply other filters (search, status, assigned users)
+    const filtered = filterProjects(roleFilteredProjects, {
       ...filters,
       searchQuery,
     });
     
     return sortProjects(filtered, sortOptions.field, sortOptions.direction);
-  }, [projectListItems, filters, searchQuery, sortOptions]);
+  }, [projectListItems, filters, searchQuery, sortOptions, user?.userType]);
 
   const handleProjectClick = (project: ProjectListItem) => {
     // Route based on project status - all statuses now go to the same route
@@ -544,7 +553,7 @@ export const ProjectListPage: React.FC = () => {
         {/* Second Row - Status Filter Tabs */}
         <div className="mb-4 px-2">
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-            {['All', 'PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'].map((status) => (
+            {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'])].map((status) => (
               <button
                 key={status}
                 onClick={() => {

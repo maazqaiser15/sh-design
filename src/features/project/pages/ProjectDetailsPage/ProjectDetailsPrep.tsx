@@ -13,6 +13,7 @@ import { TrailerLogisticsCard } from '../../components/TrailerLogisticsCard';
 import { AssignedTeamCard } from '../../components/AssignedTeamCard';
 import { TravelAccommodationModal, TravelAccommodationData } from '../../components/TravelAccommodationModal';
 import { TravelAccommodationRequestModal, TravelAccommodationRequestData } from '../../components/TravelAccommodationRequestModal';
+import { TravelAccommodationDetailsCard } from '../../components/TravelAccommodationDetailsCard';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -403,6 +404,18 @@ export const ProjectDetailsPrep: React.FC = () => {
   const handleMarkTrailerComplete = () => {
     setIsTrailerCompleted(true);
     showToast('Trailer & Films marked as complete');
+  };
+
+  // Handle travel accommodation details completion
+  const handleTravelAccommodationComplete = () => {
+    setIsTravelAccommodationCompleted(true);
+    showToast('Travel & Accommodation marked as complete');
+  };
+
+  // Handle travel accommodation details expansion
+  const handleTravelAccommodationExpand = () => {
+    // Could open a detailed view modal or navigate to a dedicated page
+    console.log('Expand travel accommodation details');
   };
 
 
@@ -923,236 +936,140 @@ export const ProjectDetailsPrep: React.FC = () => {
             />
 
             {/* Travel & Accommodation Card */}
-            <div className="bg-white rounded-xl p-5 border border-gray-200">
-              <div className="flex flex-col gap-5">
-                <div className="flex gap-4 items-start w-full">
-                  <div className="flex flex-col gap-1 flex-1">
-                    <h3 className="font-semibold text-lg text-[#101828] leading-7">Travel & Accommodation</h3>
-                    <p className="font-normal text-sm text-[#475467] leading-5">
-                      {travelAccommodationNotRequired 
-                        ? 'Travel not required for this project'
-                        : travelAccommodationDetailsAdded 
-                        ? 'Travel & accommodation details added'
-                        : travelAccommodationRequestSubmitted 
-                        ? 'Request submitted to logistics manager' 
-                        : 'Assign travel & accommodation'
-                      }
-                    </p>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {travelAccommodationNotRequired ? (
-                      /* Not Required State - Allow changing mind */
-                      <Button
-                        onClick={() => {
-                          setTravelAccommodationNotRequired(false);
-                          showToast('You can now add travel requirements');
-                        }}
-                        className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Travel
-                      </Button>
-                    ) : travelAccommodationDetailsAdded ? (
-                      /* Details Added State - Show edit option */
-                      <Button
-                        onClick={handleOpenTravelAccommodationDetailsModal}
-                        className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
-                      >
-                        <EditIcon />
-                        Edit Details
-                      </Button>
-                    ) : travelAccommodationRequestSubmitted ? (
-                      /* Request Submitted State - Add Details Button */
-                      <Button
-                        onClick={handleOpenTravelAccommodationDetailsModal}
-                        className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Details
-                      </Button>
-                    ) : (
-                      /* Initial State - Not Required and Add Buttons */
-                      <>
-                        {/* Not Required Button */}
-                        <button
-                          onClick={handleMarkTravelNotRequired}
-                          className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
-                        >
-                          <CheckCircleIcon />
-                          Not Required
-                        </button>
-
-                        {/* Add Request Button */}
-                        <button
-                          onClick={handleOpenTravelAccommodationRequestModal}
-                          className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
-                        >
-                          <PlusIcon />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-                {travelAccommodationNotRequired ? (
-                  /* Not Required State */
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2">
-                      <CheckCircleIcon />
-                      <span className="text-sm font-medium text-gray-800">
-                        Travel not required for this project
-                      </span>
+            {travelAccommodationDetailsAdded ? (
+              /* Details Added State - Show comprehensive travel details using TravelAccommodationDetailsCard */
+              <TravelAccommodationDetailsCard
+                travelAccommodationData={travelAccommodationDetailsData}
+                onAddDetails={handleOpenTravelAccommodationDetailsModal}
+                onMarkComplete={handleTravelAccommodationComplete}
+                onExpand={handleTravelAccommodationExpand}
+                onEditDetails={handleOpenTravelAccommodationDetailsModal}
+              />
+            ) : (
+              /* All Other States - Use original card structure */
+              <div className="bg-white rounded-xl p-5 border border-gray-200">
+                <div className="flex flex-col gap-5">
+                  <div className="flex gap-4 items-start w-full">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <h3 className="font-semibold text-lg text-[#101828] leading-7">Travel & Accommodation</h3>
+                      <p className="font-normal text-sm text-[#475467] leading-5">
+                        {travelAccommodationNotRequired 
+                          ? 'Travel not required for this project'
+                          : travelAccommodationRequestSubmitted 
+                          ? 'Request submitted to logistics manager' 
+                          : 'Assign travel & accommodation'
+                        }
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      You can add travel requirements later if needed
-                    </p>
-                  </div>
-                ) : travelAccommodationDetailsAdded ? (
-                  /* Details Added State - Show travel details */
-                  <div className="space-y-4">
-                    {/* Travel Details */}
-                    {travelAccommodationDetailsData?.travel && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <TruckIcon />
-                          <h4 className="text-sm font-medium text-blue-900">Travel Details</h4>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-blue-700">Route:</span>
-                            <span className="text-blue-900 font-medium">
-                              {travelAccommodationDetailsData.travel.travelFrom} → {travelAccommodationDetailsData.travel.travelTo}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-blue-700">Date:</span>
-                            <span className="text-blue-900 font-medium">
-                              {new Date(travelAccommodationDetailsData.travel.travelDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-blue-700">Team Members:</span>
-                            <span className="text-blue-900 font-medium">
-                              {travelAccommodationDetailsData.travel.numberOfTeamMembers}
-                            </span>
-                          </div>
-                          {travelAccommodationDetailsData.travel.ticketsAttachment && travelAccommodationDetailsData.travel.ticketsAttachment.length > 0 && (
-                            <div className="flex justify-between">
-                              <span className="text-blue-700">Attachments:</span>
-                              <span className="text-blue-900 font-medium underline cursor-pointer">
-                                {travelAccommodationDetailsData.travel.ticketsAttachment.length} file(s)
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex gap-2 items-center">
+                      {travelAccommodationNotRequired ? (
+                        /* Not Required State - Allow changing mind */
+                        <Button
+                          onClick={() => {
+                            setTravelAccommodationNotRequired(false);
+                            showToast('You can now add travel requirements');
+                          }}
+                          className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Travel
+                        </Button>
+                      ) : travelAccommodationRequestSubmitted ? (
+                        /* Request Submitted State - Add Details Button */
+                        <Button
+                          onClick={handleOpenTravelAccommodationDetailsModal}
+                          className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] flex items-center gap-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Details
+                        </Button>
+                      ) : (
+                        /* Initial State - Not Required and Add Buttons */
+                        <>
+                          {/* Not Required Button */}
+                          <button
+                            onClick={handleMarkTravelNotRequired}
+                            className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+                          >
+                            <CheckCircleIcon />
+                            Not Required
+                          </button>
 
-                    {/* Accommodation Details */}
-                    {travelAccommodationDetailsData?.accommodation && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Hotel className="w-5 h-5 text-green-600" />
-                          <h4 className="text-sm font-medium text-green-900">Accommodation Details</h4>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-green-700">Hotel:</span>
-                            <span className="text-green-900 font-medium">
-                              {travelAccommodationDetailsData.accommodation.hotelName}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-green-700">Rooms:</span>
-                            <span className="text-green-900 font-medium">
-                              {travelAccommodationDetailsData.accommodation.numberOfRooms}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-green-700">Check-in:</span>
-                            <span className="text-green-900 font-medium">
-                              {new Date(travelAccommodationDetailsData.accommodation.checkInDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-green-700">Check-out:</span>
-                            <span className="text-green-900 font-medium">
-                              {new Date(travelAccommodationDetailsData.accommodation.checkOutDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })}
-                            </span>
-                          </div>
-                          {travelAccommodationDetailsData.accommodation.reservationSlipsAttachment && travelAccommodationDetailsData.accommodation.reservationSlipsAttachment.length > 0 && (
-                            <div className="flex justify-between">
-                              <span className="text-green-700">Attachments:</span>
-                              <span className="text-green-900 font-medium underline cursor-pointer">
-                                {travelAccommodationDetailsData.accommodation.reservationSlipsAttachment.length} file(s)
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : travelAccommodationRequestSubmitted ? (
-                  /* Request Submitted State */
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2">
-                      <CheckCircleIcon />
-                      <span className="text-sm font-medium text-green-800">
-                        Request submitted successfully
-                      </span>
+                          {/* Add Request Button */}
+                          <button
+                            onClick={handleOpenTravelAccommodationRequestModal}
+                            className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
+                          >
+                            <PlusIcon />
+                          </button>
+                        </>
+                      )}
                     </div>
-                    <p className="text-xs text-green-600 mt-1">
-                      Logistics manager will review and provide details
-                    </p>
-                    {travelAccommodationRequestData && (
-                      <div className="mt-3 text-xs text-green-700">
-                        <p><strong>Travel Required:</strong> {travelAccommodationRequestData.travelRequired ? 'Yes' : 'No'}</p>
-                        <p><strong>Accommodation Required:</strong> {travelAccommodationRequestData.accommodationRequired ? 'Yes' : 'No'}</p>
-                        {travelAccommodationRequestData.travelMethod && (
-                          <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
-                        )}
-                        <p><strong>Team Members:</strong> {travelAccommodationRequestData.selectedTeamMembers.length} selected</p>
-                        {travelAccommodationRequestData.selectedTeamMembers.length > 0 && (
-                          <div className="mt-2">
-                            <p className="text-sm font-medium text-gray-700 mb-1">Selected Members:</p>
-                            <div className="space-y-1">
-                              {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
-                                <div key={member.id} className="flex items-center gap-2 text-sm">
-                                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="text-xs font-medium text-blue-700">
-                                      {member.name.split(' ').map(n => n[0]).join('')}
-                                    </span>
+                  </div>
+                  {travelAccommodationNotRequired ? (
+                    /* Not Required State */
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center gap-2">
+                        <CheckCircleIcon />
+                        <span className="text-sm font-medium text-gray-800">
+                          Travel not required for this project
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        You can add travel requirements later if needed
+                      </p>
+                    </div>
+                  ) : travelAccommodationRequestSubmitted ? (
+                    /* Request Submitted State */
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center gap-2">
+                        <CheckCircleIcon />
+                        <span className="text-sm font-medium text-green-800">
+                          Request submitted successfully
+                        </span>
+                      </div>
+                      <p className="text-xs text-green-600 mt-1">
+                        Logistics manager will review and provide details
+                      </p>
+                      {travelAccommodationRequestData && (
+                        <div className="mt-3 text-xs text-green-700">
+                          <p><strong>Travel Required:</strong> {travelAccommodationRequestData.travelRequired ? 'Yes' : 'No'}</p>
+                          <p><strong>Accommodation Required:</strong> {travelAccommodationRequestData.accommodationRequired ? 'Yes' : 'No'}</p>
+                          {travelAccommodationRequestData.travelMethod && (
+                            <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
+                          )}
+                          <p><strong>Team Members:</strong> {travelAccommodationRequestData.selectedTeamMembers.length} selected</p>
+                          {travelAccommodationRequestData.selectedTeamMembers.length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-sm font-medium text-gray-700 mb-1">Selected Members:</p>
+                              <div className="space-y-1">
+                                {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
+                                  <div key={member.id} className="flex items-center gap-2 text-sm">
+                                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                      <span className="text-xs font-medium text-blue-700">
+                                        {member.name.split(' ').map(n => n[0]).join('')}
+                                      </span>
+                                    </div>
+                                    <span className="text-gray-700">{member.name}</span>
+                                    <span className="text-gray-500">({member.role})</span>
                                   </div>
-                                  <span className="text-gray-700">{member.name}</span>
-                                  <span className="text-gray-500">({member.role})</span>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  /* Initial Empty State */
-                  <EmptyState
-                    icon={<TruckIcon />}
-                    message="No travel & accommodation assigned yet"
-                  />
-                )}
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Initial Empty State */
+                    <EmptyState
+                      icon={<TruckIcon />}
+                      message="No travel & accommodation assigned yet"
+                    />
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Project Documents Card */}
             <div 

@@ -28,8 +28,8 @@ export interface Window {
   id: string;
   windowName: string;
   filmType: FilmType;
-  length: number; // in cm
-  width: number; // in cm
+  length: number; // in inches
+  width: number; // in inches
   layers: LayerInstallation[];
   status: WindowStatus;
   assignedTeamMembers: string[];
@@ -42,6 +42,7 @@ export interface Window {
   color?: string; // Window color
   tint?: string; // Window tint
   stripping?: boolean; // Whether stripping is required
+  buildingName?: string; // Building name for filtering
 }
 
 export interface TakeOffSheet {
@@ -73,8 +74,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '1',
     windowName: 'Main Office Window 1',
     filmType: 'BR',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
       { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
@@ -96,8 +97,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '2',
     windowName: 'Main Office Window 2',
     filmType: 'Riot',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
       { layerNumber: 2, layerName: 'Middle Layer', status: 'In Progress' }
@@ -118,8 +119,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '3',
     windowName: 'Main Office Window 3',
     filmType: 'Riot +',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
       { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
@@ -141,8 +142,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '4',
     windowName: 'Main Office Window 4',
     filmType: 'Riot -',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Pending' }
     ],
@@ -159,8 +160,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '5',
     windowName: 'Main Office Window 5',
     filmType: 'BR',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
       { layerNumber: 2, layerName: 'Middle Layer', status: 'In Progress' }
@@ -178,8 +179,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '6',
     windowName: 'Main Office Window 6',
     filmType: 'PER',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
       { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
@@ -198,8 +199,8 @@ export const MOCK_WINDOWS: Window[] = [
     id: '7',
     windowName: 'Main Office Window 7',
     filmType: 'BR',
-    length: 120,
-    width: 80,
+    length: 48,
+    width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') }
     ],

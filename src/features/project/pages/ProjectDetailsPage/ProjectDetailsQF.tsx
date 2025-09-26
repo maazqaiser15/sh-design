@@ -36,7 +36,10 @@ import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
 import { QualityCheckFormModal, QualityCheckFormData } from '../../components/QualityCheckFormModal';
 import { AddUsageModal, InventoryItem } from '../../components/AddUsageModal';
+import { UpdateTrailerModal } from '../../components/UpdateTrailerModal';
 import { Window, MOCK_WINDOWS, MOCK_TEAM_MEMBERS } from '../../types/windowManagement';
+import { Trailer } from '../../../../types';
+import { EXPANDED_TRAILER_DATA } from '../../../../pages/Trailers/expandedTrailerData';
 
 interface ProjectDetailsQFProps {
   projectStatus?: 'WIP' | 'QF' | 'Completed';
@@ -66,6 +69,9 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
   const [showAddUsageModal, setShowAddUsageModal] = useState(false);
+  const [showUpdateTrailerModal, setShowUpdateTrailerModal] = useState(false);
+  const [selectedTrailer, setSelectedTrailer] = useState<Trailer | null>(null);
+  const [trailers, setTrailers] = useState<Trailer[]>(EXPANDED_TRAILER_DATA);
 
   // Quality Check State
   const [qualityChecks, setQualityChecks] = useState([
@@ -235,6 +241,28 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     console.log('Usage Data:', usageData);
   };
 
+  const handleUpdateTrailer = () => {
+    // For now, select the first available trailer
+    // In a real app, this would open a trailer selection modal
+    const availableTrailer = trailers.find(t => t.status === 'available') || trailers[0];
+    setSelectedTrailer(availableTrailer);
+    setShowUpdateTrailerModal(true);
+  };
+
+  const handleTrailerUpdate = (updatedTrailer: Omit<Trailer, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (selectedTrailer) {
+      const updatedTrailers = trailers.map(t => 
+        t.id === selectedTrailer.id 
+          ? { ...t, ...updatedTrailer, updatedAt: new Date().toISOString() }
+          : t
+      );
+      setTrailers(updatedTrailers);
+      showToast('Trailer updated successfully');
+      setShowUpdateTrailerModal(false);
+      setSelectedTrailer(null);
+    }
+  };
+
 
   const handleAddWindow = () => {
     setEditingWindow(null);
@@ -352,12 +380,12 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                 </div>
                 <div className="flex items-center gap-3">
                   <Button
-                    variant="primary"
-                    onClick={handleSignQualityCheckForm}
+                    variant="secondary"
+                    onClick={handleUpdateTrailer}
+                    icon={Truck}
                     className="px-3 py-2"
-                    disabled={isQualityCheckSigned}
                   >
-                    {isQualityCheckSigned ? 'QF Signed' : 'Sign Quality Check Form'}
+                    Update Trailer
                   </Button>
                   <Button
                     variant="secondary"
@@ -365,7 +393,15 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     icon={Plus}
                     className="px-3 py-2"
                   >
-                    Add Usage
+                    Update Inventory
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleSignQualityCheckForm}
+                    className="px-3 py-2"
+                    disabled={isQualityCheckSigned}
+                  >
+                    {isQualityCheckSigned ? 'QF Signed' : 'Sign Quality Check Form'}
                   </Button>
                 </div>
               </div>
@@ -1109,6 +1145,17 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
         isOpen={showAddUsageModal}
         onClose={() => setShowAddUsageModal(false)}
         onSubmit={handleUsageSubmit}
+      />
+
+      <UpdateTrailerModal
+        isOpen={showUpdateTrailerModal}
+        onClose={() => {
+          setShowUpdateTrailerModal(false);
+          setSelectedTrailer(null);
+        }}
+        onUpdateTrailer={handleTrailerUpdate}
+        trailer={selectedTrailer}
+        existingTrailerNumbers={trailers.map(t => t.trailerName)}
       />
     </div>
   );

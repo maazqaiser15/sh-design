@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Shield, User, Settings, Users, Zap } from 'lucide-react';
+import { Eye, EyeOff, User, Settings, Users, Zap, Building2, Mail, Key } from 'lucide-react';
 import { Button } from '../../common/components/Button';
 import { Logo } from '../../common/components/Logo';
 import { useAuth, DemoPersona } from '../../contexts/AuthContext';
+import { LoginType, UserType } from '../../types/auth';
 
 /**
  * Login page component with SafeHavenDefense branding
@@ -11,7 +12,7 @@ import { useAuth, DemoPersona } from '../../contexts/AuthContext';
  */
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login, demoLogin, isLoading } = useAuth();
+  const { login, demoLogin, isLoading, getAvailableLoginMethods } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +20,73 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
+  const [detectedUserType, setDetectedUserType] = useState<UserType | null>(null);
+  const [availableLoginMethods, setAvailableLoginMethods] = useState<LoginType[]>([]);
+  const [loginTypeInfo, setLoginTypeInfo] = useState<{ type: LoginType; description: string } | null>(null);
+
+  // Detect user type and login methods when email changes
+  useEffect(() => {
+    if (email && email.includes('@')) {
+      const methods = getAvailableLoginMethods(email);
+      setAvailableLoginMethods(methods);
+      
+      // Determine user type from email patterns
+      const localPart = email.split('@')[0].toLowerCase();
+      const domain = email.split('@')[1]?.toLowerCase();
+      
+      let userType: UserType = 'execution-team';
+      let loginType: LoginType = 'email';
+      let description = 'Standard email login';
+      
+      // Check email patterns for 3 user types
+      if (localPart.startsWith('admin@') || localPart === 'admin' ||
+          localPart.startsWith('vp@') || localPart === 'vp' ||
+          localPart.startsWith('vpops@') || localPart === 'vpops' ||
+          localPart.startsWith('ceo@') || localPart === 'ceo' ||
+          localPart.startsWith('cfo@') || localPart === 'cfo' ||
+          localPart.startsWith('cto@') || localPart === 'cto' ||
+          localPart.startsWith('director@') || localPart === 'director') {
+        userType = 'executive';
+        loginType = 'company-based';
+        description = 'Executive account with full system access and management capabilities';
+      } else if (localPart.startsWith('pm@') || localPart === 'pm' ||
+                 localPart.startsWith('coordinator@') || localPart === 'coordinator' ||
+                 localPart.startsWith('manager@') || localPart === 'manager' ||
+                 localPart.startsWith('supervisor@') || localPart === 'supervisor' ||
+                 localPart.startsWith('lead@') || localPart === 'lead') {
+        userType = 'project-coordinator';
+        loginType = 'company-based';
+        description = 'Project Coordinator with project management and team coordination access';
+      } else if (localPart.startsWith('crew@') || localPart === 'crew' ||
+                 localPart.startsWith('team@') || localPart === 'team' ||
+                 localPart.startsWith('field@') || localPart === 'field' ||
+                 localPart.startsWith('ground@') || localPart === 'ground' ||
+                 localPart.startsWith('ops@') || localPart === 'ops' ||
+                 localPart.startsWith('logistics@') || localPart === 'logistics' ||
+                 localPart.startsWith('production@') || localPart === 'production' ||
+                 localPart.startsWith('quality@') || localPart === 'quality' ||
+                 localPart.startsWith('safety@') || localPart === 'safety' ||
+                 localPart.startsWith('finance@') || localPart === 'finance' ||
+                 localPart.startsWith('hr@') || localPart === 'hr' ||
+                 localPart.startsWith('it@') || localPart === 'it') {
+        userType = 'execution-team';
+        loginType = 'company-based';
+        description = 'Execution Team member with operational access (no team/trailer access)';
+      }
+      
+      setDetectedUserType(userType);
+      setLoginTypeInfo({ type: loginType, description });
+    } else {
+      setDetectedUserType(null);
+      setAvailableLoginMethods([]);
+      setLoginTypeInfo(null);
+    }
+  }, [email, getAvailableLoginMethods]);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setError(''); // Clear any previous errors
+  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,23 +110,23 @@ export const Login: React.FC = () => {
 
   const demoPersonas = [
     {
-      id: 'admin' as DemoPersona,
-      title: 'VP And VP OPS Account',
-      description: 'Full access to all modules',
+      id: 'executive' as DemoPersona,
+      title: 'Executive Account',
+      description: 'Full system access with management capabilities',
       icon: Settings,
       color: 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100',
     },
     {
-      id: 'project-manager' as DemoPersona,
+      id: 'project-coordinator' as DemoPersona,
       title: 'Project Coordinator',
-      description: 'Access to projects, teams, logistics',
+      description: 'Project management and team coordination access',
       icon: User,
       color: 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100',
     },
     {
-      id: 'crew-member' as DemoPersona,
-      title: 'Ground Team',
-      description: 'Limited view (assigned tasks, schedules)',
+      id: 'execution-team' as DemoPersona,
+      title: 'Execution Team',
+      description: 'Operational access for task execution (no team/trailer access)',
       icon: Users,
       color: 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100',
     },
@@ -69,12 +137,9 @@ export const Login: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         {/* Logo and Branding - Centered Top */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-primary rounded-full flex items-center justify-center mb-4">
-            <Shield size={32} className="text-white" />
+          <div className="mx-auto mb-4">
+            <Logo size="xl" textSize="lg" className="justify-center" />
           </div>
-          <h1 className="text-h1 font-semibold text-text-primary">
-            SafeHavenDefense
-          </h1>
           <p className="text-body text-text-secondary mt-2">
             Project Management System
           </p>
@@ -82,6 +147,24 @@ export const Login: React.FC = () => {
 
         {/* Login Container - Max Width 400px */}
         <div className="bg-white rounded-lg shadow-card p-8 max-w-sm mx-auto w-full">
+          {/* Example Email Suggestions - Exactly 3 User Types */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-900 mb-2">Try these 3 example accounts:</h3>
+            <div className="space-y-1 text-xs text-gray-600">
+              <div className="flex justify-between">
+                <span>admin@safehavendefense.com</span>
+                <span className="text-red-600">Executive</span>
+              </div>
+              <div className="flex justify-between">
+                <span>pm@safehavendefense.com</span>
+                <span className="text-blue-600">Project Coordinator</span>
+              </div>
+              <div className="flex justify-between">
+                <span>crew@safehavendefense.com</span>
+                <span className="text-green-600">Execution Team</span>
+              </div>
+            </div>
+          </div>
           <form onSubmit={handleEmailLogin} className="space-y-3">
             {/* Email Field */}
             <div>
@@ -95,11 +178,36 @@ export const Login: React.FC = () => {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                 placeholder="Enter your email"
               />
             </div>
+
+            {/* User Type Detection Display */}
+            {detectedUserType && loginTypeInfo && (
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <div className="flex-shrink-0">
+                    {loginTypeInfo.type === 'company-based' ? (
+                      <Building2 size={16} className="text-blue-600" />
+                    ) : loginTypeInfo.type === 'domain-based' ? (
+                      <Mail size={16} className="text-blue-600" />
+                    ) : (
+                      <Key size={16} className="text-blue-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-blue-900">
+                      {detectedUserType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Account
+                    </p>
+                    <p className="text-xs text-blue-700">
+                      {loginTypeInfo.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Password Field - 12px spacing between fields */}
             <div className="pt-3">

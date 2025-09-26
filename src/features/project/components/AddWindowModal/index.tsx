@@ -207,7 +207,7 @@ export const AddWindowModal: React.FC<AddWindowModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="length" className="block text-sm font-medium text-gray-700 mb-1">
-                Length (cm) *
+                Length (in) *
               </label>
               <input
                 type="number"
@@ -228,7 +228,7 @@ export const AddWindowModal: React.FC<AddWindowModalProps> = ({
 
             <div>
               <label htmlFor="width" className="block text-sm font-medium text-gray-700 mb-1">
-                Width (cm) *
+                Width (in) *
               </label>
               <input
                 type="number"

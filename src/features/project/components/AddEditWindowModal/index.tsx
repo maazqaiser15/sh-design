@@ -186,25 +186,25 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Length (cm) *
+                Length (in) *
               </label>
               <input
                 type="number"
                 min="1"
                 value={formData.length}
-                onChange={(e) => handleInputChange('length', parseInt(e.target.value) || 120)}
+                onChange={(e) => handleInputChange('length', parseInt(e.target.value) || 48)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Width (cm) *
+                Width (in) *
               </label>
               <input
                 type="number"
                 min="1"
                 value={formData.width}
-                onChange={(e) => handleInputChange('width', parseInt(e.target.value) || 80)}
+                onChange={(e) => handleInputChange('width', parseInt(e.target.value) || 32)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Modal } from '../../../../common/components/Modal';
 
 export interface InventoryItem {
   id: string;
   product: string;
-  total: number;
   usedSheets: number;
   serialNumbers: string[];
 }
@@ -40,7 +39,6 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
     PRODUCT_LIST.map((product, index) => ({
       id: `item-${index + 1}`,
       product,
-      total: 0,
       usedSheets: 0,
       serialNumbers: ['']
     }))
@@ -65,7 +63,7 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
     ));
   };
 
-  const handleItemChange = (itemId: string, field: keyof Omit<InventoryItem, 'id' | 'product' | 'serialNumbers'>, value: number) => {
+  const handleItemChange = (itemId: string, field: 'usedSheets', value: number) => {
     setInventoryItems(prev => prev.map(item => 
       item.id === itemId ? { ...item, [field]: value } : item
     ));
@@ -86,7 +84,7 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
 
   const handleSubmit = () => {
     const validItems = inventoryItems.filter(item => 
-      item.total > 0 || item.usedSheets > 0 || item.serialNumbers.some(serial => serial.trim())
+      item.usedSheets > 0 || item.serialNumbers.some(serial => serial.trim())
     );
     
     if (validItems.length === 0) {
@@ -103,7 +101,6 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
       PRODUCT_LIST.map((product, index) => ({
         id: `item-${index + 1}`,
         product,
-        total: 0,
         usedSheets: 0,
         serialNumbers: ['']
       }))
@@ -115,21 +112,8 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleClose} size="xl">
       <div className="w-full">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">Add Usage</h2>
-          <button
-            onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Instructions */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-800">
-            Add materials and quantities used for this project. This will help track project costs and inventory.
-          </p>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">Update Inventory</h2>
         </div>
 
         {/* Project Inventory Table */}
@@ -142,9 +126,6 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Product
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Total
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Used Sheets
@@ -160,18 +141,6 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
                     {/* Product Column */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item.product}</div>
-                    </td>
-                    
-                    {/* Total Column */}
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.total}
-                        onChange={(e) => handleItemChange(item.id, 'total', parseInt(e.target.value) || 0)}
-                        className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="0"
-                      />
                     </td>
                     
                     {/* Used Sheets Column */}
@@ -236,7 +205,7 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
             variant="primary"
             onClick={handleSubmit}
           >
-            Add Usage
+            Update Inventory
           </Button>
         </div>
       </div>
