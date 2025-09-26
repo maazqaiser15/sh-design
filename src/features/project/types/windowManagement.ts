@@ -37,6 +37,11 @@ export interface Window {
   updatedAt: Date;
   createdFromSheet?: boolean;
   sheetId?: string;
+  interiorCount?: number; // Count of interior layers
+  exteriorCount?: number; // Count of exterior layers
+  color?: string; // Window color
+  tint?: string; // Window tint
+  stripping?: boolean; // Whether stripping is required
 }
 
 export interface TakeOffSheet {
@@ -80,7 +85,12 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-17'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 1,
+    color: 'Black',
+    tint: 'None',
+    stripping: false
   },
   {
     id: '2',
@@ -97,7 +107,12 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-16'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 0,
+    color: 'White',
+    tint: 'Light',
+    stripping: true
   },
   {
     id: '3',
@@ -115,7 +130,12 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-18'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 1,
+    color: 'Black',
+    tint: 'Dark',
+    stripping: false
   },
   {
     id: '4',
@@ -131,7 +151,9 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-15'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 0
   },
   {
     id: '5',
@@ -148,7 +170,9 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-16'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 0
   },
   {
     id: '6',
@@ -166,7 +190,9 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-17'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 1
   },
   {
     id: '7',
@@ -182,7 +208,9 @@ export const MOCK_WINDOWS: Window[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-15'),
     createdFromSheet: true,
-    sheetId: 'sheet-1'
+    sheetId: 'sheet-1',
+    interiorCount: 1,
+    exteriorCount: 0
   }
 ];
 

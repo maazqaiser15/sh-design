@@ -32,11 +32,10 @@ import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { useToast } from '../../../../contexts/ToastContext';
-import { UploadTakeOffSheetModal } from '../../components/UploadTakeOffSheetModal';
-import { UploadRecutSheetModal } from '../../components/UploadRecutSheetModal';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
 import { QualityCheckFormModal, QualityCheckFormData } from '../../components/QualityCheckFormModal';
+import { AddUsageModal, InventoryItem } from '../../components/AddUsageModal';
 import { Window, MOCK_WINDOWS, MOCK_TEAM_MEMBERS } from '../../types/windowManagement';
 
 interface ProjectDetailsQFProps {
@@ -60,14 +59,13 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     layers: 'all'
   });
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
   const [showQualityCheckModal, setShowQualityCheckModal] = useState(false);
   const [isQualityCheckSigned, setIsQualityCheckSigned] = useState(false);
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
-  const [showRecutSheetModal, setShowRecutSheetModal] = useState(false);
+  const [showAddUsageModal, setShowAddUsageModal] = useState(false);
 
   // Quality Check State
   const [qualityChecks, setQualityChecks] = useState([
@@ -226,25 +224,17 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     console.log('Quality Check Form Data:', formData);
   };
 
-  const handleEditProject = () => {
-    showToast('Edit project functionality coming soon');
+
+  const handleAddUsage = () => {
+    setShowAddUsageModal(true);
   };
 
-  const handleUploadRecutSheet = () => {
-    setShowRecutSheetModal(true);
+  const handleUsageSubmit = (usageData: InventoryItem[]) => {
+    setShowAddUsageModal(false);
+    showToast('Usage data added successfully');
+    console.log('Usage Data:', usageData);
   };
 
-  const handleRecutSheetUploadComplete = (sheet: any) => {
-    setShowRecutSheetModal(false);
-    showToast('Recut sheet uploaded and processed successfully');
-    console.log('Recut Sheet Data:', sheet);
-  };
-
-  const handleTakeOffSheetUploadComplete = (sheet: any) => {
-    setShowUploadModal(false);
-    showToast('Windows created successfully from sheet');
-    console.log('Take-off Sheet Data:', sheet);
-  };
 
   const handleAddWindow = () => {
     setEditingWindow(null);
@@ -371,19 +361,11 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                   </Button>
                   <Button
                     variant="secondary"
-                    onClick={handleUploadRecutSheet}
-                    icon={Upload}
+                    onClick={handleAddUsage}
+                    icon={Plus}
                     className="px-3 py-2"
                   >
-                    Add Recut Sheet
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handleEditProject}
-                    icon={Edit}
-                    className="px-3 py-2"
-                  >
-                    Edit
+                    Add Usage
                   </Button>
                 </div>
               </div>
@@ -460,13 +442,6 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
                       <div className="flex items-center gap-3">
-                        <Button 
-                          variant="primary" 
-                          icon={Upload}
-                          onClick={() => setShowUploadModal(true)}
-                        >
-                          Upload Sheet
-                        </Button>
                         <Button 
                           variant="primary" 
                           icon={Plus}
@@ -1108,17 +1083,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
       </div>
 
       {/* Modals */}
-      <UploadTakeOffSheetModal
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onUploadComplete={handleTakeOffSheetUploadComplete}
-      />
 
-      <UploadRecutSheetModal
-        isOpen={showRecutSheetModal}
-        onClose={() => setShowRecutSheetModal(false)}
-        onUploadComplete={handleRecutSheetUploadComplete}
-      />
 
       <AddEditWindowModal
         isOpen={showAddEditModal}
@@ -1138,6 +1103,12 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
         isOpen={showQualityCheckModal}
         onClose={() => setShowQualityCheckModal(false)}
         onSubmit={handleQualityCheckFormSubmit}
+      />
+
+      <AddUsageModal
+        isOpen={showAddUsageModal}
+        onClose={() => setShowAddUsageModal(false)}
+        onSubmit={handleUsageSubmit}
       />
     </div>
   );

@@ -22,7 +22,8 @@ export const EditWindowModal: React.FC<EditWindowModalProps> = ({
     filmType: 'BR' as FilmType,
     length: 0,
     width: 0,
-    layers: 1,
+    interiorLayers: 1,
+    exteriorLayers: 0,
     status: 'Pending' as const,
     assignedTeamMembers: [] as string[],
     installationBreakdown: [] as any[]
@@ -33,12 +34,21 @@ export const EditWindowModal: React.FC<EditWindowModalProps> = ({
   // Populate form when window changes
   useEffect(() => {
     if (window) {
+      // Calculate interior and exterior layers from existing layers
+      const interiorLayers = window.layers.filter(layer => 
+        layer.layerName.includes('Interior') || layer.layerName.includes('Middle')
+      ).length;
+      const exteriorLayers = window.layers.filter(layer => 
+        layer.layerName.includes('Exterior')
+      ).length;
+      
       setFormData({
         windowName: window.windowName,
         filmType: window.filmType,
         length: window.length,
         width: window.width,
-        layers: window.layers,
+        interiorLayers,
+        exteriorLayers,
         status: window.status,
         assignedTeamMembers: window.assignedTeamMembers,
         installationBreakdown: window.installationBreakdown
@@ -61,8 +71,12 @@ export const EditWindowModal: React.FC<EditWindowModalProps> = ({
       newErrors.width = 'Width must be greater than 0';
     }
 
-    if (formData.layers < 1) {
-      newErrors.layers = 'At least 1 layer is required';
+    if (formData.interiorLayers < 0 || formData.exteriorLayers < 0) {
+      newErrors.layers = 'Layer counts cannot be negative';
+    }
+    
+    if (formData.interiorLayers === 0 && formData.exteriorLayers === 0) {
+      newErrors.layers = 'At least one layer (interior or exterior) is required';
     }
 
     setErrors(newErrors);
@@ -135,44 +149,67 @@ export const EditWindowModal: React.FC<EditWindowModalProps> = ({
             )}
           </div>
 
-          {/* Film Type and Layers */}
+          {/* Film Type */}
+          <div>
+            <label htmlFor="filmType" className="block text-sm font-medium text-gray-700 mb-1">
+              Film Type *
+            </label>
+            <select
+              id="filmType"
+              value={formData.filmType}
+              onChange={(e) => handleInputChange('filmType', e.target.value as FilmType)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {FILM_TYPE_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Interior and Exterior Layers */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="filmType" className="block text-sm font-medium text-gray-700 mb-1">
-                Film Type *
-              </label>
-              <select
-                id="filmType"
-                value={formData.filmType}
-                onChange={(e) => handleInputChange('filmType', e.target.value as FilmType)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {FILM_TYPE_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="layers" className="block text-sm font-medium text-gray-700 mb-1">
-                Layers *
+              <label htmlFor="interiorLayers" className="block text-sm font-medium text-gray-700 mb-1">
+                Interior Layers *
               </label>
               <input
                 type="number"
-                id="layers"
-                min="1"
+                id="interiorLayers"
+                min="0"
                 max="10"
-                value={formData.layers}
-                onChange={(e) => handleInputChange('layers', parseInt(e.target.value) || 1)}
+                value={formData.interiorLayers}
+                onChange={(e) => handleInputChange('interiorLayers', parseInt(e.target.value) || 0)}
                 className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.layers ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
-              {errors.layers && (
-                <p className="mt-1 text-sm text-red-600">{errors.layers}</p>
-              )}
+            </div>
+
+            <div>
+              <label htmlFor="exteriorLayers" className="block text-sm font-medium text-gray-700 mb-1">
+                Exterior Layers *
+              </label>
+              <input
+                type="number"
+                id="exteriorLayers"
+                min="0"
+                max="10"
+                value={formData.exteriorLayers}
+                onChange={(e) => handleInputChange('exteriorLayers', parseInt(e.target.value) || 0)}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.layers ? 'border-red-300' : 'border-gray-300'
+                }`}
+              />
             </div>
           </div>
+          
+          {errors.layers && (
+            <p className="text-sm text-red-600">{errors.layers}</p>
+          )}
+          
+          <p className="text-sm text-gray-500">
+            At least one layer (interior or exterior) must be specified
+          </p>
 
           {/* Dimensions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

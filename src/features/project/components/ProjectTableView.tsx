@@ -43,7 +43,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   };
 
   return (
-    <div className="p-4">
+    <div className="px-2">
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">

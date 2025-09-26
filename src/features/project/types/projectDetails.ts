@@ -91,7 +91,38 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
 };
 
 export const MOCK_PREPARATION_DATA: PreparationStageData = {
-  assignedTeam: null, // Start with empty team
+  assignedTeam: {
+    members: [
+      {
+        id: 'tm-001',
+        name: 'John Smith',
+        role: 'Lead Supervisor',
+        avatar: 'JS',
+        location: 'Los Angeles, CA'
+      },
+      {
+        id: 'tm-002',
+        name: 'Sarah Johnson',
+        role: 'Crew Leader',
+        avatar: 'SJ',
+        location: 'Chicago, IL'
+      },
+      {
+        id: 'tm-003',
+        name: 'Mike Wilson',
+        role: 'Installer',
+        avatar: 'MW',
+        location: 'Houston, TX'
+      }
+    ],
+    count: 3,
+    leadMember: {
+      id: 'tm-001',
+      name: 'John Smith',
+      role: 'Lead Supervisor',
+      location: 'Los Angeles, CA'
+    }
+  },
   assignedTrailer: null, // Initially no trailer assigned for PV90, UB, WB stages
   logistics: {
     partner: 'LogiCorp Solutions',

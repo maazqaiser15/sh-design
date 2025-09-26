@@ -26,6 +26,7 @@ interface TeamCardProps {
     name: string;
     role: string;
     avatar?: string;
+    location?: string;
     isLead?: boolean;
   };
   onClick?: () => void;
@@ -35,7 +36,7 @@ interface TeamCardProps {
 
 /**
  * TeamCard - Individual team member card component
- * Displays team member with avatar, name, and role
+ * Displays team member with avatar, name, role, and location
  */
 export const TeamCard: React.FC<TeamCardProps> = ({
   member,
@@ -43,7 +44,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
   onRemove,
   className = ''
 }) => {
-  const { name, role, avatar, isLead } = member;
+  const { name, role, avatar, location, isLead } = member;
 
   // Use mock avatars for demo, fallback to default avatar
   const getAvatarSrc = () => {
@@ -92,7 +93,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
           )}
         </div>
 
-        {/* Name and Role */}
+        {/* Name, Role, and Location */}
         <div className="flex flex-col items-start min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <p className="font-medium text-sm text-[#101828] leading-5 truncate">
@@ -107,6 +108,16 @@ export const TeamCard: React.FC<TeamCardProps> = ({
           <p className="font-normal text-sm text-[#475467] leading-5 truncate">
             {role}
           </p>
+          {location && (
+            <div className="flex items-center gap-1 mt-1">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 1C4.34 1 3 2.34 3 4C3 6.5 6 9 6 9C6 9 9 6.5 9 4C9 2.34 7.66 1 6 1ZM6 5.25C5.45 5.25 5 4.8 5 4.25C5 3.7 5.45 3.25 6 3.25C6.55 3.25 7 3.7 7 4.25C7 4.8 6.55 5.25 6 5.25Z" fill="#6B7280"/>
+              </svg>
+              <p className="font-normal text-xs text-[#6B7280] leading-4 truncate">
+                {location}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -119,6 +130,7 @@ interface TeamCardsGridProps {
     name: string;
     role: string;
     avatar?: string;
+    location?: string;
     isLead?: boolean;
   }>;
   onMemberClick?: (member: any) => void;

@@ -7,31 +7,57 @@ export interface TravelAccommodationRequestData {
   travelRequired: boolean;
   accommodationRequired: boolean;
   travelMethod?: 'air' | 'road';
-  numberOfTeamMembers: number;
+  selectedTeamMembers: Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
+    travelMethod?: 'air' | 'road';
+  }>;
 }
 
 interface TravelAccommodationRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: TravelAccommodationRequestData) => void;
+  assignedTeamMembers: Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
+  }>;
+  projectLocation: string;
 }
 
 export const TravelAccommodationRequestModal: React.FC<TravelAccommodationRequestModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  assignedTeamMembers,
+  projectLocation,
 }) => {
   const [travelRequired, setTravelRequired] = useState(false);
   const [accommodationRequired, setAccommodationRequired] = useState(false);
   const [travelMethod, setTravelMethod] = useState<'air' | 'road'>('air');
-  const [numberOfTeamMembers, setNumberOfTeamMembers] = useState(1);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
+    travelMethod?: 'air' | 'road';
+  }>>([]);
+  const [teamMemberToggles, setTeamMemberToggles] = useState<Record<string, boolean>>({});
+  const [teamMemberTravelMethods, setTeamMemberTravelMethods] = useState<Record<string, 'air' | 'road'>>({});
 
   const handleSubmit = () => {
     const data: TravelAccommodationRequestData = {
       travelRequired,
       accommodationRequired,
       travelMethod: travelRequired ? travelMethod : undefined,
-      numberOfTeamMembers,
+      selectedTeamMembers,
     };
     onSubmit(data);
     onClose();
@@ -43,6 +69,48 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
   const isFormValid = () => {
     return travelRequired || accommodationRequired;
+  };
+
+  // Check if a team member is selected
+  const isTeamMemberSelected = (memberId: string) => {
+    return selectedTeamMembers.some(m => m.id === memberId);
+  };
+
+  // Handle individual team member toggle
+  const handleTeamMemberToggle = (memberId: string, isEnabled: boolean) => {
+    setTeamMemberToggles(prev => ({
+      ...prev,
+      [memberId]: isEnabled
+    }));
+
+    if (isEnabled) {
+      // Add to selected members if not already there
+      const member = assignedTeamMembers.find(m => m.id === memberId);
+      if (member && !selectedTeamMembers.some(m => m.id === memberId)) {
+        setSelectedTeamMembers(prev => [...prev, {
+          ...member,
+          travelMethod: teamMemberTravelMethods[memberId] || 'air'
+        }]);
+      }
+    } else {
+      // Remove from selected members
+      setSelectedTeamMembers(prev => prev.filter(m => m.id !== memberId));
+    }
+  };
+
+  // Handle travel method change for individual team member
+  const handleTeamMemberTravelMethodChange = (memberId: string, method: 'air' | 'road') => {
+    setTeamMemberTravelMethods(prev => ({
+      ...prev,
+      [memberId]: method
+    }));
+
+    // Update selected members if this member is already selected
+    setSelectedTeamMembers(prev => prev.map(member => 
+      member.id === memberId 
+        ? { ...member, travelMethod: method }
+        : member
+    ));
   };
 
   return (
@@ -72,50 +140,113 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
           {travelRequired && (
             <div className="space-y-4 pl-2">
-              {/* Travel Method Selection */}
+              {/* Team Members List */}
               <div>
-                <label className="block text-sm font-medium text-blue-700 mb-2">
-                  Travel Method
+                <label className="block text-sm font-medium text-blue-700 mb-3">
+                  Team Members
                 </label>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="travelMethod"
-                      value="air"
-                      checked={travelMethod === 'air'}
-                      onChange={() => setTravelMethod('air')}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-blue-700">Travel by Air</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="travelMethod"
-                      value="road"
-                      checked={travelMethod === 'road'}
-                      onChange={() => setTravelMethod('road')}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-blue-700">Travel by Road</span>
-                  </label>
-                </div>
-              </div>
+                <div className="space-y-3">
+                  {assignedTeamMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="bg-white border border-blue-200 rounded-lg p-4"
+                    >
+                      <div className="space-y-3">
+                        {/* Member Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            {/* Avatar */}
+                            <div className="flex-shrink-0">
+                              {member.avatar ? (
+                                <div 
+                                  className="w-10 h-10 rounded-full bg-cover bg-center bg-no-repeat"
+                                  style={{ backgroundImage: `url('${member.avatar}')` }}
+                                />
+                              ) : (
+                                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-medium">
+                                    {member.name.split(' ').map(n => n[0]).join('')}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
 
-              {/* Number of Team Members */}
-              <div>
-                <label htmlFor="teamMembers" className="block text-sm font-medium text-blue-700 mb-1">
-                  Number of Team Members
-                </label>
-                <input
-                  type="number"
-                  id="teamMembers"
-                  value={numberOfTeamMembers}
-                  onChange={(e) => setNumberOfTeamMembers(Math.max(1, Number(e.target.value)))}
-                  min="1"
-                  className="w-full px-3 py-2 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                />
+                            {/* Member Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-sm text-gray-900 truncate">
+                                  {member.name}
+                                </p>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                  {member.role}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1 mt-1">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M6 1C4.34 1 3 2.34 3 4C3 6.5 6 9 6 9C6 9 9 6.5 9 4C9 2.34 7.66 1 6 1ZM6 5.25C5.45 5.25 5 4.8 5 4.25C5 3.7 5.45 3.25 6 3.25C6.55 3.25 7 3.7 7 4.25C7 4.8 6.55 5.25 6 5.25Z" fill="#6B7280"/>
+                                </svg>
+                                <p className="text-xs text-gray-600 truncate">
+                                  {member.location} → {projectLocation}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Toggle Switch */}
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={teamMemberToggles[member.id] || false}
+                              onChange={(e) => handleTeamMemberToggle(member.id, e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+
+                        {/* Travel Method Selection - Only show when member is selected */}
+                        {teamMemberToggles[member.id] && (
+                          <div className="border-t border-gray-100 pt-3">
+                            <label className="block text-xs font-medium text-gray-700 mb-2">
+                              Travel Method
+                            </label>
+                            <div className="flex gap-4">
+                              <label className="flex items-center">
+                                <input
+                                  type="radio"
+                                  name={`travelMethod-${member.id}`}
+                                  value="air"
+                                  checked={(teamMemberTravelMethods[member.id] || 'air') === 'air'}
+                                  onChange={() => handleTeamMemberTravelMethodChange(member.id, 'air')}
+                                  className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                />
+                                <span className="ml-2 text-xs text-gray-700">Air</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="radio"
+                                  name={`travelMethod-${member.id}`}
+                                  value="road"
+                                  checked={(teamMemberTravelMethods[member.id] || 'air') === 'road'}
+                                  onChange={() => handleTeamMemberTravelMethodChange(member.id, 'road')}
+                                  className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                />
+                                <span className="ml-2 text-xs text-gray-700">Road</span>
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedTeamMembers.length > 0 && (
+                  <div className="mt-3 p-3 bg-blue-100 rounded-lg">
+                    <p className="text-sm text-blue-800 font-medium">
+                      {selectedTeamMembers.length} team member{selectedTeamMembers.length > 1 ? 's' : ''} selected for travel
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -151,7 +282,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
         {/* Modal Footer */}
         <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={handleCancel}
             className="px-6 py-2"
           >

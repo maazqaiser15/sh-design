@@ -22,21 +22,316 @@ import {
   Grid,
   List,
   Upload,
-  Trash2
+  Trash2,
+  Settings
 } from 'lucide-react';
 import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { useToast } from '../../../../contexts/ToastContext';
-import { UploadTakeOffSheetModal } from '../../components/UploadTakeOffSheetModal';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
-import { WindowType, MOCK_WINDOWS, MOCK_TEAM_MEMBERS } from '../../types/windowManagement';
+import { SetupWindowsModal, SetupWindowsData, WindowRow } from '../../components/SetupWindowsModal';
+import { Window, TakeOffSheet, MOCK_WINDOWS, MOCK_TEAM_MEMBERS, LayerInstallation, FilmType } from '../../types/windowManagement';
 
 interface ProjectDetailsWIPProps {
   projectStatus?: 'WIP' | 'QF' | 'Completed';
 }
+
+// Inline Setup Windows Form Component
+interface SetupWindowsFormProps {
+  onSave: (data: SetupWindowsData) => void;
+  onCancel: () => void;
+}
+
+const PRODUCTS = [
+  'SW450SR',
+  'SW600FE',
+  'SW440RC',
+  'SW600RC',
+  'SW600RC+',
+  'SW600BR',
+  'Tint Only',
+  'Kevlar'
+];
+
+const COLORS = ['Black', 'White'];
+const TINTS = ['None', 'Light', 'Dark'];
+const LAYER_OPTIONS = [1, 2, 3, 4];
+
+const SetupWindowsForm: React.FC<SetupWindowsFormProps> = ({ onSave, onCancel }) => {
+  const [formData, setFormData] = useState<SetupWindowsData>({
+    windows: [
+      {
+        id: '1',
+        windowLabel: 'W1',
+        width: 2,
+        length: 2,
+        product: 'SW450SR',
+        interiorLayer: 2,
+        exteriorLayer: 3,
+        color: 'Black',
+        tint: 'None',
+        stripping: false
+      }
+    ]
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleWindowChange = (windowId: string, field: keyof WindowRow, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      windows: prev.windows.map(window => 
+        window.id === windowId 
+          ? { ...window, [field]: value }
+          : window
+      )
+    }));
+  };
+
+  const addWindow = () => {
+    const newId = (formData.windows.length + 1).toString();
+    const newWindow: WindowRow = {
+      id: newId,
+      windowLabel: `W${formData.windows.length + 1}`,
+      width: 2,
+      length: 2,
+      product: 'SW450SR',
+      interiorLayer: 1,
+      exteriorLayer: 1,
+      color: 'Black',
+      tint: 'None',
+      stripping: false
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      windows: [...prev.windows, newWindow]
+    }));
+  };
+
+  const removeWindow = (windowId: string) => {
+    if (formData.windows.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        windows: prev.windows.filter(window => window.id !== windowId)
+      }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (formData.windows.length === 0) {
+      newErrors.windows = 'At least one window is required';
+    }
+    
+    formData.windows.forEach((window, index) => {
+      if (!window.windowLabel.trim()) {
+        newErrors[`window-${index}-label`] = 'Window label is required';
+      }
+      if (window.width <= 0) {
+        newErrors[`window-${index}-width`] = 'Width must be greater than 0';
+      }
+      if (window.length <= 0) {
+        newErrors[`window-${index}-length`] = 'Length must be greater than 0';
+      }
+    });
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = () => {
+    if (validateForm()) {
+      onSave(formData);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Windows Table */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Windows Configuration</h3>
+          <Button
+            variant="secondary"
+            icon={Plus}
+            onClick={addWindow}
+            className="text-sm"
+          >
+            Add Window
+          </Button>
+        </div>
+
+        {errors.windows && (
+          <p className="text-sm text-red-600">{errors.windows}</p>
+        )}
+
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto max-h-96 overflow-y-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Window</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Width</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Length</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interior</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exterior</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tint</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stripping</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {formData.windows.map((window, index) => (
+                  <tr key={window.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <input
+                        type="text"
+                        value={window.windowLabel}
+                        onChange={(e) => handleWindowChange(window.id, 'windowLabel', e.target.value)}
+                        className={`w-20 px-2 py-1 border rounded text-sm ${
+                          errors[`window-${index}-label`] ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      />
+                      {errors[`window-${index}-label`] && (
+                        <p className="text-xs text-red-500 mt-1">{errors[`window-${index}-label`]}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <input
+                        type="number"
+                        value={window.width}
+                        onChange={(e) => handleWindowChange(window.id, 'width', parseFloat(e.target.value) || 0)}
+                        className={`w-20 px-2 py-1 border rounded text-sm ${
+                          errors[`window-${index}-width`] ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        min="0"
+                        step="0.1"
+                      />
+                      {errors[`window-${index}-width`] && (
+                        <p className="text-xs text-red-500 mt-1">{errors[`window-${index}-width`]}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <input
+                        type="number"
+                        value={window.length}
+                        onChange={(e) => handleWindowChange(window.id, 'length', parseFloat(e.target.value) || 0)}
+                        className={`w-20 px-2 py-1 border rounded text-sm ${
+                          errors[`window-${index}-length`] ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        min="0"
+                        step="0.1"
+                      />
+                      {errors[`window-${index}-length`] && (
+                        <p className="text-xs text-red-500 mt-1">{errors[`window-${index}-length`]}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <select
+                        value={window.product}
+                        onChange={(e) => handleWindowChange(window.id, 'product', e.target.value)}
+                        className="w-32 px-2 py-1 border border-gray-300 rounded text-sm"
+                      >
+                        {PRODUCTS.map(product => (
+                          <option key={product} value={product}>{product}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <select
+                        value={window.interiorLayer}
+                        onChange={(e) => handleWindowChange(window.id, 'interiorLayer', parseInt(e.target.value))}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                      >
+                        {LAYER_OPTIONS.map(layer => (
+                          <option key={layer} value={layer}>{layer}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <select
+                        value={window.exteriorLayer}
+                        onChange={(e) => handleWindowChange(window.id, 'exteriorLayer', parseInt(e.target.value))}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                      >
+                        {LAYER_OPTIONS.map(layer => (
+                          <option key={layer} value={layer}>{layer}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <select
+                        value={window.color}
+                        onChange={(e) => handleWindowChange(window.id, 'color', e.target.value)}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                      >
+                        {COLORS.map(color => (
+                          <option key={color} value={color}>{color}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <select
+                        value={window.tint}
+                        onChange={(e) => handleWindowChange(window.id, 'tint', e.target.value)}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                      >
+                        {TINTS.map(tint => (
+                          <option key={tint} value={tint}>{tint}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={window.stripping}
+                        onChange={(e) => handleWindowChange(window.id, 'stripping', e.target.checked)}
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => removeWindow(window.id)}
+                        disabled={formData.windows.length === 1}
+                        className="text-red-500 hover:text-red-700 disabled:text-gray-300 disabled:cursor-not-allowed"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Form Actions */}
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <Button
+          variant="secondary"
+          onClick={onCancel}
+          className="px-6 py-2"
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          className="px-6 py-2"
+        >
+          Setup Windows
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectStatus = 'WIP' }) => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -45,7 +340,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const [activeTab, setActiveTab] = useState('job-brief');
   
   // Window Management State
-  const [windows, setWindows] = useState<WindowType[]>(MOCK_WINDOWS);
+  const [windows, setWindows] = useState<Window[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     filmType: 'all',
@@ -53,11 +348,25 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     layers: 'all'
   });
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
-  const [editingWindow, setEditingWindow] = useState<WindowType | null>(null);
-  const [selectedWindow, setSelectedWindow] = useState<WindowType | null>(null);
+  const [editingWindow, setEditingWindow] = useState<Window | null>(null);
+  const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
+  
+  // Setup Windows State
+  const [showSetupModal, setShowSetupModal] = useState(false);
+  const [showInlineSetup, setShowInlineSetup] = useState(false);
+  const [isCreatingWindows, setIsCreatingWindows] = useState(false);
+  const [windowsSetup, setWindowsSetup] = useState(false);
+
+  // Auto-show setup interface when windows are not setup
+  useEffect(() => {
+    if (!windowsSetup && !isCreatingWindows && windows.length === 0) {
+      setShowInlineSetup(true);
+    } else {
+      setShowInlineSetup(false);
+    }
+  }, [windowsSetup, isCreatingWindows, windows.length]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -151,6 +460,17 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   // Update project status based on prop
   const currentProject = { ...project, status: projectStatus };
 
+  // Helper function to calculate interior and exterior counts from layers
+  const calculateLayerCounts = (layers: any[]) => {
+    const interiorCount = layers.filter(layer => 
+      layer.layerName?.toLowerCase().includes('interior')
+    ).length;
+    const exteriorCount = layers.filter(layer => 
+      layer.layerName?.toLowerCase().includes('exterior')
+    ).length;
+    return { interiorCount, exteriorCount };
+  };
+
   // Filter windows based on search and filters
   const filteredWindows = windows.filter(window => {
     const matchesSearch = (window.windowName || '').toLowerCase().includes(searchTerm.toLowerCase());
@@ -166,27 +486,94 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     showToast('Project marked for Quality Review', 'success');
   };
 
-  const handleEditProject = () => {
-    showToast('Edit project functionality coming soon', 'info');
-  };
 
-  const handleUploadComplete = (newWindows: WindowType[]) => {
-    setWindows(prev => [...prev, ...newWindows]);
-    setShowUploadModal(false);
-    showToast('Windows created successfully from sheet', 'success');
-  };
 
   const handleAddWindow = () => {
     setEditingWindow(null);
     setShowAddEditModal(true);
   };
 
-  const handleEditWindow = (window: WindowType) => {
+  // Setup Windows Handlers
+  const handleSetupWindows = () => {
+    setShowSetupModal(true);
+  };
+
+  const handleSetupModalClose = () => {
+    // Only allow closing if windows are already setup or if user manually opened it
+    if (windowsSetup || windows.length > 0) {
+      setShowSetupModal(false);
+    }
+  };
+
+  const handleSetupSave = async (data: SetupWindowsData) => {
+    setShowSetupModal(false);
+    setShowInlineSetup(false);
+    setIsCreatingWindows(true);
+    
+    // Simulate API call to create windows
+    setTimeout(() => {
+      // Generate windows based on the table data
+      const generatedWindows: Window[] = data.windows.map((windowRow, index) => {
+        const randomStatus = ['Pending', 'In Progress', 'Complete'][Math.floor(Math.random() * 3)] as 'Pending' | 'In Progress' | 'Complete';
+        
+        // Generate layer installations based on interior and exterior layers
+        const layerInstallations: LayerInstallation[] = [];
+        const totalLayers = windowRow.interiorLayer + windowRow.exteriorLayer;
+        
+        for (let j = 1; j <= totalLayers; j++) {
+          const isInterior = j <= windowRow.interiorLayer;
+          layerInstallations.push({
+            layerNumber: j,
+            layerName: `${isInterior ? 'Interior' : 'Exterior'} Layer ${isInterior ? j : j - windowRow.interiorLayer}`,
+            status: Math.random() > 0.5 ? 'Installed' : 'Pending',
+            installedBy: Math.random() > 0.5 ? 'John Doe' : undefined,
+            installedAt: Math.random() > 0.5 ? new Date() : undefined,
+            notes: isInterior ? `Interior layer ${j}` : `Exterior layer ${j - windowRow.interiorLayer}`
+          });
+        }
+        
+        // Map product to film type
+        const productToFilmType: Record<string, FilmType> = {
+          'SW450SR': 'BR',
+          'SW600FE': 'Riot',
+          'SW440RC': 'Riot +',
+          'SW600RC': 'Riot',
+          'SW600RC+': 'Riot +',
+          'SW600BR': 'BR',
+          'Tint Only': 'PER',
+          'Kevlar': 'Custom'
+        };
+        
+        return {
+          id: `window-${index + 1}`,
+          windowName: windowRow.windowLabel,
+          filmType: productToFilmType[windowRow.product] || 'BR',
+          length: windowRow.length,
+          width: windowRow.width,
+          layers: layerInstallations,
+          status: randomStatus,
+          assignedTeamMembers: Math.random() > 0.5 ? ['John Doe', 'Jane Smith'] : ['Mike Johnson'],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          createdFromSheet: true,
+          interiorCount: windowRow.interiorLayer,
+          exteriorCount: windowRow.exteriorLayer
+        };
+      });
+      
+      setWindows(generatedWindows);
+      setWindowsSetup(true);
+      setIsCreatingWindows(false);
+      showToast(`Successfully created ${data.windows.length} windows`, 'success');
+    }, 2000); // 2 second loading simulation
+  };
+
+  const handleEditWindow = (window: Window) => {
     setEditingWindow(window);
     setShowAddEditModal(true);
   };
 
-  const handleViewWindow = (window: WindowType) => {
+  const handleViewWindow = (window: Window) => {
     setSelectedWindow(window);
     setShowWindowDetailModal(true);
   };
@@ -198,18 +585,20 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     }
   };
 
-  const handleSaveWindow = (windowData: Partial<WindowType>) => {
+  const handleSaveWindow = (windowData: Partial<Window>) => {
     if (editingWindow) {
       // Update existing window
+      const layerCounts = calculateLayerCounts(windowData.layers || editingWindow.layers);
       setWindows(prev => prev.map(w => 
         w.id === editingWindow.id 
-          ? { ...w, ...windowData, status: 'Updated' as const }
+          ? { ...w, ...windowData, ...layerCounts, status: 'Updated' as const }
           : w
       ));
       showToast('Window updated successfully', 'success');
     } else {
       // Add new window
-      const newWindow: WindowType = {
+      const layerCounts = calculateLayerCounts(windowData.layers || []);
+      const newWindow: Window = {
         id: Date.now().toString(),
         windowName: windowData.windowName || '',
         filmType: windowData.filmType || 'BR',
@@ -220,6 +609,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         assignedTeamMembers: [],
         createdAt: new Date(),
         updatedAt: new Date(),
+        ...layerCounts,
         ...windowData
       };
       setWindows(prev => [...prev, newWindow]);
@@ -229,14 +619,15 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     setEditingWindow(null);
   };
 
-  const handleUpdateWindow = (windowData: Partial<WindowType>) => {
+  const handleUpdateWindow = (windowData: Partial<Window>) => {
     if (selectedWindow) {
+      const layerCounts = calculateLayerCounts(windowData.layers || selectedWindow.layers);
       setWindows(prev => prev.map(w => 
         w.id === selectedWindow.id 
-          ? { ...w, ...windowData, status: 'Updated' as const }
+          ? { ...w, ...windowData, ...layerCounts, status: 'Updated' as const }
           : w
       ));
-      setSelectedWindow({ ...selectedWindow, ...windowData });
+      setSelectedWindow({ ...selectedWindow, ...windowData, ...layerCounts });
       showToast('Window updated successfully', 'success');
     }
   };
@@ -309,14 +700,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       View Report
                     </Button>
                   )}
-                  <Button
-                    variant="secondary"
-                    onClick={handleEditProject}
-                    icon={Edit}
-                    className="px-3 py-2"
-                  >
-                    Edit
-                  </Button>
                 </div>
               </div>
             </div>
@@ -494,7 +877,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       </div>
 
       {/* Main Content */}
-      <div className="py-6">
+      <div className="py-6 px-6">
         <div className="flex gap-6">
           {/* Left Content */}
           <div className="flex-1">
@@ -541,26 +924,40 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 
                 {/* Window Management Section */}
                 <div className="space-y-6">
-                  {/* Empty State - Show upload CTA if no windows */}
-                  {windows.length === 0 ? (
+                  {/* Inline Setup Interface */}
+                  {showInlineSetup ? (
+                    <div className="bg-white rounded-lg border border-gray-200 p-6">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                            <Settings className="w-6 h-6 text-blue-600" />
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">Setup Windows for This Project</h3>
+                          <p className="text-gray-600 text-sm">Configure your window requirements to get started with window management</p>
+                        </div>
+                      </div>
+                      <SetupWindowsForm onSave={handleSetupSave} onCancel={() => setShowInlineSetup(false)} />
+                    </div>
+                  ) : isCreatingWindows ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Creating Windows...</h3>
+                      <p className="text-gray-600">Please wait while we set up your windows</p>
+                    </div>
+                  ) : windows.length === 0 ? (
                     <div className="text-center py-12">
                       <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">No windows yet</h3>
-                      <p className="text-gray-600 mb-6">Upload a take-off sheet or add windows manually to get started</p>
+                      <p className="text-gray-600 mb-6">Add windows manually to get started</p>
                       <div className="flex justify-center gap-3">
                         <Button 
                           variant="primary" 
-                          icon={Upload}
-                          onClick={() => setShowUploadModal(true)}
-                        >
-                          Upload Take-off Sheet
-                        </Button>
-                        <Button 
-                          variant="secondary" 
                           icon={Plus}
                           onClick={handleAddWindow}
                         >
-                          Add Window Manually
+                          Add Window
                         </Button>
                       </div>
                     </div>
@@ -571,13 +968,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         <div className="flex items-center justify-between mb-6">
                           <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
                           <div className="flex items-center gap-3">
-                            <Button 
-                              variant="primary" 
-                              icon={Upload}
-                              onClick={() => setShowUploadModal(true)}
-                            >
-                              Upload Sheet
-                            </Button>
                             <Button 
                               variant="primary" 
                               icon={Plus}
@@ -659,32 +1049,48 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                             <table className="w-full">
                               <thead>
                                 <tr className="border-b border-gray-200">
-                                  <th className="text-left py-3 px-4 font-medium text-gray-900">WINDOW NAME</th>
-                                  <th className="text-left py-3 px-4 font-medium text-gray-900">FILM TYPE</th>
-                                  <th className="text-left py-3 px-4 font-medium text-gray-900">DIMENSIONS</th>
-                                  <th className="text-left py-3 px-4 font-medium text-gray-900">LAYERS</th>
-                                  <th className="text-left py-3 px-4 font-medium text-gray-900">STATUS</th>
-                                  <th className="text-right py-3 px-4 font-medium text-gray-900">ACTIONS</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">WINDOW</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">WIDTH</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">LENGTH</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">PRODUCT</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">INTERIOR</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">EXTERIOR</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">TOTAL LAYERS</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">COLOR</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">TINT</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">STRIPPING</th>
+                                  <th className="text-left py-2 px-3 text-xs font-medium text-gray-900">STATUS</th>
+                                  <th className="text-right py-2 px-3 text-xs font-medium text-gray-900">ACTIONS</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {filteredWindows.map((window) => (
                                   <tr key={window.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-4 px-4">
+                                    <td className="py-2 px-3">
                                       <div>
-                                        <div className="font-medium text-gray-900">{window.windowName}</div>
-                                        <div className="text-sm text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</div>
+                                        <div className="text-sm font-medium text-gray-900">{window.windowName}</div>
+                                        <div className="text-xs text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</div>
                                       </div>
                                     </td>
-                                    <td className="py-4 px-4">
-                                      <span className="text-blue-600 font-medium">{window.filmType}</span>
+                                    <td className="py-2 px-3 text-xs text-gray-900">{window.width} cm</td>
+                                    <td className="py-2 px-3 text-xs text-gray-900">{window.length} cm</td>
+                                    <td className="py-2 px-3">
+                                      <span className="text-xs text-blue-600 font-medium">{window.filmType}</span>
                                     </td>
-                                    <td className="py-4 px-4 text-gray-900">{window.length} x {window.width} cm</td>
-                                    <td className="py-4 px-4 text-gray-900">{window.layers.length}</td>
-                                    <td className="py-4 px-4">
+                                    <td className="py-2 px-3 text-xs text-gray-900">{window.interiorCount || 0}</td>
+                                    <td className="py-2 px-3 text-xs text-gray-900">{window.exteriorCount || 0}</td>
+                                    <td className="py-2 px-3 text-xs text-gray-900 font-semibold">
+                                      {(window.interiorCount || 0) + (window.exteriorCount || 0)}
+                                    </td>
+                                    <td className="py-2 px-3 text-xs text-gray-900">{window.color || 'N/A'}</td>
+                                    <td className="py-2 px-3 text-xs text-gray-900">{window.tint || 'N/A'}</td>
+                                    <td className="py-2 px-3 text-xs text-gray-900">
+                                      {window.stripping ? 'Yes' : 'No'}
+                                    </td>
+                                    <td className="py-2 px-3">
                                       <StatusBadge status={window.status} />
                                     </td>
-                                    <td className="py-4 px-4">
+                                    <td className="py-2 px-3">
                                       <div className="flex items-center justify-end">
                                         <div className="relative dropdown-container">
                                           <button 
@@ -709,9 +1115,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                                   handleViewWindow(window);
                                                   document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
                                                 }}
-                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
                                               >
-                                                <Eye className="w-4 h-4" />
+                                                <Eye className="w-3 h-3" />
                                                 View Details
                                               </button>
                                               <button
@@ -719,9 +1125,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                                   handleEditWindow(window);
                                                   document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
                                                 }}
-                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
                                               >
-                                                <Edit className="w-4 h-4" />
+                                                <Edit className="w-3 h-3" />
                                                 Edit Window
                                               </button>
                                               <button
@@ -729,9 +1135,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                                   handleDeleteWindow(window.id);
                                                   document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
                                                 }}
-                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
                                               >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash2 className="w-3 h-3" />
                                                 Delete Window
                                               </button>
                                             </div>
@@ -750,15 +1156,20 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                               <Card key={window.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewWindow(window)}>
                                 <div className="flex items-start justify-between mb-3">
                                   <div>
-                                    <h4 className="font-medium text-gray-900">{window.windowName}</h4>
-                                    <p className="text-sm text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
+                                    <h4 className="text-sm font-medium text-gray-900">{window.windowName}</h4>
+                                    <p className="text-xs text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
                                   </div>
                                   <StatusBadge status={window.status} />
                                 </div>
-                                <div className="space-y-2 text-sm text-gray-600">
-                                  <div>Film Type: {window.filmType}</div>
-                                  <div>Dimensions: {window.length} x {window.width} cm</div>
-                                  <div>Layers: {window.layers.length}</div>
+                                <div className="space-y-1 text-xs text-gray-600">
+                                  <div>Product: {window.filmType}</div>
+                                  <div>Dimensions: {window.width} x {window.length} cm</div>
+                                  <div>Interior: {window.interiorCount || 0}</div>
+                                  <div>Exterior: {window.exteriorCount || 0}</div>
+                                  <div className="font-semibold text-gray-900">Total Layers: {(window.interiorCount || 0) + (window.exteriorCount || 0)}</div>
+                                  <div>Color: {window.color || 'N/A'}</div>
+                                  <div>Tint: {window.tint || 'N/A'}</div>
+                                  <div>Stripping: {window.stripping ? 'Yes' : 'No'}</div>
                                 </div>
                                 <div className="flex items-center justify-end mt-4">
                                   <div className="relative dropdown-container">
@@ -785,9 +1196,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                             handleViewWindow(window);
                                             document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                           }}
-                                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
                                         >
-                                          <Eye className="w-4 h-4" />
+                                          <Eye className="w-3 h-3" />
                                           View Details
                                         </button>
                                         <button
@@ -796,9 +1207,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                             handleEditWindow(window);
                                             document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                           }}
-                                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
                                         >
-                                          <Edit className="w-4 h-4" />
+                                          <Edit className="w-3 h-3" />
                                           Edit Window
                                         </button>
                                         <button
@@ -807,9 +1218,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                             handleDeleteWindow(window.id);
                                             document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                           }}
-                                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                          className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
                                         >
-                                          <Trash2 className="w-4 h-4" />
+                                          <Trash2 className="w-3 h-3" />
                                           Delete Window
                                         </button>
                                       </div>
@@ -1276,10 +1687,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       </div>
 
       {/* Modals */}
-      <UploadTakeOffSheetModal
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onUploadComplete={handleUploadComplete}
+
+      <SetupWindowsModal
+        isOpen={showSetupModal}
+        onClose={handleSetupModalClose}
+        onSave={handleSetupSave}
       />
 
       <AddEditWindowModal

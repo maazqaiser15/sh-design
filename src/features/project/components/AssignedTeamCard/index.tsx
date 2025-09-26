@@ -71,12 +71,14 @@ interface AssignedTeamCardProps {
       name: string;
       role: string;
       avatar?: string;
+      location?: string;
     }>;
     count: number;
     leadMember?: {
       id: string;
       name: string;
       role: string;
+      location?: string;
     };
   } | null;
   onAddMember?: () => void;

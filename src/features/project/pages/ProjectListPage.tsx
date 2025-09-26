@@ -477,17 +477,17 @@ export const ProjectListPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="w-full px-4 py-0">
+      <div className="w-full py-0">
         {/* First Row - Page Heading and Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 px-2">
           {/* Left side - Title and count */}
-          <div className="mb-6 lg:mb-0">
+          <div className="mb-4 lg:mb-0">
             <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-            <p className="text-lg text-gray-500 mt-1">{projectListItems.length} Projects</p>
+            <p className="text-base text-gray-500">{projectListItems.length} Projects</p>
           </div>
           
           {/* Right side - Search and View Controls */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Search Bar */}
             <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -542,7 +542,7 @@ export const ProjectListPage: React.FC = () => {
         </div>
 
         {/* Second Row - Status Filter Tabs */}
-        <div className="mb-6">
+        <div className="mb-4 px-2">
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
             {['All', 'PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'].map((status) => (
               <button

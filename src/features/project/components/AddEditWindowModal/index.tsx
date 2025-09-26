@@ -24,17 +24,27 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
     filmType: 'BR' as FilmType,
     length: 120,
     width: 80,
-    layers: 1
+    interiorLayers: 1,
+    exteriorLayers: 0
   });
 
   useEffect(() => {
     if (windowItem) {
+      // Calculate interior and exterior layers from existing layers
+      const interiorLayers = windowItem.layers.filter(layer => 
+        layer.layerName.includes('Interior') || layer.layerName.includes('Middle')
+      ).length;
+      const exteriorLayers = windowItem.layers.filter(layer => 
+        layer.layerName.includes('Exterior')
+      ).length;
+      
       setFormData({
         windowName: windowItem.windowName,
         filmType: windowItem.filmType,
         length: windowItem.length,
         width: windowItem.width,
-        layers: windowItem.layers.length
+        interiorLayers,
+        exteriorLayers
       });
     } else {
       setFormData({
@@ -42,7 +52,8 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
         filmType: 'BR',
         length: 120,
         width: 80,
-        layers: 1
+        interiorLayers: 1,
+        exteriorLayers: 0
       });
     }
   }, [windowItem, isOpen]);
@@ -54,17 +65,28 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
     }));
   };
 
-  const generateLayerInstallations = (layerCount: number) => {
+  const generateLayerInstallations = (interiorLayers: number, exteriorLayers: number) => {
     const layers = [];
-    for (let i = 1; i <= layerCount; i++) {
+    let layerNumber = 1;
+    
+    // Add interior layers
+    for (let i = 1; i <= interiorLayers; i++) {
       layers.push({
-        layerNumber: i,
-        layerName: i === 1 ? 'Interior Layer' : 
-                  i === layerCount ? 'Exterior Layer' : 
-                  `Middle Layer ${i - 1}`,
+        layerNumber: layerNumber++,
+        layerName: interiorLayers === 1 ? 'Interior Layer' : `Interior Layer ${i}`,
         status: 'Pending' as const
       });
     }
+    
+    // Add exterior layers
+    for (let i = 1; i <= exteriorLayers; i++) {
+      layers.push({
+        layerNumber: layerNumber++,
+        layerName: exteriorLayers === 1 ? 'Exterior Layer' : `Exterior Layer ${i}`,
+        status: 'Pending' as const
+      });
+    }
+    
     return layers;
   };
 
@@ -80,8 +102,8 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
       return;
     }
 
-    if (formData.layers <= 0) {
-      showToast('Number of layers must be greater than 0', 'error');
+    if (formData.interiorLayers <= 0 && formData.exteriorLayers <= 0) {
+      showToast('At least one layer (interior or exterior) must be specified', 'error');
       return;
     }
 
@@ -92,7 +114,7 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
       filmType: formData.filmType,
       length: formData.length,
       width: formData.width,
-      layers: generateLayerInstallations(formData.layers),
+      layers: generateLayerInstallations(formData.interiorLayers, formData.exteriorLayers),
       status: windowItem ? 'Updated' : 'Pending',
       assignedTeamMembers: windowItem?.assignedTeamMembers || [],
       createdAt: windowItem?.createdAt || now,
@@ -115,7 +137,8 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
       filmType: 'BR',
       length: 120,
       width: 80,
-      layers: 1
+      interiorLayers: 1,
+      exteriorLayers: 0
     });
     onClose();
   };
@@ -187,30 +210,45 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
             </div>
           </div>
 
-          {/* Number of Layers */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Number of Layers *
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="10"
-              value={formData.layers}
-              onChange={(e) => handleInputChange('layers', parseInt(e.target.value) || 1)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Layers will be automatically named (Interior Layer, Middle Layer, Exterior Layer)
-            </p>
+          {/* Interior and Exterior Layers */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Interior Layers *
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                value={formData.interiorLayers}
+                onChange={(e) => handleInputChange('interiorLayers', parseInt(e.target.value) || 0)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Exterior Layers *
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                value={formData.exteriorLayers}
+                onChange={(e) => handleInputChange('exteriorLayers', parseInt(e.target.value) || 0)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
           </div>
+          <p className="text-sm text-gray-500">
+            At least one layer (interior or exterior) must be specified
+          </p>
 
           {/* Preview */}
-          {formData.layers > 0 && (
+          {(formData.interiorLayers > 0 || formData.exteriorLayers > 0) && (
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
               <h4 className="font-medium text-gray-900 mb-2">Layer Preview:</h4>
               <div className="space-y-1">
-                {generateLayerInstallations(formData.layers).map((layer, index) => (
+                {generateLayerInstallations(formData.interiorLayers, formData.exteriorLayers).map((layer, index) => (
                   <div key={index} className="text-sm text-gray-600">
                     • {layer.layerName}
                   </div>

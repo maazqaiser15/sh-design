@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { X, CheckCircle2, AlertCircle, FileText } from 'lucide-react';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
-import { useToast } from '../../../contexts/ToastContext';
 
 interface QualityCheckFormModalProps {
   isOpen: boolean;
@@ -11,20 +10,19 @@ interface QualityCheckFormModalProps {
 }
 
 export interface QualityCheckFormData {
-  overallQuality: 'excellent' | 'good' | 'satisfactory' | 'needs_improvement';
-  comments: string;
-  issues: string[];
-  scopeConfirmations: {
-    installationsCompleted: boolean;
-    materialsInspected: boolean;
-    adjustmentsResolved: boolean;
-  };
-  clientConfirmations: {
-    workReviewed: boolean;
-    noOutstandingIssues: boolean;
-    responsibilitiesFulfilled: boolean;
-  };
+  todaysDate: string;
+  projectName: string;
+  siteLocation: string;
+  ownersRep: string;
+  qualityWalkCompleted: boolean;
+  windowsFreeFromDebris: boolean;
+  curingTimeAcknowledged: boolean;
+  inspectionDistance: boolean;
+  visualInspectionCompleted: boolean;
+  workmanshipApproved: boolean;
+  professionalismApproved: boolean;
   signature: string;
+  comments: string;
 }
 
 export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
@@ -32,79 +30,52 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
   onClose,
   onSubmit
 }) => {
-  const { showToast } = useToast();
   const [formData, setFormData] = useState<QualityCheckFormData>({
-    overallQuality: 'good',
-    comments: '',
-    issues: [],
-    scopeConfirmations: {
-      installationsCompleted: false,
-      materialsInspected: false,
-      adjustmentsResolved: false
-    },
-    clientConfirmations: {
-      workReviewed: false,
-      noOutstandingIssues: false,
-      responsibilitiesFulfilled: false
-    },
-    signature: ''
+    todaysDate: new Date().toLocaleDateString(),
+    projectName: 'Marriot Windows Installation',
+    siteLocation: '123 Main Street, Downtown',
+    ownersRep: '',
+    qualityWalkCompleted: false,
+    windowsFreeFromDebris: false,
+    curingTimeAcknowledged: false,
+    inspectionDistance: false,
+    visualInspectionCompleted: false,
+    workmanshipApproved: false,
+    professionalismApproved: false,
+    signature: '',
+    comments: ''
   });
-
-  const [newIssue, setNewIssue] = useState('');
-  const [isSigned, setIsSigned] = useState(false);
 
   const handleInputChange = (field: keyof QualityCheckFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleCheckboxChange = (section: 'scopeConfirmations' | 'clientConfirmations', field: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: checked
-      }
-    }));
-  };
-
-  const handleAddIssue = () => {
-    if (newIssue.trim()) {
-      setFormData(prev => ({ ...prev, issues: [...prev.issues, newIssue.trim()] }));
-      setNewIssue('');
-    }
-  };
-
-  const handleRemoveIssue = (index: number) => {
-    setFormData(prev => ({ ...prev, issues: prev.issues.filter((_, i) => i !== index) }));
+  const handleCheckboxChange = (field: keyof QualityCheckFormData, checked: boolean) => {
+    setFormData(prev => ({ ...prev, [field]: checked }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSigned(true);
-    showToast('Quality Check Form signed successfully!');
     onSubmit(formData);
     onClose();
   };
 
   const handleClose = () => {
     setFormData({
-      overallQuality: 'good',
-      comments: '',
-      issues: [],
-      scopeConfirmations: {
-        installationsCompleted: false,
-        materialsInspected: false,
-        adjustmentsResolved: false
-      },
-      clientConfirmations: {
-        workReviewed: false,
-        noOutstandingIssues: false,
-        responsibilitiesFulfilled: false
-      },
-      signature: ''
+      todaysDate: new Date().toLocaleDateString(),
+      projectName: 'Marriot Windows Installation',
+      siteLocation: '123 Main Street, Downtown',
+      ownersRep: '',
+      qualityWalkCompleted: false,
+      windowsFreeFromDebris: false,
+      curingTimeAcknowledged: false,
+      inspectionDistance: false,
+      visualInspectionCompleted: false,
+      workmanshipApproved: false,
+      professionalismApproved: false,
+      signature: '',
+      comments: ''
     });
-    setNewIssue('');
-    setIsSigned(false);
     onClose();
   };
 
@@ -113,281 +84,165 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-orange-600" />
+        {/* Header with Safe Haven Defense Branding */}
+        <div className="bg-blue-600 text-white p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
+                <div className="text-blue-600 font-bold text-lg">SHD</div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">SAFE HAVEN</h1>
+                <p className="text-blue-200 text-sm">DEFENSE</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Quality Check Form</h2>
-              <p className="text-sm text-gray-500">Marriot Windows Installation Project</p>
+            <div className="text-right text-sm">
+              <p className="font-semibold">Safe Haven Defense US, LLC</p>
+              <p>22849 N 19TH Ave, Ste. 100</p>
+              <p>Phoenix, AZ 85027</p>
+              <p>p 480.689.7871</p>
+              <p>// safehavendefense.com</p>
             </div>
           </div>
-          <button
-            onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 p-2"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        </div>
+
+        {/* Document Title */}
+        <div className="text-center py-6 border-b border-gray-200">
+          <h2 className="text-3xl font-bold text-gray-900 underline">Quality Walk</h2>
         </div>
 
         {/* Form Content */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Project Information */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
-                <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                  Marriot Windows Installation
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Project Location</label>
-                <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                  123 Main Street, Downtown
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
-                <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                  Marriot Hotels
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900">
-                  {new Date().toLocaleDateString()}
-                </div>
-              </div>
+          {/* Project Details Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 min-w-[120px]">Today's Date:</label>
+              <input
+                type="text"
+                value={formData.todaysDate}
+                onChange={(e) => handleInputChange('todaysDate', e.target.value)}
+                className="flex-1 px-3 py-2 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent"
+                placeholder="MM/DD/YYYY"
+              />
             </div>
-          </Card>
-
-          {/* Quality Assessment */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-orange-600" />
-              Quality Assessment
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Overall Quality Rating *
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[
-                    { value: 'excellent', label: 'Excellent', color: 'bg-green-100 text-green-800 border-green-200' },
-                    { value: 'good', label: 'Good', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-                    { value: 'satisfactory', label: 'Satisfactory', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-                    { value: 'needs_improvement', label: 'Needs Improvement', color: 'bg-red-100 text-red-800 border-red-200' }
-                  ].map((option) => (
-                    <label key={option.value} className="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="overallQuality"
-                        value={option.value}
-                        checked={formData.overallQuality === option.value}
-                        onChange={(e) => handleInputChange('overallQuality', e.target.value)}
-                        className="sr-only"
-                      />
-                      <div className={`p-3 rounded-lg border-2 text-center transition-all ${
-                        formData.overallQuality === option.value
-                          ? option.color + ' border-current'
-                          : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
-                      }`}>
-                        {option.label}
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 min-w-[120px]">Project Name:</label>
+              <input
+                type="text"
+                value={formData.projectName}
+                onChange={(e) => handleInputChange('projectName', e.target.value)}
+                className="flex-1 px-3 py-2 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent"
+              />
             </div>
-          </Card>
-
-          {/* Issues Found */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-orange-600" />
-              Issues Found
-            </h3>
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newIssue}
-                  onChange={(e) => setNewIssue(e.target.value)}
-                  placeholder="Add an issue..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddIssue())}
-                />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleAddIssue}
-                  disabled={!newIssue.trim()}
-                >
-                  Add Issue
-                </Button>
-              </div>
-              {formData.issues.length > 0 && (
-                <div className="space-y-2">
-                  {formData.issues.map((issue, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <span className="text-red-800">{issue}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveIssue(index)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 min-w-[120px]">Site/Location:</label>
+              <input
+                type="text"
+                value={formData.siteLocation}
+                onChange={(e) => handleInputChange('siteLocation', e.target.value)}
+                className="flex-1 px-3 py-2 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent"
+              />
             </div>
-          </Card>
-
-          {/* Scope of Review */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">1. Scope of Review</h3>
-            <p className="text-sm text-gray-600 mb-4">The undersigned confirms that:</p>
-            <div className="space-y-3">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.scopeConfirmations.installationsCompleted}
-                  onChange={(e) => handleCheckboxChange('scopeConfirmations', 'installationsCompleted', e.target.checked)}
-                  className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-700">
-                  All installations under this project have been completed in full as per the agreed scope of work.
-                </span>
-              </label>
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.scopeConfirmations.materialsInspected}
-                  onChange={(e) => handleCheckboxChange('scopeConfirmations', 'materialsInspected', e.target.checked)}
-                  className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-700">
-                  All windows, films, and materials have been inspected and meet the required standards.
-                </span>
-              </label>
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.scopeConfirmations.adjustmentsResolved}
-                  onChange={(e) => handleCheckboxChange('scopeConfirmations', 'adjustmentsResolved', e.target.checked)}
-                  className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-700">
-                  Any adjustments or corrections identified during the quality check have been resolved to the client's satisfaction.
-                </span>
-              </label>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 min-w-[120px]">Owners Rep.:</label>
+              <input
+                type="text"
+                value={formData.ownersRep}
+                onChange={(e) => handleInputChange('ownersRep', e.target.value)}
+                className="flex-1 px-3 py-2 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent"
+                placeholder="Enter owner's representative name"
+              />
             </div>
-          </Card>
+          </div>
 
-          {/* Client Confirmation */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">2. Client Confirmation</h3>
-            <p className="text-sm text-gray-600 mb-4">By signing below, the client acknowledges that:</p>
-            <div className="space-y-3">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.clientConfirmations.workReviewed}
-                  onChange={(e) => handleCheckboxChange('clientConfirmations', 'workReviewed', e.target.checked)}
-                  className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-700">
-                  The work has been reviewed and is satisfactory in quality and completion.
-                </span>
-              </label>
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.clientConfirmations.noOutstandingIssues}
-                  onChange={(e) => handleCheckboxChange('clientConfirmations', 'noOutstandingIssues', e.target.checked)}
-                  className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-700">
-                  No outstanding issues remain that prevent the project from being closed.
-                </span>
-              </label>
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.clientConfirmations.responsibilitiesFulfilled}
-                  onChange={(e) => handleCheckboxChange('clientConfirmations', 'responsibilitiesFulfilled', e.target.checked)}
-                  className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-700">
-                  Safe Haven Defense has fulfilled its responsibilities for this project.
-                </span>
-              </label>
-            </div>
-          </Card>
-
-          {/* Project Sign-Off */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">3. Project Sign-Off</h3>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <p className="text-sm text-gray-700 leading-relaxed">
-                This document serves as the official sign-off and closure of the project. Upon signing, Safe Haven Defense is released from any further on-site work obligations, except under warranty terms (if applicable).
+          {/* PURPOSE Section */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900">PURPOSE</h3>
+            
+            <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+              <p>
+                Safe Haven Defense US, LLC is a recognized leader in surety laminate solutions. We provide an exceptionally finished product installed by trained experts using our innovative installation technique. Our bullet resistant films are unique, lab tested, UL certified, and provide 1 Directional Bullet Resistance while restricting unauthorized access. We stand behind our work with comprehensive warranties.
+              </p>
+              
+              <p>
+                This form serves as your approval of our workmanship and the professionalism shown by our installation team. Please ensure windows are free from debris, particle dust exists, and note that 30 days or more of curing time is required. Conduct a quality walk at a 6'-0" distance, visually inspect our work areas and mainly at right angles, from a standing and/or seated position. Please sign below for approval of a successfully completed project.
+              </p>
+              
+              <p>
+                If you have any questions, comments or concerns, please contact us so we can find a solution. Thank you for your interest in our products and trust in contracting with Safe Haven Defense US.
               </p>
             </div>
-          </Card>
+          </div>
 
-          {/* Digital Signature */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Digital Signature</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Inspector Signature *
+
+
+          {/* Comments Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Additional Comments</h3>
+            <textarea
+              value={formData.comments}
+              onChange={(e) => handleInputChange('comments', e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Any additional comments or concerns..."
+            />
+          </div>
+
+          {/* Signature Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Signature</h3>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Owner's Representative Signature *
               </label>
               <input
                 type="text"
                 required
                 value={formData.signature}
                 onChange={(e) => handleInputChange('signature', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full px-3 py-2 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent"
                 placeholder="Type your full name to sign"
               />
-              <p className="text-sm text-gray-500 mt-1">
-                By typing your name above, you confirm that this quality inspection has been completed accurately.
+              <p className="text-sm text-gray-500">
+                By signing above, you confirm approval of a successfully completed project.
               </p>
             </div>
-          </Card>
+          </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-            <Button
+          <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+            <button
               type="button"
-              variant="secondary"
               onClick={handleClose}
+              className="text-gray-400 hover:text-gray-600 p-2"
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={
-                isSigned ||
-                !formData.signature ||
-                !formData.scopeConfirmations.installationsCompleted ||
-                !formData.scopeConfirmations.materialsInspected ||
-                !formData.scopeConfirmations.adjustmentsResolved ||
-                !formData.clientConfirmations.workReviewed ||
-                !formData.clientConfirmations.noOutstandingIssues ||
-                !formData.clientConfirmations.responsibilitiesFulfilled
-              }
-            >
-              {isSigned ? 'QF Signed' : 'Submit Quality Check Form'}
-            </Button>
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={
+                  !formData.signature ||
+                  !formData.qualityWalkCompleted ||
+                  !formData.windowsFreeFromDebris ||
+                  !formData.curingTimeAcknowledged ||
+                  !formData.inspectionDistance ||
+                  !formData.visualInspectionCompleted ||
+                  !formData.workmanshipApproved ||
+                  !formData.professionalismApproved
+                }
+              >
+                Submit Quality Walk Form
+              </Button>
+            </div>
           </div>
         </form>
       </div>

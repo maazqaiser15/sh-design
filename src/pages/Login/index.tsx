@@ -43,21 +43,21 @@ export const Login: React.FC = () => {
   const demoPersonas = [
     {
       id: 'admin' as DemoPersona,
-      title: 'Admin Demo Account',
+      title: 'VP And VP OPS Account',
       description: 'Full access to all modules',
       icon: Settings,
       color: 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100',
     },
     {
       id: 'project-manager' as DemoPersona,
-      title: 'Project Manager Demo',
+      title: 'Project Coordinator',
       description: 'Access to projects, teams, logistics',
       icon: User,
       color: 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100',
     },
     {
       id: 'crew-member' as DemoPersona,
-      title: 'Crew Member Demo',
+      title: 'Ground Team',
       description: 'Limited view (assigned tasks, schedules)',
       icon: Users,
       color: 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100',

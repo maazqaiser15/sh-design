@@ -140,7 +140,7 @@ export const ProjectGanttView: React.FC<ProjectGanttViewProps> = ({
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Header with View Controls */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
+      <div className="bg-white border-b border-gray-200 px-2 py-2">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Project Gantt Chart</h1>
