@@ -69,7 +69,7 @@ const navigation: NavigationItem[] = [
  */
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { isCollapsed, isMobileOpen, toggleSidebar, closeMobileSidebar, isMobile } = useSidebar();
   const [expandedItems, setExpandedItems] = React.useState<string[]>(['Projects']);
 
   const hasPermission = (permission?: string) => {
@@ -163,31 +163,49 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-border h-full flex flex-col transition-all duration-300`}>
-      {/* Header with Logo and Toggle Button */}
-      <div className="px-4 py-4 border-b border-border flex items-center justify-between">
-        {!isCollapsed && (
-          <div>
-            <Logo size="md" textSize="sm" className="text-primary" />
-            <p className="text-caption text-text-muted mt-2 ml-11">
-              Project Management
-            </p>
-          </div>
-        )}
-        <button
-          onClick={toggleSidebar}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
-        </button>
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={closeMobileSidebar}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`
+        ${isMobile 
+          ? `fixed top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out ${
+              isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+            }`
+          : `${isCollapsed ? 'w-16' : 'w-64'}`
+        } 
+        bg-white border-r border-border h-full flex flex-col transition-all duration-300
+      `}>
+        {/* Header with Logo and Toggle Button */}
+        <div className="px-4 py-4 border-b border-border flex items-center justify-between">
+          {(!isCollapsed || isMobile) && (
+            <div>
+              <Logo size="md" textSize="sm" className="text-primary" />
+              <p className="text-caption text-text-muted mt-2 ml-11">
+                Project Management
+              </p>
+            </div>
+          )}
+          <button
+            onClick={isMobile ? closeMobileSidebar : toggleSidebar}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title={isMobile ? 'Close menu' : (isCollapsed ? 'Expand sidebar' : 'Collapse sidebar')}
+          >
+            {isMobile ? <ChevronLeft size={20} /> : (isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />)}
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+          {navigation.map(item => renderNavItem(item))}
+        </nav>
       </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
-        {navigation.map(item => renderNavItem(item))}
-      </nav>
-
-    </div>
+    </>
   );
 };

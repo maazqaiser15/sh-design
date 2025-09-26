@@ -19,6 +19,12 @@ export interface ProjectDetails {
   endDate: string;
   createdAt: string;
   updatedAt: string;
+  assignedCoordinator?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
 }
 
 // Key Info Cards Data

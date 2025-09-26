@@ -3,6 +3,7 @@ import { X, User, Calendar, CheckCircle, AlertCircle, Clock, Edit3 } from 'lucid
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { useToast } from '../../../../contexts/ToastContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 import { Window as WindowType, LayerInstallation, WindowStatus, FilmType, MOCK_TEAM_MEMBERS, FILM_TYPE_OPTIONS } from '../../types/windowManagement';
 
 interface WindowDetailModalProps {
@@ -19,6 +20,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
   onUpdate
 }) => {
   const { showToast } = useToast();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedWindow, setEditedWindow] = useState<WindowType | null>(null);
 
@@ -104,6 +106,117 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
         updatedAt: new Date()
       };
     });
+  };
+
+  const handleMarkLayerComplete = (layerIndex: number) => {
+    setEditedWindow(prev => {
+      if (!prev) return null;
+      const updatedLayers = [...prev.layers];
+      updatedLayers[layerIndex] = {
+        ...updatedLayers[layerIndex],
+        status: 'Installed' as any,
+        installedBy: 'Current User', // You can replace this with actual user name
+        installedAt: new Date()
+      };
+
+      // Check if all layers are now complete
+      const allInstalled = updatedLayers.every(layer => layer.status === 'Installed');
+      const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
+      const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
+
+      let newStatus: WindowStatus = 'Updated';
+      if (hasReinstall) {
+        newStatus = 'Reinstallation Needed';
+      } else if (allInstalled) {
+        newStatus = 'Complete';
+      } else if (hasInProgress || prev.assignedTeamMembers.length > 0) {
+        newStatus = 'In Progress';
+      }
+
+      return {
+        ...prev,
+        layers: updatedLayers,
+        status: newStatus,
+        updatedAt: new Date()
+      };
+    });
+    
+    showToast(`Layer marked as complete`);
+  };
+
+  const handleMarkLayerReinstallationRequired = (layerIndex: number) => {
+    setEditedWindow(prev => {
+      if (!prev) return null;
+      const updatedLayers = [...prev.layers];
+      updatedLayers[layerIndex] = {
+        ...updatedLayers[layerIndex],
+        status: 'Reinstallation Needed' as any,
+        notes: 'Layer requires reinstallation due to quality issues or damage',
+        reinstallationMarkedBy: user?.name || 'Current User',
+        reinstallationMarkedAt: new Date()
+      };
+
+      // Update window status based on layer statuses
+      const allInstalled = updatedLayers.every(layer => layer.status === 'Installed');
+      const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
+      const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
+
+      let newStatus: WindowStatus = 'Updated';
+      if (hasReinstall) {
+        newStatus = 'Reinstallation Needed';
+      } else if (allInstalled) {
+        newStatus = 'Complete';
+      } else if (hasInProgress || prev.assignedTeamMembers.length > 0) {
+        newStatus = 'In Progress';
+      }
+
+      return {
+        ...prev,
+        layers: updatedLayers,
+        status: newStatus,
+        updatedAt: new Date()
+      };
+    });
+    
+    showToast(`Layer marked as requiring reinstallation`);
+  };
+
+  const handleCompleteReinstallation = (layerIndex: number) => {
+    setEditedWindow(prev => {
+      if (!prev) return null;
+      const updatedLayers = [...prev.layers];
+      updatedLayers[layerIndex] = {
+        ...updatedLayers[layerIndex],
+        status: 'Installed' as any,
+        installedBy: user?.name || 'Current User',
+        installedAt: new Date(),
+        reinstallationCompletedBy: user?.name || 'Current User',
+        reinstallationCompletedAt: new Date()
+      };
+
+      // Update window status based on layer statuses
+      const allInstalled = updatedLayers.every(layer => layer.status === 'Installed');
+      const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
+      const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
+
+      let newStatus: WindowStatus = 'Updated';
+      if (hasReinstall) {
+        newStatus = 'Reinstallation Needed';
+      } else if (allInstalled) {
+        newStatus = 'Complete';
+      } else if (hasInProgress || prev.assignedTeamMembers.length > 0) {
+        newStatus = 'In Progress';
+      }
+
+      return {
+        ...prev,
+        layers: updatedLayers,
+        status: newStatus,
+        updatedAt: new Date()
+      };
+    });
+    
+    showToast(`Reinstallation completed successfully`);
   };
 
   const handleSave = () => {
@@ -227,66 +340,6 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Team Assignment */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Team Assignment</h3>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Team Members</label>
-              {isEditing ? (
-                <div className="space-y-2">
-                  {editedWindow.assignedTeamMembers.map((member, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <select
-                        value={member}
-                        onChange={(e) => {
-                          const updated = [...editedWindow.assignedTeamMembers];
-                          updated[index] = e.target.value;
-                          handleFieldChange('assignedTeamMembers', updated);
-                        }}
-                        className="flex-1 border border-gray-300 rounded-md px-3 py-2"
-                      >
-                        {MOCK_TEAM_MEMBERS.map(member => (
-                          <option key={member} value={member}>{member}</option>
-                        ))}
-                      </select>
-                      <button
-                        onClick={() => {
-                          const updated = editedWindow.assignedTeamMembers.filter((_, i) => i !== index);
-                          handleFieldChange('assignedTeamMembers', updated);
-                        }}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() => {
-                      const updated = [...editedWindow.assignedTeamMembers, MOCK_TEAM_MEMBERS[0]];
-                      handleFieldChange('assignedTeamMembers', updated);
-                    }}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
-                  >
-                    + Add Team Member
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  {editedWindow.assignedTeamMembers.length > 0 ? (
-                    editedWindow.assignedTeamMembers.map((member, index) => (
-                      <div key={index} className="flex items-center gap-2 text-gray-900">
-                        <User className="w-4 h-4" />
-                        <span>{member}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">No team members assigned</p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Layer Installation Details */}
@@ -295,7 +348,9 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
           
           <div className="space-y-3">
             {editedWindow.layers.map((layer, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
+              <div key={index} className={`border border-gray-200 rounded-lg p-4 ${
+                layer.status === 'Reinstallation Needed' ? 'bg-orange-50 border-orange-200' : ''
+              }`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     {getLayerStatusIcon(layer.status)}
@@ -319,22 +374,119 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                 </div>
                 
                 {layer.status === 'Installed' && layer.installedBy && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <User className="w-4 h-4" />
-                    <span>Installed by {layer.installedBy}</span>
-                    {layer.installedAt && (
-                      <>
-                        <span>•</span>
-                        <Calendar className="w-4 h-4" />
-                        <span>{layer.installedAt.toLocaleDateString()}</span>
-                      </>
+                  <div className="space-y-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <User className="w-4 h-4" />
+                        <span>Installed by {layer.installedBy}</span>
+                        {layer.installedAt && (
+                          <>
+                            <span>•</span>
+                            <Calendar className="w-4 h-4" />
+                            <span>{layer.installedAt.toLocaleDateString()}</span>
+                          </>
+                        )}
+                      </div>
+                      {layer.reinstallationMarkedBy && (
+                        <div className="flex items-center gap-2 text-sm text-orange-600">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>Marked by {layer.reinstallationMarkedBy}</span>
+                          {layer.reinstallationMarkedAt && (
+                            <>
+                              <span>•</span>
+                              <Calendar className="w-4 h-4" />
+                              <span>{layer.reinstallationMarkedAt.toLocaleDateString()}</span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      {layer.reinstallationCompletedBy && (
+                        <div className="flex items-center gap-2 text-sm text-green-600">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Reinstalled by {layer.reinstallationCompletedBy}</span>
+                          {layer.reinstallationCompletedAt && (
+                            <>
+                              <span>•</span>
+                              <Calendar className="w-4 h-4" />
+                              <span>{layer.reinstallationCompletedAt.toLocaleDateString()}</span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {!isEditing && user?.userType === 'execution-team' && (
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={() => handleMarkLayerReinstallationRequired(index)}
+                          className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 text-sm"
+                        >
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          Reinstallation Required
+                        </Button>
+                      </div>
                     )}
                   </div>
                 )}
                 
-                {layer.status === 'Reinstallation Needed' && layer.notes && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-                    <strong>Note:</strong> {layer.notes}
+                {layer.status === 'Reinstallation Needed' && (
+                  <div className="space-y-2">
+                    {layer.notes && (
+                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                        <strong>Note:</strong> {layer.notes}
+                      </div>
+                    )}
+                    {layer.reinstallationMarkedBy && (
+                      <div className="flex items-center gap-2 text-sm text-orange-700">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>Reinstallation marked by: {layer.reinstallationMarkedBy}</span>
+                        {layer.reinstallationMarkedAt && (
+                          <>
+                            <span>•</span>
+                            <Calendar className="w-4 h-4" />
+                            <span>{layer.reinstallationMarkedAt.toLocaleDateString()}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    {!isEditing && user?.userType === 'execution-team' && (
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={() => handleCompleteReinstallation(index)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 text-sm"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Reinstallation Complete
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Mark as Complete button for In Progress status windows */}
+                {(() => {
+                  const shouldShowButton = editedWindow.status === 'In Progress' && 
+                    (layer.status === 'In Progress' || layer.status === 'Pending') && 
+                    !isEditing && 
+                    layer.status !== 'Installed';
+                  
+                  // Debug logging
+                  console.log('Button condition check:', {
+                    windowStatus: editedWindow.status,
+                    layerStatus: layer.status,
+                    isEditing,
+                    shouldShowButton
+                  });
+                  
+                  return shouldShowButton;
+                })() && (
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      onClick={() => handleMarkLayerComplete(index)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 text-sm"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Mark as Complete
+                    </Button>
                   </div>
                 )}
               </div>

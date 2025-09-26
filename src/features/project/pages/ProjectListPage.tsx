@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid, List, Search, X, Calendar } from 'lucide-react';
+import { Grid, List, Search, X, Calendar, Plus, BarChart3, Filter, MoreHorizontal } from 'lucide-react';
 import { ProjectListView } from '../components/ProjectListView';
 import { ProjectTableView } from '../components/ProjectTableView';
 import { ProjectGanttView } from '../components/ProjectGanttView';
 import { ProjectDateModal } from '../components/ProjectDateModal';
+import { ProjectCoordinatorModal } from '../components/ProjectCoordinatorModal';
 import { 
   SafeHavenProject, 
   ProjectListItem, 
@@ -17,6 +18,8 @@ import { projectToListItem, filterProjects, sortProjects } from '../utils';
 import { Trailer } from '../../../types';
 import { useAuth } from '../../../contexts/AuthContext';
 import { filterProjectsByUserRole, getAvailableProjectStatuses } from '../../../services/projectFilterService';
+import { Button } from '../../../common/components/Button';
+import { Card } from '../../../common/components/Card';
 
 // Mock trailer data
 const mockTrailers: Trailer[] = [
@@ -407,7 +410,8 @@ const mockProjects: SafeHavenProject[] = [
 
 export const ProjectListPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
+  const isExecutive = user?.userType === 'executive';
   const [viewMode, setViewMode] = useState<ProjectViewMode>({ type: 'list' });
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<ProjectFilters>({
@@ -421,12 +425,41 @@ export const ProjectListPage: React.FC = () => {
   
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [projectForDateAssignment, setProjectForDateAssignment] = useState<ProjectListItem | null>(null);
+  const [showExecutiveAnalytics, setShowExecutiveAnalytics] = useState(false);
+  const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false);
+  const [projectForCoordinatorAssignment, setProjectForCoordinatorAssignment] = useState<ProjectListItem | null>(null);
   
 
   // Convert projects to list items
   const projectListItems = useMemo(() => {
     return mockProjects.map(projectToListItem);
   }, []);
+
+  // Executive analytics calculations
+  const executiveAnalytics = useMemo(() => {
+    if (!isExecutive) return null;
+    
+    const totalProjects = projectListItems.length;
+    const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF'].includes(p.status)).length;
+    const completedProjects = projectListItems.filter(p => p.status === 'Completed').length;
+    const completionRate = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
+    
+    const projectsByStatus = projectListItems.reduce((acc, project) => {
+      acc[project.status] = (acc[project.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    const averageProgress = projectListItems.reduce((sum, project) => sum + (project.progress || 0), 0) / totalProjects;
+    
+    return {
+      totalProjects,
+      activeProjects,
+      completedProjects,
+      completionRate,
+      projectsByStatus,
+      averageProgress
+    };
+  }, [projectListItems, isExecutive]);
 
   // Filter projects by user role first, then apply other filters
   const filteredAndSortedProjects = useMemo(() => {
@@ -445,9 +478,30 @@ export const ProjectListPage: React.FC = () => {
   }, [projectListItems, filters, searchQuery, sortOptions, user?.userType]);
 
   const handleProjectClick = (project: ProjectListItem) => {
-    // Route based on project status - all statuses now go to the same route
-    // The ProjectDetailsRouter will handle showing the appropriate layout
-    navigate(`/projects/${project.id}?status=${project.status}&title=${encodeURIComponent(project.title)}`);
+    // Check if user is executive and project status requires coordinator assignment
+    if (isExecutive && ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)) {
+      setProjectForCoordinatorAssignment(project);
+      setIsCoordinatorModalOpen(true);
+    } else {
+      // Route based on project status - all statuses now go to the same route
+      // The ProjectDetailsRouter will handle showing the appropriate layout
+      navigate(`/projects/${project.id}?status=${project.status}&title=${encodeURIComponent(project.title)}`);
+    }
+  };
+
+  const handleAssignCoordinator = (projectId: string, coordinatorId: string) => {
+    console.log(`Assigning coordinator ${coordinatorId} to project ${projectId}`);
+    // Here you would typically make an API call to assign the coordinator
+    // For now, we'll just show a success message
+    alert(`Coordinator assigned successfully to project ${projectId}`);
+    
+    // In a real app, you would update the project data with coordinator information
+    // and store it in state or make an API call to persist the assignment
+  };
+
+  const handleCloseCoordinatorModal = () => {
+    setIsCoordinatorModalOpen(false);
+    setProjectForCoordinatorAssignment(null);
   };
 
 
@@ -491,12 +545,35 @@ export const ProjectListPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 px-2">
           {/* Left side - Title and count */}
           <div className="mb-4 lg:mb-0">
-            <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-            <p className="text-base text-gray-500">{projectListItems.length} Projects</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {isExecutive ? 'Project Management' : 'Projects'}
+            </h1>
+            <p className="text-base text-gray-500">
+              {projectListItems.length} Projects
+              {isExecutive && executiveAnalytics && (
+                <span className="ml-2 text-sm text-green-600">
+                  • {executiveAnalytics.completionRate.toFixed(1)}% Completion Rate
+                </span>
+              )}
+            </p>
           </div>
           
           {/* Right side - Search and View Controls */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            {/* Executive Controls */}
+            {isExecutive && (
+              <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={BarChart3}
+                  onClick={() => setShowExecutiveAnalytics(!showExecutiveAnalytics)}
+                >
+                  Analytics
+                </Button>
+              </div>
+            )}
+
             {/* Search Bar */}
             <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -509,6 +586,17 @@ export const ProjectListPage: React.FC = () => {
               />
             </div>
 
+            {/* Create Project Button for Executives */}
+            {isExecutive && hasPermission('projects', 'manage') && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={Plus}
+                onClick={() => console.log('Create new project')}
+              >
+                Create Project
+              </Button>
+            )}
 
             {/* View Toggle - Icons Only */}
             <div className="flex bg-gray-100 rounded-lg p-1">
@@ -575,6 +663,62 @@ export const ProjectListPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Executive Analytics Panel */}
+        {isExecutive && showExecutiveAnalytics && executiveAnalytics && (
+          <div className="mb-6 px-2">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Project Analytics</h3>
+                <button
+                  onClick={() => setShowExecutiveAnalytics(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Total Projects */}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{executiveAnalytics.totalProjects}</div>
+                  <div className="text-sm text-gray-600">Total Projects</div>
+                </div>
+                
+                {/* Active Projects */}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">{executiveAnalytics.activeProjects}</div>
+                  <div className="text-sm text-gray-600">Active Projects</div>
+                </div>
+                
+                {/* Completion Rate */}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{executiveAnalytics.completionRate.toFixed(1)}%</div>
+                  <div className="text-sm text-gray-600">Completion Rate</div>
+                </div>
+                
+                {/* Average Progress */}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">{executiveAnalytics.averageProgress.toFixed(1)}%</div>
+                  <div className="text-sm text-gray-600">Avg Progress</div>
+                </div>
+              </div>
+              
+              {/* Projects by Status Breakdown */}
+              <div className="mt-6">
+                <h4 className="text-md font-medium text-gray-900 mb-3">Projects by Status</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(executiveAnalytics.projectsByStatus).map(([status, count]) => (
+                    <div key={status} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">{status}</span>
+                      <span className="text-sm font-bold text-gray-900">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
         {/* Project Views */}
         {viewMode.type === 'list' ? (
           <ProjectListView
@@ -609,6 +753,14 @@ export const ProjectListPage: React.FC = () => {
           initialEndDate={projectForDateAssignment.endDate}
         />
       )}
+
+      {/* Project Coordinator Assignment Modal */}
+      <ProjectCoordinatorModal
+        isOpen={isCoordinatorModalOpen}
+        onClose={handleCloseCoordinatorModal}
+        project={projectForCoordinatorAssignment}
+        onAssignCoordinator={handleAssignCoordinator}
+      />
       </div>
     </div>
   );

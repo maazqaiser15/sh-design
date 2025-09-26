@@ -32,7 +32,7 @@ import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { useToast } from '../../../../contexts/ToastContext';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
-import { Window, TakeOffSheet, MOCK_WINDOWS, MOCK_TEAM_MEMBERS, LayerInstallation, FilmType } from '../../types/windowManagement';
+import { Window, TakeOffSheet, MOCK_WINDOWS, MOCK_TEAM_MEMBERS, LayerInstallation, FilmType, WindowStatus } from '../../types/windowManagement';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { ROLE3_MOCK_WINDOWS } from '../../data/role3MockWindows';
 
@@ -693,6 +693,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
+  const [updateCounter, setUpdateCounter] = useState(0);
   
   // Setup Windows State
   const [showInlineSetup, setShowInlineSetup] = useState(false);
@@ -704,11 +705,36 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const [isCreatingBuildings, setIsCreatingBuildings] = useState(false);
   const [buildingsSetup, setBuildingsSetup] = useState(false);
 
+  // Calculate window status based on layer statuses
+  const calculateWindowStatus = (layers: LayerInstallation[]): WindowStatus => {
+    const allInstalled = layers.every(layer => layer.status === 'Installed');
+    const hasReinstall = layers.some(layer => layer.status === 'Reinstallation Needed');
+    const hasInProgress = layers.some(layer => layer.status === 'In Progress');
+    const allPending = layers.every(layer => layer.status === 'Pending');
+
+    if (hasReinstall) {
+      return 'Reinstallation Needed';
+    } else if (allInstalled) {
+      return 'Complete';
+    } else if (hasInProgress) {
+      return 'In Progress';
+    } else if (allPending) {
+      return 'Pending';
+    } else {
+      return 'Updated';
+    }
+  };
+
   // Initialize windows based on user role
   useEffect(() => {
     if (user?.userType === 'execution-team') {
       // Role 3: Show 15 mock windows directly, skip setup
-      setWindows(ROLE3_MOCK_WINDOWS);
+      // Calculate proper status for each window based on layer statuses
+      const windowsWithCalculatedStatus = ROLE3_MOCK_WINDOWS.map(window => ({
+        ...window,
+        status: calculateWindowStatus(window.layers)
+      }));
+      setWindows(windowsWithCalculatedStatus);
       setWindowsSetup(true); // Mark as setup to skip setup interface
     } else {
       // Other roles: Use existing logic
@@ -739,15 +765,44 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     };
   }, []);
 
-  // Get project data with default values for missing properties
+  // Calculate project progress based on window completion
+  const calculateProjectProgress = (windows: Window[]) => {
+    if (windows.length === 0) return 0;
+    
+    const completedWindows = windows.filter(w => w.status === 'Complete').length;
+    const totalWindows = windows.length;
+    
+    return Math.round((completedWindows / totalWindows) * 100);
+  };
+
+  // Calculate project metrics
+  const calculateProjectMetrics = (windows: Window[]) => {
+    const completedWindows = windows.filter(w => w.status === 'Complete').length;
+    const startedWindows = windows.filter(w => w.status === 'In Progress' || w.status === 'Complete').length;
+    const reinstallationWindows = windows.filter(w => w.status === 'Reinstallation Needed').length;
+    
+    return {
+      completed: completedWindows,
+      started: startedWindows,
+      reinstallation: reinstallationWindows,
+      total: windows.length
+    };
+  };
+
+  // Calculate dynamic project metrics
+  const projectMetrics = calculateProjectMetrics(windows);
+  const projectProgress = calculateProjectProgress(windows);
+
+  // Get project data with dynamic values based on window status
   const project = {
     ...MOCK_PROJECT_DETAILS,
-    progress: 75,
-    currentPhase: 'Window Installation',
+    progress: projectProgress,
+    currentPhase: projectProgress === 100 ? 'Project Completed' : 
+                  projectProgress > 0 ? 'Window Installation' : 'Ready to Start',
     estimatedCompletion: '2024-02-15',
-    teamOnSite: 5,
-    windowsCompleted: 12,
-    windowsStarted: 15,
+    teamOnSite: projectMetrics.started > 0 ? Math.min(projectMetrics.started, 5) : 0,
+    windowsCompleted: projectMetrics.completed,
+    windowsStarted: projectMetrics.started,
     activityLog: [
       {
         id: '1',
@@ -948,6 +1003,96 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     }
   };
 
+  const handleStartWorking = (window: Window) => {
+    // Update window status to "In Progress" and add current user to assigned team
+    const updatedWindow = {
+      ...window,
+      status: 'In Progress' as WindowStatus,
+      assignedTeamMembers: [...window.assignedTeamMembers, user?.name || 'Current User'],
+      updatedAt: new Date()
+    };
+    
+    setWindows(prev => prev.map(w => 
+      w.id === window.id ? updatedWindow : w
+    ));
+    
+    // Update selectedWindow if it's the same window being viewed
+    if (selectedWindow && selectedWindow.id === window.id) {
+      setSelectedWindow(updatedWindow);
+    }
+    
+    // Force re-render
+    setUpdateCounter(prev => prev + 1);
+    
+    showToast(`Started working on ${window.windowName}`);
+  };
+
+  const handleMarkAsCompleted = (window: Window) => {
+    // Mark all layers as installed and set window status to Complete
+    const updatedLayers = window.layers.map(layer => ({
+      ...layer,
+      status: 'Installed' as const,
+      installedBy: user?.name || 'Current User',
+      installedAt: new Date()
+    }));
+
+    const updatedWindow = {
+      ...window,
+      layers: updatedLayers,
+      status: 'Complete' as WindowStatus,
+      assignedTeamMembers: [...window.assignedTeamMembers, user?.name || 'Current User'],
+      updatedAt: new Date()
+    };
+    
+    setWindows(prev => prev.map(w => 
+      w.id === window.id ? updatedWindow : w
+    ));
+    
+    // Update selectedWindow if it's the same window being viewed
+    if (selectedWindow && selectedWindow.id === window.id) {
+      setSelectedWindow(updatedWindow);
+    }
+    
+    // Force re-render
+    setUpdateCounter(prev => prev + 1);
+    
+    // Check if all windows are completed
+    const updatedWindows = windows.map(w => w.id === window.id ? updatedWindow : w);
+    const allCompleted = updatedWindows.every(w => w.status === 'Complete');
+    
+    if (allCompleted) {
+      showToast(`🎉 Project Completed! All ${updatedWindows.length} windows have been successfully installed.`);
+    } else {
+      showToast(`Completed ${window.windowName}`);
+    }
+  };
+
+  const getActionButton = (window: Window) => {
+    if (window.status === 'Pending') {
+      return {
+        text: 'Start Working',
+        icon: CheckCircle2,
+        action: () => handleStartWorking(window),
+        className: 'text-green-700 hover:bg-green-50'
+      };
+    } else if (window.status === 'In Progress') {
+      return {
+        text: 'Mark as Completed',
+        icon: CheckCircle2,
+        action: () => handleMarkAsCompleted(window),
+        className: 'text-blue-700 hover:bg-blue-50'
+      };
+    } else if (window.status === 'Reinstallation Needed') {
+      return {
+        text: 'Start Working',
+        icon: CheckCircle2,
+        action: () => handleStartWorking(window),
+        className: 'text-orange-700 hover:bg-orange-50'
+      };
+    }
+    return null;
+  };
+
   const handleSaveWindow = (windowData: Partial<Window>) => {
     if (editingWindow) {
       // Update existing window
@@ -984,13 +1129,25 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   const handleUpdateWindow = (windowData: Partial<Window>) => {
     if (selectedWindow) {
-      const layerCounts = calculateLayerCounts(windowData.layers || selectedWindow.layers);
+      // Create the updated window with new status
+      const updatedWindow = { 
+        ...selectedWindow, 
+        ...windowData,
+        status: calculateWindowStatus(windowData.layers || selectedWindow.layers),
+        updatedAt: new Date()
+      };
+      
+      // Update the windows list immediately
       setWindows(prev => prev.map(w => 
-        w.id === selectedWindow.id 
-          ? { ...w, ...windowData, ...layerCounts, status: 'Updated' as const }
-          : w
+        w.id === selectedWindow.id ? updatedWindow : w
       ));
-      setSelectedWindow({ ...selectedWindow, ...windowData, ...layerCounts });
+      
+      // Update selectedWindow
+      setSelectedWindow(updatedWindow);
+      
+      // Force re-render
+      setUpdateCounter(prev => prev + 1);
+      
       showToast('Window updated successfully');
     }
   };
@@ -1001,19 +1158,30 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      <style>{`
+        @media (max-width: 640px) {
+          .touch-manipulation {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+          }
+          .mobile-scroll {
+            -webkit-overflow-scrolling: touch;
+          }
+        }
+      `}</style>
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="py-6 px-6">
-          <div className="flex flex-col gap-6">
+        <div className="py-4 px-4 sm:py-6 sm:px-6">
+          <div className="flex flex-col gap-4 sm:gap-6">
             {/* Page Header */}
-            <div className="flex flex-col gap-5">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-semibold text-gray-900">
+            <div className="flex flex-col gap-4 sm:gap-5">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
                       Marriot Windows Installation
                     </h1>
-                    <span className={`px-2 py-1 rounded-md text-sm font-semibold ${
+                    <span className={`px-2 py-1 rounded-md text-xs sm:text-sm font-semibold w-fit ${
                       projectStatus === 'WIP' ? 'bg-blue-50 text-blue-700' :
                       projectStatus === 'QF' ? 'bg-orange-50 text-orange-700' :
                       'bg-green-50 text-green-700'
@@ -1021,26 +1189,26 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       {projectStatus}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+                    <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold w-fit">
                       Project ID: {project.id}
                     </span>
                     <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{project.location}</span>
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="truncate">{project.location}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{project.startDate} - {project.endDate}</span>
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="truncate">{project.startDate} - {project.endDate}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   {projectStatus === 'WIP' && (
                     <Button
                       variant="primary"
                       onClick={handleMarkForQF}
-                      className="px-3 py-2"
+                      className="px-3 py-2 text-sm w-full sm:w-auto"
                     >
                       Mark for QF
                     </Button>
@@ -1049,7 +1217,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     <Button
                       variant="primary"
                       onClick={() => showToast('Project approved for completion')}
-                      className="px-3 py-2"
+                      className="px-3 py-2 text-sm w-full sm:w-auto"
                     >
                       Approve Completion
                     </Button>
@@ -1058,7 +1226,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     <Button
                       variant="secondary"
                       onClick={() => showToast('Project completed successfully')}
-                      className="px-3 py-2"
+                      className="px-3 py-2 text-sm w-full sm:w-auto"
                     >
                       View Report
                     </Button>
@@ -1106,131 +1274,131 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             </div>
 
             {/* Stats Section */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
               {projectStatus === 'WIP' ? (
                 <>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <Users className="w-4 h-4 text-blue-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Team on Site</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team on Site</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">{project.windowsCompleted}</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Windows Completed</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Completed</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <Clock className="w-4 h-4 text-blue-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">{project.windowsStarted}</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsStarted}</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Windows Started</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Started</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <AlertCircle className="w-4 h-4 text-blue-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">2</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.reinstallation}</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Issues Reported</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Issues Reported</span>
                   </div>
                 </>
               ) : projectStatus === 'QF' ? (
                 <>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <Search className="w-4 h-4 text-orange-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
+                        <Search className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">15</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Windows Inspected</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Inspected</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-orange-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">13</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">13</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Passed Quality Check</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Passed Quality Check</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <AlertCircle className="w-4 h-4 text-orange-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
+                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">2</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">2</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Need Reinstallation</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Need Reinstallation</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <Clock className="w-4 h-4 text-orange-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">2</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">2</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Days Remaining</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Remaining</span>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">15</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Total Windows</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">15</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Successfully Installed</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Successfully Installed</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <Calendar className="w-4 h-4 text-green-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">14</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">14</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Days Duration</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Duration</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <Users className="w-4 h-4 text-green-600" />
+                  <div className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                       </div>
-                      <span className="text-xl font-semibold text-gray-700">5</span>
+                      <span className="text-lg sm:text-xl font-semibold text-gray-700">5</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Team Members</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Members</span>
                   </div>
                 </>
               )}
@@ -1240,13 +1408,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       </div>
 
       {/* Main Content */}
-      <div className="py-6 px-6">
-        <div className="flex gap-6">
+      <div className="py-4 px-4 sm:py-6 sm:px-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {/* Left Content */}
           <div className="flex-1">
             {/* Tabs */}
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="flex space-x-8">
+            <div className="border-b border-gray-200 mb-4 sm:mb-6">
+              <nav className="flex space-x-2 sm:space-x-8 overflow-x-auto">
                 {(projectStatus === 'WIP' ? [
                   { id: 'job-brief', label: 'Window Management' },
                   { id: 'team', label: 'Team' },
@@ -1269,7 +1437,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    className={`py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                       activeTab === tab.id
                         ? 'border-blue-600 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -1287,18 +1455,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 
                 {/* Window Management Section */}
                 <div className="space-y-6">
-                  {/* Role 3 Info Message */}
-                  {user?.userType === 'execution-team' && windowsSetup && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <CheckCircle2 className="w-5 h-5 text-green-600 mr-2" />
-                        <p className="text-green-800 font-medium">
-                          Windows Management Ready - 15 windows pre-loaded for execution team
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Inline Setup Interface - Only show when not setup and not Role 3 */}
                   {!windowsSetup && showInlineSetup && user?.userType !== 'execution-team' && (
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -1341,14 +1497,15 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   ) : windowsSetup ? (
                     <>
                       {/* Window Management Header */}
-                      <div className="bg-white rounded-lg border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-6">
-                          <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
-                          <div className="flex items-center gap-3">
+                      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-4">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900">Window Management</h3>
+                          <div className="flex items-center gap-2 sm:gap-3">
                             <Button 
                               variant="primary" 
                               icon={Plus}
                               onClick={handleAddWindow}
+                              className="w-full sm:w-auto text-sm"
                             >
                               Add Window
                             </Button>
@@ -1356,7 +1513,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         </div>
 
                         {/* Search and Filters */}
-                        <div className="flex items-center gap-4 mb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
                           <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <input
@@ -1364,47 +1521,49 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                               placeholder="Search by window name"
                               value={searchTerm}
                               onChange={(e) => setSearchTerm(e.target.value)}
-                              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             />
                           </div>
                           
-                          <select
-                            value={filters.filmType}
-                            onChange={(e) => handleFilterChange('filmType', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            <option value="all">All Film Types</option>
-                            <option value="BR">BR</option>
-                            <option value="Riot">Riot</option>
-                            <option value="Riot+">Riot+</option>
-                          </select>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto">
+                            <select
+                              value={filters.filmType}
+                              onChange={(e) => handleFilterChange('filmType', e.target.value)}
+                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            >
+                              <option value="all">All Film Types</option>
+                              <option value="BR">BR</option>
+                              <option value="Riot">Riot</option>
+                              <option value="Riot+">Riot+</option>
+                            </select>
 
-                          <select
-                            value={filters.status}
-                            onChange={(e) => handleFilterChange('status', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            <option value="all">All Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Updated">Updated</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Complete">Complete</option>
-                            <option value="Reinstallation Needed">Reinstallation Needed</option>
-                          </select>
+                            <select
+                              value={filters.status}
+                              onChange={(e) => handleFilterChange('status', e.target.value)}
+                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            >
+                              <option value="all">All Status</option>
+                              <option value="Pending">Pending</option>
+                              <option value="Updated">Updated</option>
+                              <option value="In Progress">In Progress</option>
+                              <option value="Complete">Complete</option>
+                              <option value="Reinstallation Needed">Reinstallation Needed</option>
+                            </select>
 
-                          <select
-                            value={filters.building}
-                            onChange={(e) => handleFilterChange('building', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            <option value="all">All Buildings</option>
-                            <option value="Main Building">Main Building</option>
-                            <option value="Office Block">Office Block</option>
-                            <option value="Warehouse">Warehouse</option>
-                            <option value="Annex">Annex</option>
-                          </select>
+                            <select
+                              value={filters.building}
+                              onChange={(e) => handleFilterChange('building', e.target.value)}
+                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm col-span-2 sm:col-span-1"
+                            >
+                              <option value="all">All Buildings</option>
+                              <option value="Main Building">Main Building</option>
+                              <option value="Office Block">Office Block</option>
+                              <option value="Warehouse">Warehouse</option>
+                              <option value="Annex">Annex</option>
+                            </select>
+                          </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 justify-center sm:justify-start">
                             <button
                               onClick={() => setViewMode('list')}
                               className={`p-2 rounded-lg ${
@@ -1434,24 +1593,25 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                             <p className="text-gray-500">No windows found matching your criteria</p>
                           </div>
                         ) : viewMode === 'list' ? (
-                          <div className="overflow-x-auto">
-                            <table className="w-full min-w-[800px]">
-                              <thead>
-                                <tr className="border-b border-gray-200">
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-32">WINDOW</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">WIDTH</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">LENGTH</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-24">PRODUCT</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">INT</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">EXT</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">TOTAL</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">COLOR</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">TINT</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">STRIP</th>
-                                  <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">STATUS</th>
-                                  <th className="text-right py-2 px-2 text-xs font-medium text-gray-900 w-20">ACTIONS</th>
-                                </tr>
-                              </thead>
+                          <div className="overflow-x-auto -mx-4 sm:mx-0 mobile-scroll">
+                            <div className="min-w-full px-4 sm:px-0">
+                              <table className="w-full min-w-[800px]">
+                                <thead>
+                                  <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-32">WINDOW</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">WIDTH</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">LENGTH</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-24">PRODUCT</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">INT</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">EXT</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">TOTAL</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">COLOR</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">TINT</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">STRIP</th>
+                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">STATUS</th>
+                                    <th className="text-right py-2 px-2 text-xs font-medium text-gray-900 w-20">ACTIONS</th>
+                                  </tr>
+                                </thead>
                               <tbody>
                                 {filteredWindows.map((window) => (
                                   <tr key={window.id} className="border-b border-gray-100 hover:bg-gray-50">
@@ -1477,7 +1637,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                       {window.stripping ? 'Yes' : 'No'}
                                     </td>
                                     <td className="py-2 px-2 w-20">
-                                      <StatusBadge status={window.status} />
+                                      <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
                                     </td>
                                     <td className="py-2 px-2 w-20">
                                       <div className="flex items-center justify-end">
@@ -1490,7 +1650,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                                 dropdown.classList.toggle('hidden');
                                               }
                                             }}
-                                            className="text-gray-400 hover:text-gray-600 p-1"
+                                            className="text-gray-400 hover:text-gray-600 p-2 sm:p-1 touch-manipulation"
                                           >
                                             <MoreVertical className="w-4 h-4" />
                                           </button>
@@ -1504,7 +1664,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                                   handleViewWindow(window);
                                                   document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
                                                 }}
-                                                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
                                               >
                                                 <Eye className="w-3 h-3" />
                                                 View Details
@@ -1514,17 +1674,32 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                                   handleEditWindow(window);
                                                   document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
                                                 }}
-                                                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
                                               >
                                                 <Edit className="w-3 h-3" />
                                                 Edit Window
                                               </button>
+                                              {user?.userType === 'execution-team' && (() => {
+                                                const actionButton = getActionButton(window);
+                                                return actionButton ? (
+                                                  <button
+                                                    onClick={() => {
+                                                      actionButton.action();
+                                                      document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                    }}
+                                                    className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${actionButton.className}`}
+                                                  >
+                                                    <actionButton.icon className="w-3 h-3" />
+                                                    {actionButton.text}
+                                                  </button>
+                                                ) : null;
+                                              })()}
                                               <button
                                                 onClick={() => {
                                                   handleDeleteWindow(window.id);
                                                   document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
                                                 }}
-                                                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
                                               >
                                                 <Trash2 className="w-3 h-3" />
                                                 Delete Window
@@ -1537,10 +1712,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                   </tr>
                                 ))}
                               </tbody>
-                            </table>
+                              </table>
+                            </div>
                           </div>
                         ) : (
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                             {filteredWindows.map((window) => (
                               <Card key={window.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewWindow(window)}>
                                 <div className="flex items-start justify-between mb-3">
@@ -1548,7 +1724,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                     <h4 className="text-sm font-medium text-gray-900">{window.windowName}</h4>
                                     <p className="text-xs text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
                                   </div>
-                                  <StatusBadge status={window.status} />
+                                  <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
                                 </div>
                                 <div className="space-y-1 text-xs text-gray-600">
                                   <div>Product: {window.filmType}</div>
@@ -1570,7 +1746,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                           dropdown.classList.toggle('hidden');
                                         }
                                       }}
-                                      className="text-gray-400 hover:text-gray-600 p-1"
+                                      className="text-gray-400 hover:text-gray-600 p-2 sm:p-1 touch-manipulation"
                                     >
                                       <MoreVertical className="w-4 h-4" />
                                     </button>
@@ -1585,7 +1761,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                             handleViewWindow(window);
                                             document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                           }}
-                                          className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+                                          className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
                                         >
                                           <Eye className="w-3 h-3" />
                                           View Details
@@ -1596,18 +1772,34 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                             handleEditWindow(window);
                                             document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                           }}
-                                          className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+                                          className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
                                         >
                                           <Edit className="w-3 h-3" />
                                           Edit Window
                                         </button>
+                                        {user?.userType === 'execution-team' && (() => {
+                                          const actionButton = getActionButton(window);
+                                          return actionButton ? (
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                actionButton.action();
+                                                document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                              }}
+                                              className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${actionButton.className}`}
+                                            >
+                                              <actionButton.icon className="w-3 h-3" />
+                                              {actionButton.text}
+                                            </button>
+                                          ) : null;
+                                        })()}
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             handleDeleteWindow(window.id);
                                             document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                           }}
-                                          className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                                          className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
                                         >
                                           <Trash2 className="w-3 h-3" />
                                           Delete Window
@@ -1623,23 +1815,23 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
                         {/* Pagination */}
                         {filteredWindows.length > 0 && (
-                          <div className="flex items-center justify-between mt-6">
+                          <div className="flex flex-col sm:flex-row items-center justify-between mt-4 sm:mt-6 gap-4">
                             <div className="flex items-center gap-2">
-                              <Button variant="secondary" size="sm" icon={ArrowLeft}>
+                              <Button variant="secondary" size="sm" icon={ArrowLeft} className="text-xs">
                                 Previous
                               </Button>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm">1</span>
-                              <span className="px-3 py-1 text-gray-600 text-sm">2</span>
-                              <span className="px-3 py-1 text-gray-600 text-sm">3</span>
-                              <span className="px-3 py-1 text-gray-600 text-sm">...</span>
-                              <span className="px-3 py-1 text-gray-600 text-sm">8</span>
-                              <span className="px-3 py-1 text-gray-600 text-sm">9</span>
-                              <span className="px-3 py-1 text-gray-600 text-sm">10</span>
+                            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
+                              <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs sm:text-sm whitespace-nowrap">1</span>
+                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">2</span>
+                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">3</span>
+                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">...</span>
+                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">8</span>
+                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">9</span>
+                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">10</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button variant="secondary" size="sm" icon={ArrowRight}>
+                              <Button variant="secondary" size="sm" icon={ArrowRight} className="text-xs">
                                 Next
                               </Button>
                             </div>

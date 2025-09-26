@@ -22,6 +22,10 @@ export interface LayerInstallation {
   installedBy?: string;
   installedAt?: Date;
   notes?: string;
+  reinstallationMarkedBy?: string;
+  reinstallationMarkedAt?: Date;
+  reinstallationCompletedBy?: string;
+  reinstallationCompletedAt?: Date;
 }
 
 export interface Window {

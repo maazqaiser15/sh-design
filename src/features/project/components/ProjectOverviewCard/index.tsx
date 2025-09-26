@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Edit } from 'lucide-react';
+import { Calendar, MapPin, Edit, User } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { ProjectDetails } from '../../types/projectDetails';
@@ -62,6 +62,12 @@ export const ProjectOverviewCard: React.FC<ProjectOverviewCardProps> = ({
               <Calendar className="w-4 h-4" />
               <span>{formatDate(project.startDate)} - {formatDate(project.endDate)}</span>
             </div>
+            {project.assignedCoordinator && (
+              <div className="flex items-center gap-1">
+                <User className="w-4 h-4" />
+                <span>Coordinator: {project.assignedCoordinator.name}</span>
+              </div>
+            )}
           </div>
         </div>
         

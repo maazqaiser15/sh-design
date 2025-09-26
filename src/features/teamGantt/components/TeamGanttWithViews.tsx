@@ -7,6 +7,7 @@ import { TrailerRow } from './TrailerRow';
 import { transformTeamDataToProjectView, transformTrailerDataToProjectView } from '../utils/dataTransform';
 import { MOCK_TRAILERS } from '../data/mockData';
 import { useSidebar } from '../../../contexts/SidebarContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Filter, X } from 'lucide-react';
 
 export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
@@ -24,6 +25,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
   onFiltersChange
 }) => {
   const { isCollapsed } = useSidebar();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [selectedAvailability, setSelectedAvailability] = useState<string>('');
@@ -211,6 +213,31 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
     });
   };
 
+  // Filter layout mode buttons based on user role
+  const availableLayoutModes = useMemo(() => {
+    const allModes = [
+      { mode: 'team' as LayoutMode, label: 'Team View' },
+      { mode: 'project' as LayoutMode, label: 'Project View' },
+      { mode: 'trailer' as LayoutMode, label: 'Trailer View' }
+    ];
+
+    // Role 3 (execution-team) should only see Team View and Project View
+    if (user?.userType === 'execution-team') {
+      return allModes.filter(mode => mode.mode !== 'trailer');
+    }
+
+    // All other roles see all views
+    return allModes;
+  }, [user?.userType]);
+
+  // Auto-switch to a valid view if current view is not available for the user's role
+  React.useEffect(() => {
+    if (user?.userType === 'execution-team' && layoutMode === 'trailer') {
+      // Switch to project view as default for execution team
+      onLayoutModeChange('project');
+    }
+  }, [user?.userType, layoutMode, onLayoutModeChange]);
+
   const viewModeButtons: { mode: ViewMode; label: string }[] = [
     { mode: 'day', label: 'Day' },
     { mode: 'week', label: 'Week' },
@@ -240,36 +267,19 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
           <div className="flex items-center space-x-4">
             {/* Layout Mode Switcher */}
             <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => onLayoutModeChange('team')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                  layoutMode === 'team'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Team View
-              </button>
-              <button
-                onClick={() => onLayoutModeChange('project')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                  layoutMode === 'project'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Project View
-              </button>
-              <button
-                onClick={() => onLayoutModeChange('trailer')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                  layoutMode === 'trailer'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Trailer View
-              </button>
+              {availableLayoutModes.map(({ mode, label }) => (
+                <button
+                  key={mode}
+                  onClick={() => onLayoutModeChange(mode)}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                    layoutMode === mode
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
 
 

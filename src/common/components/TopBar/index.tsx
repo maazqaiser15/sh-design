@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Bell, LogOut } from 'lucide-react';
+import { Bell, LogOut, Menu } from 'lucide-react';
 import { Button } from '../Button';
 import { Breadcrumb } from '../Breadcrumb';
 import { NotificationsOverlay, Notification } from '../NotificationsOverlay';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useBreadcrumbContext } from '../../../contexts/BreadcrumbContext';
+import { useSidebar } from '../../../contexts/SidebarContext';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -15,6 +16,7 @@ export const TopBar: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { customBreadcrumbs } = useBreadcrumbContext();
+  const { isMobile, toggleMobileSidebar } = useSidebar();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -98,8 +100,18 @@ export const TopBar: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white border-b border-border px-6 py-4">
+      <header className="bg-white border-b border-border px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <button
+              onClick={toggleMobileSidebar}
+              className="p-2 text-text-secondary hover:text-text-primary hover:bg-gray-100 rounded-lg transition-colors mr-2"
+            >
+              <Menu size={20} />
+            </button>
+          )}
+          
           {/* Breadcrumbs */}
           <div className="flex-1">
             <Breadcrumb items={customBreadcrumbs || undefined} />

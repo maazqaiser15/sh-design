@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -7,21 +7,33 @@ import {
   Phone,
   Eye,
   ChevronRight,
+  BarChart3,
+  Users,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
 import { StatusBadge } from "../../common/components/StatusBadge";
 import { TeamMember, MOCK_TEAM_MEMBERS } from "../../features/project/types/teamMembers";
+import { useAuth } from "../../contexts/AuthContext";
 
 /**
  * Team Management page component
- * View-only interface for team members with search and filter capabilities
+ * Enhanced with executive-level team management capabilities
  */
 export const Team: React.FC = () => {
   const navigate = useNavigate();
+  const { user, hasPermission } = useAuth();
+  const isExecutive = user?.userType === 'executive';
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const filteredMembers = MOCK_TEAM_MEMBERS.filter((member) => {
     const matchesSearch =
@@ -34,6 +46,33 @@ export const Team: React.FC = () => {
 
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  // Executive analytics calculations
+  const teamAnalytics = useMemo(() => {
+    if (!isExecutive) return null;
+    
+    const totalMembers = MOCK_TEAM_MEMBERS.length;
+    const availableMembers = MOCK_TEAM_MEMBERS.filter(m => m.status === 'Available').length;
+    const unavailableMembers = MOCK_TEAM_MEMBERS.filter(m => m.status === 'Unavailable').length;
+    const utilizationRate = totalMembers > 0 ? (availableMembers / totalMembers) * 100 : 0;
+    
+    const membersByRole = MOCK_TEAM_MEMBERS.reduce((acc, member) => {
+      acc[member.role] = (acc[member.role] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    const averageExperience = MOCK_TEAM_MEMBERS.reduce((sum, member) => 
+      sum + (member.experience || 0), 0) / totalMembers;
+    
+    return {
+      totalMembers,
+      availableMembers,
+      unavailableMembers,
+      utilizationRate,
+      membersByRole,
+      averageExperience
+    };
+  }, [isExecutive]);
 
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -50,18 +89,66 @@ export const Team: React.FC = () => {
     navigate(`/team/${memberId}`);
   };
 
+  const handleSelectMember = (memberId: string) => {
+    setSelectedMembers(prev => 
+      prev.includes(memberId) 
+        ? prev.filter(id => id !== memberId)
+        : [...prev, memberId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedMembers.length === filteredMembers.length) {
+      setSelectedMembers([]);
+    } else {
+      setSelectedMembers(filteredMembers.map(m => m.id));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    console.log(`Bulk action: ${action} on members:`, selectedMembers);
+    // Implement bulk actions here
+  };
+
+  const handleCreateMember = () => {
+    console.log('Create new team member');
+    // Implement create member functionality
+  };
+
+  const handleExportTeam = () => {
+    console.log('Export team data');
+    // Implement export functionality
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-h1 font-semibold text-text-primary">
-            Team Management
+            {isExecutive ? 'Team Management' : 'Team Members'}
           </h1>
           <p className="text-body text-text-secondary mt-1">
-            View team members and their project assignments
+            {isExecutive 
+              ? 'Comprehensive team management with analytics and bulk operations'
+              : 'View team members and their project assignments'
+            }
           </p>
         </div>
+        
+        {/* Executive Controls */}
+        {isExecutive && (
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={BarChart3}
+              onClick={() => setShowAnalytics(!showAnalytics)}
+            >
+              Analytics
+            </Button>
+          </div>
+        )}
       </div>
 
 
@@ -103,6 +190,60 @@ export const Team: React.FC = () => {
           <option value="Unavailable">Unavailable</option>
         </select>
       </div>
+
+      {/* Executive Analytics Panel */}
+      {isExecutive && showAnalytics && teamAnalytics && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold text-gray-900">{teamAnalytics.totalMembers}</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Available</p>
+                <p className="text-2xl font-bold text-green-600">{teamAnalytics.availableMembers}</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-lg">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Utilization Rate</p>
+                <p className="text-2xl font-bold text-purple-600">{teamAnalytics.utilizationRate.toFixed(1)}%</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg Experience</p>
+                <p className="text-2xl font-bold text-orange-600">{teamAnalytics.averageExperience.toFixed(1)}y</p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <Clock className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
 
       {/* Team Members Table */}
       <Card>

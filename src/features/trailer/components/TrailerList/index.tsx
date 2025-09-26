@@ -16,6 +16,11 @@ interface TrailerListProps {
   onViewTrailer: (trailer: Trailer) => void;
   onEditTrailer: (trailer: Trailer) => void;
   onDeleteTrailer: (trailer: Trailer) => void;
+  isExecutive?: boolean;
+  selectedTrailers?: string[];
+  onSelectTrailer?: (trailerId: string) => void;
+  onSelectAllTrailers?: () => void;
+  onBulkAction?: (action: string) => void;
 }
 
 /**
@@ -28,6 +33,11 @@ export const TrailerList: React.FC<TrailerListProps> = ({
   onViewTrailer,
   onEditTrailer,
   onDeleteTrailer,
+  isExecutive = false,
+  selectedTrailers = [],
+  onSelectTrailer,
+  onSelectAllTrailers,
+  onBulkAction,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TrailerStatus | "">("");
@@ -194,6 +204,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
         </div>
       </Card>
 
+
       {/* Table View */}
       <TrailerTableView
         trailers={paginatedTrailers}
@@ -207,6 +218,10 @@ export const TrailerList: React.FC<TrailerListProps> = ({
         onDropdownToggle={handleDropdownToggle}
         onMenuAction={handleMenuAction}
         dropdownRef={dropdownRef}
+        isExecutive={isExecutive}
+        selectedTrailers={selectedTrailers}
+        onSelectTrailer={onSelectTrailer}
+        onSelectAllTrailers={onSelectAllTrailers}
       />
 
       {/* Pagination Controls */}
@@ -304,6 +319,10 @@ interface TrailerTableViewProps {
   onDropdownToggle: (trailerId: string) => void;
   onMenuAction: (action: string, trailer: Trailer) => void;
   dropdownRef: React.RefObject<HTMLDivElement>;
+  isExecutive?: boolean;
+  selectedTrailers?: string[];
+  onSelectTrailer?: (trailerId: string) => void;
+  onSelectAllTrailers?: () => void;
 }
 
 const TrailerTableView: React.FC<TrailerTableViewProps> = ({
@@ -318,6 +337,10 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
   onDropdownToggle,
   onMenuAction,
   dropdownRef,
+  isExecutive = false,
+  selectedTrailers = [],
+  onSelectTrailer,
+  onSelectAllTrailers,
 }) => {
   if (trailers.length === 0) {
     return (

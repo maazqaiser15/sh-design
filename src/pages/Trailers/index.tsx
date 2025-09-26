@@ -1,12 +1,15 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Truck, Plus, Package, Film, MapPin } from "lucide-react";
+import { Truck, Plus, Package, Film, MapPin, BarChart3, Download, Settings, RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Users, Filter, MoreHorizontal } from "lucide-react";
 import { TrailerList } from "../../features/trailer/components/TrailerList";
 import { TrailerDetail } from "../../features/trailer/components/TrailerDetail";
 import { TrailerForm } from "../../features/trailer/components/TrailerForm";
 import { DeleteConfirmationModal } from "../../features/trailer/components/DeleteConfirmationModal";
 import { Trailer } from "../../types";
 import { useSetBreadcrumbs } from "../../contexts/BreadcrumbContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { Card } from "../../common/components/Card";
+import { Button } from "../../common/components/Button";
 import {
   calculateTrailerStatus,
   updateInventoryStatus,
@@ -16,11 +19,13 @@ import { EXPANDED_TRAILER_DATA } from "./expandedTrailerData";
 
 /**
  * Main Trailer Management page component
- * Manages all trailer operations and state
+ * Enhanced with executive-level trailer and equipment management capabilities
  */
 export const Trailers: React.FC = () => {
   const { trailerId } = useParams<{ trailerId: string }>();
   const navigate = useNavigate();
+  const { user, hasPermission } = useAuth();
+  const isExecutive = user?.userType === 'executive';
 
   // Sample data - in a real app, this would come from an API
   const [trailers, setTrailers] = useState<Trailer[]>(EXPANDED_TRAILER_DATA);
@@ -30,11 +35,55 @@ export const Trailers: React.FC = () => {
   const [trailerToDelete, setTrailerToDelete] = useState<Trailer | null>(null);
   const [currentView, setCurrentView] = useState<'list' | 'detail' | 'create' | 'edit'>('list');
   const [trailerToEdit, setTrailerToEdit] = useState<Trailer | null>(null);
+  const [selectedTrailers, setSelectedTrailers] = useState<string[]>([]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showBulkActions, setShowBulkActions] = useState(false);
 
   // Get existing trailer numbers for validation
   const existingTrailerNames = trailers.map(
     (trailer) => trailer.trailerName
   );
+
+  // Executive analytics calculations
+  const trailerAnalytics = useMemo(() => {
+    if (!isExecutive) return null;
+    
+    const totalTrailers = trailers.length;
+    const availableTrailers = trailers.filter(t => t.status === 'available').length;
+    const lowStockTrailers = trailers.filter(t => t.status === 'low').length;
+    const unavailableTrailers = trailers.filter(t => t.status === 'unavailable').length;
+    
+    const trailersByStatus = trailers.reduce((acc, trailer) => {
+      acc[trailer.status] = (acc[trailer.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    const trailersByState = trailers.reduce((acc, trailer) => {
+      acc[trailer.state] = (acc[trailer.state] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Calculate inventory health
+    const totalTools = trailers.reduce((sum, trailer) => 
+      sum + trailer.inventory.tools.reduce((toolSum, tool) => toolSum + tool.currentStock, 0), 0);
+    const totalFilmSheets = trailers.reduce((sum, trailer) => 
+      sum + trailer.inventory.filmSheets.reduce((filmSum, film) => filmSum + film.currentStock, 0), 0);
+    
+    const averageUtilization = totalTrailers > 0 ? 
+      ((availableTrailers + lowStockTrailers) / totalTrailers) * 100 : 0;
+    
+    return {
+      totalTrailers,
+      availableTrailers,
+      lowStockTrailers,
+      unavailableTrailers,
+      trailersByStatus,
+      trailersByState,
+      totalTools,
+      totalFilmSheets,
+      averageUtilization
+    };
+  }, [trailers, isExecutive]);
 
   // Find selected trailer based on URL parameter
   const selectedTrailer = trailerId
@@ -176,6 +225,52 @@ export const Trailers: React.FC = () => {
     setTrailerToDelete(null);
   }, []);
 
+  // Executive action handlers
+  const handleSelectTrailer = useCallback((trailerId: string) => {
+    setSelectedTrailers(prev => 
+      prev.includes(trailerId) 
+        ? prev.filter(id => id !== trailerId)
+        : [...prev, trailerId]
+    );
+  }, []);
+
+  const handleSelectAllTrailers = useCallback(() => {
+    if (selectedTrailers.length === trailers.length) {
+      setSelectedTrailers([]);
+    } else {
+      setSelectedTrailers(trailers.map(t => t.id));
+    }
+  }, [selectedTrailers.length, trailers]);
+
+  const handleBulkAction = useCallback((action: string) => {
+    console.log(`Bulk action: ${action} on trailers:`, selectedTrailers);
+    // Implement bulk actions here
+    switch (action) {
+      case 'restock':
+        // Bulk restock selected trailers
+        break;
+      case 'maintenance':
+        // Schedule maintenance for selected trailers
+        break;
+      case 'relocate':
+        // Relocate selected trailers
+        break;
+      case 'export':
+        // Export selected trailers data
+        break;
+    }
+  }, [selectedTrailers]);
+
+  const handleExportTrailers = useCallback(() => {
+    console.log('Export all trailers data');
+    // Implement export functionality
+  }, []);
+
+  const handleRefreshInventory = useCallback(() => {
+    console.log('Refresh inventory status for all trailers');
+    // Implement inventory refresh
+  }, []);
+
   // Show empty state if no trailers exist
   if (trailers.length === 0 && currentView === 'list') {
     return (
@@ -315,13 +410,102 @@ export const Trailers: React.FC = () => {
           )}
         />
       ) : (
-        <TrailerList
-          trailers={trailers}
-          onCreateTrailer={handleCreateNew}
-          onViewTrailer={handleViewTrailer}
-          onEditTrailer={handleEditTrailer}
-          onDeleteTrailer={handleDeleteTrailer}
-        />
+        <div className="space-y-6">
+          {/* Executive Analytics Panel */}
+          {isExecutive && showAnalytics && trailerAnalytics && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Trailers</p>
+                    <p className="text-2xl font-bold text-gray-900">{trailerAnalytics.totalTrailers}</p>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Truck className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Available</p>
+                    <p className="text-2xl font-bold text-green-600">{trailerAnalytics.availableTrailers}</p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Low Stock</p>
+                    <p className="text-2xl font-bold text-orange-600">{trailerAnalytics.lowStockTrailers}</p>
+                  </div>
+                  <div className="p-3 bg-orange-100 rounded-lg">
+                    <AlertTriangle className="w-6 h-6 text-orange-600" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Utilization</p>
+                    <p className="text-2xl font-bold text-purple-600">{trailerAnalytics.averageUtilization.toFixed(1)}%</p>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Executive Controls */}
+          {isExecutive && (
+            <Card className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={BarChart3}
+                    onClick={() => setShowAnalytics(!showAnalytics)}
+                  >
+                    {showAnalytics ? 'Hide' : 'Show'} Analytics
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={RefreshCw}
+                    onClick={handleRefreshInventory}
+                  >
+                    Refresh Inventory
+                  </Button>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {trailers.length} trailer(s) total
+                </div>
+              </div>
+            </Card>
+          )}
+
+          <TrailerList
+            trailers={trailers}
+            onCreateTrailer={handleCreateNew}
+            onViewTrailer={handleViewTrailer}
+            onEditTrailer={handleEditTrailer}
+            onDeleteTrailer={handleDeleteTrailer}
+            isExecutive={isExecutive}
+            selectedTrailers={selectedTrailers}
+            onSelectTrailer={handleSelectTrailer}
+            onSelectAllTrailers={handleSelectAllTrailers}
+            onBulkAction={handleBulkAction}
+          />
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
