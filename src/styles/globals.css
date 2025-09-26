@@ -4,6 +4,7 @@
 
 /* Import Design System */
 @import './design-system.css';
+@import './mobile-optimizations.css';
 
 @layer base {
   html {

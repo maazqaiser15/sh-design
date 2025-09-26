@@ -7,6 +7,13 @@ interface SidebarContextType {
   toggleMobileSidebar: () => void;
   closeMobileSidebar: () => void;
   isMobile: boolean;
+  deviceType: 'mobile' | 'tablet' | 'desktop';
+  capabilities: {
+    hasTouch: boolean;
+    hasGeolocation: boolean;
+    isRetina: boolean;
+    supportsHover: boolean;
+  };
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -19,20 +26,49 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+  const [capabilities, setCapabilities] = useState({
+    hasTouch: false,
+    hasGeolocation: false,
+    isRetina: false,
+    supportsHover: false
+  });
 
-  // Check if we're on mobile
+  // Advanced device detection and capability checking
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const detectDeviceAndCapabilities = () => {
+      const width = window.innerWidth;
+      const userAgent = navigator.userAgent;
+      
+      // Device type detection
+      if (width < 768) {
+        setDeviceType('mobile');
+        setIsMobile(true);
+      } else if (width < 1024) {
+        setDeviceType('tablet');
+        setIsMobile(false);
+      } else {
+        setDeviceType('desktop');
+        setIsMobile(false);
+      }
+
+      // Capability detection
+      setCapabilities({
+        hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        hasGeolocation: 'geolocation' in navigator,
+        isRetina: window.devicePixelRatio > 1,
+        supportsHover: window.matchMedia('(hover: hover)').matches
+      });
+
       // Close mobile sidebar when switching to desktop
-      if (window.innerWidth >= 768) {
+      if (width >= 768) {
         setIsMobileOpen(false);
       }
     };
 
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    detectDeviceAndCapabilities();
+    window.addEventListener('resize', detectDeviceAndCapabilities);
+    return () => window.removeEventListener('resize', detectDeviceAndCapabilities);
   }, []);
 
   const toggleSidebar = () => {
@@ -58,7 +94,9 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
       toggleSidebar, 
       toggleMobileSidebar, 
       closeMobileSidebar,
-      isMobile 
+      isMobile,
+      deviceType,
+      capabilities
     }}>
       {children}
     </SidebarContext.Provider>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Sidebar } from "../Sidebar";
 import { TopBar } from "../TopBar";
+import { MobileBottomNav } from "../MobileBottomNav";
 import { useSidebar } from "../../../contexts/SidebarContext";
 
 interface LayoutProps {
@@ -26,9 +27,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="py-4 px-4 sm:py-6 sm:px-16">{children}</div>
+          <div className="py-4 px-4 sm:py-6 sm:px-16 pb-20 sm:pb-6">{children}</div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, CheckCircle, Hotel } from 'lucide-react';
+import { Plus, CheckCircle, Hotel, User } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
@@ -877,6 +877,12 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <CalendarIcon />
                     <p className="font-normal text-xs text-[#475467] leading-5">Feb 1, 2024 – Feb 15, 2024</p>
                   </div>
+                  {project.assignedCoordinator && (
+                    <div className="flex gap-1 items-center">
+                      <User className="w-4 h-4 text-[#475467]" />
+                      <p className="font-normal text-xs text-[#475467] leading-5">Coordinator: {project.assignedCoordinator.name}</p>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex gap-3 items-center">

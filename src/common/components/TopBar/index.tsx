@@ -112,8 +112,8 @@ export const TopBar: React.FC = () => {
             </button>
           )}
           
-          {/* Breadcrumbs */}
-          <div className="flex-1">
+          {/* Breadcrumbs - Hidden on mobile */}
+          <div className="flex-1 hidden sm:block">
             <Breadcrumb items={customBreadcrumbs || undefined} />
           </div>
 

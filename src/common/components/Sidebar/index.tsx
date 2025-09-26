@@ -69,8 +69,10 @@ const navigation: NavigationItem[] = [
  */
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
-  const { isCollapsed, isMobileOpen, toggleSidebar, closeMobileSidebar, isMobile } = useSidebar();
+  const { isCollapsed, isMobileOpen, toggleSidebar, closeMobileSidebar, isMobile, capabilities } = useSidebar();
   const [expandedItems, setExpandedItems] = React.useState<string[]>(['Projects']);
+  const [touchStart, setTouchStart] = React.useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
 
   const hasPermission = (permission?: string) => {
     if (!permission || !user) return true;
@@ -83,6 +85,35 @@ export const Sidebar: React.FC = () => {
         ? prev.filter(name => name !== itemName)
         : [...prev, itemName]
     );
+  };
+
+  // Touch gesture handling for mobile sidebar
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!isMobile || !touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && isMobileOpen) {
+      closeMobileSidebar();
+    }
+    if (isRightSwipe && !isMobileOpen) {
+      toggleSidebar();
+    }
   };
 
 
@@ -173,15 +204,20 @@ export const Sidebar: React.FC = () => {
       )}
       
       {/* Sidebar */}
-      <div className={`
-        ${isMobile 
-          ? `fixed top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out ${
-              isMobileOpen ? 'translate-x-0' : '-translate-x-full'
-            }`
-          : `${isCollapsed ? 'w-16' : 'w-64'}`
-        } 
-        bg-white border-r border-border h-full flex flex-col transition-all duration-300
-      `}>
+      <div 
+        className={`
+          ${isMobile 
+            ? `fixed top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out ${
+                isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+              }`
+            : `${isCollapsed ? 'w-16' : 'w-64'}`
+          } 
+          bg-white border-r border-border h-full flex flex-col transition-all duration-300
+        `}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         {/* Header with Logo and Toggle Button */}
         <div className="px-4 py-4 border-b border-border flex items-center justify-between">
           {(!isCollapsed || isMobile) && (

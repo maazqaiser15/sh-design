@@ -4,6 +4,7 @@ import { Card } from "../../../../common/components/Card";
 import { Button } from "../../../../common/components/Button";
 import { StatusBadge } from "../../../../common/components/StatusBadge";
 import { Trailer, TrailerStatus } from "../../../../types";
+import { useSidebar } from "../../../../contexts/SidebarContext";
 import {
   filterTrailers,
   sortTrailers,
@@ -39,6 +40,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
   onSelectAllTrailers,
   onBulkAction,
 }) => {
+  const { isMobile } = useSidebar();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TrailerStatus | "">("");
   const [stateFilter, setStateFilter] = useState("");
@@ -205,24 +207,80 @@ export const TrailerList: React.FC<TrailerListProps> = ({
       </Card>
 
 
-      {/* Table View */}
-      <TrailerTableView
-        trailers={paginatedTrailers}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onSort={handleSort}
-        onViewTrailer={onViewTrailer}
-        onEditTrailer={onEditTrailer}
-        onDeleteTrailer={onDeleteTrailer}
-        activeDropdown={activeDropdown}
-        onDropdownToggle={handleDropdownToggle}
-        onMenuAction={handleMenuAction}
-        dropdownRef={dropdownRef}
-        isExecutive={isExecutive}
-        selectedTrailers={selectedTrailers}
-        onSelectTrailer={onSelectTrailer}
-        onSelectAllTrailers={onSelectAllTrailers}
-      />
+      {/* Table View - Hidden on mobile */}
+      {!isMobile && (
+        <TrailerTableView
+          trailers={paginatedTrailers}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+          onViewTrailer={onViewTrailer}
+          onEditTrailer={onEditTrailer}
+          onDeleteTrailer={onDeleteTrailer}
+          activeDropdown={activeDropdown}
+          onDropdownToggle={handleDropdownToggle}
+          onMenuAction={handleMenuAction}
+          dropdownRef={dropdownRef}
+          isExecutive={isExecutive}
+          selectedTrailers={selectedTrailers}
+          onSelectTrailer={onSelectTrailer}
+          onSelectAllTrailers={onSelectAllTrailers}
+        />
+      )}
+
+      {/* Mobile Card View */}
+      {isMobile && (
+        <div className="space-y-4">
+          {paginatedTrailers.map((trailer) => (
+            <Card key={trailer.id} className="p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{trailer.trailerName}</h3>
+                  <p className="text-sm text-gray-600">{trailer.registrationNumber}</p>
+                </div>
+                <StatusBadge status={trailer.status} />
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>{trailer.parkingAddress}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="w-4 h-4" />
+                  <span>Last updated: {new Date(trailer.updatedAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-end mt-4 gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onViewTrailer(trailer)}
+                  icon={Eye}
+                >
+                  View
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEditTrailer(trailer)}
+                  icon={Edit2}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDeleteTrailer(trailer)}
+                  icon={Trash2}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  Delete
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Pagination Controls */}
       {totalPages > 1 && (

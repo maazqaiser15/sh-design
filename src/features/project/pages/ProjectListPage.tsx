@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Grid, List, Search, X, Calendar, Plus, BarChart3, Filter, MoreHorizontal } from 'lucide-react';
 import { ProjectListView } from '../components/ProjectListView';
@@ -17,6 +17,7 @@ import {
 import { projectToListItem, filterProjects, sortProjects } from '../utils';
 import { Trailer } from '../../../types';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useSidebar } from '../../../contexts/SidebarContext';
 import { filterProjectsByUserRole, getAvailableProjectStatuses } from '../../../services/projectFilterService';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
@@ -411,9 +412,17 @@ const mockProjects: SafeHavenProject[] = [
 export const ProjectListPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, hasPermission } = useAuth();
+  const { isMobile } = useSidebar();
   const isExecutive = user?.userType === 'executive';
   const [viewMode, setViewMode] = useState<ProjectViewMode>({ type: 'list' });
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Force list view on mobile when table is selected
+  useEffect(() => {
+    if (isMobile && viewMode.type === 'table') {
+      setViewMode({ type: 'list' });
+    }
+  }, [isMobile, viewMode.type]);
   const [filters, setFilters] = useState<ProjectFilters>({
     status: [],
     assignedUsers: [],
@@ -725,7 +734,7 @@ export const ProjectListPage: React.FC = () => {
             projects={filteredAndSortedProjects}
             onProjectClick={handleProjectClick}
           />
-        ) : viewMode.type === 'table' ? (
+        ) : viewMode.type === 'table' && !isMobile ? (
           <ProjectTableView
             projects={filteredAndSortedProjects}
             onProjectClick={handleProjectClick}

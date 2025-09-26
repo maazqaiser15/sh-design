@@ -34,6 +34,7 @@ import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
 import { Window, TakeOffSheet, MOCK_WINDOWS, MOCK_TEAM_MEMBERS, LayerInstallation, FilmType, WindowStatus } from '../../types/windowManagement';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useSidebar } from '../../../../contexts/SidebarContext';
 import { ROLE3_MOCK_WINDOWS } from '../../data/role3MockWindows';
 
 interface ProjectDetailsWIPProps {
@@ -677,6 +678,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();
+  const { isMobile } = useSidebar();
   const [activeTab, setActiveTab] = useState('job-brief');
   
   // Window Management State
@@ -689,6 +691,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     building: 'all'
   });
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+
+  // Force grid view on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setViewMode('grid');
+    }
+  }, [isMobile]);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
@@ -1167,6 +1176,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
           .mobile-scroll {
             -webkit-overflow-scrolling: touch;
           }
+          .mobile-card {
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+          }
+          .mobile-touch-target {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 12px 16px;
+          }
         }
       `}</style>
       {/* Header Section */}
@@ -1563,7 +1582,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                             </select>
                           </div>
 
-                          <div className="flex items-center gap-2 justify-center sm:justify-start">
+                          <div className="hidden sm:flex items-center gap-2 justify-center sm:justify-start">
                             <button
                               onClick={() => setViewMode('list')}
                               className={`p-2 rounded-lg ${
@@ -1592,7 +1611,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                           <div className="text-center py-8">
                             <p className="text-gray-500">No windows found matching your criteria</p>
                           </div>
-                        ) : viewMode === 'list' ? (
+                        ) : viewMode === 'list' && !isMobile ? (
                           <div className="overflow-x-auto -mx-4 sm:mx-0 mobile-scroll">
                             <div className="min-w-full px-4 sm:px-0">
                               <table className="w-full min-w-[800px]">

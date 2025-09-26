@@ -93,7 +93,13 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
   startDate: '2024-02-01',
   endDate: '2024-02-15',
   createdAt: '2024-01-15T00:00:00Z',
-  updatedAt: '2024-01-20T00:00:00Z'
+  updatedAt: '2024-01-20T00:00:00Z',
+  assignedCoordinator: {
+    id: 'coord-1',
+    name: 'Jennifer White',
+    email: 'jennifer@company.com',
+    phone: '+1-555-0130'
+  }
 };
 
 export const MOCK_PREPARATION_DATA: PreparationStageData = {
