@@ -50,17 +50,7 @@
 
 /* 2. Mobile Navigation Patterns */
 @media (max-width: 767px) {
-  /* Bottom navigation for primary actions */
-  .mobile-bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 1px solid #e5e7eb;
-    padding: 8px 16px;
-    z-index: 50;
-  }
+  /* Mobile navigation patterns removed - using sidebar instead */
 
   /* Mobile-friendly modals */
   .mobile-modal {

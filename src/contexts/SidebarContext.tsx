@@ -23,7 +23,7 @@ interface SidebarProviderProps {
 }
 
 export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');

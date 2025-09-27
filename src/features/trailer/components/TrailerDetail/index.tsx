@@ -233,10 +233,10 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                       Tool Name
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Current Stock
+                      Initial Stock
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Threshold
+                      Inventory Left
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status & Stock Level
@@ -262,10 +262,10 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                       Sheet Type
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Current Stock
+                      Initial Stock
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Threshold
+                      Inventory Left
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status & Stock Level

@@ -177,9 +177,18 @@ const USER_TYPE_ROLES: Record<UserType, UserRole> = {
     permissions: [
       { module: 'dashboard', actions: ['view'] },
       { module: 'projects', actions: ['view'] },
-      { module: 'scheduler', actions: ['view'] },
       { module: 'documents', actions: ['view'] },
       { module: 'settings', actions: [] }
+    ]
+  },
+  'lead-supervisor': {
+    id: 'role-lead-supervisor',
+    name: 'Lead Supervisor',
+    userType: 'lead-supervisor',
+    permissions: [
+      { module: 'dashboard', actions: ['view'] },
+      { module: 'projects', actions: ['view', 'edit', 'manage'] },
+      { module: 'documents', actions: ['view', 'edit'] }
     ]
   }
 };
@@ -206,6 +215,12 @@ const EMAIL_PATTERNS: Record<string, { userType: UserType; department?: Departme
   'manager@': { userType: 'project-coordinator' },
   'supervisor@': { userType: 'project-coordinator' },
   'lead@': { userType: 'project-coordinator' },
+  
+  // Lead Supervisor level
+  'leadsupervisor@': { userType: 'lead-supervisor' },
+  'lead-supervisor@': { userType: 'lead-supervisor' },
+  'lead_supervisor@': { userType: 'lead-supervisor' },
+  'ls@': { userType: 'lead-supervisor' },
   
   // Execution Team level
   'crew@': { userType: 'execution-team' },

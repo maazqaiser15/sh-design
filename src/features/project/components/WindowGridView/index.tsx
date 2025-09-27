@@ -56,9 +56,47 @@ export const WindowGridView: React.FC<WindowGridViewProps> = ({
           className="p-4 hover:shadow-md transition-shadow cursor-pointer relative group"
           onClick={() => onWindowClick(window)}
         >
-          {/* Actions */}
+          {/* Actions - Mobile: Show buttons directly, Desktop: Show 3-dots menu */}
           <div className="absolute top-3 right-3">
-            <div className="relative">
+            {/* Mobile: Direct action buttons */}
+            <div className="flex space-x-1 md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleView(window);
+                }}
+                className="p-1 text-gray-400 hover:text-gray-600"
+              >
+                <Eye className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(window);
+                }}
+                className="p-1 text-gray-400 hover:text-gray-600"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(window.id);
+                }}
+                className="p-1 text-gray-400 hover:text-red-600"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Desktop: 3-dots menu */}
+            <div className="hidden md:block relative">
               <Button
                 variant="ghost"
                 size="sm"

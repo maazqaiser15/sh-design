@@ -257,7 +257,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                   </div>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold">
-                      Project ID: {project.id}
+                      {project.projectId}
                     </span>
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />

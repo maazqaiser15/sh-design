@@ -239,103 +239,104 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       title=""
       size="xl"
     >
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6 gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
               {isEditing ? (
                 <input
                   type="text"
                   value={editedWindow.windowName}
                   onChange={(e) => handleFieldChange('windowName', e.target.value)}
-                  className="text-2xl font-bold text-gray-900 border border-gray-300 rounded px-2 py-1"
+                  className="text-xl sm:text-2xl font-bold text-gray-900 border border-gray-300 rounded px-2 py-1 w-full sm:w-auto"
                 />
               ) : (
-                <h2 className="text-2xl font-bold text-gray-900">{editedWindow.windowName}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{editedWindow.windowName}</h2>
               )}
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(editedWindow.status)}`}>
+              <span className={`px-3 py-1 rounded-full text-sm font-medium w-fit ${getStatusColor(editedWindow.status)}`}>
                 {editedWindow.status}
               </span>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
               <span>Created {editedWindow.createdAt.toLocaleDateString()}</span>
+              <span className="hidden sm:inline">•</span>
               <span>Updated {editedWindow.updatedAt.toLocaleDateString()}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             {isEditing ? (
               <>
-                <Button variant="secondary" onClick={handleCancel}>
+                <Button variant="secondary" onClick={handleCancel} className="flex-1 sm:flex-none mobile-touch-target">
                   Cancel
                 </Button>
-                <Button variant="primary" onClick={handleSave}>
+                <Button variant="primary" onClick={handleSave} className="flex-1 sm:flex-none mobile-touch-target">
                   Save Changes
                 </Button>
               </>
             ) : (
-              <Button variant="secondary" onClick={() => setIsEditing(true)} icon={Edit3}>
+              <Button variant="secondary" onClick={() => setIsEditing(true)} icon={Edit3} className="w-full sm:w-auto mobile-touch-target">
                 Edit
               </Button>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Basic Info */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Film Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Film Type</label>
                 {isEditing ? (
                   <select
                     value={editedWindow.filmType}
                     onChange={(e) => handleFieldChange('filmType', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
                   >
                     {FILM_TYPE_OPTIONS.map(type => (
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
                 ) : (
-                  <p className="text-gray-900">{editedWindow.filmType}</p>
+                  <p className="text-gray-900 text-sm sm:text-base">{editedWindow.filmType}</p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Length (cm)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Length (cm)</label>
                   {isEditing ? (
                     <input
                       type="number"
                       value={editedWindow.length}
                       onChange={(e) => handleFieldChange('length', parseInt(e.target.value) || 0)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
                     />
                   ) : (
-                    <p className="text-gray-900">{editedWindow.length}</p>
+                    <p className="text-gray-900 text-sm sm:text-base">{editedWindow.length}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Width (cm)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Width (cm)</label>
                   {isEditing ? (
                     <input
                       type="number"
                       value={editedWindow.width}
                       onChange={(e) => handleFieldChange('width', parseInt(e.target.value) || 0)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
                     />
                   ) : (
-                    <p className="text-gray-900">{editedWindow.width}</p>
+                    <p className="text-gray-900 text-sm sm:text-base">{editedWindow.width}</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Total Layers</label>
-                <p className="text-gray-900">{editedWindow.layers.length}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Total Layers</label>
+                <p className="text-gray-900 text-sm sm:text-base">{editedWindow.layers.length}</p>
               </div>
             </div>
           </div>
@@ -343,18 +344,18 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
         </div>
 
         {/* Layer Installation Details */}
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Layer Installation Details</h3>
           
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             {editedWindow.layers.map((layer, index) => (
-              <div key={index} className={`border border-gray-200 rounded-lg p-4 ${
+              <div key={index} className={`border border-gray-200 rounded-lg p-3 sm:p-4 ${
                 layer.status === 'Reinstallation Needed' ? 'bg-orange-50 border-orange-200' : ''
               }`}>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3">
                     {getLayerStatusIcon(layer.status)}
-                    <span className="font-medium text-gray-900">{layer.layerName}</span>
+                    <span className="font-medium text-gray-900 text-sm sm:text-base">{layer.layerName}</span>
                   </div>
                   {isEditing && (
                     <select
@@ -363,7 +364,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                         const installedBy = e.target.value === 'Installed' ? MOCK_TEAM_MEMBERS[0] : undefined;
                         handleLayerStatusChange(index, e.target.value, installedBy);
                       }}
-                      className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm mobile-touch-target w-full sm:w-auto"
                     >
                       <option value="Pending">Pending</option>
                       <option value="In Progress">In Progress</option>
@@ -374,41 +375,53 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                 </div>
                 
                 {layer.status === 'Installed' && layer.installedBy && (
-                  <div className="space-y-2">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <User className="w-4 h-4" />
-                        <span>Installed by {layer.installedBy}</span>
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 flex-shrink-0" />
+                          <span>Installed by {layer.installedBy}</span>
+                        </div>
                         {layer.installedAt && (
                           <>
-                            <span>•</span>
-                            <Calendar className="w-4 h-4" />
-                            <span>{layer.installedAt.toLocaleDateString()}</span>
+                            <span className="hidden sm:inline">•</span>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 flex-shrink-0" />
+                              <span>{layer.installedAt.toLocaleDateString()}</span>
+                            </div>
                           </>
                         )}
                       </div>
                       {layer.reinstallationMarkedBy && (
-                        <div className="flex items-center gap-2 text-sm text-orange-600">
-                          <AlertCircle className="w-4 h-4" />
-                          <span>Marked by {layer.reinstallationMarkedBy}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-orange-600">
+                          <div className="flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                            <span>Marked by {layer.reinstallationMarkedBy}</span>
+                          </div>
                           {layer.reinstallationMarkedAt && (
                             <>
-                              <span>•</span>
-                              <Calendar className="w-4 h-4" />
-                              <span>{layer.reinstallationMarkedAt.toLocaleDateString()}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 flex-shrink-0" />
+                                <span>{layer.reinstallationMarkedAt.toLocaleDateString()}</span>
+                              </div>
                             </>
                           )}
                         </div>
                       )}
                       {layer.reinstallationCompletedBy && (
-                        <div className="flex items-center gap-2 text-sm text-green-600">
-                          <CheckCircle className="w-4 h-4" />
-                          <span>Reinstalled by {layer.reinstallationCompletedBy}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-green-600">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                            <span>Reinstalled by {layer.reinstallationCompletedBy}</span>
+                          </div>
                           {layer.reinstallationCompletedAt && (
                             <>
-                              <span>•</span>
-                              <Calendar className="w-4 h-4" />
-                              <span>{layer.reinstallationCompletedAt.toLocaleDateString()}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 flex-shrink-0" />
+                                <span>{layer.reinstallationCompletedAt.toLocaleDateString()}</span>
+                              </div>
                             </>
                           )}
                         </div>
@@ -418,7 +431,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                       <div className="flex justify-end">
                         <Button
                           onClick={() => handleMarkLayerReinstallationRequired(index)}
-                          className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 text-sm"
+                          className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 text-sm mobile-touch-target"
                         >
                           <AlertCircle className="w-4 h-4 mr-1" />
                           Reinstallation Required
@@ -429,21 +442,25 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                 )}
                 
                 {layer.status === 'Reinstallation Needed' && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {layer.notes && (
-                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
                         <strong>Note:</strong> {layer.notes}
                       </div>
                     )}
                     {layer.reinstallationMarkedBy && (
-                      <div className="flex items-center gap-2 text-sm text-orange-700">
-                        <AlertCircle className="w-4 h-4" />
-                        <span>Reinstallation marked by: {layer.reinstallationMarkedBy}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-orange-700">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          <span>Reinstallation marked by: {layer.reinstallationMarkedBy}</span>
+                        </div>
                         {layer.reinstallationMarkedAt && (
                           <>
-                            <span>•</span>
-                            <Calendar className="w-4 h-4" />
-                            <span>{layer.reinstallationMarkedAt.toLocaleDateString()}</span>
+                            <span className="hidden sm:inline">•</span>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 flex-shrink-0" />
+                              <span>{layer.reinstallationMarkedAt.toLocaleDateString()}</span>
+                            </div>
                           </>
                         )}
                       </div>
@@ -452,7 +469,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                       <div className="flex justify-end">
                         <Button
                           onClick={() => handleCompleteReinstallation(index)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 text-sm"
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 text-sm mobile-touch-target"
                         >
                           <CheckCircle className="w-4 h-4 mr-1" />
                           Reinstallation Complete
@@ -482,7 +499,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                   <div className="mt-3 flex justify-end">
                     <Button
                       onClick={() => handleMarkLayerComplete(index)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 text-sm"
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 text-sm mobile-touch-target"
                     >
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Mark as Complete

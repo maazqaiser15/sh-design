@@ -87,6 +87,15 @@ export const routes: RouteObject[] = [
               return { element: <ProjectComingSoon /> };
             },
           },
+          {
+            path: "projects/role3-project-wip",
+            async lazy() {
+              const { ProjectDetailsWIP } = await import(
+                "../features/project/pages/ProjectDetailsPage/ProjectDetailsWIP"
+              );
+              return { element: <ProjectDetailsWIP projectStatus="WIP" /> };
+            },
+          },
 
           // Team Routes
           {

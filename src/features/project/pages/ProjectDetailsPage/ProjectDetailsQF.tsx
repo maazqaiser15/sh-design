@@ -32,6 +32,8 @@ import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { useToast } from '../../../../contexts/ToastContext';
+import { useSidebar } from '../../../../contexts/SidebarContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
 import { QualityCheckFormModal, QualityCheckFormData } from '../../components/QualityCheckFormModal';
@@ -49,6 +51,8 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { isMobile } = useSidebar();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('window-management');
   
   // Window Management State - All windows set to completed status
@@ -62,6 +66,13 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     layers: 'all'
   });
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+
+  // Force grid view on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setViewMode('grid');
+    }
+  }, [isMobile]);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
   const [showQualityCheckModal, setShowQualityCheckModal] = useState(false);
@@ -286,6 +297,72 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     }
   };
 
+  const handleStartWorking = (window: Window) => {
+    // Update window status to "In Progress" and add current user to assigned team
+    const updatedWindow = {
+      ...window,
+      status: 'In Progress' as any,
+      assignedTeamMembers: [...window.assignedTeamMembers, user?.name || 'Current User'],
+      updatedAt: new Date()
+    };
+    
+    setWindows(prev => prev.map(w => 
+      w.id === window.id ? updatedWindow : w
+    ));
+    
+    showToast(`Started working on ${window.windowName}`);
+  };
+
+  const handleMarkAsCompleted = (window: Window) => {
+    // Mark all layers as installed and set window status to Complete
+    const updatedLayers = window.layers.map(layer => ({
+      ...layer,
+      status: 'Installed' as const,
+      installedBy: user?.name || 'Current User',
+      installedAt: new Date()
+    }));
+
+    const updatedWindow = {
+      ...window,
+      layers: updatedLayers,
+      status: 'Complete' as any,
+      assignedTeamMembers: [...window.assignedTeamMembers, user?.name || 'Current User'],
+      updatedAt: new Date()
+    };
+    
+    setWindows(prev => prev.map(w => 
+      w.id === window.id ? updatedWindow : w
+    ));
+    
+    showToast(`Completed ${window.windowName}`);
+  };
+
+  const getActionButton = (window: Window) => {
+    if (window.status === 'Pending') {
+      return {
+        text: 'Start Working',
+        icon: CheckCircle2,
+        action: () => handleStartWorking(window),
+        className: 'text-green-700 hover:bg-green-50'
+      };
+    } else if (window.status === 'In Progress') {
+      return {
+        text: 'Mark as Completed',
+        icon: CheckCircle2,
+        action: () => handleMarkAsCompleted(window),
+        className: 'text-blue-700 hover:bg-blue-50'
+      };
+    } else if (window.status === 'Reinstallation Needed') {
+      return {
+        text: 'Start Working',
+        icon: CheckCircle2,
+        action: () => handleStartWorking(window),
+        className: 'text-orange-700 hover:bg-orange-50'
+      };
+    }
+    return null;
+  };
+
   const handleSaveWindow = (windowData: Partial<Window>) => {
     if (editingWindow) {
       // Update existing window
@@ -348,42 +425,63 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      <style>{`
+        @media (max-width: 640px) {
+          .touch-manipulation {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+          }
+          .mobile-scroll {
+            -webkit-overflow-scrolling: touch;
+          }
+          .mobile-card {
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+          }
+          .mobile-touch-target {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 12px 16px;
+          }
+        }
+      `}</style>
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="py-6">
-          <div className="flex flex-col gap-6">
+        <div className="py-4 px-4 sm:py-6 sm:px-6">
+          <div className="flex flex-col gap-4 sm:gap-6">
             {/* Page Header */}
-            <div className="flex flex-col gap-5">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-semibold text-gray-900">
+            <div className="flex flex-col gap-3 sm:gap-5">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
                       Marriot Windows Installation
                     </h1>
-                    <span className="px-2 py-1 rounded-md text-sm font-semibold bg-orange-50 text-orange-700">
+                    <span className="px-2 py-1 rounded-md text-sm font-semibold bg-orange-50 text-orange-700 w-fit">
                       QF
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold">
-                      Project ID: {project.id}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
+                    <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold w-fit">
+                      {project.projectId}
                     </span>
                     <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{project.location}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{project.startDate} - {project.endDate}</span>
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="text-xs sm:text-sm">{project.startDate} - {project.endDate}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                   <Button
                     variant="secondary"
                     onClick={handleUpdateTrailer}
                     icon={Truck}
-                    className="px-3 py-2"
+                    className="w-full sm:w-auto px-3 py-2 text-sm mobile-touch-target"
                   >
                     Update Trailer
                   </Button>
@@ -391,14 +489,29 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     variant="secondary"
                     onClick={handleAddUsage}
                     icon={Plus}
-                    className="px-3 py-2"
+                    className="w-full sm:w-auto px-3 py-2 text-sm mobile-touch-target"
                   >
                     Update Inventory
                   </Button>
+                  {user?.userType === 'execution-team' && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        // Map current user to team member ID for demo purposes
+                        // For execution-team demo user, navigate to first available team member
+                        const teamMemberId = 'tm-001'; // John Smith - first team member
+                        navigate(`/team/${teamMemberId}`);
+                      }}
+                      icon={Users}
+                      className="w-full sm:w-auto px-3 py-2 text-sm mobile-touch-target"
+                    >
+                      View Profile
+                    </Button>
+                  )}
                   <Button
                     variant="primary"
                     onClick={handleSignQualityCheckForm}
-                    className="px-3 py-2"
+                    className="w-full sm:w-auto px-3 py-2 text-sm mobile-touch-target"
                     disabled={isQualityCheckSigned}
                   >
                     {isQualityCheckSigned ? 'QF Signed' : 'Sign Quality Check Form'}
@@ -408,12 +521,12 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
             </div>
 
             {/* Progress Section */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+            <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                   Window Installation Progress
                 </h3>
-                <span className="text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-gray-600">
                   100% Complete
                 </span>
               </div>
@@ -423,7 +536,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                   style={{ width: '100%' }}
                 ></div>
               </div>
-              <div className="flex items-center justify-between text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-gray-600 gap-1 sm:gap-0">
                 <span>
                   Current Phase: Installation completed
                 </span>
@@ -438,13 +551,13 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
       </div>
 
       {/* Main Content */}
-      <div className="py-6">
-        <div className="flex gap-6">
+      <div className="py-4 px-4 sm:py-6 sm:px-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           {/* Left Content */}
           <div className="flex-1">
             {/* Tabs */}
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="flex space-x-8">
+            <div className="border-b border-gray-200 mb-4 sm:mb-6">
+              <nav className="flex space-x-1 sm:space-x-4 lg:space-x-8 overflow-x-auto mobile-scroll">
                 {[
                   { id: 'window-management', label: 'Window Management' },
                   { id: 'issues', label: 'Issues & Fixes' },
@@ -455,7 +568,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    className={`py-2 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
                       activeTab === tab.id
                         ? 'border-orange-600 text-orange-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -474,14 +587,15 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                 {/* Window Management Section */}
                 <div className="space-y-6">
                   {/* Window Management Header */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
+                  <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-4">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900">Window Management</h3>
                       <div className="flex items-center gap-3">
                         <Button 
                           variant="primary" 
                           icon={Plus}
                           onClick={handleAddWindow}
+                          className="w-full sm:w-auto text-sm mobile-touch-target"
                         >
                           Add Window
                         </Button>
@@ -489,7 +603,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     </div>
 
                     {/* Search and Filters */}
-                    <div className="flex items-center gap-4 mb-6">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
                       <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
@@ -497,55 +611,57 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                           placeholder="Search by window name"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         />
                       </div>
                       
-                      <select
-                        value={filters.filmType}
-                        onChange={(e) => handleFilterChange('filmType', e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="all">All Film Types</option>
-                        <option value="BR">BR</option>
-                        <option value="Riot">Riot</option>
-                        <option value="Riot+">Riot+</option>
-                      </select>
-
-                      <select
-                        value={filters.status}
-                        onChange={(e) => handleFilterChange('status', e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="all">All Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Updated">Updated</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Complete">Complete</option>
-                        <option value="Reinstallation Needed">Reinstallation Needed</option>
-                      </select>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setViewMode('list')}
-                          className={`p-2 rounded-lg ${
-                            viewMode === 'list' 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                          }`}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto">
+                        <select
+                          value={filters.filmType}
+                          onChange={(e) => handleFilterChange('filmType', e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         >
-                          <List className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setViewMode('grid')}
-                          className={`p-2 rounded-lg ${
-                            viewMode === 'grid' 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                          }`}
+                          <option value="all">All Film Types</option>
+                          <option value="BR">BR</option>
+                          <option value="Riot">Riot</option>
+                          <option value="Riot+">Riot+</option>
+                        </select>
+
+                        <select
+                          value={filters.status}
+                          onChange={(e) => handleFilterChange('status', e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         >
-                          <Grid className="w-4 h-4" />
-                        </button>
+                          <option value="all">All Status</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Updated">Updated</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Complete">Complete</option>
+                          <option value="Reinstallation Needed">Reinstallation Needed</option>
+                        </select>
+
+                        <div className="hidden sm:flex items-center gap-2 col-span-1">
+                          <button
+                            onClick={() => setViewMode('list')}
+                            className={`p-2 rounded-lg ${
+                              viewMode === 'list' 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            <List className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setViewMode('grid')}
+                            className={`p-2 rounded-lg ${
+                              viewMode === 'grid' 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            <Grid className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -554,7 +670,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                       <div className="text-center py-8">
                         <p className="text-gray-500">No windows found matching your criteria</p>
                       </div>
-                    ) : viewMode === 'list' ? (
+                    ) : viewMode === 'list' && !isMobile ? (
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
@@ -586,7 +702,51 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                                 </td>
                                 <td className="py-4 px-4">
                                   <div className="flex items-center justify-end">
-                                    <div className="relative dropdown-container">
+                                    {/* Mobile: Direct action buttons */}
+                                    <div className="flex space-x-1 md:hidden">
+                                      {user?.userType !== 'execution-team' && (
+                                        <>
+                                          <button
+                                            onClick={() => {
+                                              handleViewWindow(window);
+                                            }}
+                                            className="text-gray-400 hover:text-gray-600 p-2 mobile-touch-target"
+                                          >
+                                            <Eye className="w-4 h-4" />
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              handleEditWindow(window);
+                                            }}
+                                            className="text-gray-400 hover:text-gray-600 p-2 mobile-touch-target"
+                                          >
+                                            <Edit className="w-4 h-4" />
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              handleDeleteWindow(window.id);
+                                            }}
+                                            className="text-gray-400 hover:text-red-600 p-2 mobile-touch-target"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </>
+                                      )}
+                                      {getActionButton(window) && (
+                                        <button
+                                          onClick={() => {
+                                            getActionButton(window)?.action();
+                                          }}
+                                          className={`flex items-center gap-1 px-2 py-1 text-xs mobile-touch-target ${getActionButton(window)?.className}`}
+                                        >
+                                          <CheckCircle2 className="w-4 h-4" />
+                                          <span>{getActionButton(window)?.text || 'Complete'}</span>
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    {/* Desktop: 3-dots menu */}
+                                    <div className="hidden md:block relative dropdown-container">
                                       <button 
                                         onClick={() => {
                                           // Toggle dropdown for this specific window
@@ -624,6 +784,18 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                                             <Edit className="w-4 h-4" />
                                             Edit Window
                                           </button>
+                                          {getActionButton(window) && (
+                                            <button
+                                              onClick={() => {
+                                                getActionButton(window)?.action();
+                                                document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                              }}
+                                              className={`flex items-center gap-2 w-full px-4 py-2 text-sm ${getActionButton(window)?.className}`}
+                                            >
+                                              <CheckCircle2 className="w-4 h-4" />
+                                              {getActionButton(window)?.text}
+                                            </button>
+                                          )}
                                           <button
                                             onClick={() => {
                                               handleDeleteWindow(window.id);
@@ -645,23 +817,71 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                         </table>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {filteredWindows.map((window) => (
-                          <Card key={window.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewWindow(window)}>
+                          <Card key={window.id} className="p-3 sm:p-4 cursor-pointer hover:shadow-md transition-shadow mobile-card" onClick={() => handleViewWindow(window)}>
                             <div className="flex items-start justify-between mb-3">
-                              <div>
-                                <h4 className="font-medium text-gray-900">{window.windowName}</h4>
-                                <p className="text-sm text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">{window.windowName}</h4>
+                                <p className="text-xs sm:text-sm text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
                               </div>
                               <StatusBadge status={window.status} />
                             </div>
-                            <div className="space-y-2 text-sm text-gray-600">
+                            <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
                               <div>Film Type: {window.filmType}</div>
                               <div>Dimensions: {window.length} x {window.width} cm</div>
                               <div>Layers: {window.layers.length}</div>
                             </div>
-                            <div className="flex items-center justify-end mt-4">
-                              <div className="relative dropdown-container">
+                            <div className="flex items-center justify-end mt-3 sm:mt-4">
+                              {/* Mobile: Direct action buttons */}
+                              <div className="flex space-x-1 md:hidden">
+                                {user?.userType !== 'execution-team' && (
+                                  <>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleViewWindow(window);
+                                      }}
+                                      className="text-gray-400 hover:text-gray-600 p-2 mobile-touch-target"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditWindow(window);
+                                      }}
+                                      className="text-gray-400 hover:text-gray-600 p-2 mobile-touch-target"
+                                    >
+                                      <Edit className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteWindow(window.id);
+                                      }}
+                                      className="text-gray-400 hover:text-red-600 p-2 mobile-touch-target"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </>
+                                )}
+                                {getActionButton(window) && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      getActionButton(window)?.action();
+                                    }}
+                                    className={`flex items-center gap-1 px-2 py-1 text-xs mobile-touch-target ${getActionButton(window)?.className}`}
+                                  >
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span>{getActionButton(window)?.text || 'Complete'}</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Desktop: 3-dots menu */}
+                              <div className="hidden md:block relative dropdown-container">
                                 <button 
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -670,7 +890,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                                       dropdown.classList.toggle('hidden');
                                     }
                                   }}
-                                  className="text-gray-400 hover:text-gray-600 p-1"
+                                  className="text-gray-400 hover:text-gray-600 p-1 mobile-touch-target"
                                 >
                                   <MoreVertical className="w-4 h-4" />
                                 </button>
@@ -685,7 +905,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                                         handleViewWindow(window);
                                         document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                       }}
-                                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      className="flex items-center gap-2 w-full px-4 py-2 sm:py-1.5 text-sm text-gray-700 hover:bg-gray-100 mobile-touch-target"
                                     >
                                       <Eye className="w-4 h-4" />
                                       View Details
@@ -696,18 +916,31 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                                         handleEditWindow(window);
                                         document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                       }}
-                                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      className="flex items-center gap-2 w-full px-4 py-2 sm:py-1.5 text-sm text-gray-700 hover:bg-gray-100 mobile-touch-target"
                                     >
                                       <Edit className="w-4 h-4" />
                                       Edit Window
                                     </button>
+                                    {getActionButton(window) && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          getActionButton(window)?.action();
+                                          document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                        }}
+                                        className={`flex items-center gap-2 w-full px-4 py-2 sm:py-1.5 text-sm mobile-touch-target ${getActionButton(window)?.className}`}
+                                      >
+                                        <CheckCircle2 className="w-4 h-4" />
+                                        {getActionButton(window)?.text}
+                                      </button>
+                                    )}
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleDeleteWindow(window.id);
                                         document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
                                       }}
-                                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                      className="flex items-center gap-2 w-full px-4 py-2 sm:py-1.5 text-sm text-red-600 hover:bg-red-50 mobile-touch-target"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                       Delete Window
@@ -814,8 +1047,8 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
             {activeTab === 'document' && (
               <div className="space-y-6">
                 {/* Project Documents Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Project Documents</h3>
                       <p className="text-sm text-gray-500 mt-1">3 documents</p>
@@ -824,7 +1057,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                       variant="secondary"
                       icon={Upload}
                       onClick={() => showToast('Upload document functionality coming soon')}
-                      className="px-4 py-2"
+                      className="w-full sm:w-auto px-4 py-2 mobile-touch-target"
                     >
                       Upload document
                     </Button>
@@ -832,32 +1065,34 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                   
                   <div className="space-y-4">
                     {/* Quality Report */}
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-gray-100 last:border-b-0 gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                           <span className="text-xs font-medium text-orange-600">QR</span>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">Quality Inspection Report.pdf</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>2.1 MB</span>
-                            <span>•</span>
-                            <span>Jan 20, 2024, 11:15 AM</span>
-                            <span>•</span>
-                            <span className="px-2 py-1 bg-orange-100 text-orange-600 rounded-full text-xs">Sarah Johnson</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">Quality Inspection Report.pdf</p>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-gray-500 mt-1">
+                            <div className="flex items-center gap-2">
+                              <span>2.1 MB</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span>Jan 20, 2024, 11:15 AM</span>
+                            </div>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="px-2 py-1 bg-orange-100 text-orange-600 rounded-full text-xs w-fit">Sarah Johnson</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 self-end sm:self-center">
                         <button 
                           onClick={() => showToast('Downloading Quality Inspection Report.pdf')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
+                          className="p-2 text-gray-400 hover:text-gray-600 mobile-touch-target"
                         >
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => showToast('Delete document functionality coming soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
+                          className="p-2 text-gray-400 hover:text-red-600 mobile-touch-target"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -865,32 +1100,34 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     </div>
 
                     {/* Document 1 */}
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-gray-100 last:border-b-0 gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                           <span className="text-xs font-medium text-blue-600">DOC</span>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">Site Map - Floor Plan.pdf</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>1.95 MB</span>
-                            <span>•</span>
-                            <span>Jan 15, 2024, 02:00 PM</span>
-                            <span>•</span>
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">John Doe</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">Site Map - Floor Plan.pdf</p>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-gray-500 mt-1">
+                            <div className="flex items-center gap-2">
+                              <span>1.95 MB</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span>Jan 15, 2024, 02:00 PM</span>
+                            </div>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs w-fit">John Doe</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 self-end sm:self-center">
                         <button 
                           onClick={() => showToast('Downloading Site Map - Floor Plan.pdf')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
+                          className="p-2 text-gray-400 hover:text-gray-600 mobile-touch-target"
                         >
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => showToast('Delete document functionality coming soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
+                          className="p-2 text-gray-400 hover:text-red-600 mobile-touch-target"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -898,32 +1135,34 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     </div>
 
                     {/* Document 2 */}
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-gray-100 last:border-b-0 gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                           <span className="text-xs font-medium text-gray-600">TXT</span>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">Architectural Plan.txt</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>1.95 MB</span>
-                            <span>•</span>
-                            <span>Jan 15, 2024, 02:00 PM</span>
-                            <span>•</span>
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Ema Will</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">Architectural Plan.txt</p>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-gray-500 mt-1">
+                            <div className="flex items-center gap-2">
+                              <span>1.95 MB</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span>Jan 15, 2024, 02:00 PM</span>
+                            </div>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs w-fit">Ema Will</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 self-end sm:self-center">
                         <button 
                           onClick={() => showToast('Downloading Architectural Plan.txt')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
+                          className="p-2 text-gray-400 hover:text-gray-600 mobile-touch-target"
                         >
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => showToast('Delete document functionality coming soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
+                          className="p-2 text-gray-400 hover:text-red-600 mobile-touch-target"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -933,8 +1172,8 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                 </div>
 
                 {/* Installation Guides Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Installation Guides</h3>
                       <p className="text-sm text-gray-500 mt-1">Step-by-step installation procedures</p>
@@ -943,7 +1182,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                       variant="secondary"
                       icon={Upload}
                       onClick={() => showToast('Upload installation guide functionality coming soon')}
-                      className="px-4 py-2"
+                      className="w-full sm:w-auto px-4 py-2 mobile-touch-target"
                     >
                       Upload document
                     </Button>

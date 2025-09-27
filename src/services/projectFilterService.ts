@@ -8,6 +8,9 @@ import { ProjectStatus } from '../features/project/types';
 // Project statuses that Execution Team should not see
 const EXECUTION_TEAM_HIDDEN_STATUSES: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB'];
 
+// Project statuses that Lead Supervisor should not see
+const LEAD_SUPERVISOR_HIDDEN_STATUSES: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB'];
+
 /**
  * Check if a project status should be visible to a specific user type
  */
@@ -20,6 +23,10 @@ export function isProjectStatusVisibleToUser(status: ProjectStatus, userType: Us
     case 'project-coordinator':
       // Project Coordinators can see all project statuses
       return true;
+    
+    case 'lead-supervisor':
+      // Lead Supervisors cannot see PV75, PV90, UB, WB statuses
+      return !LEAD_SUPERVISOR_HIDDEN_STATUSES.includes(status);
     
     case 'execution-team':
       // Execution Team cannot see PV75, PV90, UB, WB statuses
@@ -61,6 +68,8 @@ export function getHiddenProjectStatuses(userType: UserType): ProjectStatus[] {
   switch (userType) {
     case 'execution-team':
       return EXECUTION_TEAM_HIDDEN_STATUSES;
+    case 'lead-supervisor':
+      return LEAD_SUPERVISOR_HIDDEN_STATUSES;
     case 'executive':
     case 'project-coordinator':
     default:

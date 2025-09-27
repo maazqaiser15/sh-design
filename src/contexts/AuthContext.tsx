@@ -142,6 +142,36 @@ const demoAccounts: Record<DemoPersona, DemoAccount> = {
       domain: 'safehavendefense.com',
       isVerified: true
     }
+  },
+  'lead-supervisor': {
+    id: 'demo-lead-supervisor',
+    name: 'David Thompson',
+    email: 'leadsupervisor@safehavendefense.com',
+    role: {
+      id: 'lead-supervisor',
+      name: 'Lead Supervisor',
+      userType: 'lead-supervisor',
+      permissions: [
+        { module: 'dashboard', actions: ['view'] },
+        { module: 'projects', actions: ['view', 'edit', 'manage'] },
+        { module: 'documents', actions: ['view', 'edit'] }
+      ]
+    },
+    avatar: 'DT',
+    description: 'Lead supervision with project and document management access only',
+    permissions: [
+      { module: 'dashboard', actions: ['view'] },
+      { module: 'projects', actions: ['view', 'edit', 'manage'] },
+      { module: 'documents', actions: ['view', 'edit'] }
+    ],
+    userType: 'lead-supervisor',
+    company: {
+      id: 'safehaven-1',
+      name: 'SafeHavenDefense',
+      type: 'safehavendefense',
+      domain: 'safehavendefense.com',
+      isVerified: true
+    }
   }
 };
 

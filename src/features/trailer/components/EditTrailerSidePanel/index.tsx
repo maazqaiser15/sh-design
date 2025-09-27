@@ -501,7 +501,7 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Current Stock</label>
+                      <label className="block text-xs text-gray-500 mb-1">Initial Stock</label>
                       <input
                         type="number"
                         min="0"
@@ -512,7 +512,7 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
                     </div>
                     
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Threshold</label>
+                      <label className="block text-xs text-gray-500 mb-1">Inventory Left</label>
                       <input
                         type="number"
                         min="0"
@@ -565,7 +565,7 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Current Stock</label>
+                      <label className="block text-xs text-gray-500 mb-1">Initial Stock</label>
                       <input
                         type="number"
                         min="0"
@@ -576,7 +576,7 @@ export const EditTrailerSidePanel: React.FC<EditTrailerSidePanelProps> = ({
                     </div>
                     
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Threshold</label>
+                      <label className="block text-xs text-gray-500 mb-1">Inventory Left</label>
                       <input
                         type="number"
                         min="0"

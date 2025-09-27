@@ -1,7 +1,6 @@
 import React from "react";
 import { Sidebar } from "../Sidebar";
 import { TopBar } from "../TopBar";
-import { MobileBottomNav } from "../MobileBottomNav";
 import { useSidebar } from "../../../contexts/SidebarContext";
 
 interface LayoutProps {
@@ -13,7 +12,7 @@ interface LayoutProps {
  * Provides the overall application structure
  */
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { isCollapsed, isMobile } = useSidebar();
+  const { isCollapsed, isMobile, isMobileOpen } = useSidebar();
 
   return (
     <div className="h-screen bg-gray-50 flex">
@@ -21,18 +20,23 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${isCollapsed && !isMobile ? 'ml-0' : ''}`}>
+      <div className={`
+        flex-1 flex flex-col overflow-hidden transition-all duration-300
+        ${isMobile 
+          ? 'ml-0' 
+          : isCollapsed 
+            ? 'ml-0' 
+            : 'ml-64'
+        }
+      `}>
         {/* Top Bar with Breadcrumbs */}
         <TopBar />
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="py-4 px-4 sm:py-6 sm:px-16 pb-20 sm:pb-6">{children}</div>
+          <div className="py-4 px-4 sm:py-6 sm:px-16">{children}</div>
         </main>
       </div>
-
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
     </div>
   );
 };

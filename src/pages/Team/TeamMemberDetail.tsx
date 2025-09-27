@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   ArrowLeft,
   Mail,
@@ -62,6 +63,7 @@ type TabType = 'time-log' | 'projects' | 'leaves' | 'activity-log';
 export const TeamMemberDetail: React.FC = () => {
   const { memberId } = useParams<{ memberId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('time-log');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -75,9 +77,17 @@ export const TeamMemberDetail: React.FC = () => {
             variant="secondary"
             size="sm"
             icon={ArrowLeft}
-            onClick={() => navigate("/team")}
+            onClick={() => {
+              // For role 3 (execution-team), navigate to dashboard
+              // For other roles, navigate to team list
+              if (user?.userType === 'execution-team') {
+                navigate("/");
+              } else {
+                navigate("/team");
+              }
+            }}
           >
-            Back to Team
+            Back
           </Button>
         </div>
         <Card>
@@ -147,51 +157,80 @@ export const TeamMemberDetail: React.FC = () => {
 
   const renderTimeLogTab = () => (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <h3 className="text-lg font-semibold text-gray-900">Daily Time Logs</h3>
         <div className="flex items-center space-x-2">
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search by date..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
       </div>
 
       {filteredTimeLogs.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time In</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Out</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hours</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredTimeLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time In</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Out</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hours</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredTimeLogs.map((log) => (
+                  <tr key={log.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {new Date(log.date).toLocaleDateString('en-US', { 
+                        day: '2-digit', 
+                        month: 'short', 
+                        year: 'numeric' 
+                      })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.timeIn}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.timeOut}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{log.totalHours}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3">
+            {filteredTimeLogs.map((log) => (
+              <div key={log.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-medium text-gray-900">
                     {new Date(log.date).toLocaleDateString('en-US', { 
                       day: '2-digit', 
                       month: 'short', 
                       year: 'numeric' 
                     })}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.timeIn}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.timeOut}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{log.totalHours}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </h4>
+                  <span className="text-sm font-medium text-blue-600">{log.totalHours}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                  <div>
+                    <span className="font-medium">Time In:</span> {log.timeIn}
+                  </div>
+                  <div>
+                    <span className="font-medium">Time Out:</span> {log.timeOut}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <div className="text-center py-12">
           <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -203,17 +242,17 @@ export const TeamMemberDetail: React.FC = () => {
 
   const renderProjectsTab = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <h3 className="text-lg font-semibold text-gray-900">Project History</h3>
         <div className="flex items-center space-x-2">
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -252,36 +291,64 @@ export const TeamMemberDetail: React.FC = () => {
           Past Projects
         </h4>
         {filteredProjects.filter(p => p.status !== 'WIP').length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredProjects.filter(p => p.status !== 'WIP').map((project) => (
-                  <tr key={project.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{project.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{project.role}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(project.startDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'Ongoing'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(project.status)}
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredProjects.filter(p => p.status !== 'WIP').map((project) => (
+                    <tr key={project.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{project.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{project.role}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(project.startDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'Ongoing'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(project.status)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+              {filteredProjects.filter(p => p.status !== 'WIP').map((project) => (
+                <div key={project.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-gray-900 truncate">{project.name}</h4>
+                    {getStatusBadge(project.status)}
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div>
+                      <span className="font-medium">Role:</span> {project.role}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="font-medium">Start:</span> {new Date(project.startDate).toLocaleDateString()}
+                      </div>
+                      <div>
+                        <span className="font-medium">End:</span> {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'Ongoing'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-12">
             <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -299,17 +366,17 @@ export const TeamMemberDetail: React.FC = () => {
 
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <h3 className="text-lg font-semibold text-gray-900">Leave History</h3>
           <div className="flex items-center space-x-2">
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-none">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search leaves..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -330,34 +397,57 @@ export const TeamMemberDetail: React.FC = () => {
         )}
 
         {filteredLeaves.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLeaves.map((leave) => (
-                  <tr key={leave.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{leave.type}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(leave.fromDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(leave.toDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(leave.status)}
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredLeaves.map((leave) => (
+                    <tr key={leave.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{leave.type}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(leave.fromDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(leave.toDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(leave.status)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+              {filteredLeaves.map((leave) => (
+                <div key={leave.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-gray-900">{leave.type}</h4>
+                    {getStatusBadge(leave.status)}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                      <span className="font-medium">From:</span> {new Date(leave.fromDate).toLocaleDateString()}
+                    </div>
+                    <div>
+                      <span className="font-medium">To:</span> {new Date(leave.toDate).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-12">
             <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -370,17 +460,17 @@ export const TeamMemberDetail: React.FC = () => {
 
   const renderActivityLogTab = () => (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <h3 className="text-lg font-semibold text-gray-900">System Activity</h3>
         <div className="flex items-center space-x-2">
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search activities..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -416,38 +506,47 @@ export const TeamMemberDetail: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-4 sm:px-0">
       {/* Header */}
-      <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
         <Button
           variant="secondary"
           size="sm"
           icon={ArrowLeft}
-          onClick={() => navigate("/team")}
+          onClick={() => {
+            // For role 3 (execution-team), navigate to dashboard
+            // For other roles, navigate to team list
+            if (user?.userType === 'execution-team') {
+              navigate("/");
+            } else {
+              navigate("/team");
+            }
+          }}
+          className="w-fit"
         >
-          Back to Team
+          Back
         </Button>
-        <div>
-          <h1 className="text-h1 font-semibold text-text-primary">
+        <div className="flex-1">
+          <h1 className="text-xl sm:text-h1 font-semibold text-text-primary">
             Team Member Details
           </h1>
-          <p className="text-body text-text-secondary mt-1">
+          <p className="text-sm sm:text-body text-text-secondary mt-1">
             View detailed information and activity for {member.name}
           </p>
         </div>
       </div>
 
       {/* User Info Header Card */}
-      <Card className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-semibold">
-                  {member.avatar}
-                </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900">{member.name}</h2>
-              <p className="text-lg text-gray-600 mb-2">{member.role}</p>
-              <div className="flex items-center space-x-4 mb-4">
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
+          <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+            <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-semibold flex-shrink-0">
+              {member.avatar}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{member.name}</h2>
+              <p className="text-base sm:text-lg text-gray-600 mb-2">{member.role}</p>
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
                 <StatusBadge status={member.status} />
                 {member.status === "Unavailable" && member.unavailableUntil && (
                   <span className="text-sm text-gray-500">
@@ -457,52 +556,53 @@ export const TeamMemberDetail: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                  <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">{member.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                  <Phone className="w-4 h-4 text-gray-400" />
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-600 truncate">{member.email}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   <span className="text-sm text-gray-600">{member.phone}</span>
                 </div>
               </div>
             </div>
-        </div>
+          </div>
 
-          <div className="text-right">
+          <div className="lg:text-right">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Current Assigned Projects</h3>
             {currentProjects.length > 0 ? (
               <div className="space-y-1">
                 {currentProjects.map((project) => (
                   <div key={project.id} className="text-sm text-blue-600 font-medium">
-                            {project.name}
-                    </div>
-                  ))}
-                </div>
-              ) : (
+                    {project.name}
+                  </div>
+                ))}
+              </div>
+            ) : (
               <span className="text-sm text-gray-500">No current project</span>
             )}
           </div>
-            </div>
-          </Card>
+        </div>
+      </Card>
 
       {/* Tab Navigation */}
       <div className="bg-white border-b border-gray-200">
-        <nav className="flex space-x-8 px-1">
+        <nav className="flex overflow-x-auto space-x-4 sm:space-x-8 px-1 scrollbar-hide">
           {tabs.map((tab) => {
             const IconComponent = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 font-medium text-sm flex items-center space-x-2 border-b-2 transition-all duration-200 ${
+                className={`py-4 px-2 sm:px-1 font-medium text-sm flex items-center space-x-2 border-b-2 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <IconComponent className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
               </button>
             );
           })}
@@ -510,7 +610,7 @@ export const TeamMemberDetail: React.FC = () => {
       </div>
 
       {/* Tab Content */}
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         {activeTab === 'time-log' && renderTimeLogTab()}
         {activeTab === 'projects' && renderProjectsTab()}
         {activeTab === 'leaves' && renderLeavesTab()}

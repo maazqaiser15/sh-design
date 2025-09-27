@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FolderOpen,
   Users,
@@ -49,6 +50,58 @@ const mockStats: DashboardStats = {
   pendingTasks: 23,
   teamUtilization: 85,
   availableTrailers: 8,
+};
+
+// Role 3 (Execution Team) specific data
+const role3UpcomingProjects = [
+  {
+    id: 'upcoming-1',
+    title: 'Downtown Office Complex',
+    location: 'New York, NY',
+    startDate: '2024-02-15',
+    endDate: '2024-02-28',
+    status: 'WB',
+    priority: 'High',
+    assignedTeam: ['John Smith', 'Sarah Johnson'],
+    description: 'Security film installation for 25-story office building'
+  },
+  {
+    id: 'upcoming-2',
+    title: 'Government Building Renovation',
+    location: 'Washington, DC',
+    startDate: '2024-03-01',
+    endDate: '2024-03-15',
+    status: 'WB',
+    priority: 'High',
+    assignedTeam: ['Mike Wilson', 'David Brown'],
+    description: 'High-security film installation with special requirements'
+  },
+  {
+    id: 'upcoming-3',
+    title: 'Corporate Headquarters',
+    location: 'Chicago, IL',
+    startDate: '2024-03-20',
+    endDate: '2024-04-05',
+    status: 'UB',
+    priority: 'Medium',
+    assignedTeam: ['Lisa Garcia', 'Maria Rodriguez'],
+    description: 'Standard security film installation for corporate office'
+  }
+];
+
+const role3CurrentAssignment = {
+  id: 'current-1',
+  title: 'Financial District Tower',
+  location: 'San Francisco, CA',
+  startDate: '2024-01-20',
+  endDate: '2024-02-10',
+  status: 'WIP',
+  progress: 65,
+  assignedTeam: ['John Smith', 'Sarah Johnson', 'Mike Wilson'],
+  description: 'Multi-layer security film installation for 30-story tower',
+  currentPhase: 'Window Installation',
+  nextMilestone: 'Quality Check - Floor 15-20',
+  estimatedCompletion: '3 days remaining'
 };
 
 // Executive-level analytics data
@@ -290,7 +343,9 @@ const mockActivities: Activity[] = [
  */
 export const Dashboard: React.FC = () => {
   const { user, hasPermission } = useAuth();
+  const navigate = useNavigate();
   const isExecutive = user?.userType === 'executive';
+  const isExecutionTeam = user?.userType === 'execution-team';
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -317,6 +372,164 @@ export const Dashboard: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  // Role 3 (Execution Team) specific dashboard
+  if (isExecutionTeam) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-h1 font-semibold text-text-primary">
+              Welcome John
+            </h1>
+            <p className="text-body text-text-secondary mt-1">
+              Your current assignment and upcoming projects
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            {/* Buttons removed for role 3 dashboard */}
+          </div>
+        </div>
+
+        {/* Current Assignment Section */}
+        <Card 
+          className="border-l-4 border-l-blue-500 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => navigate('/projects/role3-project-wip')}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-h3 font-medium text-text-primary flex items-center">
+              <Target className="w-5 h-5 mr-2 text-blue-600" />
+              Current Assignment
+            </h2>
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                {role3CurrentAssignment.status}
+              </span>
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                {role3CurrentAssignment.progress}% Complete
+              </span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div>
+              <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-2">
+                {role3CurrentAssignment.title}
+              </h3>
+              <p className="text-sm sm:text-base text-text-secondary mb-4">
+                {role3CurrentAssignment.description}
+              </p>
+              
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-center">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-text-muted mr-2 flex-shrink-0" />
+                  <span className="text-sm sm:text-base text-text-secondary truncate">{role3CurrentAssignment.location}</span>
+                </div>
+                <div className="flex items-center">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-text-muted mr-2 flex-shrink-0" />
+                  <span className="text-sm sm:text-base text-text-secondary">
+                    {new Date(role3CurrentAssignment.startDate).toLocaleDateString()} - {new Date(role3CurrentAssignment.endDate).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex items-start sm:items-center">
+                  <Users className="w-3 h-3 sm:w-4 sm:h-4 text-text-muted mr-2 flex-shrink-0 mt-0.5 sm:mt-0" />
+                  <span className="text-sm sm:text-base text-text-secondary">
+                    Team: {role3CurrentAssignment.assignedTeam.join(', ')}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-sm sm:text-base font-medium text-text-primary mb-3">Project Progress</h4>
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs sm:text-sm text-text-secondary">Overall Progress</span>
+                    <span className="text-xs sm:text-sm font-medium text-text-primary">{role3CurrentAssignment.progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${role3CurrentAssignment.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Upcoming Projects Section */}
+        <Card>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+            <h2 className="text-h3 font-medium text-text-primary flex items-center">
+              <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+              Upcoming Projects
+            </h2>
+            <Button variant="ghost" size="sm" className="self-start sm:self-auto">
+              View All
+              <ArrowRight size={16} className="ml-2" />
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            {role3UpcomingProjects.map((project) => (
+              <div key={project.id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                      <h3 className="text-sm sm:text-base font-medium text-text-primary truncate">{project.title}</h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
+                          project.status === 'WB' 
+                            ? 'bg-teal-100 text-teal-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {project.status}
+                        </span>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
+                          project.priority === 'High' 
+                            ? 'bg-red-100 text-red-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {project.priority}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs sm:text-sm text-text-secondary mb-3 line-clamp-2">{project.description}</p>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-xs sm:text-sm text-text-muted">
+                      <div className="flex items-center">
+                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">{project.location}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                        <span>{new Date(project.startDate).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+                        <span>{project.assignedTeam.length} members</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button variant="ghost" size="sm" className="self-start sm:self-auto">
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

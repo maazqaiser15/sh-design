@@ -149,55 +149,95 @@ export const WindowListView: React.FC<WindowListViewProps> = ({
               {/* Actions */}
               <div className="col-span-1">
                 <div className="relative flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleMenu(window.id);
-                    }}
-                    className="p-1 text-gray-400 hover:text-gray-600"
-                  >
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                  
-                  {/* Dropdown Menu */}
-                  {openMenuId === window.id && (
-                    <div className="absolute right-0 top-8 z-10 w-32 bg-white border border-gray-200 rounded-lg shadow-lg">
-                      <div className="py-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleView(window);
-                          }}
-                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                        >
-                          <Eye className="w-4 h-4" />
-                          <span>View</span>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(window);
-                          }}
-                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                        >
-                          <Edit className="w-4 h-4" />
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(window.id);
-                          }}
-                          className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          <span>Delete</span>
-                        </button>
+                  {/* Mobile: Direct action buttons */}
+                  <div className="flex space-x-1 md:hidden">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleView(window);
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(window);
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(window.id);
+                      }}
+                      className="p-1 text-gray-400 hover:text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {/* Desktop: 3-dots menu */}
+                  <div className="hidden md:block">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleMenu(window.id);
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                    
+                    {/* Dropdown Menu */}
+                    {openMenuId === window.id && (
+                      <div className="absolute right-0 top-8 z-10 w-32 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <div className="py-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleView(window);
+                            }}
+                            className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          >
+                            <Eye className="w-4 h-4" />
+                            <span>View</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(window);
+                            }}
+                            className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          >
+                            <Edit className="w-4 h-4" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(window.id);
+                            }}
+                            className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span>Delete</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

@@ -30,7 +30,7 @@ The application is now running at **http://localhost:3001** with the simplified 
 ### **3. Execution Team Role** 🟢
 - **Email Patterns**: `crew@`, `team@`, `field@`, `ground@`, `ops@`, `logistics@`, `production@`, `quality@`, `safety@`, `finance@`, `hr@`, `it@`
 - **Permissions**: Operational access for task execution
-- **Modules**: All modules (view only)
+- **Modules**: Dashboard, Projects, Documents (view only)
 - **Demo Account**: `crew@safehavendefense.com`
 
 ---

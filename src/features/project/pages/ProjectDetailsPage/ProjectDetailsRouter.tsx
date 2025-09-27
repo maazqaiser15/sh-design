@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
 import { useSetBreadcrumbs } from '../../../../contexts/BreadcrumbContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 import { ProjectDetailsPrep } from './ProjectDetailsPrep';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 import { ProjectDetailsQF } from './ProjectDetailsQF';
@@ -18,6 +19,7 @@ export const ProjectDetailsRouter: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchParams] = useSearchParams();
   const [project, setProject] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
+  const { user } = useAuth();
   
   // Get project status and title from URL params or project data
   const statusFromUrl = searchParams.get('status');

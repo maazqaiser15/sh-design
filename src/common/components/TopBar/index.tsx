@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, LogOut, Menu } from 'lucide-react';
+import { Bell, LogOut, Menu, User } from 'lucide-react';
 import { Button } from '../Button';
 import { Breadcrumb } from '../Breadcrumb';
 import { NotificationsOverlay, Notification } from '../NotificationsOverlay';
@@ -165,6 +165,23 @@ export const TopBar: React.FC = () => {
                       </span>
                     )}
                   </div>
+                  
+                  {/* View Profile Button - Only show for execution-team users */}
+                  {user?.userType === 'execution-team' && (
+                    <button
+                      onClick={() => {
+                        // Map current user to team member ID for demo purposes
+                        const teamMemberId = 'tm-001'; // John Smith - first team member
+                        navigate(`/team/${teamMemberId}`);
+                        setShowUserMenu(false); // Close dropdown after navigation
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-text-primary hover:bg-gray-50 flex items-center space-x-2"
+                    >
+                      <User size={16} />
+                      <span>View Profile</span>
+                    </button>
+                  )}
+                  
                   <button
                     onClick={handleLogout}
                     className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"

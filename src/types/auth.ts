@@ -6,7 +6,7 @@ export interface LoginCredentials {
 }
 
 export type LoginType = 'email' | 'demo' | 'sso' | 'domain-based' | 'company-based';
-export type UserType = 'executive' | 'project-coordinator' | 'execution-team';
+export type UserType = 'executive' | 'project-coordinator' | 'execution-team' | 'lead-supervisor';
 export type CompanyType = 'safehavendefense' | 'contractor' | 'client' | 'partner';
 export type DepartmentType = 'operations' | 'logistics' | 'production' | 'quality' | 'safety' | 'finance' | 'hr' | 'it';
 
@@ -41,7 +41,7 @@ export interface DepartmentInfo {
   permissions: Permission[];
 }
 
-export type DemoPersona = 'executive' | 'project-coordinator' | 'execution-team';
+export type DemoPersona = 'executive' | 'project-coordinator' | 'execution-team' | 'lead-supervisor';
 
 export interface DemoAccount {
   id: string;

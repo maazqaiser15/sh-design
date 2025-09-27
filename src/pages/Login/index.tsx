@@ -57,6 +57,13 @@ export const Login: React.FC = () => {
         userType = 'project-coordinator';
         loginType = 'company-based';
         description = 'Project Coordinator with project management and team coordination access';
+      } else if (localPart.startsWith('leadsupervisor@') || localPart === 'leadsupervisor' ||
+                 localPart.startsWith('lead-supervisor@') || localPart === 'lead-supervisor' ||
+                 localPart.startsWith('lead_supervisor@') || localPart === 'lead_supervisor' ||
+                 localPart.startsWith('ls@') || localPart === 'ls') {
+        userType = 'lead-supervisor';
+        loginType = 'company-based';
+        description = 'Lead Supervisor with project and document management access only';
       } else if (localPart.startsWith('crew@') || localPart === 'crew' ||
                  localPart.startsWith('team@') || localPart === 'team' ||
                  localPart.startsWith('field@') || localPart === 'field' ||
@@ -124,6 +131,13 @@ export const Login: React.FC = () => {
       color: 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100',
     },
     {
+      id: 'lead-supervisor' as DemoPersona,
+      title: 'Lead Supervisor',
+      description: 'Lead supervision with project and document management access only',
+      icon: Zap,
+      color: 'bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100',
+    },
+    {
       id: 'execution-team' as DemoPersona,
       title: 'Execution Team',
       description: 'Operational access for task execution (no team/trailer access)',
@@ -147,24 +161,6 @@ export const Login: React.FC = () => {
 
         {/* Login Container - Max Width 400px */}
         <div className="bg-white rounded-lg shadow-card p-8 max-w-sm mx-auto w-full">
-          {/* Example Email Suggestions - Exactly 3 User Types */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">Try these 3 example accounts:</h3>
-            <div className="space-y-1 text-xs text-gray-600">
-              <div className="flex justify-between">
-                <span>admin@safehavendefense.com</span>
-                <span className="text-red-600">Executive</span>
-              </div>
-              <div className="flex justify-between">
-                <span>pm@safehavendefense.com</span>
-                <span className="text-blue-600">Project Coordinator</span>
-              </div>
-              <div className="flex justify-between">
-                <span>crew@safehavendefense.com</span>
-                <span className="text-green-600">Execution Team</span>
-              </div>
-            </div>
-          </div>
           <form onSubmit={handleEmailLogin} className="space-y-3">
             {/* Email Field */}
             <div>

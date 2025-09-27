@@ -22,6 +22,7 @@ interface NavigationItem {
   icon: React.ComponentType<any>;
   children?: NavigationItem[];
   permission?: string;
+  hideOnMobile?: boolean;
 }
 
 const navigation: NavigationItem[] = [
@@ -60,6 +61,7 @@ const navigation: NavigationItem[] = [
     href: '/team-gantt-chart',
     icon: Calendar,
     permission: 'scheduler',
+    hideOnMobile: true,
   },
 ];
 
@@ -119,6 +121,7 @@ export const Sidebar: React.FC = () => {
 
   const renderNavItem = (item: NavigationItem, depth = 0) => {
     if (!hasPermission(item.permission)) return null;
+    if (isMobile && item.hideOnMobile) return null;
     
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.name);
@@ -131,7 +134,7 @@ export const Sidebar: React.FC = () => {
             <button
               onClick={() => toggleExpanded(item.name)}
               className={`
-                w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                w-full flex items-center justify-between px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
                 ${depth > 0 ? 'ml-4 pl-6' : ''}
                 text-text-secondary hover:text-text-primary hover:bg-gray-100
               `}
@@ -154,7 +157,7 @@ export const Sidebar: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                  flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
                   ${depth > 0 ? 'ml-4 pl-6' : ''}
                   text-text-secondary hover:text-text-primary hover:bg-gray-100
                 `}
@@ -167,7 +170,7 @@ export const Sidebar: React.FC = () => {
               <NavLink
                 to={item.href || '#'}
                 className={({ isActive }) => `
-                  flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                  flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
                   ${depth > 0 ? 'ml-4 pl-6' : ''}
                   ${
                     isActive
@@ -203,11 +206,25 @@ export const Sidebar: React.FC = () => {
         />
       )}
       
+      {/* Mobile-specific styles */}
+      <style jsx>{`
+        @media (max-width: 767px) {
+          .mobile-touch-target {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 12px 16px;
+          }
+          .mobile-scroll {
+            -webkit-overflow-scrolling: touch;
+          }
+        }
+      `}</style>
+      
       {/* Sidebar */}
       <div 
         className={`
           ${isMobile 
-            ? `fixed top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out ${
+            ? `fixed top-0 left-0 h-full w-64 z-50 transform transition-transform duration-300 ease-in-out ${
                 isMobileOpen ? 'translate-x-0' : '-translate-x-full'
               }`
             : `${isCollapsed ? 'w-16' : 'w-64'}`
@@ -219,18 +236,18 @@ export const Sidebar: React.FC = () => {
         onTouchEnd={onTouchEnd}
       >
         {/* Header with Logo and Toggle Button */}
-        <div className="px-4 py-4 border-b border-border flex items-center justify-between">
+        <div className="px-4 py-4 border-b border-border flex items-center justify-between min-h-[80px]">
           {(!isCollapsed || isMobile) && (
-            <div>
+            <div className="flex-1">
               <Logo size="md" textSize="sm" className="text-primary" />
-              <p className="text-caption text-text-muted mt-2 ml-11">
+              <p className="text-xs text-gray-500 mt-1 ml-11">
                 Project Management
               </p>
             </div>
           )}
           <button
             onClick={isMobile ? closeMobileSidebar : toggleSidebar}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0 mobile-touch-target"
             title={isMobile ? 'Close menu' : (isCollapsed ? 'Expand sidebar' : 'Collapse sidebar')}
           >
             {isMobile ? <ChevronLeft size={20} /> : (isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />)}
@@ -238,7 +255,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto mobile-scroll">
           {navigation.map(item => renderNavItem(item))}
         </nav>
       </div>

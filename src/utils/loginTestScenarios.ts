@@ -58,6 +58,14 @@ export const LOGIN_TEST_SCENARIOS: LoginTestScenario[] = [
     expectedCompany: 'safehavendefense',
     description: 'Project Coordinator with team coordination access'
   },
+  {
+    email: 'leadsupervisor@safehavendefense.com',
+    password: 'password123',
+    expectedUserType: 'lead-supervisor',
+    expectedLoginType: 'company-based',
+    expectedCompany: 'safehavendefense',
+    description: 'Lead Supervisor with project and document management access only'
+  },
 
   // Department-based Accounts
   {
