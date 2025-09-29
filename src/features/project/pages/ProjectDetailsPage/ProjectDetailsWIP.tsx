@@ -798,21 +798,24 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         text: 'Start Working',
         icon: CheckCircle2,
         action: () => handleStartWorking(window),
-        className: 'text-green-700 hover:bg-green-50'
+        className: 'text-green-700 hover:bg-green-50',
+        mobileClassName: 'bg-green-600 hover:bg-green-700 text-white border border-green-600 hover:border-green-700 shadow-sm hover:shadow-md transition-all duration-200'
       };
     } else if (window.status === 'In Progress') {
       return {
         text: 'Mark as Completed',
         icon: CheckCircle2,
         action: () => handleMarkAsCompleted(window),
-        className: 'text-blue-700 hover:bg-blue-50'
+        className: 'text-blue-700 hover:bg-blue-50',
+        mobileClassName: 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 hover:border-blue-700 shadow-sm hover:shadow-md transition-all duration-200'
       };
     } else if (window.status === 'Reinstallation Needed') {
       return {
         text: 'Start Working',
         icon: CheckCircle2,
         action: () => handleStartWorking(window),
-        className: 'text-orange-700 hover:bg-orange-50'
+        className: 'text-orange-700 hover:bg-orange-50',
+        mobileClassName: 'bg-orange-600 hover:bg-orange-700 text-white border border-orange-600 hover:border-orange-700 shadow-sm hover:shadow-md transition-all duration-200'
       };
     }
     return null;
@@ -1564,9 +1567,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                           e.stopPropagation();
                                           getActionButton(window)?.action();
                                         }}
-                                        className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${getActionButton(window)?.className}`}
+                                        className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md touch-manipulation min-h-[32px] ${getActionButton(window)?.mobileClassName}`}
                                       >
-                                        <CheckCircle2 className="w-3 h-3" />
+                                        <CheckCircle2 className="w-3.5 h-3.5" />
                                         <span>{getActionButton(window)?.text || 'Complete'}</span>
                                       </button>
                                     )}
