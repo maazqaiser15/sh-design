@@ -257,7 +257,7 @@ export const AddWindowModal: React.FC<AddWindowModalProps> = ({
               <div className="ml-3">
                 <p className="text-sm text-blue-800">
                   <strong>Status:</strong> This window will be created with "Pending" status. 
-                  The status will automatically update to "Updated" when you make changes.
+                  The status will be calculated based on layer installation progress.
                 </p>
               </div>
             </div>

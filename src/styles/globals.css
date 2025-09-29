@@ -6,6 +6,30 @@
 @import './design-system.css';
 @import './mobile-optimizations.css';
 
+/* Component Inspector for Development */
+@layer utilities {
+  [data-component]:hover {
+    outline: 2px solid #3b82f6 !important;
+    outline-offset: 2px !important;
+    position: relative !important;
+  }
+  
+  [data-component]:hover::after {
+    content: attr(data-component) " (" attr(data-file) ")";
+    position: absolute;
+    top: -25px;
+    left: 0;
+    background: #1f2937;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 9999;
+    pointer-events: none;
+  }
+}
+
 @layer base {
   html {
     font-family: 'SF Pro Display', system-ui, sans-serif;

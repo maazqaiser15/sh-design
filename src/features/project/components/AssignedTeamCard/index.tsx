@@ -89,7 +89,6 @@ interface AssignedTeamCardProps {
   onAddMember?: () => void;
   onRemoveMember?: (memberId: string) => void;
   onMarkComplete?: () => void;
-  onExpand?: () => void;
   isCompleted?: boolean;
   showActions?: boolean;
 }
@@ -103,7 +102,6 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
   onAddMember,
   onRemoveMember,
   onMarkComplete,
-  onExpand,
   isCompleted = false,
   showActions = true
 }) => {
@@ -114,25 +112,22 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
 
     return (
       <div className="flex gap-2 items-center">
-        {/* Mark as Complete Button - Only show when team exists */}
+        {/* Mark as Complete / Completed Button - Only show when team exists */}
         {hasTeam && (
-          <button
-            onClick={onMarkComplete}
-            className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
-          >
-            <CheckCircleIcon />
-            Mark as Complete
-          </button>
-        )}
-
-        {/* Expand Button - Only show when team exists */}
-        {hasTeam && (
-          <button
-            onClick={onExpand}
-            className="bg-white border border-[#d0d5dd] text-[#475467] w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <ExpandIcon />
-          </button>
+          isCompleted ? (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5">
+              <CheckCircleIcon />
+              Completed
+            </div>
+          ) : (
+            <button
+              onClick={onMarkComplete}
+              className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+            >
+              <CheckCircleIcon />
+              Mark as Complete
+            </button>
+          )
         )}
 
         {/* Add Team Button - Always show */}

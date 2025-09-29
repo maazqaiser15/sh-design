@@ -1,6 +1,5 @@
 export type WindowStatus = 
   | 'Pending' 
-  | 'Updated' 
   | 'In Progress' 
   | 'Complete' 
   | 'Reinstallation Needed';
@@ -241,7 +240,6 @@ export const FILM_TYPE_OPTIONS: FilmType[] = [
 
 export const WINDOW_STATUS_OPTIONS: WindowStatus[] = [
   'Pending',
-  'Updated',
   'In Progress',
   'Complete',
   'Reinstallation Needed'

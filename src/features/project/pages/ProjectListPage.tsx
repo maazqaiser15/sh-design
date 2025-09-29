@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Grid, List, Search, X, Calendar, Plus, BarChart3, Filter, MoreHorizontal } from 'lucide-react';
+import { addComponentInspector } from '../../../utils/componentInspector';
+import { ReactInspectorPanel } from '../../../utils/reactInspector';
 import { ProjectListView } from '../components/ProjectListView';
 import { ProjectTableView } from '../components/ProjectTableView';
 import { ProjectGanttView } from '../components/ProjectGanttView';
@@ -373,6 +375,24 @@ const mockProjects: SafeHavenProject[] = [
     ],
     assignedTrailer: 'Trailer Alpha',
   },
+  {
+    id: '9',
+    title: 'New Office Building Security',
+    description: 'Security film installation for newly constructed office building',
+    status: 'WIP',
+    stage: 'WIP',
+    startDate: '2025-09-30',
+    endDate: '2025-10-10',
+    location: 'Vancouver, WA',
+    createdAt: '2024-12-01T00:00:00Z',
+    updatedAt: '2024-12-01T00:00:00Z',
+    assignedTeam: [],
+    assignedTrailers: [],
+    progress: 0,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20009',
+    crew: [],
+    assignedTrailer: null,
+  },
 ];
 
 export const ProjectListPage: React.FC = () => {
@@ -511,7 +531,10 @@ export const ProjectListPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen bg-gray-50"
+      {...addComponentInspector('ProjectListPage', 'src/features/project/pages/ProjectListPage.tsx')}
+    >
       <div className="w-full py-0">
         {/* First Row - Page Heading and Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 px-2">
@@ -620,6 +643,7 @@ export const ProjectListPage: React.FC = () => {
                   const projectStatus = status === 'All' ? '' : status as ProjectStatus;
                   setFilters({
                     status: projectStatus ? [projectStatus] : [],
+                    assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
                   });
                 }}
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
@@ -733,6 +757,9 @@ export const ProjectListPage: React.FC = () => {
         project={projectForCoordinatorAssignment}
         onAssignCoordinator={handleAssignCoordinator}
       />
+
+      {/* React Inspector Panel - Development Only */}
+      <ReactInspectorPanel />
       </div>
     </div>
   );

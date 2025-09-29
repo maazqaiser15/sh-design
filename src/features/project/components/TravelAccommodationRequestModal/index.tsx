@@ -24,13 +24,11 @@ export interface TravelAccommodationRequestData {
     avatar?: string;
     location?: string;
   }>;
-  selectedRentalVehicleMembers: Array<{
-    id: string;
-    name: string;
-    role: string;
-    avatar?: string;
-    location?: string;
-  }>;
+  rentalVehicleDetails?: {
+    fromDate: string;
+    toDate: string;
+    numberOfCars: number;
+  };
 }
 
 interface TravelAccommodationRequestModalProps {
@@ -73,17 +71,18 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
     avatar?: string;
     location?: string;
   }>>([]);
-  const [selectedRentalVehicleMembers, setSelectedRentalVehicleMembers] = useState<Array<{
-    id: string;
-    name: string;
-    role: string;
-    avatar?: string;
-    location?: string;
-  }>>([]);
+  const [rentalVehicleDetails, setRentalVehicleDetails] = useState<{
+    fromDate: string;
+    toDate: string;
+    numberOfCars: number;
+  }>({
+    fromDate: '',
+    toDate: '',
+    numberOfCars: 1
+  });
   const [teamMemberToggles, setTeamMemberToggles] = useState<Record<string, boolean>>({});
   const [teamMemberTravelMethods, setTeamMemberTravelMethods] = useState<Record<string, 'air' | 'road'>>({});
   const [accommodationMemberToggles, setAccommodationMemberToggles] = useState<Record<string, boolean>>({});
-  const [rentalVehicleMemberToggles, setRentalVehicleMemberToggles] = useState<Record<string, boolean>>({});
 
   const handleSubmit = () => {
     const data: TravelAccommodationRequestData = {
@@ -93,7 +92,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
       travelMethod: travelRequired ? travelMethod : undefined,
       selectedTeamMembers,
       selectedAccommodationMembers,
-      selectedRentalVehicleMembers,
+      rentalVehicleDetails: rentalVehicleRequired ? rentalVehicleDetails : undefined,
     };
     onSubmit(data);
     onClose();
@@ -104,7 +103,13 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
   };
 
   const isFormValid = () => {
-    return travelRequired || accommodationRequired || rentalVehicleRequired;
+    if (travelRequired || accommodationRequired || rentalVehicleRequired) {
+      if (rentalVehicleRequired) {
+        return rentalVehicleDetails.fromDate && rentalVehicleDetails.toDate && rentalVehicleDetails.numberOfCars > 0;
+      }
+      return true;
+    }
+    return false;
   };
 
   // Check if a team member is selected
@@ -168,23 +173,12 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
     }
   };
 
-  // Handle individual rental vehicle team member toggle
-  const handleRentalVehicleMemberToggle = (memberId: string, isEnabled: boolean) => {
-    setRentalVehicleMemberToggles(prev => ({
+  // Handle rental vehicle details changes
+  const handleRentalVehicleDetailsChange = (field: 'fromDate' | 'toDate' | 'numberOfCars', value: string | number) => {
+    setRentalVehicleDetails(prev => ({
       ...prev,
-      [memberId]: isEnabled
+      [field]: value
     }));
-
-    if (isEnabled) {
-      // Add to selected rental vehicle members if not already there
-      const member = assignedTeamMembers.find(m => m.id === memberId);
-      if (member && !selectedRentalVehicleMembers.some(m => m.id === memberId)) {
-        setSelectedRentalVehicleMembers(prev => [...prev, member]);
-      }
-    } else {
-      // Remove from selected rental vehicle members
-      setSelectedRentalVehicleMembers(prev => prev.filter(m => m.id !== memberId));
-    }
   };
 
   return (
@@ -427,69 +421,59 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
           {rentalVehicleRequired && (
             <div className="space-y-4 pl-2">
-              {/* Team Members List */}
-              <div>
-                <label className="block text-sm font-medium text-orange-700 mb-3">
-                  Team Members
-                </label>
-                <div className="space-y-3">
-                  {assignedTeamMembers.map((member) => (
-                    <div
-                      key={member.id}
-                      className="bg-white border border-orange-200 rounded-lg p-4"
-                    >
-                      <div className="space-y-3">
-                        {/* Member Header */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 flex-1">
-                            {/* Avatar */}
-                            <div className="flex-shrink-0">
-                              {member.avatar ? (
-                                <div 
-                                  className="w-10 h-10 rounded-full bg-cover bg-center bg-no-repeat"
-                                  style={{ backgroundImage: `url('${member.avatar}')` }}
-                                />
-                              ) : (
-                                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-sm font-medium">
-                                    {member.name.split(' ').map(n => n[0]).join('')}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
+              {/* Rental Vehicle Details Form */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* From Date */}
+                  <div>
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
+                      From Date
+                    </label>
+                    <input
+                      type="date"
+                      value={rentalVehicleDetails.fromDate}
+                      onChange={(e) => handleRentalVehicleDetailsChange('fromDate', e.target.value)}
+                      className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      required
+                    />
+                  </div>
 
-                            {/* Member Info */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <p className="font-medium text-sm text-gray-900 truncate">
-                                  {member.name}
-                                </p>
-                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                  {member.role}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Toggle Switch */}
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={rentalVehicleMemberToggles[member.id] || false}
-                              onChange={(e) => handleRentalVehicleMemberToggle(member.id, e.target.checked)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {/* To Date */}
+                  <div>
+                    <label className="block text-sm font-medium text-orange-700 mb-2">
+                      To Date
+                    </label>
+                    <input
+                      type="date"
+                      value={rentalVehicleDetails.toDate}
+                      onChange={(e) => handleRentalVehicleDetailsChange('toDate', e.target.value)}
+                      className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      required
+                    />
+                  </div>
                 </div>
-                {selectedRentalVehicleMembers.length > 0 && (
+
+                {/* Number of Cars */}
+                <div>
+                  <label className="block text-sm font-medium text-orange-700 mb-2">
+                    Number of Cars Needed
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={rentalVehicleDetails.numberOfCars}
+                    onChange={(e) => handleRentalVehicleDetailsChange('numberOfCars', parseInt(e.target.value) || 1)}
+                    className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    required
+                  />
+                </div>
+
+                {/* Summary */}
+                {rentalVehicleDetails.fromDate && rentalVehicleDetails.toDate && (
                   <div className="mt-3 p-3 bg-orange-100 rounded-lg">
                     <p className="text-sm text-orange-800 font-medium">
-                      {selectedRentalVehicleMembers.length} team member{selectedRentalVehicleMembers.length > 1 ? 's' : ''} selected for rental vehicle
+                      {rentalVehicleDetails.numberOfCars} car{rentalVehicleDetails.numberOfCars > 1 ? 's' : ''} needed from {new Date(rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(rentalVehicleDetails.toDate).toLocaleDateString()}
                     </p>
                   </div>
                 )}

@@ -4,7 +4,7 @@ import { TrailerView } from '../types/ganttTypes';
 // Team Members Mock Data
 export const MOCK_TEAM_MEMBERS: TeamMember[] = [
   {
-    id: '1',
+    id: 'tm-001',
     name: 'Sarah Johnson',
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
     role: 'Supervisor',
@@ -22,7 +22,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '2',
+    id: 'tm-002',
     name: 'Alex Martin',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
@@ -40,7 +40,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '3',
+    id: 'tm-003',
     name: 'Maria Rodriguez',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     role: 'Crew Leader',
@@ -58,7 +58,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '4',
+    id: 'tm-004',
     name: 'David Chen',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     role: 'Lead',
@@ -76,7 +76,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '5',
+    id: 'tm-005',
     name: 'Emily Watson',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
     role: 'Project Coordinator',
@@ -94,7 +94,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '6',
+    id: 'tm-006',
     name: 'Michael Brown',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
@@ -112,7 +112,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '7',
+    id: 'tm-007',
     name: 'Lisa Anderson',
     avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
     role: 'Supervisor',
@@ -129,7 +129,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '8',
+    id: 'tm-008',
     name: 'James Wilson',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
     role: 'Crew Leader',
@@ -146,7 +146,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '9',
+    id: 'tm-009',
     name: 'Jennifer Taylor',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
@@ -163,7 +163,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '10',
+    id: 'tm-010',
     name: 'Robert Garcia',
     avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face',
     role: 'Project Coordinator',
@@ -180,7 +180,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '11',
+    id: 'tm-011',
     name: 'Amanda Lee',
     avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face',
     role: 'Lead',
@@ -197,7 +197,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     ]
   },
   {
-    id: '12',
+    id: 'tm-012',
     name: 'Christopher Davis',
     avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',

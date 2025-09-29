@@ -1,6 +1,6 @@
 // Window Management Types
 
-export type WindowStatus = 'Pending' | 'Updated' | 'In Progress' | 'Complete' | 'Reinstallation Needed';
+export type WindowStatus = 'Pending' | 'In Progress' | 'Complete' | 'Reinstallation Needed';
 
 export type FilmType = 'BR' | 'Riot' | 'Riot+' | 'Security' | 'Privacy' | 'Decorative' | 'Other';
 
@@ -105,7 +105,7 @@ export const MOCK_WINDOWS: Window[] = [
   ...Array.from({ length: 57 }, (_, i) => {
     const windowNumber = i + 4;
     const filmTypes: FilmType[] = ['BR', 'Riot', 'Riot+', 'Security', 'Privacy', 'Decorative', 'Other'];
-    const statuses: WindowStatus[] = ['Pending', 'Updated', 'In Progress', 'Complete', 'Reinstallation Needed'];
+    const statuses: WindowStatus[] = ['Pending', 'In Progress', 'Complete', 'Reinstallation Needed'];
     const teamMembers = ['tm-001', 'tm-002', 'tm-003', 'tm-004', 'tm-005'];
     
     const filmType = filmTypes[i % filmTypes.length];
@@ -153,7 +153,6 @@ export const FILM_TYPE_OPTIONS: { value: FilmType; label: string }[] = [
 
 export const WINDOW_STATUS_COLORS: Record<WindowStatus, string> = {
   'Pending': 'bg-gray-100 text-gray-800',
-  'Updated': 'bg-blue-100 text-blue-800',
   'In Progress': 'bg-yellow-100 text-yellow-800',
   'Complete': 'bg-green-100 text-green-800',
   'Reinstallation Needed': 'bg-red-100 text-red-800'
@@ -161,7 +160,6 @@ export const WINDOW_STATUS_COLORS: Record<WindowStatus, string> = {
 
 export const WINDOW_STATUS_DESCRIPTIONS: Record<WindowStatus, string> = {
   'Pending': 'Pending',
-  'Updated': 'Updated',
   'In Progress': 'In Progress',
   'Complete': 'Complete',
   'Reinstallation Needed': 'Reinstallation Needed'

@@ -87,7 +87,7 @@ export const EditWindowModal: React.FC<EditWindowModalProps> = ({
     if (validateForm()) {
       onSave({
         ...formData,
-        status: 'Updated' // Auto-update status when edited
+        status: editingWindow.status // Keep existing status
       });
       onClose();
     }
@@ -262,7 +262,7 @@ export const EditWindowModal: React.FC<EditWindowModalProps> = ({
               <div>
                 <h4 className="text-sm font-medium text-gray-700">Current Status</h4>
                 <p className="text-sm text-gray-600">
-                  This window will be marked as "Updated" after saving changes.
+                  Changes will be saved and the status will be recalculated based on layer progress.
                 </p>
               </div>
               <div className="text-right">

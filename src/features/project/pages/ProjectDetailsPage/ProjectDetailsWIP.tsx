@@ -7,6 +7,7 @@ import {
   Truck, 
   FileText, 
   CheckCircle2, 
+  CheckCircle,
   Clock, 
   AlertCircle,
   Edit,
@@ -18,25 +19,36 @@ import {
   X,
   MoreVertical,
   ArrowLeft,
+  Square,
+  Layers,
   ArrowRight,
   Grid,
   List,
   Upload,
   Trash2,
-  Settings
+  Settings,
+  Package,
+  ClipboardCheck,
+  FileCheck
 } from 'lucide-react';
-import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
+import { ProjectDetails, MOCK_PROJECT_DETAILS, ProjectNote } from '../../types/projectDetails';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { useToast } from '../../../../contexts/ToastContext';
 import { WindowDetailModal } from '../../components/WindowDetailModal';
 import { AddEditWindowModal } from '../../components/AddEditWindowModal';
+import { ProjectNotes } from '../../components/ProjectNotes';
 import { Window, TakeOffSheet, MOCK_WINDOWS, MOCK_TEAM_MEMBERS, LayerInstallation, FilmType, WindowStatus } from '../../types/windowManagement';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useSidebar } from '../../../../contexts/SidebarContext';
 import { ROLE3_MOCK_WINDOWS } from '../../data/role3MockWindows';
 import { MobileWindowsConfiguration } from '../../components/MobileWindowsConfiguration';
+import { QualityCheckFormModal, QualityCheckFormData } from '../../components/QualityCheckFormModal';
+import { AddUsageModal, InventoryItem } from '../../components/AddUsageModal';
+import { UpdateTrailerModal } from '../../components/UpdateTrailerModal';
+import { Trailer } from '../../../../types';
+import { EXPANDED_TRAILER_DATA } from '../../../../pages/Trailers/expandedTrailerData';
 
 interface ProjectDetailsWIPProps {
   projectStatus?: 'WIP' | 'QF' | 'Completed';
@@ -389,13 +401,19 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
   );
 };
 
-export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectStatus = 'WIP' }) => {
+export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectStatus: initialProjectStatus = 'WIP' }) => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  
+  // State for project status
+  const [projectStatus, setProjectStatus] = useState<'WIP' | 'QF' | 'Completed'>(initialProjectStatus);
   const { user } = useAuth();
   const { isMobile } = useSidebar();
   const [activeTab, setActiveTab] = useState('job-brief');
+  
+  // Notes State
+  const [notes, setNotes] = useState<ProjectNote[]>([]);
   
   // Window Management State
   const [windows, setWindows] = useState<Window[]>([]);
@@ -414,11 +432,23 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       setViewMode('grid');
     }
   }, [isMobile]);
+
+  // Modal State
+  const [showQualityCheckModal, setShowQualityCheckModal] = useState(false);
+  const [showAddUsageModal, setShowAddUsageModal] = useState(false);
+  const [showUpdateTrailerModal, setShowUpdateTrailerModal] = useState(false);
+  const [selectedTrailer, setSelectedTrailer] = useState<Trailer | null>(null);
+  const [trailers, setTrailers] = useState<Trailer[]>(EXPANDED_TRAILER_DATA);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showWindowDetailModal, setShowWindowDetailModal] = useState(false);
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
   const [updateCounter, setUpdateCounter] = useState(0);
+  
+  // Card completion states
+  const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
+  const [isInventoryUpdated, setIsInventoryUpdated] = useState(false);
+  const [isQualityFormSigned, setIsQualityFormSigned] = useState(false);
   
   // Setup Windows State
   const [showInlineSetup, setShowInlineSetup] = useState(false);
@@ -443,10 +473,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       return 'Complete';
     } else if (hasInProgress) {
       return 'In Progress';
-    } else if (allPending) {
-      return 'Pending';
     } else {
-      return 'Updated';
+      return 'Pending';
     }
   };
 
@@ -502,15 +530,14 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   // Calculate project metrics
   const calculateProjectMetrics = (windows: Window[]) => {
-    const completedWindows = windows.filter(w => w.status === 'Complete').length;
-    const startedWindows = windows.filter(w => w.status === 'In Progress' || w.status === 'Complete').length;
-    const reinstallationWindows = windows.filter(w => w.status === 'Reinstallation Needed').length;
-    
+    // Return fixed values as requested
     return {
-      completed: completedWindows,
-      started: startedWindows,
-      reinstallation: reinstallationWindows,
-      total: windows.length
+      completed: 6, // Windows Completed
+      started: 24, // Windows Started
+      reinstallation: 8, // Issues Reported
+      total: 100, // Total Windows
+      totalLayers: 340, // Total Layers
+      completedLayers: 120 // Layers Completed
     };
   };
 
@@ -525,9 +552,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     currentPhase: projectProgress === 100 ? 'Project Completed' : 
                   projectProgress > 0 ? 'Window Installation' : 'Ready to Start',
     estimatedCompletion: '2024-02-15',
-    teamOnSite: projectMetrics.started > 0 ? Math.min(projectMetrics.started, 5) : 0,
-    windowsCompleted: projectMetrics.completed,
-    windowsStarted: projectMetrics.started,
+    teamOnSite: 4, // Fixed value as requested
+    windowsCompleted: 6, // Fixed value as requested
+    windowsStarted: 24, // Fixed value as requested
     activityLog: [
       {
         id: '1',
@@ -616,7 +643,81 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   // Handlers
   const handleMarkForQF = () => {
+    setProjectStatus('QF');
     showToast('Project marked for Quality Review');
+  };
+
+  // Modal handlers
+  const handleSignQualityCheckForm = () => {
+    setShowQualityCheckModal(true);
+  };
+
+  const handleQualityCheckFormSubmit = (formData: QualityCheckFormData) => {
+    setShowQualityCheckModal(false);
+    setIsQualityFormSigned(true);
+    showToast('Quality check form submitted successfully');
+    console.log('Quality Check Form Data:', formData);
+  };
+
+  const handleAddUsage = () => {
+    setShowAddUsageModal(true);
+  };
+
+  const handleUsageSubmit = (usageData: InventoryItem[]) => {
+    setShowAddUsageModal(false);
+    setIsInventoryUpdated(true);
+    showToast('Usage data added successfully');
+    console.log('Usage Data:', usageData);
+  };
+
+  const handleUpdateTrailer = () => {
+    // For now, select the first available trailer
+    // In a real app, this would open a trailer selection modal
+    const availableTrailer = trailers.find(t => t.status === 'available') || trailers[0];
+    setSelectedTrailer(availableTrailer);
+    setShowUpdateTrailerModal(true);
+  };
+
+  const handleTrailerUpdate = (updatedTrailer: Omit<Trailer, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (selectedTrailer) {
+      const updatedTrailers = trailers.map(t => 
+        t.id === selectedTrailer.id 
+          ? { ...t, ...updatedTrailer, updatedAt: new Date().toISOString() }
+          : t
+      );
+      setTrailers(updatedTrailers);
+      showToast('Trailer updated successfully');
+      setShowUpdateTrailerModal(false);
+      setSelectedTrailer(null);
+      setIsTrailerUpdated(true);
+    }
+  };
+
+  // Note handlers
+  const handleAddNote = (content: string, isInternal: boolean) => {
+    const newNote: ProjectNote = {
+      id: `note-${Date.now()}`,
+      content,
+      author: user?.name || 'Current User',
+      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      projectId: projectId || '',
+      isInternal
+    };
+    setNotes(prev => [...prev, newNote]);
+  };
+
+  const handleEditNote = (noteId: string, content: string) => {
+    setNotes(prev => prev.map(note =>
+      note.id === noteId
+        ? { ...note, content, updatedAt: new Date().toISOString() }
+        : note
+    ));
+  };
+
+  const handleDeleteNote = (noteId: string) => {
+    setNotes(prev => prev.filter(note => note.id !== noteId));
   };
 
 
@@ -827,7 +928,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       const layerCounts = calculateLayerCounts(windowData.layers || editingWindow.layers);
       setWindows(prev => prev.map(w => 
         w.id === editingWindow.id 
-          ? { ...w, ...windowData, ...layerCounts, status: 'Updated' as const }
+          ? { ...w, ...windowData, ...layerCounts }
           : w
       ));
       showToast('Window updated successfully');
@@ -1014,138 +1115,311 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             </div>
             )}
 
-            {/* Stats Section - Hidden for execution team */}
-            {user?.userType !== 'execution-team' && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
-              {projectStatus === 'WIP' ? (
-                <>
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
+            {/* Action Cards Section - Hidden for execution team */}
+            {user?.userType !== 'execution-team' && projectStatus === 'QF' && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              {/* Update Trailer Card */}
+              <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
+                isTrailerUpdated 
+                  ? 'border-green-200 bg-green-50' 
+                  : 'border-gray-200 hover:shadow-md cursor-pointer'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      isTrailerUpdated ? 'bg-green-100' : 'bg-blue-50'
+                    }`}>
+                      {isTrailerUpdated ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <Truck className="w-5 h-5 text-blue-600" />
+                      )}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team on Site</span>
+                    <h3 className="text-lg font-semibold text-gray-900">Update Trailer</h3>
                   </div>
+                  {isTrailerUpdated && (
+                    <button
+                      onClick={handleUpdateTrailer}
+                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Edit Trailer"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  {isTrailerUpdated 
+                    ? 'Trailer information has been updated successfully.'
+                    : 'Update trailer information and logistics details for the project.'
+                  }
+                </p>
+                {isTrailerUpdated ? (
+                  <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Completed</span>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="primary" 
+                    className="w-full"
+                    onClick={handleUpdateTrailer}
+                  >
+                    Update Trailer
+                  </Button>
+                )}
+              </div>
 
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}</span>
+              {/* Update Inventory Card */}
+              <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
+                isInventoryUpdated 
+                  ? 'border-green-200 bg-green-50' 
+                  : 'border-gray-200 hover:shadow-md cursor-pointer'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      isInventoryUpdated ? 'bg-green-100' : 'bg-green-50'
+                    }`}>
+                      {isInventoryUpdated ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <Package className="w-5 h-5 text-green-600" />
+                      )}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Completed</span>
+                    <h3 className="text-lg font-semibold text-gray-900">Update Inventory</h3>
                   </div>
+                  {isInventoryUpdated && (
+                    <button
+                      onClick={handleAddUsage}
+                      className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      title="Edit Inventory"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  {isInventoryUpdated 
+                    ? 'Inventory levels have been updated successfully.'
+                    : 'Manage and update inventory levels for project materials.'
+                  }
+                </p>
+                {isInventoryUpdated ? (
+                  <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Completed</span>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="primary" 
+                    className="w-full"
+                    onClick={handleAddUsage}
+                  >
+                    Update Inventory
+                  </Button>
+                )}
+              </div>
 
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsStarted}</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Started</span>
+              {/* Sign Quality Form Card */}
+              <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
+                isQualityFormSigned 
+                  ? 'border-green-200 bg-green-50' 
+                  : 'border-gray-200 hover:shadow-md cursor-pointer'
+              }`}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    isQualityFormSigned ? 'bg-green-100' : 'bg-purple-50'
+                  }`}>
+                    {isQualityFormSigned ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <FileCheck className="w-5 h-5 text-purple-600" />
+                    )}
                   </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.reinstallation}</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Issues Reported</span>
+                  <h3 className="text-lg font-semibold text-gray-900">Sign Quality Form</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  {isQualityFormSigned 
+                    ? 'Quality assurance form has been signed successfully.'
+                    : 'Complete and sign the quality assurance form for project approval.'
+                  }
+                </p>
+                {isQualityFormSigned ? (
+                  <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Completed</span>
                   </div>
-                </>
-              ) : projectStatus === 'QF' ? (
-                <>
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <Search className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Inspected</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">13</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Passed Quality Check</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">2</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Need Reinstallation</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">2</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Remaining</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Successfully Installed</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">14</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Duration</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                      </div>
-                      <span className="text-lg sm:text-xl font-semibold text-gray-700">5</span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Members</span>
-                  </div>
-                </>
-              )}
+                ) : (
+                  <Button 
+                    variant="primary" 
+                    className="w-full"
+                    onClick={handleSignQualityCheckForm}
+                  >
+                    Sign Quality Form
+                  </Button>
+                )}
+              </div>
             </div>
             )}
+
+            {/* Stats Section - Hidden for execution team and only show for WIP status */}
+            {user?.userType !== 'execution-team' && projectStatus === 'WIP' && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+              {/* Team on Site */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team on Site</span>
+              </div>
+
+              {/* Total Windows */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                    <Square className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.total}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
+              </div>
+
+              {/* Total Layers */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-50 rounded-md flex items-center justify-center">
+                    <Layers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.totalLayers}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Layers</span>
+              </div>
+
+              {/* Layers Completed */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-50 rounded-md flex items-center justify-center">
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.completedLayers}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Completed</span>
+              </div>
+
+              {/* Windows Completed */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Completed</span>
+              </div>
+
+              {/* Windows Started */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsStarted}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Started</span>
+              </div>
+
+              {/* Issues Reported */}
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-50 rounded-md flex items-center justify-center">
+                    <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.reinstallation}</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Issues Reported</span>
+              </div>
+            </div>
+            )}
+
+
+            {/* Completed Status Stats - Show when project is completed */}
+            {user?.userType !== 'execution-team' && projectStatus === 'Completed' && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Successfully Installed</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">14</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Duration</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">100%</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Success Rate</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">4</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Members</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-50 rounded-md flex items-center justify-center">
+                    <Layers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">340</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Layers</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-50 rounded-md flex items-center justify-center">
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">340</span>
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Completed</span>
+              </div>
+            </div>
+            )}
+
           </div>
         </div>
       </div>
@@ -1287,7 +1561,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                             >
                               <option value="all">All Status</option>
                               <option value="Pending">Pending</option>
-                              <option value="Updated">Updated</option>
                               <option value="In Progress">In Progress</option>
                               <option value="Complete">Complete</option>
                               <option value="Reinstallation Needed">Reinstallation Needed</option>
@@ -1984,76 +2257,12 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
             {activeTab === 'notes' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Project Notes</h3>
-                      <p className="text-sm text-gray-500 mt-1">2 notes</p>
-                    </div>
-                    <button 
-                      onClick={() => showToast('Add note functionality coming soon')}
-                      className="w-8 h-8 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center hover:border-gray-400 hover:bg-gray-50"
-                    >
-                      <Plus className="w-4 h-4 text-gray-600" />
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {/* Note 1 */}
-                    <div className="py-4 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-900">John Smith</span>
-                            <span className="text-sm text-gray-500">Jan 20, 2024, 03:15 PM</span>
-                          </div>
-                          <p className="text-gray-700">"Client requested additional security measures for the main entrance."</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Edit note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => showToast('Delete note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Note 2 */}
-                    <div className="py-4 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-900">Maria Will</span>
-                            <span className="text-sm text-gray-500">Jan 11, 2024, 03:15 PM</span>
-                          </div>
-                          <p className="text-gray-700">"Site visit completed. All measurements confirmed."</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Edit note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => showToast('Delete note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ProjectNotes
+                  notes={notes}
+                  onAddNote={handleAddNote}
+                  onEditNote={handleEditNote}
+                  onDeleteNote={handleDeleteNote}
+                />
               </div>
             )}
           </div>
@@ -2129,6 +2338,29 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         onClose={() => setShowWindowDetailModal(false)}
         windowItem={selectedWindow}
         onUpdate={handleUpdateWindow}
+      />
+
+      <QualityCheckFormModal
+        isOpen={showQualityCheckModal}
+        onClose={() => setShowQualityCheckModal(false)}
+        onSubmit={handleQualityCheckFormSubmit}
+      />
+
+      <AddUsageModal
+        isOpen={showAddUsageModal}
+        onClose={() => setShowAddUsageModal(false)}
+        onSubmit={handleUsageSubmit}
+      />
+
+      <UpdateTrailerModal
+        isOpen={showUpdateTrailerModal}
+        onClose={() => {
+          setShowUpdateTrailerModal(false);
+          setSelectedTrailer(null);
+        }}
+        onUpdateTrailer={handleTrailerUpdate}
+        trailer={selectedTrailer}
+        existingTrailerNumbers={trailers.map(t => t.trailerName)}
       />
     </div>
   );

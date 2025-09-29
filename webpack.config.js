@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -22,6 +23,17 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                '@babel/preset-env',
+                '@babel/preset-react',
+                '@babel/preset-typescript'
+              ],
+              plugins: []
+            }
+          },
           {
             loader: "ts-loader",
             options: {
@@ -57,6 +69,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       inject: true,
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
   ],
   devServer: {

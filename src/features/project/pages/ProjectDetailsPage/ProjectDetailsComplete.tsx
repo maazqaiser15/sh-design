@@ -29,13 +29,22 @@ import {
   BarChart3,
   TrendingUp,
   Award,
-  Star
+  Star,
+  Ruler,
+  DollarSign,
+  Scissors,
+  Plane,
+  Home,
+  FileBarChart,
+  Printer
 } from 'lucide-react';
 import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
+import { PDFViewerModal } from '../../../../common/components/PDFViewerModal';
 import { useToast } from '../../../../contexts/ToastContext';
+import { generateProjectReportPDF, ProjectReportData } from '../../../../utils/pdfReportGenerator';
 
 interface ProjectDetailsCompleteProps {
   projectStatus?: 'WIP' | 'QF' | 'Completed';
@@ -46,6 +55,9 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState('project-report');
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   // Project Report Data
   const [projectReport] = useState({
@@ -53,6 +65,41 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
     totalPeopleWorked: 5,
     windowLayersReinstalled: 2,
     sheetLayersInstalled: 45,
+    // Square Footage Metrics
+    squareFootage: {
+      salesEstimate: 2850, // sq ft estimated by sales
+      operationsMeasurement: 2795, // sq ft measured by operations
+      variance: -55, // difference between sales and ops
+      variancePercentage: -1.93 // percentage variance
+    },
+    // Labour Cost Metrics
+    labourCosts: {
+      totalLabourCost: 25600, // total labour cost
+      hourlyRate: 80, // average hourly rate
+      overtimeHours: 12, // overtime hours worked
+      overtimeCost: 1920, // overtime cost
+      regularHours: 308, // regular hours worked
+      regularCost: 24640 // regular cost
+    },
+    // Film Usage Metrics
+    filmUsage: {
+      totalFilmUsed: 2850, // sq ft of film used
+      filmWaste: 85, // sq ft of film wasted
+      filmRecut: 45, // sq ft of film recut
+      wastePercentage: 2.98, // percentage of waste
+      recutPercentage: 1.58, // percentage of recut
+      filmCostPerSqFt: 12.50, // cost per square foot
+      totalFilmCost: 35625 // total film cost
+    },
+    // Travel & Accommodation Costs
+    travelAccommodation: {
+      totalTravelCost: 2400, // total travel costs
+      accommodationCost: 1800, // accommodation costs
+      perDiemCost: 1200, // per diem costs
+      totalTravelAccommodation: 5400, // total travel & accommodation
+      teamMembersTraveled: 5, // number of team members who traveled
+      averageCostPerPerson: 1080 // average cost per person
+    },
     teamMembers: [
       {
         id: '1',
@@ -233,6 +280,43 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
     showToast('Edit project functionality coming soon');
   };
 
+  const handleGeneratePDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const reportData: ProjectReportData = {
+        projectName: project.title || 'Project',
+        projectId: project.projectId || 'N/A',
+        location: project.location || 'N/A',
+        startDate: project.startDate || 'N/A',
+        endDate: project.endDate || 'N/A',
+        totalHoursSpent: projectReport.totalHoursSpent,
+        totalPeopleWorked: projectReport.totalPeopleWorked,
+        squareFootage: projectReport.squareFootage,
+        labourCosts: projectReport.labourCosts,
+        filmUsage: projectReport.filmUsage,
+        travelAccommodation: projectReport.travelAccommodation,
+        qualityChecks: {
+          passed: passedChecks,
+          failed: failedChecks,
+          successRate: 100,
+          averageQualityScore: 94.8
+        },
+        teamMembers: projectReport.teamMembers
+      };
+
+      const pdf = generateProjectReportPDF(reportData);
+      const pdfBlob = pdf.output('blob');
+      setPdfBlob(pdfBlob);
+      setShowPDFModal(true);
+      showToast('PDF report generated successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      showToast('Error generating PDF report. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   const passedChecks = qualityChecks.filter(check => check.status === 'passed').length;
   const failedChecks = qualityChecks.filter(check => check.status === 'failed').length;
   const pendingChecks = qualityChecks.filter(check => check.status === 'pending').length;
@@ -255,17 +339,25 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                       Completed
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold">
-                      {project.projectId}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{project.location}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold">
+                        {project.projectId || 'N/A'}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        <span>{project.location || 'N/A'}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>{project.startDate || 'N/A'} - {project.endDate || 'N/A'}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{project.startDate} - {project.endDate}</span>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <span className="font-medium">Safe Haven</span>
+                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">SH</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -324,22 +416,22 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
 
                 <div className="flex flex-col items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                      <AlertCircle className="w-4 h-4 text-orange-600" />
+                    <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                      <Ruler className="w-4 h-4 text-blue-600" />
                     </div>
-                    <span className="text-xl font-semibold text-gray-700">{projectReport.windowLayersReinstalled}</span>
+                    <span className="text-xl font-semibold text-gray-700">{projectReport.squareFootage.operationsMeasurement}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Window Layers Reinstalled</span>
+                  <span className="text-sm font-medium text-gray-600">Sq Ft Completed</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                      <CheckSquare className="w-4 h-4 text-blue-600" />
+                    <div className="w-8 h-8 bg-purple-50 rounded-md flex items-center justify-center">
+                      <DollarSign className="w-4 h-4 text-purple-600" />
                     </div>
-                    <span className="text-xl font-semibold text-gray-700">{projectReport.sheetLayersInstalled}</span>
+                    <span className="text-xl font-semibold text-gray-700">${(projectReport.labourCosts.totalLabourCost / 1000).toFixed(1)}k</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Sheet Layers Installed</span>
+                  <span className="text-sm font-medium text-gray-600">Labour Cost</span>
                 </div>
               </div>
             </div>
@@ -365,7 +457,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                   Status: Project completed successfully
                 </span>
                 <span>
-                  Completed on {project.endDate}
+                  Completed on {project.endDate || 'N/A'}
                 </span>
               </div>
             </div>
@@ -415,57 +507,169 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                       <h3 className="text-lg font-semibold text-gray-900">Project Report</h3>
                       <div className="flex items-center gap-3">
                         <Button 
-                          variant="secondary" 
+                          variant="primary" 
                           icon={Download}
-                          onClick={() => showToast('Downloading project report...')}
+                          onClick={handleGeneratePDF}
+                          disabled={isGeneratingPDF}
+                          className="px-4 py-2"
                         >
-                          Download Report
+                          {isGeneratingPDF ? 'Generating...' : 'Download Report'}
                         </Button>
                       </div>
                     </div>
 
                     {/* Project Statistics */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
+                      {/* Square Footage Metrics */}
                       <div className="space-y-4">
-                        <h4 className="text-md font-semibold text-gray-900">Project Metrics</h4>
+                        <div className="flex items-center gap-2">
+                          <Ruler className="w-5 h-5 text-blue-600" />
+                          <h4 className="text-md font-semibold text-gray-900">Square Footage Analysis</h4>
+                        </div>
                         <div className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Total Hours Spent</span>
-                            <span className="font-semibold text-gray-900">{projectReport.totalHoursSpent} hours</span>
+                            <span className="text-sm text-gray-600">Sales Estimate</span>
+                            <span className="font-semibold text-gray-900">{projectReport.squareFootage.salesEstimate.toLocaleString()} sq ft</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Total People Worked</span>
-                            <span className="font-semibold text-gray-900">{projectReport.totalPeopleWorked} people</span>
+                            <span className="text-sm text-gray-600">Operations Measurement</span>
+                            <span className="font-semibold text-blue-600">{projectReport.squareFootage.operationsMeasurement.toLocaleString()} sq ft</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Window Layers Reinstalled</span>
-                            <span className="font-semibold text-orange-600">{projectReport.windowLayersReinstalled} layers</span>
+                            <span className="text-sm text-gray-600">Variance</span>
+                            <span className={`font-semibold ${projectReport.squareFootage.variance < 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {projectReport.squareFootage.variance > 0 ? '+' : ''}{projectReport.squareFootage.variance} sq ft
+                            </span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Sheet Layers Installed</span>
-                            <span className="font-semibold text-blue-600">{projectReport.sheetLayersInstalled} layers</span>
+                            <span className="text-sm text-gray-600">Variance %</span>
+                            <span className={`font-semibold ${projectReport.squareFootage.variancePercentage < 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {projectReport.squareFootage.variancePercentage > 0 ? '+' : ''}{projectReport.squareFootage.variancePercentage}%
+                            </span>
                           </div>
                         </div>
                       </div>
 
+                      {/* Labour Cost Metrics */}
                       <div className="space-y-4">
-                        <h4 className="text-md font-semibold text-gray-900">Quality Summary</h4>
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="w-5 h-5 text-purple-600" />
+                          <h4 className="text-md font-semibold text-gray-900">Labour Cost Breakdown</h4>
+                        </div>
                         <div className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Windows Passed QC</span>
-                            <span className="font-semibold text-green-600">{passedChecks} windows</span>
+                            <span className="text-sm text-gray-600">Total Labour Cost</span>
+                            <span className="font-semibold text-gray-900">${projectReport.labourCosts.totalLabourCost.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Windows Failed QC</span>
-                            <span className="font-semibold text-red-600">{failedChecks} windows</span>
+                            <span className="text-sm text-gray-600">Regular Hours</span>
+                            <span className="font-semibold text-blue-600">{projectReport.labourCosts.regularHours} hrs</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Success Rate</span>
-                            <span className="font-semibold text-green-600">100%</span>
+                            <span className="text-sm text-gray-600">Overtime Hours</span>
+                            <span className="font-semibold text-orange-600">{projectReport.labourCosts.overtimeHours} hrs</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Average Quality Score</span>
-                            <span className="font-semibold text-blue-600">94.8%</span>
+                            <span className="text-sm text-gray-600">Average Hourly Rate</span>
+                            <span className="font-semibold text-purple-600">${projectReport.labourCosts.hourlyRate}/hr</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quality Summary Row */}
+                    <div className="mb-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-green-600" />
+                          <h4 className="text-md font-semibold text-gray-900">Quality Summary</h4>
+                        </div>
+                        <div className="grid grid-cols-4 gap-4">
+                          {/* Windows Passed QC Card */}
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                            <div className="text-2xl font-bold text-green-600 mb-1">{passedChecks}</div>
+                            <div className="text-sm text-green-700 font-medium">Windows Passed QC</div>
+                          </div>
+                          
+                          {/* Windows Failed QC Card */}
+                          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                            <div className="text-2xl font-bold text-red-600 mb-1">{failedChecks}</div>
+                            <div className="text-sm text-red-700 font-medium">Windows Failed QC</div>
+                          </div>
+                          
+                          {/* Success Rate Card */}
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                            <div className="text-2xl font-bold text-green-600 mb-1">100%</div>
+                            <div className="text-sm text-green-700 font-medium">Success Rate</div>
+                          </div>
+                          
+                          {/* Average Quality Score Card */}
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                            <div className="text-2xl font-bold text-blue-600 mb-1">94.8%</div>
+                            <div className="text-sm text-blue-700 font-medium">Average Quality Score</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Metrics Row */}
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                      {/* Film Usage Metrics */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Scissors className="w-5 h-5 text-orange-600" />
+                          <h4 className="text-md font-semibold text-gray-900">Film Usage & Waste Analysis</h4>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Total Film Used</span>
+                            <span className="font-semibold text-gray-900">{projectReport.filmUsage.totalFilmUsed.toLocaleString()} sq ft</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Film Waste</span>
+                            <span className="font-semibold text-red-600">{projectReport.filmUsage.filmWaste} sq ft</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Film Recut</span>
+                            <span className="font-semibold text-orange-600">{projectReport.filmUsage.filmRecut} sq ft</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Waste Percentage</span>
+                            <span className="font-semibold text-red-600">{projectReport.filmUsage.wastePercentage}%</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Total Film Cost</span>
+                            <span className="font-semibold text-gray-900">${projectReport.filmUsage.totalFilmCost.toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Travel & Accommodation Costs */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Plane className="w-5 h-5 text-indigo-600" />
+                          <h4 className="text-md font-semibold text-gray-900">Travel & Accommodation</h4>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Travel Costs</span>
+                            <span className="font-semibold text-gray-900">${projectReport.travelAccommodation.totalTravelCost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Accommodation</span>
+                            <span className="font-semibold text-blue-600">${projectReport.travelAccommodation.accommodationCost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Per Diem</span>
+                            <span className="font-semibold text-green-600">${projectReport.travelAccommodation.perDiemCost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Total Travel & Accommodation</span>
+                            <span className="font-semibold text-indigo-600">${projectReport.travelAccommodation.totalTravelAccommodation.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Cost per Person</span>
+                            <span className="font-semibold text-gray-900">${projectReport.travelAccommodation.averageCostPerPerson.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -872,7 +1076,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                 </div>
 
                 <div className="space-y-4">
-                  {project.activityLog.map((activity) => (
+                  {(project.activityLog || []).map((activity) => (
                     <div key={activity.id} className="relative">
                       <div className="flex gap-3">
                         <div className="flex-shrink-0">
@@ -918,6 +1122,14 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
           </div>
         </div>
       </div>
+
+      {/* PDF Viewer Modal */}
+      <PDFViewerModal
+        isOpen={showPDFModal}
+        onClose={() => setShowPDFModal(false)}
+        pdfBlob={pdfBlob}
+        fileName={`${(project.title || 'Project').replace(/\s+/g, '_')}_Project_Report_${new Date().toISOString().split('T')[0]}.pdf`}
+      />
     </div>
   );
 };

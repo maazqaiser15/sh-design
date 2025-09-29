@@ -115,7 +115,7 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
       length: formData.length,
       width: formData.width,
       layers: generateLayerInstallations(formData.interiorLayers, formData.exteriorLayers),
-      status: windowItem ? 'Updated' : 'Pending',
+      status: 'Pending',
       assignedTeamMembers: windowItem?.assignedTeamMembers || [],
       createdAt: windowItem?.createdAt || now,
       updatedAt: now,

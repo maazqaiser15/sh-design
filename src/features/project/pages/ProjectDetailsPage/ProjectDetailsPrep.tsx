@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, CheckCircle, Hotel, User } from 'lucide-react';
-import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA } from '../../types/projectDetails';
+import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
 import { AddTravelModal } from '../../components/AddTravelModal';
@@ -14,6 +14,7 @@ import { AssignedTeamCard } from '../../components/AssignedTeamCard';
 import { TravelAccommodationModal, TravelAccommodationData } from '../../components/TravelAccommodationModal';
 import { TravelAccommodationRequestModal, TravelAccommodationRequestData } from '../../components/TravelAccommodationRequestModal';
 import { TravelAccommodationDetailsCard } from '../../components/TravelAccommodationDetailsCard';
+import { ProjectNotes } from '../../components/ProjectNotes';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -222,6 +223,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
   const [isTrailerCompleted, setIsTrailerCompleted] = useState(false);
   const [isTravelAccommodationCompleted, setIsTravelAccommodationCompleted] = useState(false);
+  const [isAssignedTeamCompleted, setIsAssignedTeamCompleted] = useState(false);
   const [showTravelAccommodationRequestModal, setShowTravelAccommodationRequestModal] = useState(false);
   const [showTravelAccommodationDetailsModal, setShowTravelAccommodationDetailsModal] = useState(false);
   const [travelAccommodationRequestSubmitted, setTravelAccommodationRequestSubmitted] = useState(false);
@@ -233,6 +235,9 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
+  
+  // Notes State
+  const [notes, setNotes] = useState<ProjectNote[]>([]);
   
   // Trailer & Films State
   const [inventoryItems, setInventoryItems] = useState([
@@ -409,6 +414,12 @@ export const ProjectDetailsPrep: React.FC = () => {
   const handleMarkTrailerComplete = () => {
     setIsTrailerCompleted(true);
     showToast('Trailer & Films marked as complete');
+  };
+
+  // Handle assigned team completion
+  const handleAssignedTeamComplete = () => {
+    setIsAssignedTeamCompleted(true);
+    showToast('Assigned team marked as complete');
   };
 
   // Handle travel accommodation details completion
@@ -941,8 +952,8 @@ export const ProjectDetailsPrep: React.FC = () => {
               assignedTeam={preparationData.assignedTeam}
               onAddMember={handleAssignTeam}
               onRemoveMember={handleRemoveTeamMember}
-              onMarkComplete={() => console.log('Mark team as complete')}
-              onExpand={() => console.log('Expand team view')}
+              onMarkComplete={handleAssignedTeamComplete}
+              isCompleted={isAssignedTeamCompleted}
               showActions={true}
             />
 
@@ -955,6 +966,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 onMarkComplete={handleTravelAccommodationComplete}
                 onExpand={handleTravelAccommodationExpand}
                 onEditDetails={handleOpenTravelAccommodationDetailsModal}
+                isCompleted={isTravelAccommodationCompleted}
               />
             ) : (
               /* All Other States - Use original card structure */
@@ -1099,27 +1111,24 @@ export const ProjectDetailsPrep: React.FC = () => {
                             </div>
                           )}
                           
-                          {/* Rental Vehicle Team Members */}
-                          {travelAccommodationRequestData.rentalVehicleRequired && (
+                          {/* Rental Vehicle Details */}
+                          {travelAccommodationRequestData.rentalVehicleRequired && travelAccommodationRequestData.rentalVehicleDetails && (
                             <div className="mt-2">
-                              <p><strong>Rental Vehicle Team Members:</strong> {travelAccommodationRequestData.selectedRentalVehicleMembers.length} selected</p>
-                              {travelAccommodationRequestData.selectedRentalVehicleMembers.length > 0 && (
-                                <div className="mt-1">
-                                  <div className="space-y-1">
-                                    {travelAccommodationRequestData.selectedRentalVehicleMembers.map((member) => (
-                                      <div key={member.id} className="flex items-center gap-2 text-sm">
-                                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                                          <span className="text-xs font-medium text-orange-700">
-                                            {member.name.split(' ').map(n => n[0]).join('')}
-                                          </span>
-                                        </div>
-                                        <span className="text-gray-700">{member.name}</span>
-                                        <span className="text-gray-500">({member.role})</span>
-                                      </div>
-                                    ))}
+                              <p><strong>Rental Vehicle Details:</strong></p>
+                              <div className="mt-1">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <span className="text-gray-700">
+                                      <strong>Duration:</strong> {new Date(travelAccommodationRequestData.rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(travelAccommodationRequestData.rentalVehicleDetails.toDate).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <span className="text-gray-700">
+                                      <strong>Number of Cars:</strong> {travelAccommodationRequestData.rentalVehicleDetails.numberOfCars}
+                                    </span>
                                   </div>
                                 </div>
-                              )}
+                              </div>
                             </div>
                           )}
                         </div>
@@ -1218,29 +1227,12 @@ export const ProjectDetailsPrep: React.FC = () => {
             </div>
 
             {/* Project Notes Card */}
-            <div className="bg-white rounded-xl p-5 border border-gray-200">
-              <div className="flex flex-col gap-5">
-                <div className="flex gap-4 items-start w-full">
-                  <div className="flex flex-col gap-1 flex-1">
-                    <h3 className="font-semibold text-lg text-[#101828] leading-7">Project Notes</h3>
-                    <p className="font-normal text-sm text-[#475467] leading-5">0 notes</p>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {/* Add Notes Button */}
-                    <button
-                      onClick={() => console.log('Add note')}
-                      className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
-                    >
-                      <PlusIcon />
-                    </button>
-                  </div>
-                </div>
-                <EmptyState
-                  icon={<StickerIcon />}
-                  message="No notes added yet"
-                />
-              </div>
-            </div>
+            <ProjectNotes
+              notes={preparationData.notes}
+              onAddNote={handleAddNote}
+              onEditNote={handleEditNote}
+              onDeleteNote={handleDeleteNote}
+            />
           </div>
 
           {/* Right Column */}

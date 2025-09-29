@@ -1,26 +1,51 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
-import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User } from 'lucide-react';
+import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check } from 'lucide-react';
 
 export interface TicketDetails {
   id: string;
   passengerName: string;
+  isRoundTrip: boolean;
   departureDate: string;
   departureTime: string;
   arrivalDate: string;
   arrivalTime: string;
   airline: string;
+  cost: string;
   attachment?: File;
+  // Return ticket details (only used when isRoundTrip is true)
+  returnDate?: string;
+  returnTime?: string;
+  returnArrivalDate?: string;
+  returnArrivalTime?: string;
+  returnAirline?: string;
+  returnCost?: string;
+  returnAttachment?: File;
 }
 
-export interface TravelAccommodationData {
-  tickets: TicketDetails[];
+export interface RentalVehicleDetails {
+  vehicleName: string;
+  registration: string;
+  contactPersonName: string;
+  contactNumber: string;
+  fromDate: string;
+  toDate: string;
+  bookingSlipFiles: File[];
+}
+
+export interface HotelDetails {
   hotelName: string;
   numberOfRooms: number;
   checkInDate: string;
   checkOutDate: string;
-  reservationSlipsFiles: File[];
+  reservationSlipFiles: File[];
+}
+
+export interface TravelAccommodationData {
+  tickets: TicketDetails[];
+  hotelDetails: HotelDetails[];
+  rentalVehicleDetails?: RentalVehicleDetails[];
 }
 
 interface TravelAccommodationModalProps {
@@ -28,6 +53,16 @@ interface TravelAccommodationModalProps {
   onClose: () => void;
   onSubmit: (data: TravelAccommodationData) => void;
 }
+
+// Mock passenger data for dropdown
+const MOCK_PASSENGERS = [
+  { id: '1', name: 'John Smith', role: 'Project Manager' },
+  { id: '2', name: 'Sarah Johnson', role: 'Site Engineer' },
+  { id: '3', name: 'Mike Wilson', role: 'Safety Officer' },
+  { id: '4', name: 'Lisa Brown', role: 'Quality Inspector' },
+  { id: '5', name: 'David Lee', role: 'Technician' },
+  { id: '6', name: 'Emma Davis', role: 'Supervisor' },
+];
 
 export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> = ({
   isOpen,
@@ -38,22 +73,31 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   const [tickets, setTickets] = useState<TicketDetails[]>([]);
 
   // Accommodation form state
-  const [hotelName, setHotelName] = useState('');
-  const [numberOfRooms, setNumberOfRooms] = useState(1);
-  const [checkInDate, setCheckInDate] = useState('');
-  const [checkOutDate, setCheckOutDate] = useState('');
-  const [reservationSlipsFiles, setReservationSlipsFiles] = useState<File[]>([]);
+  const [hotels, setHotels] = useState<HotelDetails[]>([]);
+
+  // Rental Vehicle form state
+  const [rentalVehicles, setRentalVehicles] = useState<RentalVehicleDetails[]>([{
+    vehicleName: '',
+    registration: '',
+    contactPersonName: '',
+    contactNumber: '',
+    fromDate: '',
+    toDate: '',
+    bookingSlipFiles: []
+  }]);
 
   // Ticket management functions
   const addTicket = () => {
     const newTicket: TicketDetails = {
       id: Date.now().toString(),
       passengerName: '',
+      isRoundTrip: false,
       departureDate: '',
       departureTime: '',
       arrivalDate: '',
       arrivalTime: '',
       airline: '',
+      cost: '',
     };
     setTickets(prev => [...prev, newTicket]);
   };
@@ -75,23 +119,78 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
     }
   };
 
-  const handleReservationSlipsUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setReservationSlipsFiles(prev => [...prev, ...files]);
+  // Rental Vehicle management functions
+  const addRentalVehicle = () => {
+    const newVehicle: RentalVehicleDetails = {
+      vehicleName: '',
+      registration: '',
+      contactPersonName: '',
+      contactNumber: '',
+      fromDate: '',
+      toDate: '',
+      bookingSlipFiles: []
+    };
+    setRentalVehicles(prev => [...prev, newVehicle]);
   };
 
-  const removeReservationSlipFile = (index: number) => {
-    setReservationSlipsFiles(prev => prev.filter((_, i) => i !== index));
+  const removeRentalVehicle = (index: number) => {
+    setRentalVehicles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateRentalVehicle = (index: number, field: keyof RentalVehicleDetails, value: string | File[]) => {
+    setRentalVehicles(prev => prev.map((vehicle, i) => 
+      i === index ? { ...vehicle, [field]: value } : vehicle
+    ));
+  };
+
+
+  const handleRentalVehicleBookingSlipsUpload = (vehicleIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    updateRentalVehicle(vehicleIndex, 'bookingSlipFiles', [...rentalVehicles[vehicleIndex].bookingSlipFiles, ...files]);
+  };
+
+  const removeRentalVehicleBookingSlipFile = (vehicleIndex: number, fileIndex: number) => {
+    const updatedFiles = rentalVehicles[vehicleIndex].bookingSlipFiles.filter((_, i) => i !== fileIndex);
+    updateRentalVehicle(vehicleIndex, 'bookingSlipFiles', updatedFiles);
+  };
+
+  // Hotel management functions
+  const addHotel = () => {
+    const newHotel: HotelDetails = {
+      hotelName: '',
+      numberOfRooms: 1,
+      checkInDate: '',
+      checkOutDate: '',
+      reservationSlipFiles: []
+    };
+    setHotels(prev => [...prev, newHotel]);
+  };
+
+  const removeHotel = (index: number) => {
+    setHotels(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateHotel = (index: number, field: keyof HotelDetails, value: string | number | File[]) => {
+    setHotels(prev => prev.map((hotel, i) => 
+      i === index ? { ...hotel, [field]: value } : hotel
+    ));
+  };
+
+  const handleHotelReservationSlipsUpload = (hotelIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    updateHotel(hotelIndex, 'reservationSlipFiles', [...hotels[hotelIndex].reservationSlipFiles, ...files]);
+  };
+
+  const removeHotelReservationSlipFile = (hotelIndex: number, fileIndex: number) => {
+    const updatedFiles = hotels[hotelIndex].reservationSlipFiles.filter((_, i) => i !== fileIndex);
+    updateHotel(hotelIndex, 'reservationSlipFiles', updatedFiles);
   };
 
   const handleSubmit = () => {
     const data: TravelAccommodationData = {
       tickets,
-      hotelName,
-      numberOfRooms,
-      checkInDate,
-      checkOutDate,
-      reservationSlipsFiles,
+      hotelDetails: hotels.filter(hotel => hotel.hotelName),
+      rentalVehicleDetails: rentalVehicles.filter(vehicle => vehicle.vehicleName),
     };
     onSubmit(data);
     onClose();
@@ -102,32 +201,57 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   };
 
   const isFormValid = () => {
-    const accommodationValid = hotelName && checkInDate && checkOutDate;
-    const ticketsValid = tickets.length > 0 && tickets.every(ticket => 
-      ticket.passengerName.trim() !== '' &&
-      ticket.departureDate !== '' &&
-      ticket.departureTime !== '' &&
-      ticket.arrivalDate !== '' &&
-      ticket.arrivalTime !== '' &&
-      ticket.airline.trim() !== ''
+    const accommodationValid = hotels.length > 0 && hotels.every(hotel => 
+      hotel.hotelName && hotel.checkInDate && hotel.checkOutDate
     );
-    return accommodationValid && ticketsValid;
+    const ticketsValid = tickets.length > 0 && tickets.every(ticket => {
+      const baseValid = ticket.passengerName !== '' &&
+        ticket.departureDate !== '' &&
+        ticket.departureTime !== '' &&
+        ticket.arrivalDate !== '' &&
+        ticket.arrivalTime !== '' &&
+        ticket.airline.trim() !== '' &&
+        ticket.cost.trim() !== '';
+      
+      if (ticket.isRoundTrip) {
+        return baseValid &&
+          ticket.returnDate !== '' &&
+          ticket.returnTime !== '' &&
+          ticket.returnArrivalDate !== '' &&
+          ticket.returnArrivalTime !== '' &&
+          ticket.returnAirline?.trim() !== '' &&
+          ticket.returnCost?.trim() !== '';
+      }
+      
+      return baseValid;
+    });
+    const rentalVehicleValid = rentalVehicles.every(vehicle => 
+      !vehicle.vehicleName || (
+        vehicle.vehicleName &&
+        vehicle.registration &&
+        vehicle.contactPersonName &&
+        vehicle.contactNumber &&
+        vehicle.fromDate &&
+        vehicle.toDate
+      )
+    );
+    return accommodationValid && ticketsValid && rentalVehicleValid;
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add Travel & Accommodation Details" size="xl">
       <div className="space-y-6">
-        {/* Individual Ticket Management */}
+        {/* Flight Tickets Management */}
         <div className="bg-gray-50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">Individual Tickets</h4>
+              <h4 className="text-lg font-semibold text-gray-900">Flight Tickets</h4>
               <p className="text-sm text-gray-600">
                 {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} configured
               </p>
             </div>
             <Button
-              variant="secondary"
+              variant="primary"
               size="sm"
               onClick={addTicket}
               icon={Plus}
@@ -144,27 +268,46 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                     <User className="w-4 h-4 text-gray-500" />
                     <span className="font-medium text-gray-900">Ticket {index + 1}</span>
                   </div>
-                  <button
-                    onClick={() => removeTicket(ticket.id)}
-                    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={ticket.isRoundTrip}
+                        onChange={(e) => updateTicket(ticket.id, 'isRoundTrip', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Round Trip</span>
+                    </label>
+                    <button
+                      onClick={() => removeTicket(ticket.id)}
+                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Passenger Name */}
+                  {/* Passenger Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Passenger Name *
+                      Passenger *
                     </label>
-                    <input
-                      type="text"
-                      value={ticket.passengerName}
-                      onChange={(e) => updateTicket(ticket.id, 'passengerName', e.target.value)}
-                      placeholder="Enter passenger name"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <select
+                        value={ticket.passengerName}
+                        onChange={(e) => updateTicket(ticket.id, 'passengerName', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">Select passenger</option>
+                        {MOCK_PASSENGERS.map((passenger) => (
+                          <option key={passenger.id} value={passenger.name}>
+                            {passenger.name} - {passenger.role}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   {/* Departure Date */}
@@ -248,6 +391,25 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                     </div>
                   </div>
 
+                  {/* Ticket Cost */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ticket Cost *
+                    </label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={ticket.cost}
+                        onChange={(e) => updateTicket(ticket.id, 'cost', e.target.value)}
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+
                   {/* Ticket Upload */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -273,13 +435,155 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                     </div>
                   </div>
                 </div>
+
+                {/* Return Ticket Details - Only show when round trip is checked */}
+                {ticket.isRoundTrip && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Check className="w-4 h-4 text-green-600" />
+                      <h5 className="font-medium text-gray-900">Return Ticket Details</h5>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Return Date */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Date *
+                        </label>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="date"
+                            value={ticket.returnDate || ''}
+                            onChange={(e) => updateTicket(ticket.id, 'returnDate', e.target.value)}
+                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Time */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Time *
+                        </label>
+                        <div className="relative">
+                          <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="time"
+                            value={ticket.returnTime || ''}
+                            onChange={(e) => updateTicket(ticket.id, 'returnTime', e.target.value)}
+                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Arrival Date */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Arrival Date *
+                        </label>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="date"
+                            value={ticket.returnArrivalDate || ''}
+                            onChange={(e) => updateTicket(ticket.id, 'returnArrivalDate', e.target.value)}
+                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Arrival Time */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Arrival Time *
+                        </label>
+                        <div className="relative">
+                          <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="time"
+                            value={ticket.returnArrivalTime || ''}
+                            onChange={(e) => updateTicket(ticket.id, 'returnArrivalTime', e.target.value)}
+                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Airline */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Airline *
+                        </label>
+                        <div className="relative">
+                          <Plane className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            value={ticket.returnAirline || ''}
+                            onChange={(e) => updateTicket(ticket.id, 'returnAirline', e.target.value)}
+                            placeholder="Enter return airline name"
+                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Cost */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Cost *
+                        </label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="number"
+                            value={ticket.returnCost || ''}
+                            onChange={(e) => updateTicket(ticket.id, 'returnCost', e.target.value)}
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Ticket Upload */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Return Ticket Upload
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="file"
+                            id={`return-ticket-${ticket.id}`}
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                updateTicket(ticket.id, 'returnAttachment', file);
+                              }
+                            }}
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor={`return-ticket-${ticket.id}`}
+                            className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                          >
+                            <Upload className="w-4 h-4 text-gray-400 mr-2" />
+                            <span className="text-sm text-gray-600">
+                              {ticket.returnAttachment ? ticket.returnAttachment.name : 'Upload return ticket'}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
             
             {tickets.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <User className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                <p>No tickets added yet. Click "Add Ticket" to get started.</p>
+                <Plane className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>No flight tickets added yet. Click "Add Ticket" to get started.</p>
               </div>
             )}
           </div>
@@ -287,121 +591,331 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
 
         {/* Accommodation Details Section */}
         <div className="bg-gray-50 rounded-lg p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Hotel className="w-5 h-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Accommodation Details</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Hotel Name */}
-            <div>
-              <label htmlFor="hotelName" className="block text-sm font-medium text-gray-700 mb-1">
-                Hotel Name
-              </label>
-              <div className="relative">
-                <Hotel className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  id="hotelName"
-                  value={hotelName}
-                  onChange={(e) => setHotelName(e.target.value)}
-                  placeholder="Enter hotel name"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Hotel className="w-5 h-5 text-green-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Accommodation Details</h3>
             </div>
-
-            {/* Number of Rooms */}
-            <div>
-              <label htmlFor="numberOfRooms" className="block text-sm font-medium text-gray-700 mb-1">
-                Number of Rooms
-              </label>
-              <input
-                type="number"
-                id="numberOfRooms"
-                value={numberOfRooms}
-                onChange={(e) => setNumberOfRooms(Math.max(1, Number(e.target.value)))}
-                min="1"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Check-in Date */}
-            <div>
-              <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Check-in Date
-              </label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="date"
-                  id="checkInDate"
-                  value={checkInDate}
-                  onChange={(e) => setCheckInDate(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            {/* Check-out Date */}
-            <div>
-              <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Check-out Date
-              </label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="date"
-                  id="checkOutDate"
-                  value={checkOutDate}
-                  onChange={(e) => setCheckOutDate(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
+            <button
+              onClick={addHotel}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Hotel
+            </button>
           </div>
 
-          {/* Attach Reservation Slips */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Attach Reservation Slips
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <input
-                type="file"
-                id="reservationSlipsUpload"
-                multiple
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                onChange={handleReservationSlipsUpload}
-                className="hidden"
-              />
-              <label
-                htmlFor="reservationSlipsUpload"
-                className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 rounded-lg p-4 transition-colors"
-              >
-                <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-600">Click to upload reservation slips or drag and drop</span>
-                <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
-              </label>
+          {hotels.length === 0 ? (
+            <div className="text-center py-8">
+              <Hotel className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">No hotels added yet. Click 'Add Hotel' to get started.</p>
             </div>
-            
-            {/* Display uploaded files */}
-            {reservationSlipsFiles.length > 0 && (
-              <div className="mt-3 space-y-2">
-                {reservationSlipsFiles.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between bg-white border border-gray-200 rounded-md p-2">
-                    <span className="text-sm text-gray-700 truncate">{file.name}</span>
+          ) : (
+            <div className="space-y-4">
+              {hotels.map((hotel, hotelIndex) => (
+                <div key={hotelIndex} className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Hotel className="w-4 h-4 text-green-600" />
+                      <span className="font-medium text-gray-900">Hotel {hotelIndex + 1}</span>
+                    </div>
                     <button
-                      onClick={() => removeReservationSlipFile(index)}
-                      className="text-red-500 hover:text-red-700 text-sm"
+                      onClick={() => removeHotel(hotelIndex)}
+                      className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
                     >
+                      <Trash2 className="w-3 h-3" />
                       Remove
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Hotel Name */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Hotel Name *
+                      </label>
+                      <div className="relative">
+                        <Hotel className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          value={hotel.hotelName}
+                          onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)}
+                          placeholder="Enter hotel name"
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Number of Rooms */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Number of Rooms *
+                      </label>
+                      <input
+                        type="number"
+                        value={hotel.numberOfRooms}
+                        onChange={(e) => updateHotel(hotelIndex, 'numberOfRooms', Math.max(1, Number(e.target.value)))}
+                        min="1"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                      />
+                    </div>
+
+                    {/* Check-in Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Check-in Date *
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="date"
+                          value={hotel.checkInDate}
+                          onChange={(e) => updateHotel(hotelIndex, 'checkInDate', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Check-out Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Check-out Date *
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="date"
+                          value={hotel.checkOutDate}
+                          onChange={(e) => updateHotel(hotelIndex, 'checkOutDate', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Attach Reservation Slips */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Attach Reservation Slips
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                      <input
+                        type="file"
+                        id={`hotel-reservation-${hotelIndex}`}
+                        multiple
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        onChange={(e) => handleHotelReservationSlipsUpload(hotelIndex, e)}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor={`hotel-reservation-${hotelIndex}`}
+                        className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 rounded-lg p-4 transition-colors"
+                      >
+                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                        <span className="text-sm text-gray-600">Click to upload reservation slips or drag and drop</span>
+                        <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
+                      </label>
+                    </div>
+                    
+                    {/* Display uploaded files */}
+                    {hotel.reservationSlipFiles.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {hotel.reservationSlipFiles.map((file, fileIndex) => (
+                          <div key={fileIndex} className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md p-2">
+                            <div className="flex items-center gap-2">
+                              <Upload className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-700">{file.name}</span>
+                            </div>
+                            <button
+                              onClick={() => removeHotelReservationSlipFile(hotelIndex, fileIndex)}
+                              className="text-red-500 hover:text-red-700 text-sm"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Rental Vehicle Details Section */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Car className="w-5 h-5 text-orange-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Rental Vehicle Details</h3>
+            </div>
+            <button
+              onClick={addRentalVehicle}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-orange-600 bg-orange-50 border border-orange-200 rounded-md hover:bg-orange-100 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Vehicle
+            </button>
           </div>
+          
+          {rentalVehicles.map((vehicle, vehicleIndex) => (
+            <div key={vehicleIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-md font-medium text-gray-800">Vehicle {vehicleIndex + 1}</h4>
+                {rentalVehicles.length > 1 && (
+                  <button
+                    onClick={() => removeRentalVehicle(vehicleIndex)}
+                    className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Remove
+                  </button>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Vehicle Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Vehicle Name
+                  </label>
+                  <div className="relative">
+                    <Car className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={vehicle.vehicleName}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'vehicleName', e.target.value)}
+                      placeholder="Enter vehicle name"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Registration */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Registration Number
+                  </label>
+                  <input
+                    type="text"
+                    value={vehicle.registration}
+                    onChange={(e) => updateRentalVehicle(vehicleIndex, 'registration', e.target.value)}
+                    placeholder="Enter registration number"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+
+                {/* Contact Person Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Contact Person Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={vehicle.contactPersonName}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'contactPersonName', e.target.value)}
+                      placeholder="Enter contact person name"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Number */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Contact Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="tel"
+                      value={vehicle.contactNumber}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'contactNumber', e.target.value)}
+                      placeholder="Enter contact number"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                {/* From Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    From Date
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="date"
+                      value={vehicle.fromDate}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'fromDate', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                {/* To Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    To Date
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="date"
+                      value={vehicle.toDate}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'toDate', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Attach Booking Slips */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Attach Booking Slips
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                  <input
+                    type="file"
+                    id={`rentalBookingSlipsUpload-${vehicleIndex}`}
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    onChange={(e) => handleRentalVehicleBookingSlipsUpload(vehicleIndex, e)}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor={`rentalBookingSlipsUpload-${vehicleIndex}`}
+                    className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 rounded-lg p-4 transition-colors"
+                  >
+                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                    <span className="text-sm text-gray-600">Click to upload booking slips or drag and drop</span>
+                    <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
+                  </label>
+                </div>
+                
+                {/* Display uploaded files */}
+                {vehicle.bookingSlipFiles.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {vehicle.bookingSlipFiles.map((file, fileIndex) => (
+                      <div key={fileIndex} className="flex items-center justify-between bg-white border border-gray-200 rounded-md p-2">
+                        <span className="text-sm text-gray-700 truncate">{file.name}</span>
+                        <button
+                          onClick={() => removeRentalVehicleBookingSlipFile(vehicleIndex, fileIndex)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Modal Footer */}

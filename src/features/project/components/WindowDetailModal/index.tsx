@@ -36,8 +36,6 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
     switch (status) {
       case 'Pending':
         return 'bg-gray-100 text-gray-700';
-      case 'Updated':
-        return 'bg-blue-100 text-blue-700';
       case 'In Progress':
         return 'bg-yellow-100 text-yellow-700';
       case 'Complete':
@@ -64,12 +62,6 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
     setEditedWindow(prev => {
       if (!prev) return null;
       const updated = { ...prev, [field]: value, updatedAt: new Date() };
-      
-      // Auto-update status to "Updated" when any field is edited
-      if (field !== 'status' && prev.status !== 'In Progress' && prev.status !== 'Complete') {
-        updated.status = 'Updated';
-      }
-      
       return updated;
     });
   };
@@ -90,7 +82,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
       const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
 
-      let newStatus: WindowStatus = 'Updated';
+      let newStatus: WindowStatus = 'Pending';
       if (hasReinstall) {
         newStatus = 'Reinstallation Needed';
       } else if (allInstalled) {
@@ -124,7 +116,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
       const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
 
-      let newStatus: WindowStatus = 'Updated';
+      let newStatus: WindowStatus = 'Pending';
       if (hasReinstall) {
         newStatus = 'Reinstallation Needed';
       } else if (allInstalled) {
@@ -161,7 +153,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
       const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
 
-      let newStatus: WindowStatus = 'Updated';
+      let newStatus: WindowStatus = 'Pending';
       if (hasReinstall) {
         newStatus = 'Reinstallation Needed';
       } else if (allInstalled) {
@@ -199,7 +191,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
       const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
 
-      let newStatus: WindowStatus = 'Updated';
+      let newStatus: WindowStatus = 'Pending';
       if (hasReinstall) {
         newStatus = 'Reinstallation Needed';
       } else if (allInstalled) {

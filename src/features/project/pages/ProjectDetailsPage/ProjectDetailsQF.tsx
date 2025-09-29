@@ -368,7 +368,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
       // Update existing window
       setWindows(prev => prev.map(w => 
         w.id === editingWindow.id 
-          ? { ...w, ...windowData, status: 'Updated' as const }
+          ? { ...w, ...windowData }
           : w
       ));
       showToast('Window updated successfully');
@@ -398,7 +398,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
     if (selectedWindow) {
       setWindows(prev => prev.map(w => 
         w.id === selectedWindow.id 
-          ? { ...w, ...windowData, status: 'Updated' as const }
+          ? { ...w, ...windowData }
           : w
       ));
       setSelectedWindow({ ...selectedWindow, ...windowData });
@@ -477,7 +477,8 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                  <Button
+                  {/* Hidden buttons - Update Trailer, Update Inventory, Sign Quality Check Form */}
+                  {/* <Button
                     variant="secondary"
                     onClick={handleUpdateTrailer}
                     icon={Truck}
@@ -515,7 +516,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                     disabled={isQualityCheckSigned}
                   >
                     {isQualityCheckSigned ? 'QF Signed' : 'Sign Quality Check Form'}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
@@ -634,7 +635,6 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                         >
                           <option value="all">All Status</option>
                           <option value="Pending">Pending</option>
-                          <option value="Updated">Updated</option>
                           <option value="In Progress">In Progress</option>
                           <option value="Complete">Complete</option>
                           <option value="Reinstallation Needed">Reinstallation Needed</option>

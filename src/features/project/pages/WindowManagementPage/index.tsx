@@ -115,7 +115,6 @@ export const WindowManagementPage: React.FC<WindowManagementPageProps> = ({
     const updatedWindow: Window = {
       ...editingWindow,
       ...windowData,
-      status: 'Updated', // Auto-update status when edited
       updatedAt: new Date().toISOString()
     };
     
