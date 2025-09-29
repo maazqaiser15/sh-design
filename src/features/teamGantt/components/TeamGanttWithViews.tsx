@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TeamGanttProps, ViewMode, LayoutMode, Project, TrailerView, TeamGanttFilters } from '../types/ganttTypes';
 import { TimelineHeader } from './TimelineHeader';
 import { TeamRow } from './TeamRow';
@@ -26,6 +27,11 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
 }) => {
   const { isCollapsed } = useSidebar();
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleMemberClick = (member: any) => {
+    navigate(`/team/${member.id}`);
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [selectedAvailability, setSelectedAvailability] = useState<string>('');
@@ -97,6 +103,11 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
     });
     return Array.from(availabilitySet).sort();
   }, []);
+
+  // Handle trailer click navigation
+  const handleTrailerClick = (trailer: TrailerView) => {
+    navigate(`/trailers/${trailer.trailerId}`);
+  };
 
   // Filter trailers based on search term, project filter, and new filters
   const filteredTrailers = useMemo(() => {
@@ -353,6 +364,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
                     currentDate={currentDate}
                     onProjectHover={onProjectHover}
                     onProjectClick={onProjectClick}
+                    onMemberClick={handleMemberClick}
                     hoveredProject={hoveredProject}
                   />
                 ))}
@@ -420,6 +432,7 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
                     onProjectHover={onProjectHover}
                     onProjectClick={onProjectClick}
                     hoveredProject={hoveredProject}
+                    onTrailerClick={handleTrailerClick}
                   />
                 ))}
               </div>

@@ -12,8 +12,8 @@ export interface TeamMember {
   id: string;
   name: string;
   avatar: string;
-  role: "Lead" | "Supervisor" | "Crew Leader" | "Installer" | "Coordinator";
-  availability: "available" | "unavailable";
+  role: "Lead" | "Supervisor" | "Project Coordinator" | "Crew Leader" | "Installer";
+  availability: "Available" | "Unavailable" | "Out of office" | "Inactive";
   projects: Project[];
 }
 
@@ -83,6 +83,7 @@ export interface TeamRowProps {
   currentDate: Date;
   onProjectHover: (project: Project | null) => void;
   onProjectClick: (project: Project) => void;
+  onMemberClick?: (member: TeamMember) => void;
   hoveredProject: Project | null;
 }
 
@@ -102,6 +103,7 @@ export interface TrailerRowProps {
   onProjectHover: (project: Project | null) => void;
   onProjectClick: (project: Project) => void;
   hoveredProject: Project | null;
+  onTrailerClick?: (trailer: TrailerView) => void;
 }
 
 export interface TimelineHeaderProps {

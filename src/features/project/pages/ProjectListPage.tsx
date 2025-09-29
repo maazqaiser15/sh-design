@@ -114,46 +114,12 @@ const mockProjects: SafeHavenProject[] = [
     location: 'Downtown Seattle, WA',
     createdAt: '2024-12-01T00:00:00Z',
     updatedAt: '2024-12-15T00:00:00Z',
-    assignedTeam: ['1', '2', '3'],
-    assignedTrailers: ['1'],
+    assignedTeam: [],
+    assignedTrailers: [],
     progress: 5,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20001',
-    crew: [
-      { 
-        id: '1', 
-        name: 'John Smith', 
-        role: 'Lead Installer', 
-        designation: 'Lead Installer',
-        location: 'Seattle, WA',
-        phone: '+1-555-0101',
-        productivity: 'Efficient in Installation',
-        status: 'available' as const,
-        avatar: undefined 
-      },
-      { 
-        id: '2', 
-        name: 'Sarah Johnson', 
-        role: 'Technician', 
-        designation: 'Technician',
-        location: 'Seattle, WA',
-        phone: '+1-555-0102',
-        productivity: 'Efficient in Installation',
-        status: 'available' as const,
-        avatar: undefined 
-      },
-      { 
-        id: '3', 
-        name: 'Mike Davis', 
-        role: 'Assistant', 
-        designation: 'Assistant',
-        location: 'Seattle, WA',
-        phone: '+1-555-0103',
-        productivity: 'Efficient in Installation',
-        status: 'available' as const,
-        avatar: undefined 
-      },
-    ],
-    assignedTrailer: 'Trailer Alpha',
+    crew: [],
+    assignedTrailer: null,
   },
   {
     id: '2',
@@ -180,7 +146,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0104',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face' 
       },
       { 
         id: '5', 
@@ -191,7 +157,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0105',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' 
       },
     ],
     assignedTrailer: 'Trailer Beta',
@@ -239,7 +205,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0106',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face' 
       },
       { 
         id: '7', 
@@ -250,7 +216,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0107',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face' 
       },
       { 
         id: '8', 
@@ -261,7 +227,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0108',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face' 
       },
     ],
     assignedTrailer: 'Trailer Gamma',
@@ -309,7 +275,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0109',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face' 
       },
       { 
         id: '10', 
@@ -320,7 +286,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0110',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face' 
       },
     ],
     assignedTrailer: 'Trailer Delta',
@@ -350,7 +316,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0111',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face' 
       },
       { 
         id: '12', 
@@ -361,7 +327,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0112',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face' 
       },
     ],
     assignedTrailer: 'Trailer Echo',
@@ -391,7 +357,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0101',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face' 
       },
       { 
         id: '2', 
@@ -402,7 +368,7 @@ const mockProjects: SafeHavenProject[] = [
         phone: '+1-555-0102',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: undefined 
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face' 
       }
     ],
     assignedTrailer: 'Trailer Alpha',
@@ -501,9 +467,6 @@ export const ProjectListPage: React.FC = () => {
   const handleAssignCoordinator = (projectId: string, coordinatorId: string) => {
     console.log(`Assigning coordinator ${coordinatorId} to project ${projectId}`);
     // Here you would typically make an API call to assign the coordinator
-    // For now, we'll just show a success message
-    alert(`Coordinator assigned successfully to project ${projectId}`);
-    
     // In a real app, you would update the project data with coordinator information
     // and store it in state or make an API call to persist the assignment
   };

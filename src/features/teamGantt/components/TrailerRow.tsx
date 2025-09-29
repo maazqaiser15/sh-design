@@ -9,7 +9,8 @@ export const TrailerRow: React.FC<TrailerRowProps> = ({
   currentDate,
   onProjectHover,
   onProjectClick,
-  hoveredProject
+  hoveredProject,
+  onTrailerClick
 }) => {
   const timelineCells = getTimelineCells(currentDate, viewMode);
   const trailerStatusDots = {
@@ -28,7 +29,10 @@ export const TrailerRow: React.FC<TrailerRowProps> = ({
   return (
     <div className="flex border-b border-gray-200 hover:bg-gray-50" style={{ height: `${calculatedHeight}px` }}>
       {/* Trailer Info Column */}
-      <div className="w-80 flex items-center px-4 py-3 border-r border-gray-200 bg-white">
+      <div 
+        className="w-80 flex items-center px-4 py-3 border-r border-gray-200 bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => onTrailerClick?.(trailer)}
+      >
         <div className="flex items-center space-x-3">
           {/* Status Dot */}
           <div className={`w-3 h-3 rounded-full ${trailerStatusDots[trailer.status]}`}></div>

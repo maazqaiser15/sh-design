@@ -2,8 +2,8 @@ export interface TeamMember {
   id: string;
   name: string;
   avatar: string;
-  role: "Lead" | "Supervisor" | "Crew Leader" | "Installer" | "Coordinator";
-  availability: "available" | "unavailable";
+  role: "Lead" | "Supervisor" | "Project Coordinator" | "Crew Leader" | "Installer";
+  availability: "Available" | "Unavailable" | "Out of office" | "Inactive";
   projects: Project[];
 }
 

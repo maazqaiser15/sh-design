@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { TeamRowProps, Project } from '../types/ganttTypes';
 import { ProjectBar } from './ProjectBar';
 import { PROJECT_STATUS_COLORS, ROLE_COLORS, AVAILABILITY_COLORS } from '../data/mockData';
+import { Avatar } from '../../../common/components/Avatar';
 
 export const TeamRow: React.FC<TeamRowProps> = ({
   member,
@@ -9,6 +10,7 @@ export const TeamRow: React.FC<TeamRowProps> = ({
   currentDate,
   onProjectHover,
   onProjectClick,
+  onMemberClick,
   hoveredProject
 }) => {
   // Calculate project positions and dimensions
@@ -133,21 +135,16 @@ export const TeamRow: React.FC<TeamRowProps> = ({
   return (
     <div className="flex border-b border-gray-200 hover:bg-gray-50 transition-colors">
       {/* Left Column - Team Member Info */}
-      <div className="w-80 p-4 flex-shrink-0 border-r border-gray-200">
+      <div 
+        className="w-80 p-4 flex-shrink-0 border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => onMemberClick?.(member)}
+      >
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-            {member.avatar ? (
-              <img
-                src={member.avatar}
-                alt={member.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium">
-                {member.name.charAt(0)}
-              </div>
-            )}
-          </div>
+          <Avatar
+            src={member.avatar}
+            name={member.name}
+            size="lg"
+          />
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-gray-900 truncate">
               {member.name}

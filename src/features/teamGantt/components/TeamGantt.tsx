@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TeamGanttProps, ViewMode } from '../types';
 import { TimelineHeader } from './TimelineHeader';
 import { TeamRow } from './TeamRow';
@@ -13,7 +14,12 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
   onProjectClick,
   hoveredProject
 }) => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const handleMemberClick = (member: any) => {
+    navigate(`/team/${member.id}`);
+  };
   const [selectedProject, setSelectedProject] = useState<string>('');
 
   // Get unique project names for filter
@@ -169,6 +175,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
                   currentDate={currentDate}
                   onProjectHover={onProjectHover}
                   onProjectClick={onProjectClick}
+                  onMemberClick={handleMemberClick}
                   hoveredProject={hoveredProject}
                 />
               ))}

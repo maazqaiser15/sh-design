@@ -289,7 +289,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
               >
                 <option value="">All Roles</option>
-                {['Manager', 'Developer', 'Designer', 'QA', 'DevOps'].map((role) => (
+                {['Lead', 'Supervisor', 'Project Coordinator', 'Crew Leader', 'Installer'].map((role) => (
                   <option key={role} value={role}>
                     {role}
                   </option>
@@ -326,7 +326,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
               >
                 <option value="">All Status</option>
-                {['Available', 'Busy', 'Away', 'Offline'].map((status) => (
+                {['Available', 'Unavailable', 'Out of office', 'Inactive'].map((status) => (
                   <option key={status} value={status}>
                     {status}
                   </option>
@@ -340,12 +340,13 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             </div>
           )}
 
-          {/* All Projects Filter - Only for Trailer View */}
+          {/* All Locations Filter - Only for Trailer View */}
           {layoutMode === 'trailer' && (
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
               <select
@@ -362,10 +363,10 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 }}
                 className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
               >
-                <option value="">All Projects</option>
-                {['Project Alpha', 'Project Beta', 'Project Gamma'].map((projectName) => (
-                  <option key={projectName} value={projectName}>
-                    {projectName}
+                <option value="">All Locations</option>
+                {['Los Angeles, CA', 'Houston, TX', 'Miami, FL', 'New York, NY', 'Chicago, IL', 'Phoenix, AZ', 'Denver, CO', 'Seattle, WA', 'Portland, OR', 'Las Vegas, NV', 'Salt Lake City, UT', 'Billings, MT'].map((location) => (
+                  <option key={location} value={location}>
+                    {location}
                   </option>
                 ))}
               </select>
@@ -400,7 +401,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
               >
                 <option value="">All Availability</option>
-                {['Available', 'Low', 'Unavailable'].map((availability) => (
+                {['Available', 'Unavailable'].map((availability) => (
                   <option key={availability} value={availability}>
                     {availability}
                   </option>

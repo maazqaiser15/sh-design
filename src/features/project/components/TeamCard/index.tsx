@@ -1,17 +1,9 @@
 import React from 'react';
+import { Avatar } from '../../../../common/components/Avatar';
 
-// Mock avatar images from Figma
-const imgAvatar1 = "http://localhost:3845/assets/5180c7274a468ba221dccc98237c5b89acc690bd.png";
-const imgAvatar2 = "http://localhost:3845/assets/d20f43a765e6ed6ac3bdea39b6be2ea6b6b1193c.png";
-
-// Default avatar fallback
-const DefaultAvatar = ({ name }: { name: string }) => (
-  <div className="bg-[#0D76BF] rounded-full w-8 h-8 flex items-center justify-center">
-    <span className="text-white text-sm font-medium">
-      {name.split(' ').map(n => n[0]).join('')}
-    </span>
-  </div>
-);
+// Mock avatar images - using reliable placeholder services
+const imgAvatar1 = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face";
+const imgAvatar2 = "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face";
 
 // X Close Icon
 const XCloseIcon = () => (
@@ -54,7 +46,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
     if (name.toLowerCase().includes('james')) return imgAvatar1;
     if (name.toLowerCase().includes('emma')) return imgAvatar2;
     
-    return null;
+    return undefined;
   };
 
   const avatarSrc = getAvatarSrc();
@@ -83,14 +75,11 @@ export const TeamCard: React.FC<TeamCardProps> = ({
       <div className="flex gap-3 items-center">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          {avatarSrc ? (
-            <div 
-              className="w-8 h-8 rounded-full bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url('${avatarSrc}')` }}
-            />
-          ) : (
-            <DefaultAvatar name={name} />
-          )}
+          <Avatar
+            src={avatarSrc}
+            name={name}
+            size="md"
+          />
         </div>
 
         {/* Name, Role, and Location */}

@@ -8,7 +8,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Sarah Johnson',
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
     role: 'Supervisor',
-    availability: 'available',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-1',
@@ -26,7 +26,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Alex Martin',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
-    availability: 'available',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-2',
@@ -44,7 +44,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Maria Rodriguez',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     role: 'Crew Leader',
-    availability: 'unavailable',
+    availability: 'Out of office',
     projects: [
       {
         projectId: 'proj-3',
@@ -62,7 +62,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'David Chen',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     role: 'Lead',
-    availability: 'available',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-4',
@@ -79,8 +79,8 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     id: '5',
     name: 'Emily Watson',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-    role: 'Coordinator',
-    availability: 'available',
+    role: 'Project Coordinator',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-5',
@@ -98,7 +98,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Michael Brown',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
-    availability: 'unavailable',
+    availability: 'Inactive',
     projects: [
       {
         projectId: 'proj-6',
@@ -116,7 +116,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Lisa Anderson',
     avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
     role: 'Supervisor',
-    availability: 'available',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-7',
@@ -133,7 +133,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'James Wilson',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
     role: 'Crew Leader',
-    availability: 'unavailable',
+    availability: 'Unavailable',
     projects: [
       {
         projectId: 'proj-8',
@@ -150,7 +150,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Jennifer Taylor',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
-    availability: 'available',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-9',
@@ -166,8 +166,8 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     id: '10',
     name: 'Robert Garcia',
     avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face',
-    role: 'Coordinator',
-    availability: 'available',
+    role: 'Project Coordinator',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-10',
@@ -184,7 +184,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Amanda Lee',
     avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face',
     role: 'Lead',
-    availability: 'unavailable',
+    availability: 'Out of office',
     projects: [
       {
         projectId: 'proj-11',
@@ -201,7 +201,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Christopher Davis',
     avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
-    availability: 'available',
+    availability: 'Available',
     projects: [
       {
         projectId: 'proj-12',
@@ -451,9 +451,9 @@ export const PROJECT_STATUS_COLORS = {
 export const ROLE_COLORS = {
   'Lead': 'bg-red-100 text-red-800 border-red-200',
   'Supervisor': 'bg-purple-100 text-purple-800 border-purple-200',
+  'Project Coordinator': 'bg-green-100 text-green-800 border-green-200',
   'Crew Leader': 'bg-blue-100 text-blue-800 border-blue-200',
-  'Installer': 'bg-gray-100 text-gray-800 border-gray-200',
-  'Coordinator': 'bg-green-100 text-green-800 border-green-200'
+  'Installer': 'bg-gray-100 text-gray-800 border-gray-200'
 } as const;
 
 export const TRAILER_STATUS_COLORS = {
@@ -463,6 +463,8 @@ export const TRAILER_STATUS_COLORS = {
 } as const;
 
 export const AVAILABILITY_COLORS = {
-  'available': 'bg-green-100 text-green-800 border-green-200',
-  'unavailable': 'bg-red-100 text-red-800 border-red-200'
+  'Available': 'bg-green-100 text-green-800 border-green-200',
+  'Unavailable': 'bg-red-100 text-red-800 border-red-200',
+  'Out of office': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  'Inactive': 'bg-gray-100 text-gray-800 border-gray-200'
 } as const;

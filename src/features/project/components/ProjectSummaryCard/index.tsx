@@ -1,4 +1,5 @@
 import React from 'react';
+import { Avatar } from '../../../../common/components/Avatar';
 import { ProjectPreparationData } from '../../types/preparation';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { Button } from '../../../../common/components/Button';
@@ -40,16 +41,12 @@ export const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
               className="relative group"
               title={`${member.name} - ${member.designation}`}
             >
-              <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
-                {member.avatar ? (
-                  <img
-                    src={member.avatar}
-                    alt={member.name}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  member.name.charAt(0).toUpperCase()
-                )}
+              <div className="border-2 border-white">
+                <Avatar
+                  src={member.avatar}
+                  name={member.name}
+                  size="md"
+                />
               </div>
               {member.status === 'unavailable' && (
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>

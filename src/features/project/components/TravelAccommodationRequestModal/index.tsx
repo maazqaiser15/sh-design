@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { Avatar } from '../../../../common/components/Avatar';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
-import { Plane, Hotel } from 'lucide-react';
+import { Plane, Hotel, Car } from 'lucide-react';
 
 export interface TravelAccommodationRequestData {
   travelRequired: boolean;
   accommodationRequired: boolean;
+  rentalVehicleRequired: boolean;
   travelMethod?: 'air' | 'road';
   selectedTeamMembers: Array<{
     id: string;
@@ -14,6 +16,20 @@ export interface TravelAccommodationRequestData {
     avatar?: string;
     location?: string;
     travelMethod?: 'air' | 'road';
+  }>;
+  selectedAccommodationMembers: Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
+  }>;
+  selectedRentalVehicleMembers: Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
   }>;
 }
 
@@ -40,6 +56,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 }) => {
   const [travelRequired, setTravelRequired] = useState(false);
   const [accommodationRequired, setAccommodationRequired] = useState(false);
+  const [rentalVehicleRequired, setRentalVehicleRequired] = useState(false);
   const [travelMethod, setTravelMethod] = useState<'air' | 'road'>('air');
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<Array<{
     id: string;
@@ -49,15 +66,34 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
     location?: string;
     travelMethod?: 'air' | 'road';
   }>>([]);
+  const [selectedAccommodationMembers, setSelectedAccommodationMembers] = useState<Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
+  }>>([]);
+  const [selectedRentalVehicleMembers, setSelectedRentalVehicleMembers] = useState<Array<{
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    location?: string;
+  }>>([]);
   const [teamMemberToggles, setTeamMemberToggles] = useState<Record<string, boolean>>({});
   const [teamMemberTravelMethods, setTeamMemberTravelMethods] = useState<Record<string, 'air' | 'road'>>({});
+  const [accommodationMemberToggles, setAccommodationMemberToggles] = useState<Record<string, boolean>>({});
+  const [rentalVehicleMemberToggles, setRentalVehicleMemberToggles] = useState<Record<string, boolean>>({});
 
   const handleSubmit = () => {
     const data: TravelAccommodationRequestData = {
       travelRequired,
       accommodationRequired,
+      rentalVehicleRequired,
       travelMethod: travelRequired ? travelMethod : undefined,
       selectedTeamMembers,
+      selectedAccommodationMembers,
+      selectedRentalVehicleMembers,
     };
     onSubmit(data);
     onClose();
@@ -68,7 +104,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
   };
 
   const isFormValid = () => {
-    return travelRequired || accommodationRequired;
+    return travelRequired || accommodationRequired || rentalVehicleRequired;
   };
 
   // Check if a team member is selected
@@ -111,6 +147,44 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
         ? { ...member, travelMethod: method }
         : member
     ));
+  };
+
+  // Handle individual accommodation team member toggle
+  const handleAccommodationMemberToggle = (memberId: string, isEnabled: boolean) => {
+    setAccommodationMemberToggles(prev => ({
+      ...prev,
+      [memberId]: isEnabled
+    }));
+
+    if (isEnabled) {
+      // Add to selected accommodation members if not already there
+      const member = assignedTeamMembers.find(m => m.id === memberId);
+      if (member && !selectedAccommodationMembers.some(m => m.id === memberId)) {
+        setSelectedAccommodationMembers(prev => [...prev, member]);
+      }
+    } else {
+      // Remove from selected accommodation members
+      setSelectedAccommodationMembers(prev => prev.filter(m => m.id !== memberId));
+    }
+  };
+
+  // Handle individual rental vehicle team member toggle
+  const handleRentalVehicleMemberToggle = (memberId: string, isEnabled: boolean) => {
+    setRentalVehicleMemberToggles(prev => ({
+      ...prev,
+      [memberId]: isEnabled
+    }));
+
+    if (isEnabled) {
+      // Add to selected rental vehicle members if not already there
+      const member = assignedTeamMembers.find(m => m.id === memberId);
+      if (member && !selectedRentalVehicleMembers.some(m => m.id === memberId)) {
+        setSelectedRentalVehicleMembers(prev => [...prev, member]);
+      }
+    } else {
+      // Remove from selected rental vehicle members
+      setSelectedRentalVehicleMembers(prev => prev.filter(m => m.id !== memberId));
+    }
   };
 
   return (
@@ -157,18 +231,11 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                           <div className="flex items-center gap-3 flex-1">
                             {/* Avatar */}
                             <div className="flex-shrink-0">
-                              {member.avatar ? (
-                                <div 
-                                  className="w-10 h-10 rounded-full bg-cover bg-center bg-no-repeat"
-                                  style={{ backgroundImage: `url('${member.avatar}')` }}
-                                />
-                              ) : (
-                                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-sm font-medium">
-                                    {member.name.split(' ').map(n => n[0]).join('')}
-                                  </span>
-                                </div>
-                              )}
+                              <Avatar
+                                src={member.avatar}
+                                name={member.name}
+                                size="lg"
+                              />
                             </div>
 
                             {/* Member Info */}
@@ -271,9 +338,165 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
           </div>
 
           {accommodationRequired && (
-            <div className="pl-2">
+            <div className="space-y-4 pl-2">
+              {/* Team Members List */}
+              <div>
+                <label className="block text-sm font-medium text-green-700 mb-3">
+                  Team Members
+                </label>
+                <div className="space-y-3">
+                  {assignedTeamMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="bg-white border border-green-200 rounded-lg p-4"
+                    >
+                      <div className="space-y-3">
+                        {/* Member Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            {/* Avatar */}
+                            <div className="flex-shrink-0">
+                              <Avatar
+                                src={member.avatar}
+                                name={member.name}
+                                size="lg"
+                              />
+                            </div>
+
+                            {/* Member Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-sm text-gray-900 truncate">
+                                  {member.name}
+                                </p>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                  {member.role}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Toggle Switch */}
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={accommodationMemberToggles[member.id] || false}
+                              onChange={(e) => handleAccommodationMemberToggle(member.id, e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedAccommodationMembers.length > 0 && (
+                  <div className="mt-3 p-3 bg-green-100 rounded-lg">
+                    <p className="text-sm text-green-800 font-medium">
+                      {selectedAccommodationMembers.length} team member{selectedAccommodationMembers.length > 1 ? 's' : ''} selected for accommodation
+                    </p>
+                  </div>
+                )}
+              </div>
+              
               <p className="text-sm text-green-700">
                 Accommodation details can be added later after the request is approved.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Rental Vehicle Section */}
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Car className="w-5 h-5 text-orange-600" />
+              <h3 className="text-lg font-semibold text-orange-900">Rental Vehicle Required</h3>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rentalVehicleRequired}
+                onChange={(e) => setRentalVehicleRequired(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+            </label>
+          </div>
+
+          {rentalVehicleRequired && (
+            <div className="space-y-4 pl-2">
+              {/* Team Members List */}
+              <div>
+                <label className="block text-sm font-medium text-orange-700 mb-3">
+                  Team Members
+                </label>
+                <div className="space-y-3">
+                  {assignedTeamMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="bg-white border border-orange-200 rounded-lg p-4"
+                    >
+                      <div className="space-y-3">
+                        {/* Member Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            {/* Avatar */}
+                            <div className="flex-shrink-0">
+                              {member.avatar ? (
+                                <div 
+                                  className="w-10 h-10 rounded-full bg-cover bg-center bg-no-repeat"
+                                  style={{ backgroundImage: `url('${member.avatar}')` }}
+                                />
+                              ) : (
+                                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-medium">
+                                    {member.name.split(' ').map(n => n[0]).join('')}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Member Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-sm text-gray-900 truncate">
+                                  {member.name}
+                                </p>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                  {member.role}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Toggle Switch */}
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={rentalVehicleMemberToggles[member.id] || false}
+                              onChange={(e) => handleRentalVehicleMemberToggle(member.id, e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedRentalVehicleMembers.length > 0 && (
+                  <div className="mt-3 p-3 bg-orange-100 rounded-lg">
+                    <p className="text-sm text-orange-800 font-medium">
+                      {selectedRentalVehicleMembers.length} team member{selectedRentalVehicleMembers.length > 1 ? 's' : ''} selected for rental vehicle
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <p className="text-sm text-orange-700">
+                Vehicle details can be added later after the request is approved.
               </p>
             </div>
           )}

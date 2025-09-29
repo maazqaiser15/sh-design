@@ -65,11 +65,16 @@ const UsersIcon = () => (
 );
 
 const ExpandIcon = () => (
-  <img 
-    alt="expand" 
-    className="w-4 h-4" 
-    src="http://localhost:3845/assets/3e78c16b10a97a5ae477b888f056cb3c7d900fb9.svg"
-  />
+  <svg 
+    width="16" 
+    height="16" 
+    viewBox="0 0 16 16" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+    className="w-4 h-4"
+  >
+    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
 );
 
 const PlusIcon = () => (
@@ -1041,26 +1046,80 @@ export const ProjectDetailsPrep: React.FC = () => {
                         <div className="mt-3 text-xs text-green-700">
                           <p><strong>Travel Required:</strong> {travelAccommodationRequestData.travelRequired ? 'Yes' : 'No'}</p>
                           <p><strong>Accommodation Required:</strong> {travelAccommodationRequestData.accommodationRequired ? 'Yes' : 'No'}</p>
+                          <p><strong>Rental Vehicle Required:</strong> {travelAccommodationRequestData.rentalVehicleRequired ? 'Yes' : 'No'}</p>
                           {travelAccommodationRequestData.travelMethod && (
                             <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
                           )}
-                          <p><strong>Team Members:</strong> {travelAccommodationRequestData.selectedTeamMembers.length} selected</p>
-                          {travelAccommodationRequestData.selectedTeamMembers.length > 0 && (
+                          
+                          {/* Travel Team Members */}
+                          {travelAccommodationRequestData.travelRequired && (
                             <div className="mt-2">
-                              <p className="text-sm font-medium text-gray-700 mb-1">Selected Members:</p>
-                              <div className="space-y-1">
-                                {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
-                                  <div key={member.id} className="flex items-center gap-2 text-sm">
-                                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                                      <span className="text-xs font-medium text-blue-700">
-                                        {member.name.split(' ').map(n => n[0]).join('')}
-                                      </span>
-                                    </div>
-                                    <span className="text-gray-700">{member.name}</span>
-                                    <span className="text-gray-500">({member.role})</span>
+                              <p><strong>Travel Team Members:</strong> {travelAccommodationRequestData.selectedTeamMembers.length} selected</p>
+                              {travelAccommodationRequestData.selectedTeamMembers.length > 0 && (
+                                <div className="mt-1">
+                                  <div className="space-y-1">
+                                    {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
+                                      <div key={member.id} className="flex items-center gap-2 text-sm">
+                                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                          <span className="text-xs font-medium text-blue-700">
+                                            {member.name.split(' ').map(n => n[0]).join('')}
+                                          </span>
+                                        </div>
+                                        <span className="text-gray-700">{member.name}</span>
+                                        <span className="text-gray-500">({member.role})</span>
+                                      </div>
+                                    ))}
                                   </div>
-                                ))}
-                              </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Accommodation Team Members */}
+                          {travelAccommodationRequestData.accommodationRequired && (
+                            <div className="mt-2">
+                              <p><strong>Accommodation Team Members:</strong> {travelAccommodationRequestData.selectedAccommodationMembers.length} selected</p>
+                              {travelAccommodationRequestData.selectedAccommodationMembers.length > 0 && (
+                                <div className="mt-1">
+                                  <div className="space-y-1">
+                                    {travelAccommodationRequestData.selectedAccommodationMembers.map((member) => (
+                                      <div key={member.id} className="flex items-center gap-2 text-sm">
+                                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                          <span className="text-xs font-medium text-green-700">
+                                            {member.name.split(' ').map(n => n[0]).join('')}
+                                          </span>
+                                        </div>
+                                        <span className="text-gray-700">{member.name}</span>
+                                        <span className="text-gray-500">({member.role})</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Rental Vehicle Team Members */}
+                          {travelAccommodationRequestData.rentalVehicleRequired && (
+                            <div className="mt-2">
+                              <p><strong>Rental Vehicle Team Members:</strong> {travelAccommodationRequestData.selectedRentalVehicleMembers.length} selected</p>
+                              {travelAccommodationRequestData.selectedRentalVehicleMembers.length > 0 && (
+                                <div className="mt-1">
+                                  <div className="space-y-1">
+                                    {travelAccommodationRequestData.selectedRentalVehicleMembers.map((member) => (
+                                      <div key={member.id} className="flex items-center gap-2 text-sm">
+                                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                                          <span className="text-xs font-medium text-orange-700">
+                                            {member.name.split(' ').map(n => n[0]).join('')}
+                                          </span>
+                                        </div>
+                                        <span className="text-gray-700">{member.name}</span>
+                                        <span className="text-gray-500">({member.role})</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
