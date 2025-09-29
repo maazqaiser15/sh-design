@@ -28,6 +28,7 @@ export interface TravelAccommodationRequestData {
     fromDate: string;
     toDate: string;
     numberOfCars: number;
+    pickupLocation: string;
   };
 }
 
@@ -75,10 +76,12 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
     fromDate: string;
     toDate: string;
     numberOfCars: number;
+    pickupLocation: string;
   }>({
     fromDate: '',
     toDate: '',
-    numberOfCars: 1
+    numberOfCars: 1,
+    pickupLocation: ''
   });
   const [teamMemberToggles, setTeamMemberToggles] = useState<Record<string, boolean>>({});
   const [teamMemberTravelMethods, setTeamMemberTravelMethods] = useState<Record<string, 'air' | 'road'>>({});
@@ -174,7 +177,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
   };
 
   // Handle rental vehicle details changes
-  const handleRentalVehicleDetailsChange = (field: 'fromDate' | 'toDate' | 'numberOfCars', value: string | number) => {
+  const handleRentalVehicleDetailsChange = (field: 'fromDate' | 'toDate' | 'numberOfCars' | 'pickupLocation', value: string | number) => {
     setRentalVehicleDetails(prev => ({
       ...prev,
       [field]: value
@@ -469,11 +472,31 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                   />
                 </div>
 
+                {/* Pickup Location */}
+                <div>
+                  <label className="block text-sm font-medium text-orange-700 mb-2">
+                    Where Picking Up From
+                  </label>
+                  <input
+                    type="text"
+                    value={rentalVehicleDetails.pickupLocation}
+                    onChange={(e) => handleRentalVehicleDetailsChange('pickupLocation', e.target.value)}
+                    placeholder="Enter pickup location (e.g., Airport, Hotel, Office)"
+                    className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    required
+                  />
+                </div>
+
                 {/* Summary */}
                 {rentalVehicleDetails.fromDate && rentalVehicleDetails.toDate && (
                   <div className="mt-3 p-3 bg-orange-100 rounded-lg">
                     <p className="text-sm text-orange-800 font-medium">
                       {rentalVehicleDetails.numberOfCars} car{rentalVehicleDetails.numberOfCars > 1 ? 's' : ''} needed from {new Date(rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(rentalVehicleDetails.toDate).toLocaleDateString()}
+                      {rentalVehicleDetails.pickupLocation && (
+                        <span className="block mt-1">
+                          Pickup from: {rentalVehicleDetails.pickupLocation}
+                        </span>
+                      )}
                     </p>
                   </div>
                 )}

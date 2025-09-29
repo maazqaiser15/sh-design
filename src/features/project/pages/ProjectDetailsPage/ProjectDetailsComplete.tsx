@@ -65,6 +65,9 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
     totalPeopleWorked: 5,
     windowLayersReinstalled: 2,
     sheetLayersInstalled: 45,
+    // Project Completion Dates
+    estimatedCompletion: '2024-02-15',
+    actualCompletion: '2024-02-14',
     // Square Footage Metrics
     squareFootage: {
       salesEstimate: 2850, // sq ft estimated by sales
@@ -74,31 +77,32 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
     },
     // Labour Cost Metrics
     labourCosts: {
-      totalLabourCost: 25600, // total labour cost
-      hourlyRate: 80, // average hourly rate
+      regularHours: 308, // regular hours worked
+      regularCost: 24640, // regular cost
       overtimeHours: 12, // overtime hours worked
       overtimeCost: 1920, // overtime cost
-      regularHours: 308, // regular hours worked
-      regularCost: 24640 // regular cost
+      actualHours: 320, // actual hours worked
+      estimatedHours: 300, // estimated hours
+      actualOvertimeHours: 12, // actual overtime hours
+      overtimePercentage: 3.75 // overtime percentage
     },
     // Film Usage Metrics
     filmUsage: {
       totalFilmUsed: 2850, // sq ft of film used
-      filmWaste: 85, // sq ft of film wasted
       filmRecut: 45, // sq ft of film recut
       wastePercentage: 2.98, // percentage of waste
       recutPercentage: 1.58, // percentage of recut
-      filmCostPerSqFt: 12.50, // cost per square foot
-      totalFilmCost: 35625 // total film cost
+      filmCostPerSqFt: 12.50 // cost per square foot
     },
     // Travel & Accommodation Costs
     travelAccommodation: {
-      totalTravelCost: 2400, // total travel costs
-      accommodationCost: 1800, // accommodation costs
-      perDiemCost: 1200, // per diem costs
-      totalTravelAccommodation: 5400, // total travel & accommodation
-      teamMembersTraveled: 5, // number of team members who traveled
-      averageCostPerPerson: 1080 // average cost per person
+      hotelCost: 1800, // hotel costs
+      flightCostToJob: 1200, // flight cost to job
+      flightCostFromJob: 1200, // flight cost from job
+      rentalCar: true, // rental car Y/N
+      rentalCost: 400, // rental cost
+      totalTravelAccommodation: 4600, // total travel & accommodation
+      teamMembersTraveled: 5 // number of team members who traveled
     },
     teamMembers: [
       {
@@ -106,9 +110,8 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         name: 'John Smith',
         role: 'Lead Supervisor',
         hoursWorked: 80,
-        performance: 'Excellent',
-        rating: 5,
-        tasksCompleted: 15,
+        layersInstalled: 12,
+        layersReinstalled: 2,
         qualityScore: 98
       },
       {
@@ -116,9 +119,8 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         name: 'Ayesha Khan',
         role: 'Crew Leader',
         hoursWorked: 75,
-        performance: 'Very Good',
-        rating: 4.5,
-        tasksCompleted: 12,
+        layersInstalled: 10,
+        layersReinstalled: 1,
         qualityScore: 95
       },
       {
@@ -126,9 +128,8 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         name: 'Mike Lee',
         role: 'Senior Installer',
         hoursWorked: 70,
-        performance: 'Good',
-        rating: 4,
-        tasksCompleted: 10,
+        layersInstalled: 8,
+        layersReinstalled: 1,
         qualityScore: 92
       },
       {
@@ -136,9 +137,8 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         name: 'Sarah Johnson',
         role: 'Installer',
         hoursWorked: 65,
-        performance: 'Very Good',
-        rating: 4.5,
-        tasksCompleted: 8,
+        layersInstalled: 7,
+        layersReinstalled: 0,
         qualityScore: 94
       },
       {
@@ -146,9 +146,8 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         name: 'David Chen',
         role: 'Installer',
         hoursWorked: 60,
-        performance: 'Good',
-        rating: 4,
-        tasksCompleted: 7,
+        layersInstalled: 6,
+        layersReinstalled: 0,
         qualityScore: 90
       }
     ]
@@ -289,6 +288,8 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         location: project.location || 'N/A',
         startDate: project.startDate || 'N/A',
         endDate: project.endDate || 'N/A',
+        estimatedCompletion: projectReport.estimatedCompletion,
+        actualCompletion: projectReport.actualCompletion,
         totalHoursSpent: projectReport.totalHoursSpent,
         totalPeopleWorked: projectReport.totalPeopleWorked,
         squareFootage: projectReport.squareFootage,
@@ -351,6 +352,10 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         <span>{project.startDate || 'N/A'} - {project.endDate || 'N/A'}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>Est: {projectReport.estimatedCompletion} | Act: {projectReport.actualCompletion}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -558,10 +563,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                         </div>
                         <div className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Total Labour Cost</span>
-                            <span className="font-semibold text-gray-900">${projectReport.labourCosts.totalLabourCost.toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-sm text-gray-600">Regular Hours</span>
                             <span className="font-semibold text-blue-600">{projectReport.labourCosts.regularHours} hrs</span>
                           </div>
@@ -570,8 +571,20 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                             <span className="font-semibold text-orange-600">{projectReport.labourCosts.overtimeHours} hrs</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Average Hourly Rate</span>
-                            <span className="font-semibold text-purple-600">${projectReport.labourCosts.hourlyRate}/hr</span>
+                            <span className="text-sm text-gray-600">Estimated Hours</span>
+                            <span className="font-semibold text-blue-600">{projectReport.labourCosts.estimatedHours} hrs</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Actual Hours</span>
+                            <span className="font-semibold text-green-600">{projectReport.labourCosts.actualHours} hrs</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Actual Overtime Hours</span>
+                            <span className="font-semibold text-orange-600">{projectReport.labourCosts.actualOvertimeHours} hrs</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Overtime Percentage</span>
+                            <span className="font-semibold text-purple-600">{projectReport.labourCosts.overtimePercentage}%</span>
                           </div>
                         </div>
                       </div>
@@ -626,20 +639,12 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                             <span className="font-semibold text-gray-900">{projectReport.filmUsage.totalFilmUsed.toLocaleString()} sq ft</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Film Waste</span>
-                            <span className="font-semibold text-red-600">{projectReport.filmUsage.filmWaste} sq ft</span>
-                          </div>
-                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-sm text-gray-600">Film Recut</span>
                             <span className="font-semibold text-orange-600">{projectReport.filmUsage.filmRecut} sq ft</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-sm text-gray-600">Waste Percentage</span>
                             <span className="font-semibold text-red-600">{projectReport.filmUsage.wastePercentage}%</span>
-                          </div>
-                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Total Film Cost</span>
-                            <span className="font-semibold text-gray-900">${projectReport.filmUsage.totalFilmCost.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -652,24 +657,28 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                         </div>
                         <div className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Travel Costs</span>
-                            <span className="font-semibold text-gray-900">${projectReport.travelAccommodation.totalTravelCost.toLocaleString()}</span>
+                            <span className="text-sm text-gray-600">Hotel Cost</span>
+                            <span className="font-semibold text-gray-900">${projectReport.travelAccommodation.hotelCost.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Accommodation</span>
-                            <span className="font-semibold text-blue-600">${projectReport.travelAccommodation.accommodationCost.toLocaleString()}</span>
+                            <span className="text-sm text-gray-600">Flight Cost To Job</span>
+                            <span className="font-semibold text-blue-600">${projectReport.travelAccommodation.flightCostToJob.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Per Diem</span>
-                            <span className="font-semibold text-green-600">${projectReport.travelAccommodation.perDiemCost.toLocaleString()}</span>
+                            <span className="text-sm text-gray-600">Flight Cost From Job</span>
+                            <span className="font-semibold text-blue-600">${projectReport.travelAccommodation.flightCostFromJob.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Rental Car Y/N</span>
+                            <span className="font-semibold text-gray-900">{projectReport.travelAccommodation.rentalCar ? 'Yes' : 'No'}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Rental Cost</span>
+                            <span className="font-semibold text-orange-600">${projectReport.travelAccommodation.rentalCost.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-sm text-gray-600">Total Travel & Accommodation</span>
                             <span className="font-semibold text-indigo-600">${projectReport.travelAccommodation.totalTravelAccommodation.toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Cost per Person</span>
-                            <span className="font-semibold text-gray-900">${projectReport.travelAccommodation.averageCostPerPerson.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -694,33 +703,20 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                             </div>
                             <div className="flex items-center gap-6">
                               <div className="text-center">
+                                <p className="text-sm text-gray-600">No of Layers Installed</p>
+                                <p className="font-semibold text-gray-900">{member.layersInstalled}</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm text-gray-600">No of Layers Reinstalled</p>
+                                <p className="font-semibold text-gray-900">{member.layersReinstalled}</p>
+                              </div>
+                              <div className="text-center">
                                 <p className="text-sm text-gray-600">Hours</p>
                                 <p className="font-semibold text-gray-900">{member.hoursWorked}</p>
                               </div>
                               <div className="text-center">
-                                <p className="text-sm text-gray-600">Tasks</p>
-                                <p className="font-semibold text-gray-900">{member.tasksCompleted}</p>
-                              </div>
-                              <div className="text-center">
                                 <p className="text-sm text-gray-600">Quality</p>
                                 <p className="font-semibold text-gray-900">{member.qualityScore}%</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-sm text-gray-600">Rating</p>
-                                <div className="flex items-center gap-1">
-                                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                                  <span className="font-semibold text-gray-900">{member.rating}</span>
-                                </div>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-sm text-gray-600">Performance</p>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  member.performance === 'Excellent' ? 'bg-green-100 text-green-800' :
-                                  member.performance === 'Very Good' ? 'bg-blue-100 text-blue-800' :
-                                  'bg-yellow-100 text-yellow-800'
-                                }`}>
-                                  {member.performance}
-                                </span>
                               </div>
                             </div>
                           </div>
@@ -767,11 +763,16 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <p className="text-sm text-gray-500">{member.role}</p>
                         </div>
                         <div className="text-sm text-gray-600">
+                          {member.layersInstalled} layers installed
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {member.layersReinstalled} layers reinstalled
+                        </div>
+                        <div className="text-sm text-gray-600">
                           {member.hoursWorked} hours worked
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-sm font-medium text-gray-900">{member.rating}</span>
+                        <div className="text-sm text-gray-600">
+                          {member.qualityScore}% quality
                         </div>
                       </div>
                     ))}

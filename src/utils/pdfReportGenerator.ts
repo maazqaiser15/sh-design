@@ -6,6 +6,8 @@ export interface ProjectReportData {
   location: string;
   startDate: string;
   endDate: string;
+  estimatedCompletion: string;
+  actualCompletion: string;
   totalHoursSpent: number;
   totalPeopleWorked: number;
   squareFootage: {
@@ -15,29 +17,30 @@ export interface ProjectReportData {
     variancePercentage: number;
   };
   labourCosts: {
-    totalLabourCost: number;
-    hourlyRate: number;
-    overtimeHours: number;
-    overtimeCost: number;
     regularHours: number;
     regularCost: number;
+    overtimeHours: number;
+    overtimeCost: number;
+    actualHours: number;
+    estimatedHours: number;
+    actualOvertimeHours: number;
+    overtimePercentage: number;
   };
   filmUsage: {
     totalFilmUsed: number;
-    filmWaste: number;
     filmRecut: number;
     wastePercentage: number;
     recutPercentage: number;
     filmCostPerSqFt: number;
-    totalFilmCost: number;
   };
   travelAccommodation: {
-    totalTravelCost: number;
-    accommodationCost: number;
-    perDiemCost: number;
+    hotelCost: number;
+    flightCostToJob: number;
+    flightCostFromJob: number;
+    rentalCar: boolean;
+    rentalCost: number;
     totalTravelAccommodation: number;
     teamMembersTraveled: number;
-    averageCostPerPerson: number;
   };
   qualityChecks: {
     passed: number;
@@ -49,9 +52,8 @@ export interface ProjectReportData {
     name: string;
     role: string;
     hoursWorked: number;
-    performance: string;
-    rating: number;
-    tasksCompleted: number;
+    layersInstalled: number;
+    layersReinstalled: number;
     qualityScore: number;
   }>;
 }
@@ -127,12 +129,16 @@ export const generateProjectReportPDF = (data: ProjectReportData): jsPDF => {
   doc.text(`Location: ${data.location}`, margin, yPosition);
   yPosition += 6;
   doc.text(`Duration: ${data.startDate} - ${data.endDate}`, margin, yPosition);
+  yPosition += 6;
+  doc.text(`Estimated Completion: ${data.estimatedCompletion}`, margin, yPosition);
+  yPosition += 6;
+  doc.text(`Actual Completion: ${data.actualCompletion}`, margin, yPosition);
   yPosition += 12;
 
   // Executive Summary
   yPosition = addSectionHeader('EXECUTIVE SUMMARY', yPosition);
   
-  const totalProjectCost = data.labourCosts.totalLabourCost + data.filmUsage.totalFilmCost + data.travelAccommodation.totalTravelAccommodation;
+  const totalProjectCost = data.labourCosts.regularCost + data.labourCosts.overtimeCost + data.travelAccommodation.totalTravelAccommodation;
   
   yPosition = addMetricRow('Total Project Cost', `$${totalProjectCost.toLocaleString()}`, yPosition, true);
   yPosition = addMetricRow('Square Footage Completed', `${data.squareFootage.operationsMeasurement.toLocaleString()} sq ft`, yPosition);
@@ -153,10 +159,12 @@ export const generateProjectReportPDF = (data: ProjectReportData): jsPDF => {
   // Labour Cost Breakdown
   yPosition = addSectionHeader('LABOUR COST BREAKDOWN', yPosition);
   
-  yPosition = addMetricRow('Total Labour Cost', `$${data.labourCosts.totalLabourCost.toLocaleString()}`, yPosition, true);
   yPosition = addMetricRow('Regular Hours', `${data.labourCosts.regularHours} hrs`, yPosition);
   yPosition = addMetricRow('Overtime Hours', `${data.labourCosts.overtimeHours} hrs`, yPosition);
-  yPosition = addMetricRow('Average Hourly Rate', `$${data.labourCosts.hourlyRate}/hr`, yPosition);
+  yPosition = addMetricRow('Estimated Hours', `${data.labourCosts.estimatedHours} hrs`, yPosition);
+  yPosition = addMetricRow('Actual Hours', `${data.labourCosts.actualHours} hrs`, yPosition);
+  yPosition = addMetricRow('Actual Overtime Hours', `${data.labourCosts.actualOvertimeHours} hrs`, yPosition);
+  yPosition = addMetricRow('Overtime Percentage', `${data.labourCosts.overtimePercentage}%`, yPosition);
   yPosition = addMetricRow('Regular Cost', `$${data.labourCosts.regularCost.toLocaleString()}`, yPosition);
   yPosition = addMetricRow('Overtime Cost', `$${data.labourCosts.overtimeCost.toLocaleString()}`, yPosition);
   yPosition += 10;
@@ -165,22 +173,21 @@ export const generateProjectReportPDF = (data: ProjectReportData): jsPDF => {
   yPosition = addSectionHeader('FILM USAGE & WASTE ANALYSIS', yPosition);
   
   yPosition = addMetricRow('Total Film Used', `${data.filmUsage.totalFilmUsed.toLocaleString()} sq ft`, yPosition);
-  yPosition = addMetricRow('Film Waste', `${data.filmUsage.filmWaste} sq ft`, yPosition);
   yPosition = addMetricRow('Film Recut', `${data.filmUsage.filmRecut} sq ft`, yPosition);
   yPosition = addMetricRow('Waste Percentage', `${data.filmUsage.wastePercentage}%`, yPosition);
   yPosition = addMetricRow('Recut Percentage', `${data.filmUsage.recutPercentage}%`, yPosition);
-  yPosition = addMetricRow('Total Film Cost', `$${data.filmUsage.totalFilmCost.toLocaleString()}`, yPosition, true);
   yPosition += 10;
 
   // Travel & Accommodation
   yPosition = addSectionHeader('TRAVEL & ACCOMMODATION COSTS', yPosition);
   
-  yPosition = addMetricRow('Travel Costs', `$${data.travelAccommodation.totalTravelCost.toLocaleString()}`, yPosition);
-  yPosition = addMetricRow('Accommodation', `$${data.travelAccommodation.accommodationCost.toLocaleString()}`, yPosition);
-  yPosition = addMetricRow('Per Diem', `$${data.travelAccommodation.perDiemCost.toLocaleString()}`, yPosition);
+  yPosition = addMetricRow('Hotel Cost', `$${data.travelAccommodation.hotelCost.toLocaleString()}`, yPosition);
+  yPosition = addMetricRow('Flight Cost To Job', `$${data.travelAccommodation.flightCostToJob.toLocaleString()}`, yPosition);
+  yPosition = addMetricRow('Flight Cost From Job', `$${data.travelAccommodation.flightCostFromJob.toLocaleString()}`, yPosition);
+  yPosition = addMetricRow('Rental Car Y/N', data.travelAccommodation.rentalCar ? 'Yes' : 'No', yPosition);
+  yPosition = addMetricRow('Rental Cost', `$${data.travelAccommodation.rentalCost.toLocaleString()}`, yPosition);
   yPosition = addMetricRow('Total Travel & Accommodation', `$${data.travelAccommodation.totalTravelAccommodation.toLocaleString()}`, yPosition, true);
   yPosition = addMetricRow('Team Members Traveled', `${data.travelAccommodation.teamMembersTraveled} people`, yPosition);
-  yPosition = addMetricRow('Cost per Person', `$${data.travelAccommodation.averageCostPerPerson.toLocaleString()}`, yPosition);
   yPosition += 10;
 
   // Quality Summary
@@ -201,7 +208,7 @@ export const generateProjectReportPDF = (data: ProjectReportData): jsPDF => {
       yPosition = margin;
     }
     
-    yPosition = addMetricRow(`${member.name} (${member.role})`, `${member.hoursWorked} hrs | ${member.tasksCompleted} tasks | ${member.qualityScore}% quality`, yPosition);
+    yPosition = addMetricRow(`${member.name} (${member.role})`, `${member.layersInstalled} layers installed | ${member.layersReinstalled} layers reinstalled | ${member.hoursWorked} hrs | ${member.qualityScore}% quality`, yPosition);
   });
 
   // Footer

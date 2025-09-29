@@ -14,10 +14,11 @@ export interface TicketDetails {
 }
 
 export interface RentalVehicleDetails {
-  vehicleName: string;
-  registration: string;
-  contactPersonName: string;
-  contactNumber: string;
+  companyName: string;
+  bookingName: string;
+  bookedBy: string;
+  companyContactNumber: string;
+  rentalCost: number;
   fromDate: string;
   toDate: string;
   bookingSlipFiles: File[];
@@ -28,6 +29,7 @@ export interface HotelDetails {
   numberOfRooms: number;
   checkInDate: string;
   checkOutDate: string;
+  hotelCost: number;
   reservationSlipFiles: File[];
 }
 
@@ -249,6 +251,10 @@ export const TravelAccommodationDetailsCard: React.FC<TravelAccommodationDetails
                       <span className="text-green-700 font-medium text-sm">Check-out:</span>
                       <p className="text-green-900 font-medium">{formatDate(hotel.checkOutDate)}</p>
                     </div>
+                    <div>
+                      <span className="text-green-700 font-medium text-sm">Hotel Cost:</span>
+                      <p className="text-green-900 font-medium">${hotel.hotelCost.toFixed(2)}</p>
+                    </div>
                   </div>
                   
                   {/* Reservation Slips */}
@@ -294,20 +300,24 @@ export const TravelAccommodationDetailsCard: React.FC<TravelAccommodationDetails
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <span className="text-orange-700 font-medium text-sm">Vehicle Name:</span>
-                      <p className="text-orange-900 font-medium">{vehicle.vehicleName}</p>
+                      <span className="text-orange-700 font-medium text-sm">Company Name:</span>
+                      <p className="text-orange-900 font-medium">{vehicle.companyName}</p>
                     </div>
                     <div>
-                      <span className="text-orange-700 font-medium text-sm">Registration:</span>
-                      <p className="text-orange-900 font-medium">{vehicle.registration}</p>
+                      <span className="text-orange-700 font-medium text-sm">Booking Name:</span>
+                      <p className="text-orange-900 font-medium">{vehicle.bookingName}</p>
                     </div>
                     <div>
-                      <span className="text-orange-700 font-medium text-sm">Contact Person:</span>
-                      <p className="text-orange-900 font-medium">{vehicle.contactPersonName}</p>
+                      <span className="text-orange-700 font-medium text-sm">Booked By:</span>
+                      <p className="text-orange-900 font-medium">{vehicle.bookedBy}</p>
                     </div>
                     <div>
-                      <span className="text-orange-700 font-medium text-sm">Contact Number:</span>
-                      <p className="text-orange-900 font-medium">{vehicle.contactNumber}</p>
+                      <span className="text-orange-700 font-medium text-sm">Company Contact:</span>
+                      <p className="text-orange-900 font-medium">{vehicle.companyContactNumber}</p>
+                    </div>
+                    <div>
+                      <span className="text-orange-700 font-medium text-sm">Rental Cost:</span>
+                      <p className="text-orange-900 font-medium">${vehicle.rentalCost.toFixed(2)}</p>
                     </div>
                     <div>
                       <span className="text-orange-700 font-medium text-sm">Duration:</span>

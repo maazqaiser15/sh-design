@@ -346,6 +346,19 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const isExecutive = user?.userType === 'executive';
   const isExecutionTeam = user?.userType === 'execution-team';
+  const isLeadSupervisor = user?.userType === 'lead-supervisor';
+
+  // Redirect lead supervisors to projects page as they don't have dashboard access
+  React.useEffect(() => {
+    if (isLeadSupervisor) {
+      navigate('/projects');
+    }
+  }, [isLeadSupervisor, navigate]);
+
+  // Don't render anything for lead supervisors as they'll be redirected
+  if (isLeadSupervisor) {
+    return null;
+  }
 
   const getActivityIcon = (type: string) => {
     switch (type) {

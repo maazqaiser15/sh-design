@@ -152,7 +152,6 @@ const demoAccounts: Record<DemoPersona, DemoAccount> = {
       name: 'Lead Supervisor',
       userType: 'lead-supervisor',
       permissions: [
-        { module: 'dashboard', actions: ['view'] },
         { module: 'projects', actions: ['view', 'edit', 'manage'] },
         { module: 'documents', actions: ['view', 'edit'] }
       ]
@@ -160,7 +159,6 @@ const demoAccounts: Record<DemoPersona, DemoAccount> = {
     avatar: 'DT',
     description: 'Lead supervision with project and document management access only',
     permissions: [
-      { module: 'dashboard', actions: ['view'] },
       { module: 'projects', actions: ['view', 'edit', 'manage'] },
       { module: 'documents', actions: ['view', 'edit'] }
     ],

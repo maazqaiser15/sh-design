@@ -386,12 +386,35 @@ const mockProjects: SafeHavenProject[] = [
     location: 'Vancouver, WA',
     createdAt: '2024-12-01T00:00:00Z',
     updatedAt: '2024-12-01T00:00:00Z',
-    assignedTeam: [],
-    assignedTrailers: [],
+    assignedTeam: ['2', '3'],
+    assignedTrailers: ['1'],
     progress: 0,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20009',
-    crew: [],
-    assignedTrailer: null,
+    crew: [
+      { 
+        id: '2', 
+        name: 'Alex Martin', 
+        role: 'Installer', 
+        designation: 'Installer',
+        location: 'Vancouver, WA',
+        phone: '+1-555-0102',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' 
+      },
+      { 
+        id: '3', 
+        name: 'Maria Rodriguez', 
+        role: 'Crew Leader', 
+        designation: 'Crew Leader',
+        location: 'Vancouver, WA',
+        phone: '+1-555-0103',
+        productivity: 'Efficient in Installation',
+        status: 'available' as const,
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face' 
+      }
+    ],
+    assignedTrailer: 'Alpha Trailer',
   },
 ];
 
@@ -400,6 +423,7 @@ export const ProjectListPage: React.FC = () => {
   const { user, hasPermission } = useAuth();
   const { isMobile } = useSidebar();
   const isExecutive = user?.userType === 'executive';
+  const isLeadSupervisor = user?.userType === 'lead-supervisor';
   const [viewMode, setViewMode] = useState<ProjectViewMode>({ type: 'list' });
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -420,7 +444,7 @@ export const ProjectListPage: React.FC = () => {
   
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [projectForDateAssignment, setProjectForDateAssignment] = useState<ProjectListItem | null>(null);
-  const [showExecutiveAnalytics, setShowExecutiveAnalytics] = useState(false);
+  const [showLeadSupervisorAnalytics, setShowLeadSupervisorAnalytics] = useState(true);
   const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false);
   const [projectForCoordinatorAssignment, setProjectForCoordinatorAssignment] = useState<ProjectListItem | null>(null);
   
@@ -430,9 +454,9 @@ export const ProjectListPage: React.FC = () => {
     return mockProjects.map(projectToListItem);
   }, []);
 
-  // Executive analytics calculations
-  const executiveAnalytics = useMemo(() => {
-    if (!isExecutive) return null;
+  // Lead Supervisor analytics calculations
+  const leadSupervisorAnalytics = useMemo(() => {
+    if (!isLeadSupervisor) return null;
     
     const totalProjects = projectListItems.length;
     const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF'].includes(p.status)).length;
@@ -454,7 +478,7 @@ export const ProjectListPage: React.FC = () => {
       projectsByStatus,
       averageProgress
     };
-  }, [projectListItems, isExecutive]);
+  }, [projectListItems, isLeadSupervisor]);
 
   // Filter projects by user role first, then apply other filters
   const filteredAndSortedProjects = useMemo(() => {
@@ -545,9 +569,9 @@ export const ProjectListPage: React.FC = () => {
             </h1>
             <p className="text-base text-gray-500">
               {projectListItems.length} Projects
-              {isExecutive && executiveAnalytics && (
+              {isLeadSupervisor && leadSupervisorAnalytics && (
                 <span className="ml-2 text-sm text-green-600">
-                  • {executiveAnalytics.completionRate.toFixed(1)}% Completion Rate
+                  • {leadSupervisorAnalytics.completionRate.toFixed(1)}% Completion Rate
                 </span>
               )}
             </p>
@@ -555,14 +579,14 @@ export const ProjectListPage: React.FC = () => {
           
           {/* Right side - Search and View Controls */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            {/* Executive Controls */}
-            {isExecutive && (
+            {/* Lead Supervisor Controls */}
+            {isLeadSupervisor && (
               <div className="flex items-center gap-2 mb-2 sm:mb-0">
                 <Button
                   variant="secondary"
                   size="sm"
                   icon={BarChart3}
-                  onClick={() => setShowExecutiveAnalytics(!showExecutiveAnalytics)}
+                  onClick={() => setShowLeadSupervisorAnalytics(!showLeadSupervisorAnalytics)}
                 >
                   Analytics
                 </Button>
@@ -659,14 +683,14 @@ export const ProjectListPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Executive Analytics Panel */}
-        {isExecutive && showExecutiveAnalytics && executiveAnalytics && (
+        {/* Lead Supervisor Analytics Panel */}
+        {isLeadSupervisor && showLeadSupervisorAnalytics && leadSupervisorAnalytics && (
           <div className="mb-6 px-2">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Project Analytics</h3>
                 <button
-                  onClick={() => setShowExecutiveAnalytics(false)}
+                  onClick={() => setShowLeadSupervisorAnalytics(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="w-5 h-5" />
@@ -676,25 +700,25 @@ export const ProjectListPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Total Projects */}
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{executiveAnalytics.totalProjects}</div>
+                  <div className="text-2xl font-bold text-blue-600">{leadSupervisorAnalytics.totalProjects}</div>
                   <div className="text-sm text-gray-600">Total Projects</div>
                 </div>
                 
                 {/* Active Projects */}
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">{executiveAnalytics.activeProjects}</div>
+                  <div className="text-2xl font-bold text-orange-600">{leadSupervisorAnalytics.activeProjects}</div>
                   <div className="text-sm text-gray-600">Active Projects</div>
                 </div>
                 
                 {/* Completion Rate */}
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{executiveAnalytics.completionRate.toFixed(1)}%</div>
+                  <div className="text-2xl font-bold text-green-600">{leadSupervisorAnalytics.completionRate.toFixed(1)}%</div>
                   <div className="text-sm text-gray-600">Completion Rate</div>
                 </div>
                 
                 {/* Average Progress */}
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">{executiveAnalytics.averageProgress.toFixed(1)}%</div>
+                  <div className="text-2xl font-bold text-purple-600">{leadSupervisorAnalytics.averageProgress.toFixed(1)}%</div>
                   <div className="text-sm text-gray-600">Avg Progress</div>
                 </div>
               </div>
@@ -703,7 +727,7 @@ export const ProjectListPage: React.FC = () => {
               <div className="mt-6">
                 <h4 className="text-md font-medium text-gray-900 mb-3">Projects by Status</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Object.entries(executiveAnalytics.projectsByStatus).map(([status, count]) => (
+                  {Object.entries(leadSupervisorAnalytics.projectsByStatus).map(([status, count]) => (
                     <div key={status} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <span className="text-sm font-medium text-gray-700">{status}</span>
                       <span className="text-sm font-bold text-gray-900">{count}</span>

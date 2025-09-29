@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
-import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check } from 'lucide-react';
+import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check, Building, FileText } from 'lucide-react';
 
 export interface TicketDetails {
   id: string;
@@ -25,10 +25,11 @@ export interface TicketDetails {
 }
 
 export interface RentalVehicleDetails {
-  vehicleName: string;
-  registration: string;
-  contactPersonName: string;
-  contactNumber: string;
+  companyName: string;
+  bookingName: string;
+  bookedBy: string;
+  companyContactNumber: string;
+  rentalCost: number;
   fromDate: string;
   toDate: string;
   bookingSlipFiles: File[];
@@ -39,6 +40,7 @@ export interface HotelDetails {
   numberOfRooms: number;
   checkInDate: string;
   checkOutDate: string;
+  hotelCost: number;
   reservationSlipFiles: File[];
 }
 
@@ -77,10 +79,11 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
 
   // Rental Vehicle form state
   const [rentalVehicles, setRentalVehicles] = useState<RentalVehicleDetails[]>([{
-    vehicleName: '',
-    registration: '',
-    contactPersonName: '',
-    contactNumber: '',
+    companyName: '',
+    bookingName: '',
+    bookedBy: '',
+    companyContactNumber: '',
+    rentalCost: 0,
     fromDate: '',
     toDate: '',
     bookingSlipFiles: []
@@ -122,10 +125,11 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   // Rental Vehicle management functions
   const addRentalVehicle = () => {
     const newVehicle: RentalVehicleDetails = {
-      vehicleName: '',
-      registration: '',
-      contactPersonName: '',
-      contactNumber: '',
+      companyName: '',
+      bookingName: '',
+      bookedBy: '',
+      companyContactNumber: '',
+      rentalCost: 0,
       fromDate: '',
       toDate: '',
       bookingSlipFiles: []
@@ -161,6 +165,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
       numberOfRooms: 1,
       checkInDate: '',
       checkOutDate: '',
+      hotelCost: 0,
       reservationSlipFiles: []
     };
     setHotels(prev => [...prev, newHotel]);
@@ -190,7 +195,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
     const data: TravelAccommodationData = {
       tickets,
       hotelDetails: hotels.filter(hotel => hotel.hotelName),
-      rentalVehicleDetails: rentalVehicles.filter(vehicle => vehicle.vehicleName),
+      rentalVehicleDetails: rentalVehicles.filter(vehicle => vehicle.companyName),
     };
     onSubmit(data);
     onClose();
@@ -226,11 +231,11 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
       return baseValid;
     });
     const rentalVehicleValid = rentalVehicles.every(vehicle => 
-      !vehicle.vehicleName || (
-        vehicle.vehicleName &&
-        vehicle.registration &&
-        vehicle.contactPersonName &&
-        vehicle.contactNumber &&
+      !vehicle.companyName || (
+        vehicle.companyName &&
+        vehicle.bookingName &&
+        vehicle.bookedBy &&
+        vehicle.companyContactNumber &&
         vehicle.fromDate &&
         vehicle.toDate
       )
@@ -691,6 +696,25 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                         />
                       </div>
                     </div>
+
+                    {/* Hotel Cost */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Hotel Cost *
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">$</span>
+                        <input
+                          type="number"
+                          value={hotel.hotelCost}
+                          onChange={(e) => updateHotel(hotelIndex, 'hotelCost', Math.max(0, Number(e.target.value)))}
+                          min="0"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Attach Reservation Slips */}
@@ -775,66 +799,88 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Vehicle Name */}
+                {/* Company Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Vehicle Name
+                    Company Name
                   </label>
                   <div className="relative">
-                    <Car className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="text"
-                      value={vehicle.vehicleName}
-                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'vehicleName', e.target.value)}
-                      placeholder="Enter vehicle name"
+                      value={vehicle.companyName}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'companyName', e.target.value)}
+                      placeholder="Enter company name"
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
                 </div>
 
-                {/* Registration */}
+                {/* Booking Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Registration Number
+                    Booking Name
                   </label>
-                  <input
-                    type="text"
-                    value={vehicle.registration}
-                    onChange={(e) => updateRentalVehicle(vehicleIndex, 'registration', e.target.value)}
-                    placeholder="Enter registration number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-                  />
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={vehicle.bookingName}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'bookingName', e.target.value)}
+                      placeholder="Enter booking name"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
                 </div>
 
-                {/* Contact Person Name */}
+                {/* Booked By */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Person Name
+                    Booked By
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="text"
-                      value={vehicle.contactPersonName}
-                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'contactPersonName', e.target.value)}
-                      placeholder="Enter contact person name"
+                      value={vehicle.bookedBy}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'bookedBy', e.target.value)}
+                      placeholder="Enter booked by name"
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
                 </div>
 
-                {/* Contact Number */}
+                {/* Company Contact Number */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Number
+                    Company Contact Number
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="tel"
-                      value={vehicle.contactNumber}
-                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'contactNumber', e.target.value)}
-                      placeholder="Enter contact number"
+                      value={vehicle.companyContactNumber}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'companyContactNumber', e.target.value)}
+                      placeholder="Enter company contact number"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Rental Cost */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Rental Cost
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={vehicle.rentalCost}
+                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'rentalCost', Math.max(0, Number(e.target.value)))}
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>

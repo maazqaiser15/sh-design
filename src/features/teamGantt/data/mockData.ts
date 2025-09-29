@@ -29,13 +29,13 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     availability: 'Available',
     projects: [
       {
-        projectId: 'proj-2',
-        projectName: 'Hilton Lobby Renovation',
-        status: 'UB',
-        startDate: '2025-10-02',
-        endDate: '2025-10-15',
-        role: 'Lead Installer',
-        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20002'
+        projectId: 'proj-9',
+        projectName: 'New Office Building Security',
+        status: 'WIP',
+        startDate: '2025-09-30',
+        endDate: '2025-10-10',
+        role: 'Installer',
+        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20009'
       }
     ]
   },
@@ -44,16 +44,16 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Maria Rodriguez',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     role: 'Crew Leader',
-    availability: 'Out of office',
+    availability: 'Available',
     projects: [
       {
-        projectId: 'proj-3',
-        projectName: 'Safe Haven Office Setup',
+        projectId: 'proj-9',
+        projectName: 'New Office Building Security',
         status: 'WIP',
-        startDate: '2025-10-03',
-        endDate: '2025-11-14',
+        startDate: '2025-09-30',
+        endDate: '2025-10-10',
         role: 'Crew Leader',
-        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20003'
+        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20009'
       }
     ]
   },
@@ -230,16 +230,16 @@ export const MOCK_TRAILERS: TrailerView[] = [
     trailerName: 'Alpha Trailer',
     registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10001',
     status: 'available',
-    location: 'Los Angeles, CA',
+    location: 'Vancouver, WA',
     assignedProjects: [
       {
-        projectId: 'proj-1',
-        projectName: 'Marriott Windows Installation',
-        projectStatus: 'PV90',
-        startDate: '2025-10-01',
-        endDate: '2025-10-28',
+        projectId: 'proj-9',
+        projectName: 'New Office Building Security',
+        projectStatus: 'WIP',
+        startDate: '2025-09-30',
+        endDate: '2025-10-10',
         role: 'Primary Equipment',
-        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20001'
+        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20009'
       }
     ]
   },

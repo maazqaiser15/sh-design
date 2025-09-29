@@ -21,8 +21,14 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
       .slice(0, 2);
   };
 
-  const getProgressPercentage = (status: string): number => {
-    switch (status) {
+  const getProgressPercentage = (project: ProjectListItem): number => {
+    // Use actual progress value from project data if available
+    if (project.progress !== undefined) {
+      return project.progress;
+    }
+    
+    // Fallback to status-based progress for backward compatibility
+    switch (project.status) {
       case 'PV75':
         return 5;
       case 'PV90':
@@ -141,12 +147,12 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
             <div className="mt-auto">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-medium text-gray-600">Progress</span>
-                <span className="text-sm font-semibold text-gray-700">{getProgressPercentage(project.status)}%</span>
+                <span className="text-sm font-semibold text-gray-700">{getProgressPercentage(project)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
                   className={`h-3 rounded-full transition-all duration-300 ${getProgressBarColor(project.status)}`}
-                  style={{ width: `${getProgressPercentage(project.status)}%` }}
+                  style={{ width: `${getProgressPercentage(project)}%` }}
                 ></div>
               </div>
             </div>

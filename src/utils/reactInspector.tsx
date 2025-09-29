@@ -84,11 +84,11 @@ export const getInspectorProps = (componentName: string, fileName: string) => {
       console.log(`🎯 Element:`, e.currentTarget);
       console.groupEnd();
     },
-    onMouseEnter: (e: React.MouseEvent) => {
+    onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
       e.currentTarget.style.outline = '2px solid #3b82f6';
       e.currentTarget.style.outlineOffset = '2px';
     },
-    onMouseLeave: (e: React.MouseEvent) => {
+    onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
       e.currentTarget.style.outline = 'none';
       e.currentTarget.style.outlineOffset = '0';
     }
