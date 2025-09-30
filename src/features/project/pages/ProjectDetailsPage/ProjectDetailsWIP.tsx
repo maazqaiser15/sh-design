@@ -532,12 +532,12 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const calculateProjectMetrics = (windows: Window[]) => {
     // Return fixed values as requested
     return {
-      completed: 6, // Windows Completed
+      completed: 10, // Windows Completed
       started: 24, // Windows Started
-      reinstallation: 8, // Issues Reported
-      total: 100, // Total Windows
+      reinstallation: 4, // Issues Reported
+      total: 300, // Total Windows
       totalLayers: 340, // Total Layers
-      completedLayers: 120 // Layers Completed
+      completedLayers: 40 // Layers Completed
     };
   };
 
@@ -552,9 +552,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     currentPhase: projectProgress === 100 ? 'Project Completed' : 
                   projectProgress > 0 ? 'Window Installation' : 'Ready to Start',
     estimatedCompletion: '2024-02-15',
-    teamOnSite: 4, // Fixed value as requested
-    windowsCompleted: 6, // Fixed value as requested
-    windowsStarted: 24, // Fixed value as requested
+    teamOnSite: 4, // Team Assigned: 4
+    windowsCompleted: 10, // Windows Completed: 10/300
+    windowsStarted: 24, // Windows Started
     activityLog: [
       {
         id: '1',
@@ -1264,7 +1264,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
             {/* Stats Section - Hidden for execution team and only show for WIP status */}
             {user?.userType !== 'execution-team' && projectStatus === 'WIP' && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               {/* Team on Site */}
               <div className="flex flex-col items-center gap-2 sm:gap-3">
                 <div className="flex items-center gap-1 sm:gap-2">
@@ -1273,30 +1273,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   </div>
                   <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team on Site</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Assigned</span>
               </div>
 
-              {/* Total Windows */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                    <Square className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                  </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.total}</span>
-                </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
-              </div>
-
-              {/* Total Layers */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-50 rounded-md flex items-center justify-center">
-                    <Layers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
-                  </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.totalLayers}</span>
-                </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Layers</span>
-              </div>
 
               {/* Layers Completed */}
               <div className="flex flex-col items-center gap-2 sm:gap-3">
@@ -1304,9 +1283,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-50 rounded-md flex items-center justify-center">
                     <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.completedLayers}</span>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.completedLayers}/{projectMetrics.totalLayers}</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Completed</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Installed</span>
               </div>
 
               {/* Windows Completed */}
@@ -1315,21 +1294,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
                     <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}</span>
+                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}/{projectMetrics.total}</span>
                 </div>
                 <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Completed</span>
               </div>
 
-              {/* Windows Started */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-md flex items-center justify-center">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
-                  </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsStarted}</span>
-                </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Started</span>
-              </div>
 
               {/* Issues Reported */}
               <div className="flex flex-col items-center gap-2 sm:gap-3">
