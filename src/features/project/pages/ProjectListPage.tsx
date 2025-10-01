@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Grid, List, Search, X, Calendar, Plus, BarChart3, Filter, MoreHorizontal } from 'lucide-react';
-import { addComponentInspector } from '../../../utils/componentInspector';
-import { ReactInspectorPanel } from '../../../utils/reactInspector';
 import { ProjectListView } from '../components/ProjectListView';
 import { ProjectTableView } from '../components/ProjectTableView';
 import { ProjectGanttView } from '../components/ProjectGanttView';
@@ -555,17 +553,14 @@ export const ProjectListPage: React.FC = () => {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-gray-50"
-      {...addComponentInspector('ProjectListPage', 'src/features/project/pages/ProjectListPage.tsx')}
-    >
+    <div className="min-h-screen bg-gray-50">
       <div className="w-full py-0">
         {/* First Row - Page Heading and Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 px-2">
           {/* Left side - Title and count */}
           <div className="mb-4 lg:mb-0">
             <h1 className="text-3xl font-bold text-gray-900">
-              {isExecutive ? 'Project Management' : 'Projects'}
+              {isExecutive ? 'Project Management' : 'Project Portfolio'}
             </h1>
             <p className="text-base text-gray-500">
               {projectListItems.length} Projects
@@ -598,24 +593,13 @@ export const ProjectListPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search projects..."
+                placeholder="Search by project name, location, or ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
-            {/* Create Project Button for Executives */}
-            {isExecutive && hasPermission('projects', 'manage') && (
-              <Button
-                variant="primary"
-                size="sm"
-                icon={Plus}
-                onClick={() => console.log('Create new project')}
-              >
-                Create Project
-              </Button>
-            )}
 
             {/* View Toggle - Icons Only */}
             <div className="flex bg-gray-100 rounded-lg p-1">
@@ -626,7 +610,7 @@ export const ProjectListPage: React.FC = () => {
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                title="List View"
+                title="Card-based project view"
               >
                 <Grid className="w-4 h-4" />
               </button>
@@ -637,7 +621,7 @@ export const ProjectListPage: React.FC = () => {
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                title="Table View"
+                title="Detailed project table"
               >
                 <List className="w-4 h-4" />
               </button>
@@ -648,7 +632,7 @@ export const ProjectListPage: React.FC = () => {
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                title="Gantt Chart View"
+                title="Timeline and resource view"
               >
                 <Calendar className="w-4 h-4" />
               </button>
@@ -782,8 +766,6 @@ export const ProjectListPage: React.FC = () => {
         onAssignCoordinator={handleAssignCoordinator}
       />
 
-      {/* React Inspector Panel - Development Only */}
-      <ReactInspectorPanel />
       </div>
     </div>
   );

@@ -28,8 +28,8 @@ export const ProjectDetailsRouter: React.FC = () => {
   
   // Set breadcrumbs for project details
   useSetBreadcrumbs([
-    { label: 'Projects', href: '/projects' },
-    { label: projectTitle || project.title || `Project ${projectId}`, href: undefined }
+    { label: 'Project Portfolio', href: '/projects' },
+    { label: 'Project Details', href: undefined }
   ], [projectId, projectTitle, project.title]);
 
   // Determine which layout to show based on status

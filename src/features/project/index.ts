@@ -29,5 +29,4 @@ export type { TeamMember, TeamRole, TeamMemberStatus } from './types/teamMembers
 export type { TrailerForAssignment, TrailerStatus } from './types/trailers';
 export * from './utils';
 export { getAvailableTrailersForAssignment, convertTrailerToAssignment } from './utils/trailerDataUtils';
-export { demonstrateTrailerModuleIntegration } from './utils/trailerModuleDemo';
 export { demonstrateChecklistAutoUpdate } from './utils/checklistDemo';

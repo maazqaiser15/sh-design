@@ -20,7 +20,7 @@ export const TeamGanttChart: React.FC = () => {
 
   // Set breadcrumbs
   useSetBreadcrumbs([
-    { label: 'Team Gantt Chart' }
+    { label: 'Resource Planning' }
   ]);
 
   const handleDateChange = (newDate: Date) => {

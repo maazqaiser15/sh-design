@@ -283,7 +283,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
     setIsGeneratingPDF(true);
     try {
       const reportData: ProjectReportData = {
-        projectName: project.title || 'Project',
+        projectName: project.name || 'Project',
         projectId: project.projectId || 'N/A',
         location: project.location || 'N/A',
         startDate: project.startDate || 'N/A',
@@ -312,7 +312,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
       showToast('PDF report generated successfully!');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      showToast('Error generating PDF report. Please try again.');
+      showToast('Unable to generate report. Please check your connection and try again.');
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -372,7 +372,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     onClick={handleCreateAssociatedProject}
                     className="px-3 py-2"
                   >
-                    Create Associated Project
+                    Create Follow-up Project
                   </Button>
                   <Button
                     variant="secondary"
@@ -380,7 +380,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     icon={Edit}
                     className="px-3 py-2"
                   >
-                    Edit
+                    Edit Project
                   </Button>
                 </div>
               </div>
@@ -406,7 +406,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     </div>
                     <span className="text-xl font-semibold text-gray-700">{projectReport.totalHoursSpent}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Hours Spent</span>
+                  <span className="text-sm font-medium text-gray-600">Total Hours Worked</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-3">
@@ -416,7 +416,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     </div>
                     <span className="text-xl font-semibold text-gray-700">{projectReport.totalPeopleWorked}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-600">People Worked</span>
+                  <span className="text-sm font-medium text-gray-600">Team Members</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-3">
@@ -426,7 +426,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     </div>
                     <span className="text-xl font-semibold text-gray-700">{projectReport.squareFootage.operationsMeasurement}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Sq Ft Completed</span>
+                  <span className="text-sm font-medium text-gray-600">Square Footage Installed</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-3">
@@ -434,9 +434,9 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     <div className="w-8 h-8 bg-purple-50 rounded-md flex items-center justify-center">
                       <DollarSign className="w-4 h-4 text-purple-600" />
                     </div>
-                    <span className="text-xl font-semibold text-gray-700">${(projectReport.labourCosts.totalLabourCost / 1000).toFixed(1)}k</span>
+                    <span className="text-xl font-semibold text-gray-700">{projectReport.sheetLayersInstalled}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Labour Cost</span>
+                  <span className="text-sm font-medium text-gray-600">Layers Installed</span>
                 </div>
               </div>
             </div>
@@ -481,10 +481,10 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
               <nav className="flex space-x-8">
                 {[
                   { id: 'project-report', label: 'Project Report' },
-                  { id: 'issues', label: 'Issues & Fixes' },
+                  { id: 'issues', label: 'Quality Issues' },
                   { id: 'team', label: 'Team' },
-                  { id: 'document', label: 'Document' },
-                  { id: 'notes', label: 'Notes' }
+                  { id: 'document', label: 'Documents' },
+                  { id: 'notes', label: 'Project Notes' }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -518,7 +518,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           disabled={isGeneratingPDF}
                           className="px-4 py-2"
                         >
-                          {isGeneratingPDF ? 'Generating...' : 'Download Report'}
+                          {isGeneratingPDF ? 'Generating...' : 'Export Report'}
                         </Button>
                       </div>
                     </div>
@@ -598,16 +598,16 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <h4 className="text-md font-semibold text-gray-900">Quality Summary</h4>
                         </div>
                         <div className="grid grid-cols-4 gap-4">
-                          {/* Windows Passed QC Card */}
+                          {/* Layers Installed Card  */}
                           <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
                             <div className="text-2xl font-bold text-green-600 mb-1">{passedChecks}</div>
-                            <div className="text-sm text-green-700 font-medium">Windows Passed QC</div>
+                            <div className="text-sm text-green-700 font-medium">Layers Installed</div>
                           </div>
                           
-                          {/* Windows Failed QC Card */}
+                          {/* Layers Reinstalled Card */}
                           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
                             <div className="text-2xl font-bold text-red-600 mb-1">{failedChecks}</div>
-                            <div className="text-sm text-red-700 font-medium">Windows Failed QC</div>
+                            <div className="text-sm text-red-700 font-medium">Layers Reinstalled</div>
                           </div>
                           
                           {/* Success Rate Card */}
@@ -707,16 +707,12 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                                 <p className="font-semibold text-gray-900">{member.layersInstalled}</p>
                               </div>
                               <div className="text-center">
-                                <p className="text-sm text-gray-600">No of Layers Reinstalled</p>
+                                <p className="text-sm text-gray-600">Issues Reported</p>
                                 <p className="font-semibold text-gray-900">{member.layersReinstalled}</p>
                               </div>
                               <div className="text-center">
                                 <p className="text-sm text-gray-600">Hours</p>
                                 <p className="font-semibold text-gray-900">{member.hoursWorked}</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-sm text-gray-600">Quality</p>
-                                <p className="font-semibold text-gray-900">{member.qualityScore}%</p>
                               </div>
                             </div>
                           </div>
@@ -731,7 +727,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
             {activeTab === 'issues' && (
               <div className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Issues & Fixes</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Quality Issues</h3>
                   <div className="space-y-4">
                     <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
                       <h4 className="font-medium text-green-900">All Issues Resolved</h4>
@@ -793,10 +789,10 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     <Button
                       variant="secondary"
                       icon={Upload}
-                      onClick={() => showToast('Upload document functionality coming soon')}
+                      onClick={() => showToast('Document upload will be available soon')}
                       className="px-4 py-2"
                     >
-                      Upload document
+                      Add Document
                     </Button>
                   </div>
                   
@@ -826,7 +822,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => showToast('Delete document functionality coming soon')}
+                          onClick={() => showToast('Document deletion will be available soon')}
                           className="p-2 text-gray-400 hover:text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -859,7 +855,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => showToast('Delete document functionality coming soon')}
+                          onClick={() => showToast('Document deletion will be available soon')}
                           className="p-2 text-gray-400 hover:text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -892,7 +888,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => showToast('Delete document functionality coming soon')}
+                          onClick={() => showToast('Document deletion will be available soon')}
                           className="p-2 text-gray-400 hover:text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -925,7 +921,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <Download className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => showToast('Delete document functionality coming soon')}
+                          onClick={() => showToast('Document deletion will be available soon')}
                           className="p-2 text-gray-400 hover:text-red-600"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1129,7 +1125,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
         isOpen={showPDFModal}
         onClose={() => setShowPDFModal(false)}
         pdfBlob={pdfBlob}
-        fileName={`${(project.title || 'Project').replace(/\s+/g, '_')}_Project_Report_${new Date().toISOString().split('T')[0]}.pdf`}
+        fileName={`${(project.name || 'Project').replace(/\s+/g, '_')}_Project_Report_${new Date().toISOString().split('T')[0]}.pdf`}
       />
     </div>
   );

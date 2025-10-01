@@ -15,17 +15,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isCollapsed, isMobile, isMobileOpen } = useSidebar();
 
   return (
-    <div className="h-screen bg-gray-50 flex">
+    <div className="h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
       <div className={`
-        flex-1 flex flex-col overflow-hidden transition-all duration-300
+        h-full flex flex-col overflow-hidden transition-all duration-300
         ${isMobile 
           ? 'ml-0' 
           : isCollapsed 
-            ? 'ml-0' 
+            ? 'ml-16' 
             : 'ml-64'
         }
       `}>

@@ -193,8 +193,8 @@ export const generateProjectReportPDF = (data: ProjectReportData): jsPDF => {
   // Quality Summary
   yPosition = addSectionHeader('QUALITY SUMMARY', yPosition);
   
-  yPosition = addMetricRow('Windows Passed QC', `${data.qualityChecks.passed} windows`, yPosition);
-  yPosition = addMetricRow('Windows Failed QC', `${data.qualityChecks.failed} windows`, yPosition);
+  yPosition = addMetricRow('Layers Installed', `${data.qualityChecks.passed} windows`, yPosition);
+  yPosition = addMetricRow('Layers Reinstalled', `${data.qualityChecks.failed} windows`, yPosition);
   yPosition = addMetricRow('Success Rate', `${data.qualityChecks.successRate}%`, yPosition, true);
   yPosition = addMetricRow('Average Quality Score', `${data.qualityChecks.averageQualityScore}%`, yPosition);
   yPosition += 10;

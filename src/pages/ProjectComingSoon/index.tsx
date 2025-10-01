@@ -15,8 +15,8 @@ export const ProjectComingSoon: React.FC = () => {
 
   // Set breadcrumbs
   useSetBreadcrumbs([
-    { label: 'Projects', href: '/projects' },
-    { label: title || `Project ${projectId}` }
+    { label: 'Project Portfolio', href: '/projects' },
+    { label: `Project Details - ${title || `Project ${projectId}`}` }
   ], [projectId, title]);
 
   const getStatusInfo = (status: string) => {
@@ -89,7 +89,7 @@ export const ProjectComingSoon: React.FC = () => {
               icon={ArrowLeft}
               className="w-full"
             >
-              Back to Projects
+              Back to Project Portfolio
             </Button>
             
             <p className="text-sm text-gray-500">

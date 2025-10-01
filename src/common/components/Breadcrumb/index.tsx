@@ -30,7 +30,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   
   // Add home breadcrumb if enabled
   const allItems = showHome 
-    ? [{ label: 'Dashboard', href: '/', icon: Home }, ...breadcrumbItems]
+    ? [{ label: 'Project Overview', href: '/', icon: Home }, ...breadcrumbItems]
     : breadcrumbItems;
 
   // Don't show breadcrumb if we're on home page and only have home item
@@ -106,19 +106,19 @@ function generateBreadcrumbsFromPath(pathname: string): BreadcrumbItem[] {
 function formatSegmentLabel(segment: string, allSegments: string[], index: number): string {
   // Handle specific route patterns
   const routeLabels: Record<string, string> = {
-    'projects': 'Projects',
-    'project': 'Project',
+    'projects': 'Project Portfolio',
+    'project': 'Project Details',
     'preparation': 'Preparation',
     'execution': 'Execution', 
     'completion': 'Completion',
-    'team': 'Team',
-    'trailers': 'Trailers',
-    'trailer': 'Trailer',
-    'scheduler': 'Scheduler',
+    'team': 'Team Management',
+    'trailers': 'Trailers Management',
+    'trailer': 'Trailer Details',
+    'scheduler': 'Resource Planning',
     'documents': 'Documents',
     'settings': 'Settings',
     'coming-soon': 'Coming Soon',
-    'team-gantt-chart': 'Team Gantt Chart',
+    'team-gantt-chart': 'Resource Planning',
   };
 
   // Check if it's a UUID or ID (for dynamic routes)
@@ -129,13 +129,13 @@ function formatSegmentLabel(segment: string, allSegments: string[], index: numbe
     // For IDs, try to infer the type from the previous segment
     const previousSegment = allSegments[index - 1];
     if (previousSegment === 'projects') {
-      return isUuid ? `Project ${segment.substring(0, 8)}...` : `Project ${segment}`;
+      return isUuid ? `Project Details - ${segment.substring(0, 8)}...` : `Project Details - ${segment}`;
     }
     if (previousSegment === 'trailers') {
-      return isUuid ? `Trailer ${segment.substring(0, 8)}...` : `Trailer ${segment}`;
+      return isUuid ? `Trailer Details - ${segment.substring(0, 8)}...` : `Trailer Details - ${segment}`;
     }
     if (previousSegment === 'team') {
-      return isUuid ? `Member ${segment.substring(0, 8)}...` : `Member ${segment}`;
+      return isUuid ? `Team Member - ${segment.substring(0, 8)}...` : `Team Member - ${segment}`;
     }
     return isUuid ? `${segment.substring(0, 8)}...` : segment;
   }

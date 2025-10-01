@@ -483,7 +483,7 @@ export const Dashboard: React.FC = () => {
               Upcoming Projects
             </h2>
             <Button variant="ghost" size="sm" className="self-start sm:self-auto">
-              View All
+              See All
               <ArrowRight size={16} className="ml-2" />
             </Button>
           </div>
@@ -550,7 +550,7 @@ export const Dashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-h1 font-semibold text-text-primary">
-            {isExecutive ? 'Executive Dashboard' : 'Dashboard'}
+            {isExecutive ? 'Executive Dashboard' : 'Project Overview'}
           </h1>
           <p className="text-body text-text-secondary mt-1">
             {isExecutive 
@@ -562,9 +562,6 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center space-x-3">
           <Button variant="secondary" size="sm">
             View Reports
-          </Button>
-          <Button variant="primary" size="sm" icon={Plus}>
-            Create Project
           </Button>
         </div>
       </div>
@@ -997,10 +994,10 @@ export const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-body font-medium text-text-primary">
-                    {isExecutive ? 'Manage Projects' : 'Create Project'}
+                    {isExecutive ? 'Manage Projects' : 'View Projects'}
                   </p>
                   <p className="text-caption text-text-muted">
-                    {isExecutive ? 'Oversee all project operations' : 'Start a new project'}
+                    {isExecutive ? 'Oversee all project operations' : 'View all projects'}
                   </p>
                 </div>
               </div>
@@ -1090,7 +1087,7 @@ export const Dashboard: React.FC = () => {
               Recent Activity
             </h2>
             <Button variant="ghost" size="sm">
-              View All
+              See All
             </Button>
           </div>
           <div className="space-y-4">

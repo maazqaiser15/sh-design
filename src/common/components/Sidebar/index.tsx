@@ -27,25 +27,25 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   {
-    name: 'Dashboard',
+    name: 'Project Overview',
     href: '/',
     icon: LayoutDashboard,
     permission: 'dashboard',
   },
   {
-    name: 'Projects',
+    name: 'Project Portfolio',
     href: '/projects',
     icon: FolderOpen,
     permission: 'projects',
   },
   {
-    name: 'Team',
+    name: 'Team Management',
     href: '/team',
     icon: Users,
     permission: 'team',
   },
   {
-    name: 'Trailers',
+    name: 'Trailers Management',
     href: '/trailers',
     icon: Truck,
     permission: 'trailers',
@@ -57,7 +57,7 @@ const navigation: NavigationItem[] = [
     permission: 'settings',
   },
   {
-    name: 'Schedular',
+    name: 'Resource Planning',
     href: '/team-gantt-chart',
     icon: Calendar,
     permission: 'scheduler',
@@ -227,9 +227,11 @@ export const Sidebar: React.FC = () => {
             ? `fixed top-0 left-0 h-full w-64 z-50 transform transition-transform duration-300 ease-in-out ${
                 isMobileOpen ? 'translate-x-0' : '-translate-x-full'
               }`
-            : `${isCollapsed ? 'w-16' : 'w-64'}`
+            : `fixed top-0 left-0 h-full z-30 transform transition-all duration-300 ease-in-out ${
+                isCollapsed ? 'w-16' : 'w-64'
+              }`
           } 
-          bg-white border-r border-border h-full flex flex-col transition-all duration-300
+          bg-white border-r border-border flex flex-col
         `}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}

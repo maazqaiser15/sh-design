@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Truck, Plus, Package, Film, MapPin, BarChart3, Download, Settings, RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Users, Filter, MoreHorizontal } from "lucide-react";
+import { Truck, Plus, Package, Film, MapPin, BarChart3, Download, Settings, RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Users, Filter, MoreHorizontal, Search } from "lucide-react";
 import { TrailerList } from "../../features/trailer/components/TrailerList";
 import { TrailerDetail } from "../../features/trailer/components/TrailerDetail";
 import { TrailerForm } from "../../features/trailer/components/TrailerForm";
 import { DeleteConfirmationModal } from "../../features/trailer/components/DeleteConfirmationModal";
+import { MapCard } from "../../features/trailer/components/MapCard";
 import { Trailer } from "../../types";
 import { useSetBreadcrumbs } from "../../contexts/BreadcrumbContext";
 import { useAuth } from "../../contexts/AuthContext";
@@ -38,11 +39,30 @@ export const Trailers: React.FC = () => {
   const [selectedTrailers, setSelectedTrailers] = useState<string[]>([]);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showBulkActions, setShowBulkActions] = useState(false);
+  
+  // Search and Filter State
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [stateFilter, setStateFilter] = useState<string>("");
 
   // Get existing trailer numbers for validation
   const existingTrailerNames = trailers.map(
     (trailer) => trailer.trailerName
   );
+
+  // Filter trailers based on search and filter criteria
+  const filteredTrailers = useMemo(() => {
+    return trailers.filter((trailer) => {
+      const matchesSearch = !searchTerm || 
+        trailer.trailerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trailer.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = !statusFilter || trailer.status === statusFilter;
+      const matchesState = !stateFilter || trailer.state === stateFilter;
+      
+      return matchesSearch && matchesStatus && matchesState;
+    });
+  }, [trailers, searchTerm, statusFilter, stateFilter]);
 
   // Executive analytics calculations
   const trailerAnalytics = useMemo(() => {
@@ -411,6 +431,76 @@ export const Trailers: React.FC = () => {
         />
       ) : (
         <div className="space-y-6">
+          {/* Page Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                Trailer Management
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Manage trailer inventory and track film stock levels
+              </p>
+            </div>
+            <Button onClick={handleCreateNew} icon={Plus}>
+              Add New Trailer
+            </Button>
+          </div>
+
+          {/* Search and Filters */}
+          <Card>
+            <div className="flex flex-col lg:flex-row gap-4">
+              {/* Search */}
+              <div className="flex-1">
+                <div className="relative">
+                  <Search
+                    size={20}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search trailers by name or registration number.."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="low">Low Stock</option>
+                <option value="unavailable">Unavailable</option>
+              </select>
+
+              {/* State Filter */}
+              <select 
+                value={stateFilter}
+                onChange={(e) => setStateFilter(e.target.value)}
+                className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="">All Locations</option>
+                <option value="CA">California</option>
+                <option value="TX">Texas</option>
+                <option value="NY">New York</option>
+                <option value="FL">Florida</option>
+                <option value="IL">Illinois</option>
+              </select>
+            </div>
+          </Card>
+
+          {/* Map Card */}
+          <MapCard
+            trailers={filteredTrailers}
+            onTrailerClick={handleViewTrailer}
+            className="mb-6"
+          />
+
           {/* Executive Analytics Panel */}
           {isExecutive && showAnalytics && trailerAnalytics && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -494,7 +584,7 @@ export const Trailers: React.FC = () => {
           )}
 
           <TrailerList
-            trailers={trailers}
+            trailers={filteredTrailers}
             onCreateTrailer={handleCreateNew}
             onViewTrailer={handleViewTrailer}
             onEditTrailer={handleEditTrailer}

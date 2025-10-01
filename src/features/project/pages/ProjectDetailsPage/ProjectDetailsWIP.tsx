@@ -1074,8 +1074,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
               </div>
             </div>
 
-            {/* Progress Section - Hidden for execution team */}
-            {user?.userType !== 'execution-team' && (
+            {/* Progress Section - Hidden for execution team and QF state */}
+            {user?.userType !== 'execution-team' && projectStatus !== 'QF' && (
             <div className="bg-gray-50 rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
