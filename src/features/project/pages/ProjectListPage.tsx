@@ -421,6 +421,7 @@ export const ProjectListPage: React.FC = () => {
   const { user, hasPermission } = useAuth();
   const { isMobile } = useSidebar();
   const isExecutive = user?.userType === 'executive';
+  const isProjectCoordinator = user?.userType === 'project-coordinator';
   const isLeadSupervisor = user?.userType === 'lead-supervisor';
   const [viewMode, setViewMode] = useState<ProjectViewMode>({ type: 'list' });
   const [searchQuery, setSearchQuery] = useState('');
@@ -495,8 +496,8 @@ export const ProjectListPage: React.FC = () => {
   }, [projectListItems, filters, searchQuery, sortOptions, user?.userType]);
 
   const handleProjectClick = (project: ProjectListItem) => {
-    // Check if user is executive and project status requires coordinator assignment
-    if (isExecutive && ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)) {
+    // Check if user is executive or project coordinator and project status requires coordinator assignment
+    if ((isExecutive || isProjectCoordinator) && ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)) {
       setProjectForCoordinatorAssignment(project);
       setIsCoordinatorModalOpen(true);
     } else {
@@ -506,8 +507,14 @@ export const ProjectListPage: React.FC = () => {
     }
   };
 
-  const handleAssignCoordinator = (projectId: string, coordinatorId: string) => {
+  const handleAssignCoordinator = (projectId: string, coordinatorId: string, startDate?: string, endDate?: string) => {
     console.log(`Assigning coordinator ${coordinatorId} to project ${projectId}`);
+    if (startDate) {
+      console.log(`Project start date: ${startDate}`);
+    }
+    if (endDate) {
+      console.log(`Project end date: ${endDate}`);
+    }
     // Here you would typically make an API call to assign the coordinator
     // In a real app, you would update the project data with coordinator information
     // and store it in state or make an API call to persist the assignment
@@ -764,6 +771,7 @@ export const ProjectListPage: React.FC = () => {
         onClose={handleCloseCoordinatorModal}
         project={projectForCoordinatorAssignment}
         onAssignCoordinator={handleAssignCoordinator}
+        userRole={user?.userType as 'executive' | 'project-coordinator'}
       />
 
       </div>
