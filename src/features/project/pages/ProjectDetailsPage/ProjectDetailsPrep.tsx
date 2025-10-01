@@ -1387,39 +1387,18 @@ export const ProjectDetailsPrep: React.FC = () => {
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
                   The project cannot move to the next status because the project contract needs to be added. 
-                  Please contact the sales person to complete the contract requirements.
+                  Please contact the sales person.
                 </p>
               </div>
               
-              {/* Contact Information */}
-              <div className="bg-gray-50 rounded-lg p-4 w-full">
-                <div className="text-sm text-gray-700">
-                  <p className="font-medium mb-2">Contact Sales Team:</p>
-                  <div className="space-y-1">
-                    <p>📞 Phone: (555) 123-4567</p>
-                    <p>📧 Email: sales@company.com</p>
-                    <p>👤 Sales Manager: John Smith</p>
-                  </div>
-                </div>
-              </div>
               
               {/* Action Buttons */}
-              <div className="flex gap-3 w-full">
+              <div className="flex justify-center w-full">
                 <Button
                   onClick={() => setShowContractRequiredModal(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-2 rounded-lg font-medium transition-colors"
                 >
                   Close
-                </Button>
-                <Button
-                  onClick={() => {
-                    // In a real app, this would open email client or contact form
-                    window.open('mailto:sales@company.com?subject=Project Contract Required - TXDA-SJ1BR1-EETUSC01-P20001', '_blank');
-                    setShowContractRequiredModal(false);
-                  }}
-                  className="flex-1 bg-[#0d76bf] text-white hover:bg-[#0b5a8f] px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Contact Sales
                 </Button>
               </div>
             </div>
