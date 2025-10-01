@@ -1047,7 +1047,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     <Button
                       variant="primary"
                       onClick={handleMarkForQF}
+                      disabled={!windowsSetup}
                       className="px-3 py-2 text-sm w-full sm:w-auto"
+                      title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
                     >
                       Mark for QF
                     </Button>

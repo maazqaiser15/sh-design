@@ -28,6 +28,8 @@ export const Team: React.FC = () => {
   const navigate = useNavigate();
   const { user, hasPermission } = useAuth();
   const isExecutive = user?.userType === 'executive';
+  const isLeadSupervisor = user?.userType === 'lead-supervisor';
+  const canManageTeam = isExecutive || isLeadSupervisor;
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -47,9 +49,9 @@ export const Team: React.FC = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  // Executive analytics calculations
+  // Team analytics calculations
   const teamAnalytics = useMemo(() => {
-    if (!isExecutive) return null;
+    if (!canManageTeam) return null;
     
     const totalMembers = MOCK_TEAM_MEMBERS.length;
     const availableMembers = MOCK_TEAM_MEMBERS.filter(m => m.status === 'Available').length;
@@ -72,7 +74,7 @@ export const Team: React.FC = () => {
       membersByRole,
       averageExperience
     };
-  }, [isExecutive]);
+  }, [canManageTeam]);
 
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -126,18 +128,20 @@ export const Team: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-h1 font-semibold text-text-primary">
-            {isExecutive ? 'Team Management' : 'Team Members'}
+            {canManageTeam ? 'Team Management' : 'Team Members'}
           </h1>
           <p className="text-body text-text-secondary mt-1">
             {isExecutive 
               ? 'Comprehensive team management with analytics and bulk operations'
+              : isLeadSupervisor
+              ? 'Team management with project coordination capabilities'
               : 'View team members and their project assignments'
             }
           </p>
         </div>
         
-        {/* Executive Controls */}
-        {isExecutive && (
+        {/* Team Management Controls */}
+        {canManageTeam && (
           <div className="flex items-center space-x-3">
             <Button
               variant="secondary"
@@ -191,8 +195,8 @@ export const Team: React.FC = () => {
         </select>
       </div>
 
-      {/* Executive Analytics Panel */}
-      {isExecutive && showAnalytics && teamAnalytics && (
+      {/* Team Analytics Panel */}
+      {canManageTeam && showAnalytics && teamAnalytics && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="p-6">
             <div className="flex items-center justify-between">

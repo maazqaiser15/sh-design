@@ -8,6 +8,7 @@ interface ProjectOverviewCardProps {
   project: ProjectDetails;
   onMarkForQF?: () => void;
   onEditProject?: () => void;
+  windowsSetup?: boolean;
 }
 
 /**
@@ -17,7 +18,8 @@ interface ProjectOverviewCardProps {
 export const ProjectOverviewCard: React.FC<ProjectOverviewCardProps> = ({
   project,
   onMarkForQF,
-  onEditProject
+  onEditProject,
+  windowsSetup = true
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -76,7 +78,9 @@ export const ProjectOverviewCard: React.FC<ProjectOverviewCardProps> = ({
           <Button
             variant="primary"
             onClick={onMarkForQF}
+            disabled={!windowsSetup}
             className="px-3 py-2"
+            title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
           >
             Mark for QF
           </Button>

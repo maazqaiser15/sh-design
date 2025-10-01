@@ -78,6 +78,12 @@ export const Sidebar: React.FC = () => {
 
   const hasPermission = (permission?: string) => {
     if (!permission || !user) return true;
+    
+    // Hide dashboard for Project Coordinators (role 2)
+    if (permission === 'dashboard' && user.userType === 'project-coordinator') {
+      return false;
+    }
+    
     return user.permissions.some(p => p.module === permission && p.actions.length > 0);
   };
 

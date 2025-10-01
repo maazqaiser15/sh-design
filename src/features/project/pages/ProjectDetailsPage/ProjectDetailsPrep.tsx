@@ -21,6 +21,7 @@ import { useToast } from '../../../../contexts/ToastContext';
 import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
 import { TrailerForAssignment } from '../../types/trailers';
 import { Window, MOCK_WINDOWS } from '../../types/windows';
+import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 
 // Icons from Figma design
 
@@ -37,11 +38,6 @@ const CalendarIcon = () => (
   </svg>
 );
 
-const EditIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11.3333 1.99999C11.5084 1.82498 11.7163 1.68604 11.9451 1.59128C12.1739 1.49652 12.4191 1.44775 12.6667 1.44775C12.9142 1.44775 13.1594 1.49652 13.3882 1.59128C13.617 1.68604 13.8249 1.82498 14 1.99999C14.175 2.175 14.3139 2.3829 14.4087 2.6117C14.5035 2.8405 14.5522 3.0857 14.5522 3.33332C14.5522 3.58094 14.5035 3.82614 14.4087 4.05492C14.3139 4.2837 14.175 4.4916 14 4.66665L5 13.6667L1.33333 14.6667L2.33333 11L11.3333 1.99999Z" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 
 const CheckCircleIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -235,9 +231,13 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
+  const [showContractRequiredModal, setShowContractRequiredModal] = useState(false);
   
   // Notes State
   const [notes, setNotes] = useState<ProjectNote[]>([]);
+  
+  // Check if all stages are completed
+  const allStagesCompleted = isAssignedTeamCompleted && isTravelAccommodationCompleted && isTrailerCompleted;
   
   // Trailer & Films State
   const [inventoryItems, setInventoryItems] = useState([
@@ -733,10 +733,6 @@ export const ProjectDetailsPrep: React.FC = () => {
   };
 
 
-  // Handle edit project
-  const handleEditProject = () => {
-    setShowEditModal(true);
-  };
 
   // Handle edit dates
   const handleEditDates = () => {
@@ -856,12 +852,12 @@ export const ProjectDetailsPrep: React.FC = () => {
 
 
   const handleMarkStageComplete = () => {
-    console.log('Mark stage as complete');
+    setShowContractRequiredModal(true);
   };
 
   // If project status is WIP, render the WIP status page
   if (project.status === 'WIP') {
-    return <WIPStatusPage />;
+    return <ProjectDetailsWIP projectStatus="WIP" />;
   }
 
   return (
@@ -904,17 +900,14 @@ export const ProjectDetailsPrep: React.FC = () => {
               <div className="flex gap-3 items-center">
                 <Button
                   onClick={handleMarkStageComplete}
-                  className="bg-[#0d76bf] text-white px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)]"
+                  disabled={!allStagesCompleted}
+                  className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] ${
+                    allStagesCompleted 
+                      ? 'bg-[#0d76bf] text-white hover:bg-[#0b5a8f]' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Mark Stage as Complete
-                </Button>
-                <Button
-                  onClick={handleEditProject}
-                  variant="outline"
-                  className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-md font-semibold text-sm leading-5 flex items-center gap-2 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)]"
-                >
-                  <EditIcon />
-                  Edit
                 </Button>
               </div>
             </div>
@@ -926,12 +919,12 @@ export const ProjectDetailsPrep: React.FC = () => {
             <div className="flex items-center w-full">
               <ProgressStep
                 title="Team Assignment"
-                status="completed"
-                description="Completed"
+                status={isAssignedTeamCompleted ? "completed" : "incomplete"}
+                description={isAssignedTeamCompleted ? "Completed" : "In Progress"}
               />
               <ProgressStep
                 title="Travel & Accommodation"
-                status={isTravelAccommodationCompleted ? "completed" : "current"}
+                status={isTravelAccommodationCompleted ? "completed" : "incomplete"}
                 description={isTravelAccommodationCompleted ? "Completed" : "In Progress"}
               />
               <ProgressStep
@@ -1370,6 +1363,68 @@ export const ProjectDetailsPrep: React.FC = () => {
           onClose={() => setShowTravelAccommodationDetailsModal(false)}
           onSubmit={handleTravelAccommodationDetailsSubmit}
         />
+
+        {/* Contract Required Modal */}
+        <Modal
+          isOpen={showContractRequiredModal}
+          onClose={() => setShowContractRequiredModal(false)}
+          title="Project Contract Required"
+          size="md"
+        >
+          <div className="p-6">
+            <div className="flex flex-col items-center text-center space-y-4">
+              {/* Warning Icon */}
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              
+              {/* Main Message */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Project Cannot Move to Next Status
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  The project cannot move to the next status because the project contract needs to be added. 
+                  Please contact the sales person to complete the contract requirements.
+                </p>
+              </div>
+              
+              {/* Contact Information */}
+              <div className="bg-gray-50 rounded-lg p-4 w-full">
+                <div className="text-sm text-gray-700">
+                  <p className="font-medium mb-2">Contact Sales Team:</p>
+                  <div className="space-y-1">
+                    <p>📞 Phone: (555) 123-4567</p>
+                    <p>📧 Email: sales@company.com</p>
+                    <p>👤 Sales Manager: John Smith</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-3 w-full">
+                <Button
+                  onClick={() => setShowContractRequiredModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    // In a real app, this would open email client or contact form
+                    window.open('mailto:sales@company.com?subject=Project Contract Required - TXDA-SJ1BR1-EETUSC01-P20001', '_blank');
+                    setShowContractRequiredModal(false);
+                  }}
+                  className="flex-1 bg-[#0d76bf] text-white hover:bg-[#0b5a8f] px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Contact Sales
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Modal>
     </div>
   );
 };

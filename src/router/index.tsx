@@ -54,8 +54,8 @@ export const routes: RouteObject[] = [
           {
             index: true,
             async lazy() {
-              const { Dashboard } = await import("../pages/Dashboard");
-              return { element: <Dashboard /> };
+              const { DashboardWrapper } = await import("../components/DashboardWrapper");
+              return { element: <DashboardWrapper /> };
             },
           },
 

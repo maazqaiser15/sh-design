@@ -63,7 +63,7 @@ export const Login: React.FC = () => {
                  localPart.startsWith('ls@') || localPart === 'ls') {
         userType = 'lead-supervisor';
         loginType = 'company-based';
-        description = 'Lead Supervisor with project and document management access only';
+        description = 'Lead Supervisor with project, team, and document management access';
       } else if (localPart.startsWith('crew@') || localPart === 'crew' ||
                  localPart.startsWith('team@') || localPart === 'team' ||
                  localPart.startsWith('field@') || localPart === 'field' ||

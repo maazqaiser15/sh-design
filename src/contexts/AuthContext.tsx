@@ -120,17 +120,15 @@ const demoAccounts: Record<DemoPersona, DemoAccount> = {
       permissions: [
         { module: 'dashboard', actions: ['view'] },
         { module: 'projects', actions: ['view'] },
-        { module: 'scheduler', actions: ['view'] },
         { module: 'documents', actions: ['view'] },
         { module: 'settings', actions: [] }
       ]
     },
     avatar: 'ER',
-    description: 'Operational access for task execution and field work (no team/trailer access)',
+    description: 'Operational access for task execution and field work (no team/trailer/scheduler access)',
     permissions: [
       { module: 'dashboard', actions: ['view'] },
       { module: 'projects', actions: ['view'] },
-      { module: 'scheduler', actions: ['view'] },
       { module: 'documents', actions: ['view'] },
       { module: 'settings', actions: [] }
     ],
@@ -153,13 +151,15 @@ const demoAccounts: Record<DemoPersona, DemoAccount> = {
       userType: 'lead-supervisor',
       permissions: [
         { module: 'projects', actions: ['view', 'edit', 'manage'] },
+        { module: 'team', actions: ['view', 'edit'] },
         { module: 'documents', actions: ['view', 'edit'] }
       ]
     },
     avatar: 'DT',
-    description: 'Lead supervision with project and document management access only',
+    description: 'Lead supervision with project, team, and document management access',
     permissions: [
       { module: 'projects', actions: ['view', 'edit', 'manage'] },
+      { module: 'team', actions: ['view', 'edit'] },
       { module: 'documents', actions: ['view', 'edit'] }
     ],
     userType: 'lead-supervisor',

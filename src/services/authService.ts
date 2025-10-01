@@ -187,6 +187,7 @@ const USER_TYPE_ROLES: Record<UserType, UserRole> = {
     userType: 'lead-supervisor',
     permissions: [
       { module: 'projects', actions: ['view', 'edit', 'manage'] },
+      { module: 'team', actions: ['view', 'edit'] },
       { module: 'documents', actions: ['view', 'edit'] }
     ]
   }

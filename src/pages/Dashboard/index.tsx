@@ -38,6 +38,7 @@ import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
 import { DashboardStats, Activity } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { ExecutiveDashboard } from "../../components/DashboardWrapper/ExecutiveDashboard";
 
 // Mock data
 const mockStats: DashboardStats = {
@@ -358,6 +359,11 @@ export const Dashboard: React.FC = () => {
   // Don't render anything for lead supervisors as they'll be redirected
   if (isLeadSupervisor) {
     return null;
+  }
+
+  // Render Executive Dashboard for role 1 (executive)
+  if (isExecutive) {
+    return <ExecutiveDashboard />;
   }
 
   const getActivityIcon = (type: string) => {

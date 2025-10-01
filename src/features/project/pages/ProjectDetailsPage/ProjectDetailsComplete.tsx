@@ -9,7 +9,6 @@ import {
   CheckCircle2, 
   Clock, 
   AlertCircle,
-  Edit,
   Plus,
   Eye,
   Download,
@@ -275,9 +274,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
     showToast('Create Associated Project functionality coming soon');
   };
 
-  const handleEditProject = () => {
-    showToast('Edit project functionality coming soon');
-  };
 
   const handleGeneratePDF = async () => {
     setIsGeneratingPDF(true);
@@ -373,14 +369,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     className="px-3 py-2"
                   >
                     Create Follow-up Project
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handleEditProject}
-                    icon={Edit}
-                    className="px-3 py-2"
-                  >
-                    Edit Project
                   </Button>
                 </div>
               </div>
@@ -962,12 +950,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                         </div>
                         <div className="flex items-center gap-2 ml-4">
                           <button 
-                            onClick={() => showToast('Edit note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
                             onClick={() => showToast('Delete note functionality coming soon')}
                             className="p-1 text-gray-400 hover:text-red-600"
                           >
@@ -988,12 +970,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <p className="text-gray-700">"Final quality inspection completed. All windows passed with excellent results. Ready for client handover."</p>
                         </div>
                         <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Edit note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
                           <button 
                             onClick={() => showToast('Delete note functionality coming soon')}
                             className="p-1 text-gray-400 hover:text-red-600"
@@ -1016,12 +992,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                         </div>
                         <div className="flex items-center gap-2 ml-4">
                           <button 
-                            onClick={() => showToast('Edit note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
                             onClick={() => showToast('Delete note functionality coming soon')}
                             className="p-1 text-gray-400 hover:text-red-600"
                           >
@@ -1042,12 +1012,6 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                           <p className="text-gray-700">"Site cleanup completed. All materials properly disposed and site returned to original condition."</p>
                         </div>
                         <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Edit note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
                           <button 
                             onClick={() => showToast('Delete note functionality coming soon')}
                             className="p-1 text-gray-400 hover:text-red-600"
