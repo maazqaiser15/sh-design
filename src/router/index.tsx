@@ -174,10 +174,22 @@ export const routes: RouteObject[] = [
           },
         },
 
-          // Coming Soon Routes
+          // Settings Routes
           {
             path: "settings",
-            element: <ComingSoon title="Settings" />,
+            children: [
+              {
+                index: true,
+                element: <ComingSoon title="Settings" />,
+              },
+              {
+                path: "profile",
+                async lazy() {
+                  const { ProfileSettings } = await import("../pages/ProfileSettings");
+                  return { element: <ProfileSettings /> };
+                },
+              },
+            ],
           },
         ],
       },

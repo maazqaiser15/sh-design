@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Truck, Plus, Package, Film, MapPin, BarChart3, Download, Settings, RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Users, Filter, MoreHorizontal, Search } from "lucide-react";
+import { Truck, Plus, Package, Film, MapPin, BarChart3, Download, Settings, RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Users, Filter, MoreHorizontal, Search, Inbox } from "lucide-react";
 import { TrailerList } from "../../features/trailer/components/TrailerList";
 import { TrailerDetail } from "../../features/trailer/components/TrailerDetail";
 import { TrailerForm } from "../../features/trailer/components/TrailerForm";
@@ -44,6 +44,7 @@ export const Trailers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [stateFilter, setStateFilter] = useState<string>("");
+  const [showArchived, setShowArchived] = useState(false);
 
   // Get existing trailer numbers for validation
   const existingTrailerNames = trailers.map(
@@ -60,9 +61,12 @@ export const Trailers: React.FC = () => {
       const matchesStatus = !statusFilter || trailer.status === statusFilter;
       const matchesState = !stateFilter || trailer.state === stateFilter;
       
-      return matchesSearch && matchesStatus && matchesState;
+      // Filter by archived status
+      const matchesArchived = showArchived ? trailer.status === 'archived' : trailer.status !== 'archived';
+      
+      return matchesSearch && matchesStatus && matchesState && matchesArchived;
     });
-  }, [trailers, searchTerm, statusFilter, stateFilter]);
+  }, [trailers, searchTerm, statusFilter, stateFilter, showArchived]);
 
   // Executive analytics calculations
   const trailerAnalytics = useMemo(() => {
@@ -222,16 +226,18 @@ export const Trailers: React.FC = () => {
     setTrailerToEdit(null);
   }, []);
 
-  const handleDeleteTrailer = useCallback((trailer: Trailer) => {
+  const handleArchiveTrailer = useCallback((trailer: Trailer) => {
     setTrailerToDelete(trailer);
     setIsDeleteModalOpen(true);
   }, []);
 
-  const handleConfirmDelete = useCallback(
+  const handleConfirmArchive = useCallback(
     (trailer: Trailer) => {
-      setTrailers((prev) => prev.filter((t) => t.id !== trailer.id));
+      setTrailers((prev) => prev.map((t) => 
+        t.id === trailer.id ? { ...t, status: 'archived' as const } : t
+      ));
 
-      // If we're viewing the deleted trailer, go back to list
+      // If we're viewing the archived trailer, go back to list
       if (trailerId === trailer.id) {
         navigate("/trailers");
       }
@@ -240,7 +246,7 @@ export const Trailers: React.FC = () => {
   );
 
 
-  const handleCloseDeleteModal = useCallback(() => {
+  const handleCloseArchiveModal = useCallback(() => {
     setIsDeleteModalOpen(false);
     setTrailerToDelete(null);
   }, []);
@@ -405,7 +411,7 @@ export const Trailers: React.FC = () => {
           trailer={selectedTrailer}
           onBack={handleBackToList}
           onEdit={handleEditTrailer}
-          onDelete={handleDeleteTrailer}
+          onArchive={handleArchiveTrailer}
           onRestock={(restockedTrailer) => {
             // Update the trailer in the list
             setTrailers(prev => 
@@ -446,7 +452,7 @@ export const Trailers: React.FC = () => {
             </Button>
           </div>
 
-          {/* Search and Filters */}
+          {/* Search, Filters and Action Buttons */}
           <Card>
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
@@ -491,15 +497,29 @@ export const Trailers: React.FC = () => {
                 <option value="FL">Florida</option>
                 <option value="IL">Illinois</option>
               </select>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    // TODO: Implement map view functionality
+                    console.log('Show map view');
+                  }}
+                  icon={MapPin}
+                >
+                  Show Map
+                </Button>
+                <Button
+                  variant={showArchived ? "primary" : "secondary"}
+                  onClick={() => setShowArchived(!showArchived)}
+                  icon={Inbox}
+                  title={showArchived ? "Show Active Trailers" : "Show Archived Trailers"}
+                />
+              </div>
             </div>
           </Card>
 
-          {/* Map Card */}
-          <MapCard
-            trailers={filteredTrailers}
-            onTrailerClick={handleViewTrailer}
-            className="mb-6"
-          />
 
           {/* Executive Analytics Panel */}
           {isExecutive && showAnalytics && trailerAnalytics && (
@@ -554,41 +574,13 @@ export const Trailers: React.FC = () => {
             </div>
           )}
 
-          {/* Executive Controls */}
-          {isExecutive && (
-            <Card className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    icon={BarChart3}
-                    onClick={() => setShowAnalytics(!showAnalytics)}
-                  >
-                    {showAnalytics ? 'Hide' : 'Show'} Analytics
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    icon={RefreshCw}
-                    onClick={handleRefreshInventory}
-                  >
-                    Refresh Inventory
-                  </Button>
-                </div>
-                <div className="text-sm text-gray-600">
-                  {trailers.length} trailer(s) total
-                </div>
-              </div>
-            </Card>
-          )}
 
           <TrailerList
             trailers={filteredTrailers}
             onCreateTrailer={handleCreateNew}
             onViewTrailer={handleViewTrailer}
             onEditTrailer={handleEditTrailer}
-            onDeleteTrailer={handleDeleteTrailer}
+            onArchiveTrailer={handleArchiveTrailer}
             isExecutive={isExecutive}
             selectedTrailers={selectedTrailers}
             onSelectTrailer={handleSelectTrailer}
@@ -601,9 +593,9 @@ export const Trailers: React.FC = () => {
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
-        onClose={handleCloseDeleteModal}
+        onClose={handleCloseArchiveModal}
         trailer={trailerToDelete}
-        onConfirmDelete={handleConfirmDelete}
+        onConfirmArchive={handleConfirmArchive}
       />
     </div>
   );

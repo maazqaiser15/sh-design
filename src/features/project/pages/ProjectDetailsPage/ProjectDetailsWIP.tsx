@@ -693,6 +693,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     }
   };
 
+
   // Note handlers
   const handleAddNote = (content: string, isInternal: boolean) => {
     const newNote: ProjectNote = {
@@ -895,13 +896,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   const getActionButton = (window: Window) => {
     if (window.status === 'Pending') {
-      return {
-        text: 'Start Working',
-        icon: CheckCircle2,
-        action: () => handleStartWorking(window),
-        className: 'text-green-700 hover:bg-green-50',
-        mobileClassName: 'bg-green-600 hover:bg-green-700 text-white border border-green-600 hover:border-green-700 shadow-sm hover:shadow-md transition-all duration-200'
-      };
+      return null; // Removed Start Working button for Pending status
     } else if (window.status === 'In Progress') {
       return {
         text: 'Mark as Completed',
@@ -2333,6 +2328,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         trailer={selectedTrailer}
         existingTrailerNumbers={trailers.map(t => t.trailerName)}
       />
+
     </div>
   );
 };

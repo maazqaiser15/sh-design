@@ -15,6 +15,11 @@ export interface TeamMember {
   role: "Lead" | "Supervisor" | "Project Coordinator" | "Crew Leader" | "Installer";
   availability: "Available" | "Unavailable" | "Out of office" | "Inactive";
   projects: Project[];
+  outOfOfficeDuration?: {
+    startDate: string;
+    endDate: string;
+    reason: string;
+  };
 }
 
 export interface Project {

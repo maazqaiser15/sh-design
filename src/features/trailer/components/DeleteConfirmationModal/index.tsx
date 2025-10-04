@@ -8,32 +8,32 @@ interface DeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   trailer: Trailer | null;
-  onConfirmDelete: (trailer: Trailer) => void;
+  onConfirmArchive: (trailer: Trailer) => void;
 }
 
 /**
- * Confirmation modal for deleting trailers
+ * Confirmation modal for archiving trailers
  * Follows the design specification with clear warning and action buttons
  */
 export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   isOpen,
   onClose,
   trailer,
-  onConfirmDelete,
+  onConfirmArchive,
 }) => {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmArchive = async () => {
     if (!trailer) return;
 
-    setIsDeleting(true);
+    setIsArchiving(true);
     try {
-      await onConfirmDelete(trailer);
+      await onConfirmArchive(trailer);
       onClose();
     } catch (error) {
-      console.error('Error deleting trailer:', error);
+      console.error('Error archiving trailer:', error);
     } finally {
-      setIsDeleting(false);
+      setIsArchiving(false);
     }
   };
 
@@ -43,7 +43,7 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Delete Trailer?"
+      title="Archive Trailer?"
       size="sm"
     >
       <div className="space-y-6">
@@ -57,8 +57,8 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
           <div className="flex-1">
             <div className="space-y-2">
               <p className="text-sm text-gray-900">
-                This will permanently remove <strong>Trailer {trailer.trailerName}</strong> and its records. 
-                This action cannot be undone.
+                This will archive <strong>Trailer {trailer.trailerName}</strong> and move it to archived status. 
+                The trailer will no longer be available for new assignments but records will be preserved.
               </p>
               
               {/* Trailer Details */}
@@ -85,8 +85,8 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
           <div className="flex items-start gap-2">
             <AlertTriangle size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-amber-800">
-              <strong>Warning:</strong> If this trailer is currently assigned to any projects, 
-              you may need to reassign them to other trailers before deletion.
+              <strong>Note:</strong> If this trailer is currently assigned to any projects, 
+              it will remain assigned but marked as archived.
             </div>
           </div>
         </div>
@@ -97,17 +97,17 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
             type="button"
             variant="secondary"
             onClick={onClose}
-            disabled={isDeleting}
+            disabled={isArchiving}
           >
             Cancel
           </Button>
           <Button
             type="button"
-            onClick={handleConfirmDelete}
-            disabled={isDeleting}
+            onClick={handleConfirmArchive}
+            disabled={isArchiving}
             className="bg-red-600 hover:bg-red-700 focus:ring-red-500 text-white"
           >
-            {isDeleting ? 'Deleting...' : 'Delete Trailer'}
+            {isArchiving ? 'Archiving...' : 'Archive Trailer'}
           </Button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, LogOut, Menu, User } from 'lucide-react';
+import { Bell, LogOut, Menu, User, Settings } from 'lucide-react';
 import { Button } from '../Button';
 import { Breadcrumb } from '../Breadcrumb';
 import { NotificationsOverlay, Notification } from '../NotificationsOverlay';
@@ -165,6 +165,18 @@ export const TopBar: React.FC = () => {
                       </span>
                     )}
                   </div>
+                  
+                  {/* Profile Settings Button */}
+                  <button
+                    onClick={() => {
+                      navigate('/settings/profile');
+                      setShowUserMenu(false); // Close dropdown after navigation
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-text-primary hover:bg-gray-50 flex items-center space-x-2"
+                  >
+                    <Settings size={16} />
+                    <span>Profile Settings</span>
+                  </button>
                   
                   {/* View Profile Button - Only show for execution-team users */}
                   {user?.userType === 'execution-team' && (

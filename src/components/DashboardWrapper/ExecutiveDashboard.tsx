@@ -40,7 +40,7 @@ const mockProjects = [
   {
     id: '2',
     name: 'Residential Community Protection',
-    status: 'WB',
+    status: 'UB',
     qualityScore: 92,
     successRate: 96,
     saleEstimate: 180000,
@@ -345,7 +345,7 @@ const StatsWidget: React.FC<{
   </Card>
 );
 
-// Project Status Bar Chart Component
+// Project Status Horizontal Bar Chart Component
 const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) => {
   const statusCounts = useMemo(() => {
     const counts = projects.reduce((acc, project) => {
@@ -354,17 +354,16 @@ const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) => {
     }, {} as Record<string, number>);
     
     return [
-      { status: 'PV75', count: counts['PV75'] || 0, color: 'bg-blue-500' },
-      { status: 'PV90', count: counts['PV90'] || 0, color: 'bg-teal-500' },
-      { status: 'UB', count: counts['UB'] || 0, color: 'bg-amber-500' },
-      { status: 'WB', count: counts['WB'] || 0, color: 'bg-orange-500' },
-      { status: 'WIP', count: counts['WIP'] || 0, color: 'bg-purple-500' },
-      { status: 'QF', count: counts['QF'] || 0, color: 'bg-indigo-500' },
-      { status: 'Completed', count: counts['Completed'] || 0, color: 'bg-green-500' }
+      { status: 'PV75', count: counts['PV75'] || 0, color: 'bg-blue-500', label: 'Pre-Planning' },
+      { status: 'PV90', count: counts['PV90'] || 0, color: 'bg-teal-500', label: 'Planning' },
+      { status: 'UB', count: counts['UB'] || 0, color: 'bg-amber-500', label: 'Under Review' },
+      { status: 'WIP', count: counts['WIP'] || 0, color: 'bg-purple-500', label: 'Work in Progress' },
+      { status: 'QF', count: counts['QF'] || 0, color: 'bg-indigo-500', label: 'Quality Review' },
+      { status: 'Completed', count: counts['Completed'] || 0, color: 'bg-green-500', label: 'Completed' }
     ];
-  }, []);
+  }, [projects]);
 
-  const maxCount = Math.max(...statusCounts.map(s => s.count));
+  const maxCount = Math.max(...statusCounts.map(s => s.count), 1);
 
   return (
     <Card className="p-6 h-96 flex flex-col">
@@ -372,21 +371,25 @@ const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) => {
         <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
         Project Status Distribution
       </h3>
-      <div className="flex-1 overflow-y-auto space-y-3">
-        {statusCounts.map(({ status, count, color }) => (
-          <div key={status} className="flex items-center">
-            <div className="w-20 text-sm text-gray-600">{status}</div>
-            <div className="flex-1 mx-4">
-              <div className="w-full bg-gray-200 rounded-full h-6">
-                <div 
-                  className={`${color} h-6 rounded-full flex items-center justify-end pr-2 text-white text-sm font-medium transition-all duration-500`}
-                  style={{ width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%` }}
-                >
-                  {count > 0 && count}
-                </div>
+      <div className="flex-1 overflow-y-auto space-y-4">
+        {statusCounts.map(({ status, count, color, label }) => (
+          <div key={status} className="space-y-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full ${color}`}></div>
+                <span className="text-sm font-medium text-gray-900">{status}</span>
               </div>
+              <span className="text-sm font-semibold text-gray-900">{count}</span>
             </div>
-            <div className="w-12 text-sm font-medium text-gray-900 text-right">{count}</div>
+            <div className="w-full bg-gray-100 rounded-full h-3">
+              <div 
+                className={`${color} h-3 rounded-full transition-all duration-700 ease-out`}
+                style={{ 
+                  width: `${(count / maxCount) * 100}%`,
+                  minWidth: count > 0 ? '8px' : '0px'
+                }}
+              />
+            </div>
           </div>
         ))}
       </div>

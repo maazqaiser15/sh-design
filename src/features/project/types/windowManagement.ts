@@ -81,7 +81,7 @@ export const MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Installed', installedBy: 'Mike Lee', installedAt: new Date('2024-01-17') }
     ],
     status: 'Complete',
@@ -104,7 +104,7 @@ export const MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'In Progress' }
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'In Progress' }
     ],
     status: 'In Progress',
     assignedTeamMembers: ['John Smith', 'Ayesha Khan'],
@@ -126,7 +126,7 @@ export const MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Reinstallation Needed', installedBy: 'Mike Lee', installedAt: new Date('2024-01-17'), notes: 'Quality issue detected' }
     ],
     status: 'Reinstallation Needed',
@@ -167,7 +167,7 @@ export const MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'In Progress' }
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'In Progress' }
     ],
     status: 'In Progress',
     assignedTeamMembers: ['John Smith', 'Ayesha Khan'],
@@ -186,7 +186,7 @@ export const MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-15') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Ayesha Khan', installedAt: new Date('2024-01-16') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Installed', installedBy: 'Mike Lee', installedAt: new Date('2024-01-17') }
     ],
     status: 'Complete',

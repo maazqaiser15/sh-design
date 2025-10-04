@@ -7,9 +7,6 @@ import {
   Phone,
   Eye,
   ChevronRight,
-  BarChart3,
-  Users,
-  TrendingUp,
   Clock,
   CheckCircle,
   AlertTriangle,
@@ -34,7 +31,6 @@ export const Team: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
-  const [showAnalytics, setShowAnalytics] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const filteredMembers = MOCK_TEAM_MEMBERS.filter((member) => {
@@ -49,32 +45,6 @@ export const Team: React.FC = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  // Team analytics calculations
-  const teamAnalytics = useMemo(() => {
-    if (!canManageTeam) return null;
-    
-    const totalMembers = MOCK_TEAM_MEMBERS.length;
-    const availableMembers = MOCK_TEAM_MEMBERS.filter(m => m.status === 'Available').length;
-    const unavailableMembers = MOCK_TEAM_MEMBERS.filter(m => m.status === 'Unavailable').length;
-    const utilizationRate = totalMembers > 0 ? (availableMembers / totalMembers) * 100 : 0;
-    
-    const membersByRole = MOCK_TEAM_MEMBERS.reduce((acc, member) => {
-      acc[member.role] = (acc[member.role] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
-    const averageExperience = MOCK_TEAM_MEMBERS.reduce((sum, member) => 
-      sum + (member.experience || 0), 0) / totalMembers;
-    
-    return {
-      totalMembers,
-      availableMembers,
-      unavailableMembers,
-      utilizationRate,
-      membersByRole,
-      averageExperience
-    };
-  }, [canManageTeam]);
 
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -140,19 +110,6 @@ export const Team: React.FC = () => {
           </p>
         </div>
         
-        {/* Team Management Controls */}
-        {canManageTeam && (
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={BarChart3}
-              onClick={() => setShowAnalytics(!showAnalytics)}
-            >
-              Analytics
-            </Button>
-          </div>
-        )}
       </div>
 
 
@@ -195,58 +152,6 @@ export const Team: React.FC = () => {
         </select>
       </div>
 
-      {/* Team Analytics Panel */}
-      {canManageTeam && showAnalytics && teamAnalytics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Members</p>
-                <p className="text-2xl font-bold text-gray-900">{teamAnalytics.totalMembers}</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Available</p>
-                <p className="text-2xl font-bold text-green-600">{teamAnalytics.availableMembers}</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Utilization Rate</p>
-                <p className="text-2xl font-bold text-purple-600">{teamAnalytics.utilizationRate.toFixed(1)}%</p>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Experience</p>
-                <p className="text-2xl font-bold text-orange-600">{teamAnalytics.averageExperience.toFixed(1)}y</p>
-              </div>
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <Clock className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
 
 
       {/* Team Members Table */}
@@ -275,11 +180,6 @@ export const Team: React.FC = () => {
                         <p className="text-body font-medium text-text-primary">
                           {member.name}
                         </p>
-                        {member.experience && (
-                          <p className="text-caption text-text-muted">
-                            {member.experience} years experience
-                          </p>
-                        )}
                       </div>
                     </div>
                   </td>

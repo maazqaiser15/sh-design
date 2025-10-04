@@ -61,7 +61,7 @@ const role3UpcomingProjects = [
     location: 'New York, NY',
     startDate: '2024-02-15',
     endDate: '2024-02-28',
-    status: 'WB',
+    status: 'UB',
     priority: 'High',
     assignedTeam: ['John Smith', 'Sarah Johnson'],
     description: 'Security film installation for 25-story office building'
@@ -72,7 +72,7 @@ const role3UpcomingProjects = [
     location: 'Washington, DC',
     startDate: '2024-03-01',
     endDate: '2024-03-15',
-    status: 'WB',
+    status: 'UB',
     priority: 'High',
     assignedTeam: ['Mike Wilson', 'David Brown'],
     description: 'High-security film installation with special requirements'
@@ -503,8 +503,8 @@ export const Dashboard: React.FC = () => {
                       <h3 className="text-sm sm:text-base font-medium text-text-primary truncate">{project.title}</h3>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
-                          project.status === 'WB' 
-                            ? 'bg-teal-100 text-teal-800' 
+                          project.status === 'UB' 
+                            ? 'bg-amber-100 text-amber-800' 
                             : 'bg-blue-100 text-blue-800'
                         }`}>
                           {project.status}

@@ -49,7 +49,7 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeSection, setActiveSection] = useState<'basic' | 'tools' | 'sheets'>('basic');
+  const [activeTab, setActiveTab] = useState<'cart' | 'caulking' | 'trailer' | 'film'>('cart');
   const [availableCities, setAvailableCities] = useState<string[]>([]);
 
   // Update available cities when state changes
@@ -205,7 +205,7 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
       }), {} as Record<FilmSheetType, number>),
     });
     setErrors({});
-    setActiveSection('basic');
+    setActiveTab('cart');
     onClose();
   };
 
@@ -217,271 +217,306 @@ export const CreateTrailerModal: React.FC<CreateTrailerModalProps> = ({
       size="xl"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Section Navigation */}
+
+        {/* Tab Navigation */}
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
           <button
             type="button"
-            onClick={() => setActiveSection('basic')}
+            onClick={() => setActiveTab('cart')}
             className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeSection === 'basic'
+              activeTab === 'cart'
                 ? 'bg-white text-primary shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Basic Info
+            Cart Item
           </button>
           <button
             type="button"
-            onClick={() => setActiveSection('tools')}
+            onClick={() => setActiveTab('caulking')}
             className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeSection === 'tools'
+              activeTab === 'caulking'
                 ? 'bg-white text-primary shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Tools Inventory
+            Caulking Supplies
           </button>
           <button
             type="button"
-            onClick={() => setActiveSection('sheets')}
+            onClick={() => setActiveTab('trailer')}
             className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeSection === 'sheets'
+              activeTab === 'trailer'
                 ? 'bg-white text-primary shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Film Sheets
+            Trailer Item
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('film')}
+            className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              activeTab === 'film'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Film
           </button>
         </div>
 
-        {/* Section 1: Basic Information */}
-        {activeSection === 'basic' && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 pb-2 border-b border-gray-200">
-              Basic Information
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="trailerName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Trailer Name *
-                </label>
-                <input
-                  type="text"
-                  id="trailerName"
-                  value={formData.trailerName}
-                  onChange={(e) => handleInputChange('trailerName', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                    errors.trailerName ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter Trailer Name"
-                />
-                {errors.trailerName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.trailerName}</p>
-                )}
-              </div>
+        {/* Tab Content */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6 min-h-[400px]">
+          {activeTab === 'cart' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Cart Item
+              </h3>
+              <p className="text-sm text-gray-600">
+                Configure current stock levels and thresholds for each cart item. The system will alert when stock falls below threshold levels.
+              </p>
 
-              <div>
-                <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                  Registration Number *
-                </label>
-                <input
-                  type="text"
-                  id="registrationNumber"
-                  value={formData.registrationNumber}
-                  onChange={(e) => handleInputChange('registrationNumber', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                    errors.registrationNumber ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter registration number"
-                />
-                {errors.registrationNumber && (
-                  <p className="mt-1 text-sm text-red-600">{errors.registrationNumber}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="parkingAddress" className="block text-sm font-medium text-gray-700 mb-1">
-                Parking Address *
-              </label>
-              <input
-                type="text"
-                id="parkingAddress"
-                value={formData.parkingAddress}
-                onChange={(e) => handleInputChange('parkingAddress', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.parkingAddress ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter parking address"
-              />
-              {errors.parkingAddress && (
-                <p className="mt-1 text-sm text-red-600">{errors.parkingAddress}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-                State *
-              </label>
-              <select
-                id="state"
-                value={formData.state}
-                onChange={(e) => handleInputChange('state', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.state ? 'border-red-300' : 'border-gray-300'
-                }`}
-              >
-                <option value="">Select state</option>
-                {USA_STATES.map(state => (
-                  <option key={state} value={state}>{state}</option>
+              <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                {[
+                  'Beer Tank W/ Hose',
+                  'Hard Press',
+                  'Red Card',
+                  'Olfa',
+                  'Olfa Blade Pack',
+                  'Scrapers',
+                  'Scraper Blade Pack',
+                  'Pick',
+                  '1 Qrt Acetone',
+                  'Phillips Head SD',
+                  'Window Squeegee',
+                  'Sharps Containers',
+                  'Headlamps',
+                  'Batteries for Headlamps (Pack)'
+                ].map((item) => (
+                  <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {item}
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Min Threshold</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Current Inventory</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </select>
-              {errors.state && (
-                <p className="mt-1 text-sm text-red-600">{errors.state}</p>
-              )}
+              </div>
             </div>
+          )}
 
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                City *
-              </label>
-              <select
-                id="city"
-                value={formData.city}
-                onChange={(e) => handleInputChange('city', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.city ? 'border-red-300' : 'border-gray-300'
-                }`}
-                disabled={!formData.state}
-              >
-                <option value="">Select city</option>
-                {availableCities.map(city => (
-                  <option key={city} value={city}>{city}</option>
+          {activeTab === 'caulking' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Caulking Supplies
+              </h3>
+              <p className="text-sm text-gray-600">
+                Configure current stock levels and thresholds for each caulking supply item. The system will alert when stock falls below threshold levels.
+              </p>
+
+              <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                {[
+                  'Rolls of Painters tape',
+                  'Caulk Sausage Case',
+                  'Caulk Gun (Sausage)',
+                  'Pack Nitrile Gloves',
+                  'Case of Blue Towels',
+                  'Tub O\' Towels',
+                  'Crocodile Wipes',
+                  'Caulking Gun Tips'
+                ].map((item) => (
+                  <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {item}
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Min Threshold</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Current Inventory</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </select>
-              {errors.city && (
-                <p className="mt-1 text-sm text-red-600">{errors.city}</p>
-              )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Section 2: Tools Inventory */}
-        {activeSection === 'tools' && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 pb-2 border-b border-gray-200">
-              Tools Inventory (with default thresholds)
-            </h3>
-            
-            <p className="text-sm text-gray-600">
-              Set the minimum threshold for each tool. The system will alert when stock falls below these levels.
-            </p>
+          {activeTab === 'trailer' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Trailer Item
+              </h3>
+              <p className="text-sm text-gray-600">
+                Configure current stock levels and thresholds for each trailer item. The system will alert when stock falls below threshold levels.
+              </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-              {TOOL_INVENTORY.map((tool) => (
-                <div key={tool.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                      {tool.name}
-                    </label>
-                    <span className="text-xs text-gray-500">Default: {tool.defaultThreshold}</span>
+              <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                {[
+                  'Cordless Drill',
+                  'Allen Key Set',
+                  'Channel Lock Pliers',
+                  'Drill Bit Kit',
+                  'Generator W/ Cord',
+                  'Micro Fiber Package',
+                  '5 Gal Gas Can',
+                  'Air Compressor W/ Hose',
+                  'Trash Can',
+                  '55 Gal Trash Bags Case',
+                  'Bath Towel',
+                  'Towel Clips for hanging',
+                  '5 Gal Buckets',
+                  'Sharpie Pack',
+                  'Dry Erase Marker Pack',
+                  'Square',
+                  'Non Serated Scissors',
+                  'Ladders',
+                  'Tank Fix Kits',
+                  'Extras Spray Nozzles',
+                  'Broom and Dust Pan',
+                  'Scotch Brite Case',
+                  'Sos Pad Box',
+                  'Glass Thickness Gauge',
+                  'PPE Bin/SDS Binder',
+                  'Spare Cutter Blades (Box)',
+                  'Tire Patch Kit',
+                  'Parking Cones',
+                  'Wheel Chalks',
+                  'Tongue Lock'
+                ].map((item) => (
+                  <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {item}
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Min Threshold</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Current Inventory</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.toolThresholds[tool.name] || tool.defaultThreshold}
-                      onChange={(e) => handleToolThresholdChange(tool.name, parseInt(e.target.value) || 0)}
-                      className={`w-20 px-2 py-1 border rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent ${
-                        errors[`tool_${tool.name}`] ? 'border-red-300' : 'border-gray-300'
-                      }`}
-                    />
-                    <span className="text-sm text-gray-500">units</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Section 3: Film Sheets */}
-        {activeSection === 'sheets' && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 pb-2 border-b border-gray-200">
-              Film Sheets Configuration
-            </h3>
-            
-
-            <p className="text-sm text-gray-600">
-              Set the minimum threshold for each film sheet type. The system will alert when stock falls below these levels.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-              {FILM_SHEET_TYPES.map((sheetType) => (
-                <div key={sheetType} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                      {sheetType}
-                    </label>
+          {activeTab === 'film' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                {[
+                  'SW450',
+                  'SW440BR',
+                  'SW600BR',
+                  'CL700 EXT',
+                  'Madico SG20 E Tint',
+                  'Madico RS20 E Tint',
+                  'Suntek SXT-20',
+                  'Suntek SXT-35',
+                  'Suntek IXT-20',
+                  'Suntek IXT-35',
+                  'Suntek Frost'
+                ].map((item) => (
+                  <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {item}
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Min Threshold</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-gray-500">Current Inventory</label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.filmSheetThresholds[sheetType] || 10}
-                      onChange={(e) => handleFilmSheetThresholdChange(sheetType, parseInt(e.target.value) || 0)}
-                      className={`w-20 px-2 py-1 border rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent ${
-                        errors[`sheet_${sheetType}`] ? 'border-red-300' : 'border-gray-300'
-                      }`}
-                    />
-                    <span className="text-sm text-gray-500">units</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Actions */}
-        <div className="flex justify-between pt-4 border-t border-gray-200">
-          <div className="flex space-x-2">
-            {activeSection !== 'basic' && (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setActiveSection(activeSection === 'tools' ? 'basic' : 'tools')}
-              >
-                Previous
-              </Button>
-            )}
-            {activeSection !== 'sheets' && (
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => setActiveSection(activeSection === 'basic' ? 'tools' : 'sheets')}
-              >
-                Next
-              </Button>
-            )}
-          </div>
-          
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Creating...' : 'Create Trailer'}
-            </Button>
-          </div>
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Creating...' : 'Create Trailer'}
+          </Button>
         </div>
       </form>
     </Modal>
