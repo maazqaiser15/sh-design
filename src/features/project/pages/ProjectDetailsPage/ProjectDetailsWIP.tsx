@@ -981,7 +981,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       <style>{`
         @media (max-width: 640px) {
           .touch-manipulation {
@@ -1004,7 +1004,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         }
       `}</style>
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="border-b border-gray-200">
         <div className="py-4 px-4 sm:py-6 sm:px-6">
           <div className="flex flex-col gap-4 sm:gap-6">
             {/* Page Header */}
