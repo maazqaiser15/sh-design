@@ -15,7 +15,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isCollapsed, isMobile, isMobileOpen } = useSidebar();
 
   return (
-    <div className="h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 backgroung-image-container">
       {/* Sidebar */}
       <Sidebar />
 
@@ -34,7 +34,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="py-4 px-4 sm:py-6 sm:px-16">{children}</div>
+          <div className="py-4 px-4">{children}</div>
         </main>
       </div>
     </div>

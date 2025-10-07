@@ -17,6 +17,8 @@ import {
   createActivityLog,
 } from "../../features/trailer/utils/trailerUtils";
 import { EXPANDED_TRAILER_DATA } from "./expandedTrailerData";
+import SearchField from "common/components/SearchField";
+import SelectField from "common/components/SelectField";
 
 /**
  * Main Trailer Management page component
@@ -39,7 +41,7 @@ export const Trailers: React.FC = () => {
   const [selectedTrailers, setSelectedTrailers] = useState<string[]>([]);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showBulkActions, setShowBulkActions] = useState(false);
-  
+
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -53,13 +55,13 @@ export const Trailers: React.FC = () => {
   // Filter trailers based on search and filter criteria
   const filteredTrailers = useMemo(() => {
     return trailers.filter((trailer) => {
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         trailer.trailerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         trailer.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesStatus = !statusFilter || trailer.status === statusFilter;
       const matchesState = !stateFilter || trailer.state === stateFilter;
-      
+
       return matchesSearch && matchesStatus && matchesState;
     });
   }, [trailers, searchTerm, statusFilter, stateFilter]);
@@ -67,31 +69,31 @@ export const Trailers: React.FC = () => {
   // Executive analytics calculations
   const trailerAnalytics = useMemo(() => {
     if (!isExecutive) return null;
-    
+
     const totalTrailers = trailers.length;
     const availableTrailers = trailers.filter(t => t.status === 'available').length;
     const lowStockTrailers = trailers.filter(t => t.status === 'low').length;
     const unavailableTrailers = trailers.filter(t => t.status === 'unavailable').length;
-    
+
     const trailersByStatus = trailers.reduce((acc, trailer) => {
       acc[trailer.status] = (acc[trailer.status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     const trailersByState = trailers.reduce((acc, trailer) => {
       acc[trailer.state] = (acc[trailer.state] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     // Calculate inventory health
-    const totalTools = trailers.reduce((sum, trailer) => 
+    const totalTools = trailers.reduce((sum, trailer) =>
       sum + trailer.inventory.tools.reduce((toolSum, tool) => toolSum + tool.currentStock, 0), 0);
-    const totalFilmSheets = trailers.reduce((sum, trailer) => 
+    const totalFilmSheets = trailers.reduce((sum, trailer) =>
       sum + trailer.inventory.filmSheets.reduce((filmSum, film) => filmSum + film.currentStock, 0), 0);
-    
-    const averageUtilization = totalTrailers > 0 ? 
+
+    const averageUtilization = totalTrailers > 0 ?
       ((availableTrailers + lowStockTrailers) / totalTrailers) * 100 : 0;
-    
+
     return {
       totalTrailers,
       availableTrailers,
@@ -129,20 +131,20 @@ export const Trailers: React.FC = () => {
   useSetBreadcrumbs(
     currentView === 'detail' && selectedTrailer
       ? [
-          { label: "Trailers", href: "/trailers", icon: Truck },
-          { label: `Trailer ${selectedTrailer.trailerName}` },
-        ]
+        { label: "Trailers", href: "/trailers", icon: Truck },
+        { label: `Trailer ${selectedTrailer.trailerName}` },
+      ]
       : currentView === 'create'
-      ? [
+        ? [
           { label: "Trailers", href: "/trailers", icon: Truck },
           { label: "Add New Trailer" },
         ]
-      : currentView === 'edit' && trailerToEdit
-      ? [
-          { label: "Trailers", href: "/trailers", icon: Truck },
-          { label: `Edit Trailer ${trailerToEdit.trailerName}` },
-        ]
-      : [{ label: "Trailers", icon: Truck }],
+        : currentView === 'edit' && trailerToEdit
+          ? [
+            { label: "Trailers", href: "/trailers", icon: Truck },
+            { label: `Edit Trailer ${trailerToEdit.trailerName}` },
+          ]
+          : [{ label: "Trailers", icon: Truck }],
     [currentView, selectedTrailer, trailerToEdit]
   );
 
@@ -196,7 +198,7 @@ export const Trailers: React.FC = () => {
 
   const handleUpdateTrailer = useCallback((updatedTrailer: Omit<Trailer, "id" | "createdAt" | "updatedAt">) => {
     const now = new Date().toISOString();
-    
+
     const updatedTrailerWithId: Trailer = {
       ...updatedTrailer,
       id: trailerToEdit?.id || crypto.randomUUID(),
@@ -247,8 +249,8 @@ export const Trailers: React.FC = () => {
 
   // Executive action handlers
   const handleSelectTrailer = useCallback((trailerId: string) => {
-    setSelectedTrailers(prev => 
-      prev.includes(trailerId) 
+    setSelectedTrailers(prev =>
+      prev.includes(trailerId)
         ? prev.filter(id => id !== trailerId)
         : [...prev, trailerId]
     );
@@ -294,7 +296,7 @@ export const Trailers: React.FC = () => {
   // Show empty state if no trailers exist
   if (trailers.length === 0 && currentView === 'list') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-transparent flex items-center justify-center px-4">
         <div className="max-w-2xl w-full">
           {/* Main Empty State Card */}
           <Card className="text-center py-12">
@@ -371,7 +373,7 @@ export const Trailers: React.FC = () => {
                   <p className="text-sm text-gray-600">Add trailer name, registration number, and parking address</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-blue-600 text-sm font-semibold">2</span>
@@ -381,7 +383,7 @@ export const Trailers: React.FC = () => {
                   <p className="text-sm text-gray-600">Set minimum stock levels for tools and film sheets</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-blue-600 text-sm font-semibold">3</span>
@@ -399,7 +401,7 @@ export const Trailers: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className=" bg-transparent">
       {currentView === 'detail' && selectedTrailer ? (
         <TrailerDetail
           trailer={selectedTrailer}
@@ -408,7 +410,7 @@ export const Trailers: React.FC = () => {
           onDelete={handleDeleteTrailer}
           onRestock={(restockedTrailer) => {
             // Update the trailer in the list
-            setTrailers(prev => 
+            setTrailers(prev =>
               prev.map(t => t.id === restockedTrailer.id ? restockedTrailer : t)
             );
           }}
@@ -430,8 +432,9 @@ export const Trailers: React.FC = () => {
           )}
         />
       ) : (
-        <div className="space-y-6">
+        <Card className="space-y-6">
           {/* Page Header */}
+      
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">
@@ -441,65 +444,40 @@ export const Trailers: React.FC = () => {
                 Manage trailer inventory and track film stock levels
               </p>
             </div>
-            <Button onClick={handleCreateNew} icon={Plus}>
-              Add New Trailer
-            </Button>
-          </div>
 
-          {/* Search and Filters */}
-          <Card>
             <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1">
-                <div className="relative">
-                  <Search
-                    size={20}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search trailers by name or registration number.."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
+              <div className="">
+                <SearchField className={""} iconSize={20} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={"Search"} />
               </div>
 
-              {/* Status Filter */}
-              <select 
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="">All Statuses</option>
-                <option value="available">Available</option>
-                <option value="low">Low Stock</option>
-                <option value="unavailable">Unavailable</option>
-              </select>
 
-              {/* State Filter */}
-              <select 
-                value={stateFilter}
-                onChange={(e) => setStateFilter(e.target.value)}
-                className="px-3 py-2 pr-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="">All Locations</option>
-                <option value="CA">California</option>
-                <option value="TX">Texas</option>
-                <option value="NY">New York</option>
-                <option value="FL">Florida</option>
-                <option value="IL">Illinois</option>
-              </select>
+              <SelectField className={"h-[42px]"} label={""} value={statusFilter} onChange={(e: any) => setStatusFilter(e.target.value)} placeholder={""} options={[
+                { value: "available", label: "Available" },
+                { value: "low", label: "Low Stock" },
+                { value: "unavailable", label: "Unavailable" },
+              ]} />
+
+              <SelectField className={"h-[42px]"} label={""} value={stateFilter} onChange={(e) => setStateFilter(e.target.value)} placeholder={""} options={[
+                { value: "CA", label: "California" },
+                { value: "TX", label: "Texas" },
+                { value: "NY", label: "New York" },
+                { value: "FL", label: "Florida" },
+                { value: "IL", label: "Illinois" },
+              ]} />
+              <Button icon={Plus} variant="primary">
+                Create new
+              </Button>
             </div>
-          </Card>
+          </div>
+
+
 
           {/* Map Card */}
-          <MapCard
+          {/* <MapCard
             trailers={filteredTrailers}
             onTrailerClick={handleViewTrailer}
             className="mb-6"
-          />
+          /> */}
 
           {/* Executive Analytics Panel */}
           {isExecutive && showAnalytics && trailerAnalytics && (
@@ -555,7 +533,7 @@ export const Trailers: React.FC = () => {
           )}
 
           {/* Executive Controls */}
-          {isExecutive && (
+          {/* {isExecutive && (
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -581,7 +559,7 @@ export const Trailers: React.FC = () => {
                 </div>
               </div>
             </Card>
-          )}
+          )} */}
 
           <TrailerList
             trailers={filteredTrailers}
@@ -595,7 +573,7 @@ export const Trailers: React.FC = () => {
             onSelectAllTrailers={handleSelectAllTrailers}
             onBulkAction={handleBulkAction}
           />
-        </div>
+        </Card>
       )}
 
       {/* Delete Confirmation Modal */}

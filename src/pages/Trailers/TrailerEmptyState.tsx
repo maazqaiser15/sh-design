@@ -22,7 +22,7 @@ export const TrailerEmptyState: React.FC = () => {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
             Trailer Management
-          </h1>
+          </h1> 
           <p className="mt-1 text-sm text-gray-600">
             Manage trailer inventory and track film stock levels
           </p>

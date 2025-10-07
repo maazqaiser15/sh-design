@@ -28,11 +28,13 @@ export const Card: React.FC<CardProps> = ({
   const hoverClass = hover ? 'hover:shadow-lg transition-shadow cursor-pointer' : '';
 
   return (
-    <div 
-      className={`bg-white rounded-lg shadow-card ${paddingClasses[padding]} ${hoverClass} ${className}`}
+    <div
+      className={`bg-[#FFFFFF66] rounded-3xl
+ shadow-card ${paddingClasses[padding]} ${hoverClass} ${className}`}
       onClick={onClick}
     >
       {children}
     </div>
   );
 };
+

@@ -5,6 +5,7 @@ import { Button } from '../../common/components/Button';
 import { Logo } from '../../common/components/Logo';
 import { useAuth, DemoPersona } from '../../contexts/AuthContext';
 import { LoginType, UserType } from '../../types/auth';
+import { FormField } from 'common/components/FormField';
 
 /**
  * Login page component with SafeHavenDefense branding
@@ -13,7 +14,7 @@ import { LoginType, UserType } from '../../types/auth';
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login, demoLogin, isLoading, getAvailableLoginMethods } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -29,58 +30,58 @@ export const Login: React.FC = () => {
     if (email && email.includes('@')) {
       const methods = getAvailableLoginMethods(email);
       setAvailableLoginMethods(methods);
-      
+
       // Determine user type from email patterns
       const localPart = email.split('@')[0].toLowerCase();
       const domain = email.split('@')[1]?.toLowerCase();
-      
+
       let userType: UserType = 'execution-team';
       let loginType: LoginType = 'email';
       let description = 'Standard email login';
-      
+
       // Check email patterns for 3 user types
       if (localPart.startsWith('admin@') || localPart === 'admin' ||
-          localPart.startsWith('vp@') || localPart === 'vp' ||
-          localPart.startsWith('vpops@') || localPart === 'vpops' ||
-          localPart.startsWith('ceo@') || localPart === 'ceo' ||
-          localPart.startsWith('cfo@') || localPart === 'cfo' ||
-          localPart.startsWith('cto@') || localPart === 'cto' ||
-          localPart.startsWith('director@') || localPart === 'director') {
+        localPart.startsWith('vp@') || localPart === 'vp' ||
+        localPart.startsWith('vpops@') || localPart === 'vpops' ||
+        localPart.startsWith('ceo@') || localPart === 'ceo' ||
+        localPart.startsWith('cfo@') || localPart === 'cfo' ||
+        localPart.startsWith('cto@') || localPart === 'cto' ||
+        localPart.startsWith('director@') || localPart === 'director') {
         userType = 'executive';
         loginType = 'company-based';
         description = 'Executive account with full system access and management capabilities';
       } else if (localPart.startsWith('pm@') || localPart === 'pm' ||
-                 localPart.startsWith('coordinator@') || localPart === 'coordinator' ||
-                 localPart.startsWith('manager@') || localPart === 'manager' ||
-                 localPart.startsWith('supervisor@') || localPart === 'supervisor' ||
-                 localPart.startsWith('lead@') || localPart === 'lead') {
+        localPart.startsWith('coordinator@') || localPart === 'coordinator' ||
+        localPart.startsWith('manager@') || localPart === 'manager' ||
+        localPart.startsWith('supervisor@') || localPart === 'supervisor' ||
+        localPart.startsWith('lead@') || localPart === 'lead') {
         userType = 'project-coordinator';
         loginType = 'company-based';
         description = 'Project Coordinator with project management and team coordination access';
       } else if (localPart.startsWith('leadsupervisor@') || localPart === 'leadsupervisor' ||
-                 localPart.startsWith('lead-supervisor@') || localPart === 'lead-supervisor' ||
-                 localPart.startsWith('lead_supervisor@') || localPart === 'lead_supervisor' ||
-                 localPart.startsWith('ls@') || localPart === 'ls') {
+        localPart.startsWith('lead-supervisor@') || localPart === 'lead-supervisor' ||
+        localPart.startsWith('lead_supervisor@') || localPart === 'lead_supervisor' ||
+        localPart.startsWith('ls@') || localPart === 'ls') {
         userType = 'lead-supervisor';
         loginType = 'company-based';
         description = 'Lead Supervisor with project, team, and document management access';
       } else if (localPart.startsWith('crew@') || localPart === 'crew' ||
-                 localPart.startsWith('team@') || localPart === 'team' ||
-                 localPart.startsWith('field@') || localPart === 'field' ||
-                 localPart.startsWith('ground@') || localPart === 'ground' ||
-                 localPart.startsWith('ops@') || localPart === 'ops' ||
-                 localPart.startsWith('logistics@') || localPart === 'logistics' ||
-                 localPart.startsWith('production@') || localPart === 'production' ||
-                 localPart.startsWith('quality@') || localPart === 'quality' ||
-                 localPart.startsWith('safety@') || localPart === 'safety' ||
-                 localPart.startsWith('finance@') || localPart === 'finance' ||
-                 localPart.startsWith('hr@') || localPart === 'hr' ||
-                 localPart.startsWith('it@') || localPart === 'it') {
+        localPart.startsWith('team@') || localPart === 'team' ||
+        localPart.startsWith('field@') || localPart === 'field' ||
+        localPart.startsWith('ground@') || localPart === 'ground' ||
+        localPart.startsWith('ops@') || localPart === 'ops' ||
+        localPart.startsWith('logistics@') || localPart === 'logistics' ||
+        localPart.startsWith('production@') || localPart === 'production' ||
+        localPart.startsWith('quality@') || localPart === 'quality' ||
+        localPart.startsWith('safety@') || localPart === 'safety' ||
+        localPart.startsWith('finance@') || localPart === 'finance' ||
+        localPart.startsWith('hr@') || localPart === 'hr' ||
+        localPart.startsWith('it@') || localPart === 'it') {
         userType = 'execution-team';
         loginType = 'company-based';
         description = 'Execution Team member with operational access (no team/trailer access)';
       }
-      
+
       setDetectedUserType(userType);
       setLoginTypeInfo({ type: loginType, description });
     } else {
@@ -162,32 +163,23 @@ export const Login: React.FC = () => {
         {/* Login Container - Max Width 400px */}
         <div className="bg-white rounded-lg shadow-card p-8 max-w-sm mx-auto w-full">
           <form onSubmit={handleEmailLogin} className="space-y-3">
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={handleEmailChange}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                placeholder="Enter your email"
-              />
-            </div>
+            <FormField
+              label="Email Address"
+              name="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="Enter your email"
+              type="email"
+            />
 
             {/* User Type Detection Display */}
             {detectedUserType && loginTypeInfo && (
               <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <div className="flex-shrink-0">
-                    {loginTypeInfo.type === 'company-based' ? (
+                    {loginTypeInfo.type === "company-based" ? (
                       <Building2 size={16} className="text-blue-600" />
-                    ) : loginTypeInfo.type === 'domain-based' ? (
+                    ) : loginTypeInfo.type === "domain-based" ? (
                       <Mail size={16} className="text-blue-600" />
                     ) : (
                       <Key size={16} className="text-blue-600" />
@@ -195,7 +187,10 @@ export const Login: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-blue-900">
-                      {detectedUserType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Account
+                      {detectedUserType
+                        .replace("-", " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}{" "}
+                      Account
                     </p>
                     <p className="text-xs text-blue-700">
                       {loginTypeInfo.description}
@@ -205,31 +200,17 @@ export const Login: React.FC = () => {
               </div>
             )}
 
-            {/* Password Field - 12px spacing between fields */}
-            <div className="pt-3">
-              <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 pr-10 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-secondary"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+            {/* Password Field */}
+            <div className="pt-3 relative">
+              <FormField
+                label="Password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder='Enter your password'
+                type={showPassword ? "text" : "password"}
+                rightIcon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              />
             </div>
 
             {/* Remember Me & Forgot Password */}
@@ -243,7 +224,10 @@ export const Login: React.FC = () => {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-text-secondary">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-text-secondary"
+                >
                   Remember me
                 </label>
               </div>
@@ -271,7 +255,7 @@ export const Login: React.FC = () => {
                 className="w-full"
                 disabled={isLoggingIn || isLoading}
               >
-                {isLoggingIn ? 'Signing in...' : 'Log in'}
+                {isLoggingIn ? "Signing in..." : "Log in"}
               </Button>
             </div>
           </form>
@@ -297,10 +281,10 @@ export const Login: React.FC = () => {
               className="w-full"
               title="Try SafeHavenDefense with sample data — no signup required."
               onClick={() => {
-                // Show demo persona selection
-                const demoSection = document.getElementById('demo-personas');
+                const demoSection = document.getElementById("demo-personas");
                 if (demoSection) {
-                  demoSection.style.display = demoSection.style.display === 'none' ? 'block' : 'none';
+                  demoSection.style.display =
+                    demoSection.style.display === "none" ? "block" : "none";
                 }
               }}
             >
@@ -309,7 +293,7 @@ export const Login: React.FC = () => {
           </div>
 
           {/* Demo Personas Selection */}
-          <div id="demo-personas" style={{ display: 'none' }} className="mt-4 space-y-2">
+          <div id="demo-personas" style={{ display: "none" }} className="mt-4 space-y-2">
             <h4 className="text-sm font-medium text-text-primary text-center mb-3">
               Choose Demo Account
             </h4>
@@ -349,5 +333,7 @@ export const Login: React.FC = () => {
         </div>
       </div>
     </div>
+
+
   );
 };

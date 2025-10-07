@@ -8,10 +8,6 @@ import { useBreadcrumbContext } from '../../../contexts/BreadcrumbContext';
 import { useSidebar } from '../../../contexts/SidebarContext';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Top navigation bar component
- * Provides breadcrumbs, notifications, and user actions with authentication
- */
 export const TopBar: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -100,7 +96,7 @@ export const TopBar: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white border-b border-border px-4 sm:px-6 py-4">
+      <header className="bg-transparent  px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Mobile Menu Button */}
           {isMobile && (

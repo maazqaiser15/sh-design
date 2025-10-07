@@ -52,7 +52,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
               )}
               
               {isLast || !item.href ? (
-                <span className="flex items-center text-gray-900 font-medium">
+                <span className="flex items-center text-[#344054] bg-white rounded-lg py-[4px] px-[8px] font-medium">
                   {IconComponent && (
                     <IconComponent size={16} className="mr-2 text-gray-600" />
                   )}

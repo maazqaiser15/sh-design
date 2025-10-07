@@ -10,6 +10,7 @@ import {
   sortTrailers,
   USA_STATES,
 } from "../../utils/trailerUtils";
+import CustomDataTable from "common/components/CustomDataTable";
 
 interface TrailerListProps {
   trailers: Trailer[];
@@ -44,9 +45,9 @@ export const TrailerList: React.FC<TrailerListProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TrailerStatus | "">("");
   const [stateFilter, setStateFilter] = useState("");
-      const [sortBy, setSortBy] = useState<
-        "trailerName" | "registrationNumber" | "location" | "status" | "updatedAt"
-      >("trailerName");
+  const [sortBy, setSortBy] = useState<
+    "trailerName" | "registrationNumber" | "location" | "status" | "updatedAt"
+  >("trailerName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -74,7 +75,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
       search: searchTerm || undefined,
     });
 
-        return sortTrailers(filtered, sortBy as any, sortOrder);
+    return sortTrailers(filtered, sortBy as any, sortOrder);
   }, [trailers, searchTerm, statusFilter, stateFilter, sortBy, sortOrder]);
 
   // Pagination calculations
@@ -137,6 +138,8 @@ export const TrailerList: React.FC<TrailerListProps> = ({
         break;
     }
   };
+
+
 
   return (
     <div className="space-y-6">
@@ -218,76 +221,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
       )}
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <Card>
-          <div className="flex items-center justify-between px-4 py-3">
-            {/* Left side: Items per page and showing count */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <label htmlFor="itemsPerPage" className="text-sm text-gray-600">
-                  Items per page:
-                </label>
-                <select
-                  id="itemsPerPage"
-                  value={itemsPerPage}
-                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                  className="px-2 py-1 pr-6 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-              </div>
-              <div className="text-sm text-gray-600">
-                Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} trailers
-              </div>
-            </div>
-
-            {/* Right side: Navigation controls */}
-            <div className="flex items-center space-x-2">
-              {/* Previous button */}
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-                className="p-2"
-              >
-                <ChevronLeft size={16} />
-              </Button>
-
-              {/* Page numbers */}
-              <div className="flex items-center space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1 text-sm rounded ${
-                      currentPage === page
-                        ? "bg-primary text-white"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-
-              {/* Next button */}
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className="p-2"
-              >
-                <ChevronRight size={16} />
-              </Button>
-            </div>
-          </div>
-        </Card>
-      )}
+    
     </div>
   );
 };
@@ -368,121 +302,93 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
     </button>
   );
 
-  return (
-    <Card padding="sm">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="trailerName">Trailer Name</SortButton>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="registrationNumber">Registration</SortButton>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="location">Location</SortButton>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <SortButton field="status">Status</SortButton>
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {trailers.map((trailer) => (
-              <tr 
-                key={trailer.id} 
-                className="hover:bg-gray-50 cursor-pointer transition-colors"
-                onClick={() => onViewTrailer(trailer)}
+
+  const columns = [
+    {
+      name: 'Prompt Title',
+      selector: (row: any) => row.trailerName,
+    },
+    {
+      name: 'Created By',
+      selector: (row: any) => row.state,
+    },
+    {
+      name: 'Created Date',
+      selector: (row: any) => row.createdAt,
+    },
+    {
+      name: 'Actions',
+      selector: (row: any) => row.action,
+      cell: (row: any) => (
+        <div 
+        className="relative inline-block text-left" 
+        ref={activeDropdown === row.id ? dropdownRef : null}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDropdownToggle(row.id);
+          }}
+          id={`menu-button-${row.id}`}
+          aria-expanded={activeDropdown === row.id}
+          aria-haspopup="true"
+        >
+          <MoreVertical size={20} />
+        </button>
+        
+        {activeDropdown === row.id && (
+          <div 
+            className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="py-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMenuAction('view', row);
+                }}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {trailer.trailerName}
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {trailer.registrationNumber}
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    <div className="font-medium">{trailer.city}, {trailer.state}</div>
-                    <div className="text-gray-500 text-xs">{trailer.parkingAddress}</div>
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <StatusBadge status={trailer.status} unavailableUntil={trailer.unavailableUntil} />
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                  <div 
-                    className="relative inline-block text-left" 
-                    ref={activeDropdown === trailer.id ? dropdownRef : null}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      className="flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDropdownToggle(trailer.id);
-                      }}
-                      id={`menu-button-${trailer.id}`}
-                      aria-expanded={activeDropdown === trailer.id}
-                      aria-haspopup="true"
-                    >
-                      <MoreVertical size={20} />
-                    </button>
-                    
-                    {activeDropdown === trailer.id && (
-                      <div 
-                        className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="py-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onMenuAction('view', trailer);
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Eye size={16} className="mr-2" />
-                            View Details
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onMenuAction('edit', trailer);
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Edit2 size={16} className="mr-2" />
-                            Edit Trailer
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onMenuAction('delete', trailer);
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 size={16} className="mr-2" />
-                            Delete Trailer
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                <Eye size={16} className="mr-2" />
+                View Details
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMenuAction('edit', row);
+                }}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <Edit2 size={16} className="mr-2" />
+                Edit Trailer
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMenuAction('delete', row);
+                }}
+                className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+              >
+                <Trash2 size={16} className="mr-2" />
+                Delete Trailer
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    </Card>
+      )
+    },
+  ]
+
+
+  return (
+
+      <div className="overflow-x-auto">
+        <CustomDataTable title={""}  columns={columns} data={trailers} selectableRows={undefined} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
+      </div>
+
   );
 };

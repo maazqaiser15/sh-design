@@ -163,7 +163,7 @@ export const Sidebar: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
+                  flex items-center space-x-3  px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
                   ${depth > 0 ? 'ml-4 pl-6' : ''}
                   text-text-secondary hover:text-text-primary hover:bg-gray-100
                 `}
@@ -176,11 +176,11 @@ export const Sidebar: React.FC = () => {
               <NavLink
                 to={item.href || '#'}
                 className={({ isActive }) => `
-                  flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
+                  flex items-center space-x-3  justify-center md:justify-start px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
                   ${depth > 0 ? 'ml-4 pl-6' : ''}
                   ${
                     isActive
-                      ? 'bg-primary text-white'
+                      ? 'bg-[#0D76BF] text-white'
                       : 'text-text-secondary hover:text-text-primary hover:bg-gray-100'
                   }
                 `}
@@ -237,14 +237,14 @@ export const Sidebar: React.FC = () => {
                 isCollapsed ? 'w-16' : 'w-64'
               }`
           } 
-          bg-white border-r border-border flex flex-col
+          bg-transparent  flex flex-col
         `}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
         {/* Header with Logo and Toggle Button */}
-        <div className="px-4 py-4 border-b border-border flex items-center justify-between min-h-[80px]">
+        <div className="px-4 py-4  flex items-center justify-between min-h-[80px]">
           {(!isCollapsed || isMobile) && (
             <div className="flex-1">
               <Logo size="md" textSize="sm" className="text-primary" />

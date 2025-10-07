@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, CheckCircle, Clock } from 'lucide-react';
 import { Button } from '../../common/components/Button';
 import { Logo } from '../../common/components/Logo';
+import { FormField } from 'common/components/FormField';
 
 /**
  * Forgot Password page component
@@ -41,7 +42,7 @@ export const ForgotPassword: React.FC = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Mock email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
@@ -60,14 +61,14 @@ export const ForgotPassword: React.FC = () => {
 
   const handleResend = async () => {
     if (!canResend) return;
-    
+
     setError('');
     setIsLoading(true);
 
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setResendTimer(120); // Reset timer
       setCanResend(false);
     } catch (err) {
@@ -109,25 +110,8 @@ export const ForgotPassword: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail size={20} className="text-gray-400" />
-                    </div>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your email address"
-                    />
-                  </div>
+
+                  <FormField leftIcon={<Mail size={20} className="text-gray-400" />} onChange={(e) => setEmail(e.target.value)} value={email} name='email' type='email' placeholder='Enter Your Email Address' />
                 </div>
 
                 {/* Error Message */}
@@ -156,11 +140,11 @@ export const ForgotPassword: React.FC = () => {
                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
                   <CheckCircle size={24} className="text-green-600" />
                 </div>
-                
+
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
                   Check Your Email
                 </h1>
-                
+
                 <p className="text-gray-600 mb-6">
                   We've sent a password reset link to <strong>{email}</strong>
                 </p>
@@ -170,7 +154,7 @@ export const ForgotPassword: React.FC = () => {
                   <p className="text-sm text-gray-600 mb-3">
                     Didn't receive the email?
                   </p>
-                  
+
                   {resendTimer > 0 ? (
                     <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
                       <Clock size={16} />
