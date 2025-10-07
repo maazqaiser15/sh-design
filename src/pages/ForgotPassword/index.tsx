@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Form, Link } from 'react-router-dom';
 import { ArrowLeft, Mail, CheckCircle, Clock } from 'lucide-react';
 import { Button } from '../../common/components/Button';
 import { Logo } from '../../common/components/Logo';
-import { FormField } from 'common/components/FormField';
+import { Formik } from 'formik';
+import FormField from 'common/components/FormField';
+import * as Yup from 'Yup';
+// import { FormField } from 'common/components/FormField';
 
 /**
  * Forgot Password page component
  * Handles email submission and confirmation link sending
  */
+const forgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().required("Email is required").email("Please enter a valid email address"),
+});
+
 export const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -16,6 +23,10 @@ export const ForgotPassword: React.FC = () => {
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
+
+  const initialValues:any = {
+    email: "",
+  };
 
   // Timer countdown for resend functionality
   useEffect(() => {
@@ -107,31 +118,17 @@ export const ForgotPassword: React.FC = () => {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Email Field */}
-                <div>
-
-                  <FormField leftIcon={<Mail size={20} className="text-gray-400" />} onChange={(e) => setEmail(e.target.value)} value={email} name='email' type='email' placeholder='Enter Your Email Address' />
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-                    {error}
-                  </div>
+              <Formik initialValues={initialValues} validationSchema={forgotPasswordSchema} onSubmit={handleSubmit}>
+                {({ isSubmitting, errors, touched }) => (
+                  <Form className="space-y-4">
+                    <FormField label={"Email Address"} isLeftIcon={<Mail size={20} className="text-gray-400"/>} name={"email"} type={"email"} placeholder={"Enter your email address"} className={""}/>
+                    {/* Submit Button */}
+                    <Button type="submit" variant="primary" size="md" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? "Sending..." : "Send Reset Link"}
+                    </Button>
+                  </Form>
                 )}
-
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Sending...' : 'Send Reset Link'}
-                </Button>
-              </form>
+              </Formik>
             </>
           ) : (
             <>
