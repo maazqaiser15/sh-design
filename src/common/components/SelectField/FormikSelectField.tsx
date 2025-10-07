@@ -41,7 +41,7 @@ const FormikSelectField: React.FC<FormikSelectFieldProps> = ({
   return (
     <div className={`relative flex flex-col ${className}`}>
       {label && (
-        <label className="mb-1 text-sm font-medium text-gray-700">{label}</label>
+        <label className="mb-1  font-medium text-gray-700">{label}</label>
       )}
       <div className="relative">
         <select
