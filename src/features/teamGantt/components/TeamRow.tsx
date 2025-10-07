@@ -164,10 +164,17 @@ export const TeamRow: React.FC<TeamRowProps> = ({
       {/* Right Column - Timeline */}
       <div className="flex-1 relative">
         <div className="h-20 relative">
-          {member.projects.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-              Unassigned
+          {member.availability === 'Out of office' && member.outOfOfficeDuration ? (
+            // Out of office bar
+            <div className="h-20 relative">
+              <div className="absolute top-2 left-0 right-0 h-6 bg-orange-200 border border-orange-300 rounded flex items-center justify-center">
+                <span className="text-xs font-medium text-orange-800">
+                  Unavailable: {new Date(member.outOfOfficeDuration.startDate).toLocaleDateString()} - {new Date(member.outOfOfficeDuration.endDate).toLocaleDateString()}
+                </span>
+              </div>
             </div>
+          ) : member.projects.length === 0 ? (
+            null
           ) : (
             projectBars.map((bar, index) => (
               <ProjectBar

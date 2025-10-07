@@ -73,7 +73,7 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
     for (let i = 1; i <= interiorLayers; i++) {
       layers.push({
         layerNumber: layerNumber++,
-        layerName: interiorLayers === 1 ? 'Interior Layer' : `Interior Layer ${i}`,
+        layerName: 'Interior Layer',
         status: 'Pending' as const
       });
     }
@@ -82,7 +82,7 @@ export const AddEditWindowModal: React.FC<AddEditWindowModalProps> = ({
     for (let i = 1; i <= exteriorLayers; i++) {
       layers.push({
         layerNumber: layerNumber++,
-        layerName: exteriorLayers === 1 ? 'Exterior Layer' : `Exterior Layer ${i}`,
+        layerName: 'Exterior Layer',
         status: 'Pending' as const
       });
     }

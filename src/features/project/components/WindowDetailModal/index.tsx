@@ -81,13 +81,14 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       const allInstalled = updatedLayers.every(layer => layer.status === 'Installed');
       const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
       const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
+      const hasInstalledLayers = updatedLayers.some(layer => layer.status === 'Installed');
 
       let newStatus: WindowStatus = 'Pending';
       if (hasReinstall) {
         newStatus = 'Reinstallation Needed';
       } else if (allInstalled) {
         newStatus = 'Complete';
-      } else if (hasInProgress || prev.assignedTeamMembers.length > 0) {
+      } else if (hasInProgress || prev.assignedTeamMembers.length > 0 || hasInstalledLayers) {
         newStatus = 'In Progress';
       }
 
@@ -115,13 +116,14 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
       const allInstalled = updatedLayers.every(layer => layer.status === 'Installed');
       const hasReinstall = updatedLayers.some(layer => layer.status === 'Reinstallation Needed');
       const hasInProgress = updatedLayers.some(layer => layer.status === 'In Progress');
+      const hasInstalledLayers = updatedLayers.some(layer => layer.status === 'Installed');
 
       let newStatus: WindowStatus = 'Pending';
       if (hasReinstall) {
         newStatus = 'Reinstallation Needed';
       } else if (allInstalled) {
         newStatus = 'Complete';
-      } else if (hasInProgress || prev.assignedTeamMembers.length > 0) {
+      } else if (hasInProgress || prev.assignedTeamMembers.length > 0 || hasInstalledLayers) {
         newStatus = 'In Progress';
       }
 
@@ -471,9 +473,9 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                   </div>
                 )}
                 
-                {/* Mark as Complete button for In Progress status windows */}
+                {/* Mark as Complete button for In Progress and Pending status windows */}
                 {(() => {
-                  const shouldShowButton = editedWindow.status === 'In Progress' && 
+                  const shouldShowButton = (editedWindow.status === 'In Progress' || editedWindow.status === 'Pending') && 
                     (layer.status === 'In Progress' || layer.status === 'Pending') && 
                     !isEditing && 
                     layer.status !== 'Installed';

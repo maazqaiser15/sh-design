@@ -17,7 +17,7 @@ interface TrailerListProps {
   onCreateTrailer: () => void;
   onViewTrailer: (trailer: Trailer) => void;
   onEditTrailer: (trailer: Trailer) => void;
-  onDeleteTrailer: (trailer: Trailer) => void;
+  onArchiveTrailer: (trailer: Trailer) => void;
   isExecutive?: boolean;
   selectedTrailers?: string[];
   onSelectTrailer?: (trailerId: string) => void;
@@ -34,7 +34,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
   onCreateTrailer,
   onViewTrailer,
   onEditTrailer,
-  onDeleteTrailer,
+  onArchiveTrailer,
   isExecutive = false,
   selectedTrailers = [],
   onSelectTrailer,
@@ -134,7 +134,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
         onEditTrailer(trailer);
         break;
       case 'delete':
-        onDeleteTrailer(trailer);
+        onArchiveTrailer(trailer);
         break;
     }
   };
@@ -154,7 +154,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
           onSort={handleSort}
           onViewTrailer={onViewTrailer}
           onEditTrailer={onEditTrailer}
-          onDeleteTrailer={onDeleteTrailer}
+          onArchiveTrailer={onArchiveTrailer}
           activeDropdown={activeDropdown}
           onDropdownToggle={handleDropdownToggle}
           onMenuAction={handleMenuAction}
@@ -208,11 +208,11 @@ export const TrailerList: React.FC<TrailerListProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => onDeleteTrailer(trailer)}
+                  onClick={() => onArchiveTrailer(trailer)}
                   icon={Trash2}
                   className="text-red-600 hover:text-red-700"
                 >
-                  Delete
+                  Archive
                 </Button>
               </div>
             </Card>
@@ -241,7 +241,7 @@ interface TrailerTableViewProps {
   ) => void;
   onViewTrailer: (trailer: Trailer) => void;
   onEditTrailer: (trailer: Trailer) => void;
-  onDeleteTrailer: (trailer: Trailer) => void;
+  onArchiveTrailer: (trailer: Trailer) => void;
   activeDropdown: string | null;
   onDropdownToggle: (trailerId: string) => void;
   onMenuAction: (action: string, trailer: Trailer) => void;
@@ -259,7 +259,7 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
   onSort,
   onViewTrailer,
   onEditTrailer,
-  onDeleteTrailer,
+  onArchiveTrailer,
   activeDropdown,
   onDropdownToggle,
   onMenuAction,

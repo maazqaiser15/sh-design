@@ -339,12 +339,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
 
   const getActionButton = (window: Window) => {
     if (window.status === 'Pending') {
-      return {
-        text: 'Start Working',
-        icon: CheckCircle2,
-        action: () => handleStartWorking(window),
-        className: 'text-green-700 hover:bg-green-50'
-      };
+      return null; // Removed Start Working button for Pending status
     } else if (window.status === 'In Progress') {
       return {
         text: 'Mark as Completed',

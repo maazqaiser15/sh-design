@@ -50,8 +50,14 @@ export interface Trailer {
   state: string;
   city: string;
   inventory: {
-    tools: ToolInventoryItem[];
-    filmSheets: FilmSheetInventoryItem[];
+    // New structure
+    cartItems?: CartInventoryItem[];
+    caulkingSupplies?: CaulkingInventoryItem[];
+    trailerItems?: TrailerInventoryItem[];
+    films?: FilmInventoryItem[];
+    // Legacy structure (for backward compatibility)
+    tools?: ToolInventoryItem[];
+    filmSheets?: FilmSheetInventoryItem[];
   };
   status: TrailerStatus;
   unavailableUntil?: string; // Date string if unavailable
@@ -71,6 +77,34 @@ export interface ToolInventoryItem {
 
 export interface FilmSheetInventoryItem {
   sheetType: FilmSheetType;
+  currentStock: number;
+  threshold: number;
+  status: FilmStockStatus;
+}
+
+export interface CartInventoryItem {
+  itemName: string;
+  currentStock: number;
+  threshold: number;
+  status: FilmStockStatus;
+}
+
+export interface CaulkingInventoryItem {
+  itemName: string;
+  currentStock: number;
+  threshold: number;
+  status: FilmStockStatus;
+}
+
+export interface TrailerInventoryItem {
+  itemName: string;
+  currentStock: number;
+  threshold: number;
+  status: FilmStockStatus;
+}
+
+export interface FilmInventoryItem {
+  filmType: string;
   currentStock: number;
   threshold: number;
   status: FilmStockStatus;

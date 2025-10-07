@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Edit2, Trash2, MapPin, Calendar, User, Activity, Package, Film, Truck, FileText, Plus, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Edit2, Trash2, MapPin, Calendar, User, Activity, Package, Film, Truck, FileText, RotateCcw } from 'lucide-react';
 import { Card } from '../../../../common/components/Card';
 import { Button } from '../../../../common/components/Button';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
-import { Trailer, ToolInventoryItem, FilmSheetInventoryItem } from '../../../../types';
+import { Trailer, CartInventoryItem, CaulkingInventoryItem, TrailerInventoryItem, FilmInventoryItem } from '../../../../types';
 
 interface TrailerDetailProps {
   trailer: Trailer;
   onBack: () => void;
   onEdit: (trailer: Trailer) => void;
-  onDelete: (trailer: Trailer) => void;
+  onArchive: (trailer: Trailer) => void;
   onRestock?: (trailer: Trailer) => void;
 }
 
@@ -21,10 +21,10 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
   trailer: initialTrailer,
   onBack,
   onEdit,
-  onDelete,
+  onArchive,
   onRestock,
 }) => {
-  const [activeTab, setActiveTab] = useState<'tools' | 'sheets'>('tools');
+  const [activeTab, setActiveTab] = useState<'cart' | 'caulking' | 'trailer' | 'film'>('cart');
   const [trailer, setTrailer] = useState<Trailer>(initialTrailer);
 
   const formatDate = (dateString: string) => {
@@ -41,14 +41,24 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
     const restockedTrailer: Trailer = {
       ...trailer,
       inventory: {
-        tools: trailer.inventory.tools.map(tool => ({
-          ...tool,
-          currentStock: tool.threshold,
+        cartItems: (trailer.inventory.cartItems || []).map(item => ({
+          ...item,
+          currentStock: item.threshold,
           status: 'good' as const
         })),
-        filmSheets: trailer.inventory.filmSheets.map(sheet => ({
-          ...sheet,
-          currentStock: sheet.threshold,
+        caulkingSupplies: (trailer.inventory.caulkingSupplies || []).map(item => ({
+          ...item,
+          currentStock: item.threshold,
+          status: 'good' as const
+        })),
+        trailerItems: (trailer.inventory.trailerItems || []).map(item => ({
+          ...item,
+          currentStock: item.threshold,
+          status: 'good' as const
+        })),
+        films: (trailer.inventory.films || []).map(item => ({
+          ...item,
+          currentStock: item.threshold,
           status: 'good' as const
         }))
       },
@@ -95,18 +105,6 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {trailer.status === 'available' && (
-            <Button
-              variant="primary"
-              onClick={() => {
-                // TODO: Implement project assignment functionality
-                console.log('Assign trailer to project:', trailer.trailerName);
-              }}
-              icon={Plus}
-            >
-              Assign to Project
-            </Button>
-          )}
           <Button
             variant="secondary"
             onClick={() => onEdit(trailer)}
@@ -116,11 +114,11 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
           </Button>
           <Button
             variant="ghost"
-            onClick={() => onDelete(trailer)}
+            onClick={() => onArchive(trailer)}
             icon={Trash2}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
-            Delete
+            Archive
           </Button>
         </div>
       </div>
@@ -159,7 +157,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                 <MapPin size={20} className="text-purple-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-600">Address</div>
+                <div className="text-sm text-gray-600">Parking Address</div>
                 <div className="font-medium text-gray-900">{trailer.parkingAddress}</div>
               </div>
             </div>
@@ -169,7 +167,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                 <MapPin size={20} className="text-orange-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-600">Current Location</div>
+                <div className="text-sm text-gray-600">Project Location</div>
                 <div className="font-medium text-gray-500">-</div>
               </div>
             </div>
@@ -183,48 +181,161 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Inventory</h2>
-            <Button
-              variant="secondary"
-              onClick={handleRestock}
-              icon={RotateCcw}
-              className="text-green-600 hover:text-green-700 hover:bg-green-50"
-            >
-              Mark Restocked
-            </Button>
           </div>
           
           {/* Tab Navigation */}
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
             <button
-              onClick={() => setActiveTab('tools')}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'tools'
+              onClick={() => setActiveTab('cart')}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'cart'
                   ? 'bg-white text-primary shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <div className="flex items-center justify-center gap-2">
-                <Package size={16} />
-                Tools ({trailer.inventory.tools.length})
-              </div>
+              Cart Item
             </button>
             <button
-              onClick={() => setActiveTab('sheets')}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'sheets'
+              onClick={() => setActiveTab('caulking')}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'caulking'
                   ? 'bg-white text-primary shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <div className="flex items-center justify-center gap-2">
-                <Film size={16} />
-                Film Sheets ({trailer.inventory.filmSheets.length})
-              </div>
+              Caulking Supplies
+            </button>
+            <button
+              onClick={() => setActiveTab('trailer')}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'trailer'
+                  ? 'bg-white text-primary shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Trailer Item
+            </button>
+            <button
+              onClick={() => setActiveTab('film')}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'film'
+                  ? 'bg-white text-primary shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Film
             </button>
           </div>
 
-          {/* Tools Tab */}
-          {activeTab === 'tools' && (
+          {/* Cart Item Tab */}
+          {activeTab === 'cart' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Cart Item
+              </h3>
+              <p className="text-sm text-gray-600">
+                Current stock levels and thresholds for each cart item.
+              </p>
+
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tool Name
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Min Threshold
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Current Inventory
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status & Stock Level
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {[
+                      { name: 'Beer Tank W/ Hose', threshold: 5, inventoryLeft: 6, status: 'Good on stock' },
+                      { name: 'Hard Press', threshold: 3, inventoryLeft: 5, status: 'Good on stock' },
+                      { name: 'Red Card', threshold: 6, inventoryLeft: 8, status: 'Good on stock' },
+                      { name: 'Olfa', threshold: 4, inventoryLeft: 3, status: 'Low on stock' },
+                      { name: 'Olfa Blade Pack', threshold: 8, inventoryLeft: 12, status: 'Good on stock' },
+                      { name: 'Scrapers', threshold: 4, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Scraper Blade Pack', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+                      { name: 'Pick', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+                      { name: '1 Qrt Acetone', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Phillips Head SD', threshold: 4, inventoryLeft: 3, status: 'Low on stock' },
+                      { name: 'Window Squeegee', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+                      { name: 'Sharps Containers', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Headlamps', threshold: 3, inventoryLeft: 5, status: 'Good on stock' },
+                      { name: 'Batteries for Headlamps (Pack)', threshold: 5, inventoryLeft: 8, status: 'Good on stock' }
+                    ].map((item, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.name}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.threshold}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.inventoryLeft}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="space-y-2">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              item.status === 'Good on stock' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {item.status}
+                            </span>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all ${
+                                  item.status === 'Good on stock' ? 'bg-green-500' :
+                                  'bg-red-500'
+                                }`}
+                                style={{ width: `${Math.min((item.inventoryLeft / item.threshold) * 100, 100)}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {item.inventoryLeft > item.threshold ? (
+                                <span className="text-green-600">
+                                  +{item.inventoryLeft - item.threshold} above threshold
+                                </span>
+                              ) : item.inventoryLeft === item.threshold ? (
+                                <span className="text-yellow-600">At threshold</span>
+                              ) : item.inventoryLeft === 0 ? (
+                                <span className="text-red-600">Out of stock</span>
+                              ) : (
+                                <span className="text-red-600">
+                                  {item.threshold - item.inventoryLeft} below threshold
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Caulking Supplies Tab */}
+          {activeTab === 'caulking' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Caulking Supplies
+              </h3>
+              <p className="text-sm text-gray-600">
+                Current stock levels and thresholds for each caulking supply item.
+              </p>
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -244,22 +355,86 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {trailer.inventory.tools.map((item, index) => (
-                    <ToolInventoryRow key={index} item={item} />
+                    {[
+                      { name: 'Rolls of Painters Tape', threshold: 6, inventoryLeft: 8, status: 'Good on stock' },
+                      { name: 'Caulk Sausage Case', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Caulk Gun (Sausage)', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Pack Nitrile Gloves', threshold: 10, inventoryLeft: 15, status: 'Good on stock' },
+                      { name: 'Case of Blue Towels', threshold: 5, inventoryLeft: 3, status: 'Low on stock' },
+                      { name: 'Tub O\' Towels', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+                      { name: 'Crocodile Wipes', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+                      { name: 'Caulking Gun Tips', threshold: 8, inventoryLeft: 12, status: 'Good on stock' }
+                    ].map((item, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.name}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.threshold}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.inventoryLeft}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="space-y-2">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              item.status === 'Good on stock' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {item.status}
+                            </span>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all ${
+                                  item.status === 'Good on stock' ? 'bg-green-500' :
+                                  'bg-red-500'
+                                }`}
+                                style={{ width: `${Math.min((item.inventoryLeft / item.threshold) * 100, 100)}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {item.inventoryLeft > item.threshold ? (
+                                <span className="text-green-600">
+                                  +{item.inventoryLeft - item.threshold} above threshold
+                                </span>
+                              ) : item.inventoryLeft === item.threshold ? (
+                                <span className="text-yellow-600">At threshold</span>
+                              ) : item.inventoryLeft === 0 ? (
+                                <span className="text-red-600">Out of stock</span>
+                              ) : (
+                                <span className="text-red-600">
+                                  {item.threshold - item.inventoryLeft} below threshold
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
 
-          {/* Film Sheets Tab */}
-          {activeTab === 'sheets' && (
+          {/* Trailer Item Tab */}
+          {activeTab === 'trailer' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Trailer Item
+              </h3>
+              <p className="text-sm text-gray-600">
+                Current stock levels and thresholds for each trailer item.
+              </p>
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sheet Type
+                        Tool Name
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Initial Stock
@@ -273,12 +448,179 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {trailer.inventory.filmSheets.map((item, index) => (
-                    <FilmSheetInventoryRow key={index} item={item} />
+                    {[
+                      { name: 'Cordless Drill', threshold: 1, inventoryLeft: 2, status: 'Good on stock' },
+                      { name: 'Allen Key Set', threshold: 2, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Channel Lock Pliers', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Drill Bit Kit', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+                      { name: 'Generator W/ Cord', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+                      { name: 'Micro Fiber Package', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+                      { name: '5 Gal Gas Can', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+                      { name: 'Air Compressor W/ Hose', threshold: 1, inventoryLeft: 2, status: 'Good on stock' },
+                      { name: 'Trash Can', threshold: 2, inventoryLeft: 3, status: 'Good on stock' },
+                      { name: '55 Gal Trash Bags Case', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Bath Towel', threshold: 4, inventoryLeft: 5, status: 'Good on stock' },
+                      { name: 'Towel Clips for Hanging', threshold: 6, inventoryLeft: 9, status: 'Good on stock' },
+                      { name: '5 Gal Buckets', threshold: 4, inventoryLeft: 3, status: 'Low on stock' },
+                      { name: 'Sharpie Pack', threshold: 5, inventoryLeft: 8, status: 'Good on stock' },
+                      { name: 'Dry Erase Marker Pack', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+                      { name: 'Square', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Non Serated Scissors', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Ladders', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+                      { name: 'Tank Fix Kits', threshold: 2, inventoryLeft: 3, status: 'Good on stock' },
+                      { name: 'Extras Spray Nozzles', threshold: 4, inventoryLeft: 5, status: 'Good on stock' },
+                      { name: 'Broom and Dust Pan', threshold: 2, inventoryLeft: 2, status: 'Good on stock' },
+                      { name: 'Scotch Brite Case', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Sos Pad Box', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Glass Thickness Gauge', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+                      { name: 'PPE Bin/SDS Binder', threshold: 2, inventoryLeft: 2, status: 'Good on stock' },
+                      { name: 'Spare Cutter Blades (Box)', threshold: 2, inventoryLeft: 3, status: 'Good on stock' },
+                      { name: 'Tire Patch Kit', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+                      { name: 'Parking Cones', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+                      { name: 'Wheel Chalks', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+                      { name: 'Tongue Lock', threshold: 2, inventoryLeft: 1, status: 'Low on stock' }
+                    ].map((item, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.name}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.threshold}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.inventoryLeft}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="space-y-2">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              item.status === 'Good on stock' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {item.status}
+                            </span>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all ${
+                                  item.status === 'Good on stock' ? 'bg-green-500' :
+                                  'bg-red-500'
+                                }`}
+                                style={{ width: `${Math.min((item.inventoryLeft / item.threshold) * 100, 100)}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {item.inventoryLeft > item.threshold ? (
+                                <span className="text-green-600">
+                                  +{item.inventoryLeft - item.threshold} above threshold
+                                </span>
+                              ) : item.inventoryLeft === item.threshold ? (
+                                <span className="text-yellow-600">At threshold</span>
+                              ) : item.inventoryLeft === 0 ? (
+                                <span className="text-red-600">Out of stock</span>
+                              ) : (
+                                <span className="text-red-600">
+                                  {item.threshold - item.inventoryLeft} below threshold
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
                   ))}
                 </tbody>
               </table>
-              
+              </div>
+            </div>
+          )}
+
+          {/* Film Tab */}
+          {activeTab === 'film' && (
+            <div className="space-y-4">
+
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tool Name
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Min Threshold
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Current Inventory
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status & Stock Level
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {[
+                      { name: 'SW450', threshold: 8, inventoryLeft: 12, status: 'Good on stock' },
+                      { name: 'SW440BR', threshold: 6, inventoryLeft: 8, status: 'Good on stock' },
+                      { name: 'SW600BR', threshold: 5, inventoryLeft: 6, status: 'Good on stock' },
+                      { name: 'CL700 EXT', threshold: 5, inventoryLeft: 4, status: 'Low on stock' },
+                      { name: 'Madico SG20 E Tint', threshold: 10, inventoryLeft: 15, status: 'Good on stock' },
+                      { name: 'Madico RS20 E Tint', threshold: 8, inventoryLeft: 12, status: 'Good on stock' },
+                      { name: 'Suntek SXT-20', threshold: 6, inventoryLeft: 9, status: 'Good on stock' },
+                      { name: 'Suntek SXT-35', threshold: 7, inventoryLeft: 10, status: 'Good on stock' },
+                      { name: 'Suntek IXT-20', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+                      { name: 'Suntek IXT-35', threshold: 6, inventoryLeft: 5, status: 'Low on stock' },
+                      { name: 'Suntek Frost', threshold: 4, inventoryLeft: 3, status: 'Low on stock' }
+                    ].map((item, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.name}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.threshold}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{item.inventoryLeft}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="space-y-2">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              item.status === 'Good on stock' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {item.status}
+                            </span>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all ${
+                                  item.status === 'Good on stock' ? 'bg-green-500' :
+                                  'bg-red-500'
+                                }`}
+                                style={{ width: `${Math.min((item.inventoryLeft / item.threshold) * 100, 100)}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {item.inventoryLeft > item.threshold ? (
+                                <span className="text-green-600">
+                                  +{item.inventoryLeft - item.threshold} above threshold
+                                </span>
+                              ) : item.inventoryLeft === item.threshold ? (
+                                <span className="text-yellow-600">At threshold</span>
+                              ) : item.inventoryLeft === 0 ? (
+                                <span className="text-red-600">Out of stock</span>
+                              ) : (
+                                <span className="text-red-600">
+                                  {item.threshold - item.inventoryLeft} below threshold
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
@@ -337,120 +679,3 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
   );
 };
 
-interface ToolInventoryRowProps {
-  item: ToolInventoryItem;
-}
-
-const ToolInventoryRow: React.FC<ToolInventoryRowProps> = ({ item }) => {
-  const getStockLevelWidth = () => {
-    if (item.threshold === 0) return 100;
-    return Math.min((item.currentStock / item.threshold) * 100, 100);
-  };
-
-  const getStockLevelColor = () => {
-    if (item.status === 'critical') return 'bg-red-500';
-    if (item.status === 'low') return 'bg-amber-500';
-    return 'bg-green-500';
-  };
-
-  return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
-          {item.toolName}
-        </div>
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{item.currentStock}</div>
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{item.threshold}</div>
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="space-y-2">
-          <StatusBadge status={item.status} />
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all ${getStockLevelColor()}`}
-              style={{ width: `${getStockLevelWidth()}%` }}
-            />
-          </div>
-          <div className="text-xs text-gray-600">
-            {item.currentStock > item.threshold ? (
-              <span className="text-green-600">
-                +{item.currentStock - item.threshold} above threshold
-              </span>
-            ) : item.currentStock === item.threshold ? (
-              <span className="text-amber-600">At threshold</span>
-            ) : item.currentStock === 0 ? (
-              <span className="text-red-600">Out of stock</span>
-            ) : (
-              <span className="text-red-600">
-                {item.threshold - item.currentStock} below threshold
-              </span>
-            )}
-          </div>
-        </div>
-      </td>
-    </tr>
-  );
-};
-
-interface FilmSheetInventoryRowProps {
-  item: FilmSheetInventoryItem;
-}
-
-const FilmSheetInventoryRow: React.FC<FilmSheetInventoryRowProps> = ({ item }) => {
-  const getStockLevelWidth = () => {
-    if (item.threshold === 0) return 100;
-    return Math.min((item.currentStock / item.threshold) * 100, 100);
-  };
-
-  const getStockLevelColor = () => {
-    if (item.status === 'critical') return 'bg-red-500';
-    if (item.status === 'low') return 'bg-amber-500';
-    return 'bg-green-500';
-  };
-
-  return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
-          {item.sheetType}
-        </div>
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{item.currentStock}</div>
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{item.threshold}</div>
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="space-y-2">
-          <StatusBadge status={item.status} />
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all ${getStockLevelColor()}`}
-              style={{ width: `${getStockLevelWidth()}%` }}
-            />
-          </div>
-          <div className="text-xs text-gray-600">
-            {item.currentStock > item.threshold ? (
-              <span className="text-green-600">
-                +{item.currentStock - item.threshold} above threshold
-              </span>
-            ) : item.currentStock === item.threshold ? (
-              <span className="text-amber-600">At threshold</span>
-            ) : item.currentStock === 0 ? (
-              <span className="text-red-600">Out of stock</span>
-            ) : (
-              <span className="text-red-600">
-                {item.threshold - item.currentStock} below threshold
-              </span>
-            )}
-          </div>
-        </div>
-      </td>
-    </tr>
-  );
-};

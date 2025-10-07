@@ -12,7 +12,7 @@ export const ROLE3_MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Pending', installedBy: undefined, installedAt: undefined },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Pending', installedBy: undefined, installedAt: undefined },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Pending', installedBy: undefined, installedAt: undefined },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Pending', installedBy: undefined, installedAt: undefined }
     ],
     status: 'Pending',
@@ -59,7 +59,7 @@ export const ROLE3_MOCK_WINDOWS: Window[] = [
     width: 40,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Pending', installedBy: undefined, installedAt: undefined },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Pending', installedBy: undefined, installedAt: undefined },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Pending', installedBy: undefined, installedAt: undefined },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Pending', installedBy: undefined, installedAt: undefined }
     ],
     status: 'Pending',
@@ -154,7 +154,7 @@ export const ROLE3_MOCK_WINDOWS: Window[] = [
     width: 30,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Reinstallation Needed', installedBy: 'Sarah Johnson', installedAt: new Date('2024-01-16'), reinstallationMarkedBy: 'David Brown', reinstallationMarkedAt: new Date('2024-01-19'), notes: 'Film peeling at edges' },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Sarah Johnson', installedAt: new Date('2024-01-16') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Sarah Johnson', installedAt: new Date('2024-01-16') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Installed', installedBy: 'Sarah Johnson', installedAt: new Date('2024-01-16') }
     ],
     status: 'Reinstallation Needed',
@@ -249,7 +249,7 @@ export const ROLE3_MOCK_WINDOWS: Window[] = [
     width: 32,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-16') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-16') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-16') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Installed', installedBy: 'John Smith', installedAt: new Date('2024-01-16') }
     ],
     status: 'Complete',
@@ -296,7 +296,7 @@ export const ROLE3_MOCK_WINDOWS: Window[] = [
     width: 28,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Mike Wilson', installedAt: new Date('2024-01-18') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Mike Wilson', installedAt: new Date('2024-01-18') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Mike Wilson', installedAt: new Date('2024-01-18') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Installed', installedBy: 'Mike Wilson', installedAt: new Date('2024-01-18') }
     ],
     status: 'Complete',
@@ -343,7 +343,7 @@ export const ROLE3_MOCK_WINDOWS: Window[] = [
     width: 35,
     layers: [
       { layerNumber: 1, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Lisa Garcia', installedAt: new Date('2024-01-20') },
-      { layerNumber: 2, layerName: 'Middle Layer', status: 'Installed', installedBy: 'Lisa Garcia', installedAt: new Date('2024-01-20') },
+      { layerNumber: 2, layerName: 'Interior Layer', status: 'Installed', installedBy: 'Lisa Garcia', installedAt: new Date('2024-01-20') },
       { layerNumber: 3, layerName: 'Exterior Layer', status: 'Installed', installedBy: 'Lisa Garcia', installedAt: new Date('2024-01-20') }
     ],
     status: 'Complete',

@@ -98,18 +98,13 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     name: 'Michael Brown',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
     role: 'Installer',
-    availability: 'Inactive',
-    projects: [
-      {
-        projectId: 'proj-6',
-        projectName: 'Airport Security Upgrade',
-        status: 'PV75',
-        startDate: '2025-10-10',
-        endDate: '2025-10-17',
-        role: 'Senior Installer',
-        vinCode: 'TXDA-SJ1BR1-EETUSC01-P20006'
-      }
-    ]
+    availability: 'Out of office',
+    outOfOfficeDuration: {
+      startDate: '2024-10-15',
+      endDate: '2024-10-30',
+      reason: 'Vacation'
+    },
+    projects: []
   },
   {
     id: 'tm-007',

@@ -4,9 +4,14 @@ import {
   BarChart3,
   Users,
   TrendingUp,
+  Search,
+  Filter,
+  Mail,
+  Phone,
+  Eye,
+  ChevronRight,
   Clock,
   CheckCircle,
-  Eye,
 } from "lucide-react";
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
@@ -31,7 +36,6 @@ export const Team: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
-  const [showAnalytics, setShowAnalytics] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const filteredMembers = MOCK_TEAM_MEMBERS.filter((member) => {
@@ -200,7 +204,7 @@ export const Team: React.FC = () => {
 
 
         {/* Team Analytics Panel */}
-        {canManageTeam && showAnalytics && teamAnalytics && (
+        {/* {canManageTeam && showAnalytics && teamAnalytics && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="p-6">
               <div className="flex items-center justify-between">
@@ -250,7 +254,7 @@ export const Team: React.FC = () => {
               </div>
             </Card>
           </div>
-        )}
+        )} */}
 
 
         {/* Team Members Table */}

@@ -27,10 +27,12 @@ import { TeamMember, MOCK_TEAM_MEMBERS } from "../../features/project/types/team
 
 // Mock data for demonstration
 const mockTimeLogs = [
-  { id: 1, date: "2025-09-12", timeIn: "9:05 AM", timeOut: "6:30 PM", totalHours: "9h 25m" },
-  { id: 2, date: "2025-09-11", timeIn: "8:45 AM", timeOut: "5:15 PM", totalHours: "8h 30m" },
-  { id: 3, date: "2025-09-10", timeIn: "9:00 AM", timeOut: "6:00 PM", totalHours: "9h 00m" },
-  { id: 4, date: "2025-09-09", timeIn: "8:30 AM", timeOut: "5:45 PM", totalHours: "9h 15m" },
+  { id: 1, date: "2025-09-12", timeIn: "9:05 AM", timeOut: "6:30 PM", totalHours: "9h 25m", projectName: "Solar Panel Mall" },
+  { id: 2, date: "2025-09-11", timeIn: "8:45 AM", timeOut: "5:15 PM", totalHours: "8h 30m", projectName: "City Mall Tower" },
+  { id: 3, date: "2025-09-10", timeIn: "9:00 AM", timeOut: "6:00 PM", totalHours: "9h 00m", projectName: "Solar Panel Mall" },
+  { id: 4, date: "2025-09-09", timeIn: "8:30 AM", timeOut: "5:45 PM", totalHours: "9h 15m", projectName: "Sunset Villas" },
+  { id: 5, date: "2025-09-08", timeIn: "9:15 AM", timeOut: "6:45 PM", totalHours: "9h 30m", projectName: "Office Complex A" },
+  { id: 6, date: "2025-09-07", timeIn: "8:00 AM", timeOut: "5:30 PM", totalHours: "9h 30m", projectName: "City Mall Tower" },
 ];
 
 const mockProjects = [
@@ -66,6 +68,10 @@ export const TeamMemberDetail: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('time-log');
   const [searchTerm, setSearchTerm] = useState('');
+  const [timeLogDateFrom, setTimeLogDateFrom] = useState('');
+  const [timeLogDateTo, setTimeLogDateTo] = useState('');
+  const [leaveDateFrom, setLeaveDateFrom] = useState('');
+  const [leaveDateTo, setLeaveDateTo] = useState('');
 
   const member = MOCK_TEAM_MEMBERS.find((m) => m.id === memberId);
 
@@ -130,19 +136,44 @@ export const TeamMemberDetail: React.FC = () => {
   const currentProjects = mockProjects.filter(p => p.status === 'WIP');
   const pastProjects = mockProjects.filter(p => p.status !== 'WIP');
 
-  const filteredTimeLogs = mockTimeLogs.filter(log => 
-    log.date.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTimeLogs = mockTimeLogs.filter(log => {
+    const logDate = new Date(log.date);
+    const fromDate = timeLogDateFrom ? new Date(timeLogDateFrom) : null;
+    const toDate = timeLogDateTo ? new Date(timeLogDateTo) : null;
+    
+    if (fromDate && toDate) {
+      return logDate >= fromDate && logDate <= toDate;
+    } else if (fromDate) {
+      return logDate >= fromDate;
+    } else if (toDate) {
+      return logDate <= toDate;
+    }
+    return true;
+  });
 
   const filteredProjects = mockProjects.filter(project => 
     project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredLeaves = mockLeaves.filter(leave => 
-    leave.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    leave.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLeaves = mockLeaves.filter(leave => {
+    const leaveFromDate = new Date(leave.fromDate);
+    const leaveToDate = new Date(leave.toDate);
+    const fromDate = leaveDateFrom ? new Date(leaveDateFrom) : null;
+    const toDate = leaveDateTo ? new Date(leaveDateTo) : null;
+    
+    // Check if leave period overlaps with selected date range
+    if (fromDate && toDate) {
+      return (leaveFromDate >= fromDate && leaveFromDate <= toDate) ||
+             (leaveToDate >= fromDate && leaveToDate <= toDate) ||
+             (leaveFromDate <= fromDate && leaveToDate >= toDate);
+    } else if (fromDate) {
+      return leaveToDate >= fromDate;
+    } else if (toDate) {
+      return leaveFromDate <= toDate;
+    }
+    return true;
+  });
 
   const filteredActivityLog = mockActivityLog.filter(activity => 
     activity.action.toLowerCase().includes(searchTerm.toLowerCase())
@@ -160,15 +191,41 @@ export const TeamMemberDetail: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <h3 className="text-lg font-semibold text-gray-900">Daily Time Logs</h3>
         <div className="flex items-center space-x-2">
-          <div className="relative flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search by date..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="date"
+                placeholder="From date"
+                value={timeLogDateFrom}
+                onChange={(e) => setTimeLogDateFrom(e.target.value)}
+                className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <span className="text-gray-500">to</span>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="date"
+                placeholder="To date"
+                value={timeLogDateTo}
+                onChange={(e) => setTimeLogDateTo(e.target.value)}
+                className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            {(timeLogDateFrom || timeLogDateTo) && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setTimeLogDateFrom('');
+                  setTimeLogDateTo('');
+                }}
+                className="px-3 py-2"
+              >
+                Clear
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -184,6 +241,7 @@ export const TeamMemberDetail: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time In</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Out</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hours</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Name</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -199,6 +257,7 @@ export const TeamMemberDetail: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.timeIn}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.timeOut}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{log.totalHours}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{log.projectName}</td>
                   </tr>
                 ))}
               </tbody>
@@ -369,15 +428,41 @@ export const TeamMemberDetail: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <h3 className="text-lg font-semibold text-gray-900">Leave History</h3>
           <div className="flex items-center space-x-2">
-            <div className="relative flex-1 sm:flex-none">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search leaves..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="date"
+                  placeholder="From date"
+                  value={leaveDateFrom}
+                  onChange={(e) => setLeaveDateFrom(e.target.value)}
+                  className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <span className="text-gray-500">to</span>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="date"
+                  placeholder="To date"
+                  value={leaveDateTo}
+                  onChange={(e) => setLeaveDateTo(e.target.value)}
+                  className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              {(leaveDateFrom || leaveDateTo) && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setLeaveDateFrom('');
+                    setLeaveDateTo('');
+                  }}
+                  className="px-3 py-2"
+                >
+                  Clear
+                </Button>
+              )}
             </div>
           </div>
         </div>
