@@ -200,31 +200,14 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
           >
             Back
           </Button>
-          <div>
+          {/* <div>
             <h1 className="text-2xl font-semibold text-gray-900">
               {trailer.trailerName}
             </h1>
             <p className="text-sm text-gray-600">
               Registration: {trailer.registrationNumber}
             </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => onEdit(trailer)}
-            icon={Edit2}
-          >
-            Edit Trailer
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => onArchive(trailer)}
-            icon={Trash2}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            Archive
-          </Button>
+          </div> */}
         </div>
       </div>
 
@@ -275,6 +258,8 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
             </div>
           </div>
         </div>
+    
+        <div className="absolute inset-[-1px] pointer-events-none shadow-[-5px_-5px_250px_0px_inset_rgba(255,255,255,0.02)]" />
       </Card>
 
 

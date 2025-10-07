@@ -498,7 +498,24 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     Configure current stock levels and thresholds for each cart item. The system will alert when stock falls below threshold levels.
                   </p>
 
-                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                  {/* Column Headers */}
+                  <div className="bg-gray-100 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-gray-700">Item Name</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-20 text-center">
+                          <span className="text-xs font-medium text-gray-500">Min Threshold</span>
+                        </div>
+                        <div className="w-20 text-center">
+                          <span className="text-xs font-medium text-gray-500">Current Inventory</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
                     {[
                       'Beer Tank W/ Hose',
                       'Hard Press',
@@ -517,29 +534,23 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     ].map((item) => (
                       <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-gray-700">
                             {item}
-                          </label>
+                          </span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Minimum Threshold</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Current Inventory</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                          />
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                          />
                         </div>
                       </div>
                     ))}
@@ -556,7 +567,24 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     Configure current stock levels and thresholds for each caulking supply item. The system will alert when stock falls below threshold levels.
                   </p>
 
-                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                  {/* Column Headers */}
+                  <div className="bg-gray-100 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-gray-700">Item Name</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-20 text-center">
+                          <span className="text-xs font-medium text-gray-500">Min Threshold</span>
+                        </div>
+                        <div className="w-20 text-center">
+                          <span className="text-xs font-medium text-gray-500">Current Inventory</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
                     {[
                       'Rolls of Painters tape',
                       'Caulk Sausage Case',
@@ -569,29 +597,23 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     ].map((item) => (
                       <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-gray-700">
                             {item}
-                          </label>
+                          </span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Minimum Threshold</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Current Inventory</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                          />
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                          />
                         </div>
                       </div>
                     ))}
@@ -608,7 +630,24 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     Configure current stock levels and thresholds for each trailer item. The system will alert when stock falls below threshold levels.
                   </p>
 
-                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                  {/* Column Headers */}
+                  <div className="bg-gray-100 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-gray-700">Item Name</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-20 text-center">
+                          <span className="text-xs font-medium text-gray-500">Min Threshold</span>
+                        </div>
+                        <div className="w-20 text-center">
+                          <span className="text-xs font-medium text-gray-500">Current Inventory</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
                     {[
                       'Cordless Drill',
                       'Allen Key Set',
@@ -643,29 +682,23 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     ].map((item) => (
                       <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-gray-700">
                             {item}
-                          </label>
+                          </span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Minimum Threshold</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Current Inventory</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                          />
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                          />
                         </div>
                       </div>
                     ))}
@@ -682,48 +715,131 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                     Configure current stock levels and thresholds for each film type. The system will alert when stock falls below threshold levels.
                   </p>
 
-                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
-                    {[
-                      'SW450',
-                      'SW440BR',
-                      'SW600BR',
-                      'CL700 EXT',
-                      'Madico SG20 E Tint',
-                      'Madico RS20 E Tint',
-                      'Suntek SXT-20',
-                      'Suntek SXT-35',
-                      'Suntek IXT-20',
-                      'Suntek IXT-35',
-                      'Suntek Frost'
-                    ].map((item) => (
-                      <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  {/* Protective Films Section */}
+                  <div className="space-y-3">
+                    <h4 className="text-md font-medium text-gray-800">Protective Films</h4>
+                    
+                    {/* Column Headers for Protective Films */}
+                    <div className="bg-gray-100 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700">
-                            {item}
-                          </label>
+                          <span className="text-sm font-medium text-gray-700">Film Type</span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Minimum Threshold</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
+                          <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500">Min Threshold</span>
                           </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">Current Inventory</label>
-                            <input
-                              type="number"
-                              min="0"
-                              placeholder="0"
-                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
+                          <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500">48</span>
+                          </div>
+                          <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500">60</span>
+                          </div>
+                          <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500">72</span>
                           </div>
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-2">
+                      {[
+                        'SW450',
+                        'SW440BR',
+                        'SW600BR',
+                        'CL700 EXT'
+                      ].map((item) => (
+                        <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <span className="text-sm font-medium text-gray-700">
+                              {item}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tint Films Section */}
+                  <div className="space-y-3">
+                    <h4 className="text-md font-medium text-gray-800">Tint Films</h4>
+                    
+                    {/* Column Headers for Tint Films */}
+                    <div className="bg-gray-100 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-gray-700">Film Type</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500">Min Threshold</span>
+                          </div>
+                          <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500">Current Inventory</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-2">
+                      {[
+                        'Madico SG20 E Tint',
+                        'Madico RS20 E Tint',
+                        'Suntek SXT-20',
+                        'Suntek SXT-35',
+                        'Suntek IXT-20',
+                        'Suntek IXT-35',
+                        'Suntek Frost'
+                      ].map((item) => (
+                        <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <span className="text-sm font-medium text-gray-700">
+                              {item}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
