@@ -104,76 +104,74 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => onEdit(trailer)}
-            icon={Edit2}
-          >
-            Edit Trailer
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => onArchive(trailer)}
-            icon={Trash2}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            Archive
-          </Button>
-        </div>
       </div>
 
-      {/* Basic Information Card */}
-      <Card>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
-            <StatusBadge status={trailer.status} size="md" unavailableUntil={trailer.unavailableUntil} />
+      {/* Basic Information Card - New Figma Design */}
+      <div className="backdrop-blur-[21px] backdrop-filter border border-slate-100 border-solid box-border content-stretch flex flex-col gap-[24px] items-start p-[24px] relative rounded-[14px] size-full">
+        <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
+          <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
+            <div className="bg-[#dbe9fe] box-border content-stretch flex gap-[10px] items-center p-[10px] relative rounded-[12px] shrink-0">
+              <div className="relative shrink-0 size-[24px]">
+                <Truck size={24} className="text-blue-600" />
+              </div>
+            </div>
+            <div className="content-stretch flex flex-col gap-[6px] items-start justify-center leading-none not-italic relative shrink-0 text-nowrap whitespace-pre">
+              <p className="font-semibold relative shrink-0 text-[#101827] text-[20px]">
+                {trailer.trailerName}
+              </p>
+              <p className="font-normal relative shrink-0 text-[14px] text-gray-600">
+                Registration: {trailer.registrationNumber}
+              </p>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Truck size={20} className="text-blue-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Trailer Name</div>
-                <div className="font-medium text-gray-900">{trailer.trailerName}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <FileText size={20} className="text-green-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Registration Number</div>
-                <div className="font-medium text-gray-900">{trailer.registrationNumber}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <MapPin size={20} className="text-purple-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Parking Address</div>
-                <div className="font-medium text-gray-900">{trailer.parkingAddress}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <MapPin size={20} className="text-orange-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Project Location</div>
-                <div className="font-medium text-gray-500">-</div>
-              </div>
-            </div>
+          <div className="content-stretch flex gap-[12px] items-center justify-center relative shrink-0">
+            <Button
+              variant="secondary"
+              onClick={() => onArchive(trailer)}
+              className="box-border content-stretch flex gap-[4px] items-center justify-center min-w-[80px] overflow-clip px-[16px] py-[8px] relative rounded-[8px] shrink-0"
+            >
+              <Trash2 size={16} className="text-slate-700" />
+              Archive
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => onEdit(trailer)}
+              className="border border-slate-300 border-solid content-stretch flex items-center justify-center relative rounded-[8px] shrink-0 size-[32px]"
+            >
+              <Edit2 size={16} className="text-slate-700" />
+            </Button>
           </div>
         </div>
-      </Card>
+        <div className="content-stretch flex gap-[32px] items-start relative shrink-0">
+          <div className="content-stretch flex flex-col gap-[8px] items-start justify-center relative shrink-0 w-[300px]">
+            <p className="font-normal leading-none not-italic relative shrink-0 text-[14px] text-gray-600 text-nowrap whitespace-pre">
+              Status
+            </p>
+            <div className="bg-red-100 box-border content-stretch flex h-[24px] items-center justify-center overflow-clip px-[12px] py-[2px] relative rounded-[24px] shrink-0">
+              <p className="font-normal leading-none not-italic relative shrink-0 text-[14px] text-nowrap text-red-700 whitespace-pre">
+                {trailer.unavailableUntil ? `Unavailable until ${new Date(trailer.unavailableUntil).toLocaleDateString('en-GB')}` : 'Available'}
+              </p>
+            </div>
+          </div>
+          <div className="content-stretch flex flex-col gap-[8px] items-start justify-center leading-none not-italic relative shrink-0 text-[14px] text-nowrap w-[300px] whitespace-pre">
+            <p className="font-normal relative shrink-0 text-gray-600">
+              Parking Address
+            </p>
+            <p className="font-semibold relative shrink-0 text-[#101827]">
+              {trailer.parkingAddress}
+            </p>
+          </div>
+          <div className="content-stretch flex flex-col gap-[8px] items-start justify-center leading-none not-italic relative shrink-0 text-[14px] text-nowrap w-[300px] whitespace-pre">
+            <p className="font-normal relative shrink-0 text-gray-600">
+              Project Location
+            </p>
+            <p className="font-semibold relative shrink-0 text-[#101827]">
+              ----
+            </p>
+          </div>
+        </div>
+        <div className="absolute inset-[-1px] pointer-events-none shadow-[-5px_-5px_250px_0px_inset_rgba(255,255,255,0.02)]" />
+      </div>
 
 
       {/* Inventory Section with Tabs */}
