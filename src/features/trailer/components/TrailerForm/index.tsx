@@ -18,7 +18,7 @@ import {
 import FormField from 'common/components/FormField';
 import FormikSelectField from 'common/components/SelectField/FormikSelectField';
 import { Formik } from 'formik';
-import * as Yup from 'Yup';
+import * as Yup from 'yup';
 
 interface TrailerFormProps {
   trailer?: Trailer | null; // If provided, it's edit mode; if null, it's create mode

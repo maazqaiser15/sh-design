@@ -7,7 +7,7 @@ import { useAuth, DemoPersona } from '../../contexts/AuthContext';
 import { LoginType, UserType } from '../../types/auth';
 import { Formik } from 'formik';
 import FormField from 'common/components/FormField';
-import * as Yup from 'Yup'
+import * as Yup from 'yup';
 // import FormField from 'common/components/FormField';
 
 /**
