@@ -3,18 +3,20 @@ import { ArrowLeft, Save, X } from 'lucide-react';
 import { Card } from '../../../../common/components/Card';
 import { Button } from '../../../../common/components/Button';
 import { Trailer, FilmSheetType, ToolInventoryItem, FilmSheetInventoryItem } from '../../../../types';
-import { 
+import {
   TOOL_INVENTORY,
-  FILM_SHEET_TYPES, 
+  FILM_SHEET_TYPES,
   USA_STATES,
   USA_CITIES,
-  validateTrailerForm, 
+  validateTrailerForm,
   createInitialInventory,
   createActivityLog,
   formatTrailerName,
   TrailerFormData,
   updateInventoryStatus
 } from '../../utils/trailerUtils';
+import { FormField } from 'common/components/FormField';
+import SelectField from 'common/components/SelectField';
 
 interface TrailerFormProps {
   trailer?: Trailer | null; // If provided, it's edit mode; if null, it's create mode
@@ -34,7 +36,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
   existingTrailerNumbers,
 }) => {
   const isEditMode = !!trailer;
-  
+
   const [formData, setFormData] = useState<TrailerFormData>({
     trailerName: '',
     registrationNumber: '',
@@ -246,13 +248,13 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
     // Validate form
     const validation = validateTrailerForm(formData);
-    
+
     // Check for duplicate trailer name (excluding current trailer in edit mode)
     const formattedTrailerName = formData.trailerName.trim();
-    const otherTrailerNames = isEditMode 
+    const otherTrailerNames = isEditMode
       ? existingTrailerNumbers.filter(name => name !== trailer?.trailerName)
       : existingTrailerNumbers;
-      
+
     if (otherTrailerNames.includes(formattedTrailerName)) {
       validation.errors.trailerName = 'Trailer name already exists';
       validation.isValid = false;
@@ -271,8 +273,8 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
         currentStock: toolCurrentStock[tool.name],
         threshold: formData.toolThresholds[tool.name],
         status: toolCurrentStock[tool.name] === 0 ? 'critical' as const :
-                toolCurrentStock[tool.name] <= formData.toolThresholds[tool.name] ? 'low' as const :
-                'good' as const,
+          toolCurrentStock[tool.name] <= formData.toolThresholds[tool.name] ? 'low' as const :
+            'good' as const,
       }));
 
       // Create updated film sheets inventory
@@ -281,8 +283,8 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
         currentStock: filmSheetCurrentStock[sheetType],
         threshold: formData.filmSheetThresholds[sheetType],
         status: filmSheetCurrentStock[sheetType] === 0 ? 'critical' as const :
-                filmSheetCurrentStock[sheetType] <= formData.filmSheetThresholds[sheetType] ? 'low' as const :
-                'good' as const,
+          filmSheetCurrentStock[sheetType] <= formData.filmSheetThresholds[sheetType] ? 'low' as const :
+            'good' as const,
       }));
 
       // Create the new inventory structure
@@ -295,20 +297,20 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
       // Create activity logs for changes (only in edit mode)
       const activityLogs = trailer ? [...trailer.activityLogs] : [];
-      
+
       if (isEditMode && trailer) {
         if (trailer.trailerName !== formattedTrailerName) {
           activityLogs.push(
             createActivityLog('updated', `Trailer name changed from ${trailer.trailerName} to ${formattedTrailerName}`, undefined, true)
           );
         }
-        
+
         if (trailer.registrationNumber !== formData.registrationNumber) {
           activityLogs.push(
             createActivityLog('updated', `Registration number updated`, undefined, true)
           );
         }
-        
+
         // Check for address changes
         if (trailer.parkingAddress !== formData.parkingAddress) {
           activityLogs.push(
@@ -365,7 +367,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       };
 
       onSave(trailerData);
-      
+
       setErrors({});
     } catch (error) {
       console.error('Error saving trailer:', error);
@@ -376,7 +378,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-scree">
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header with Actions */}
@@ -391,7 +393,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
               </p>
             </div>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex gap-3">
             <Button
@@ -421,109 +423,21 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
               <h2 className="text-xl font-semibold text-gray-900 pb-4 border-b border-gray-200">
                 Basic Information
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="trailerName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Trailer Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="trailerName"
-                    value={formData.trailerName}
-                    onChange={(e) => handleInputChange('trailerName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.trailerName ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter trailer name"
-                  />
-                  {errors.trailerName && (
-                    <p className="mt-2 text-sm text-red-600">{errors.trailerName}</p>
-                  )}
-                </div>
 
-                <div>
-                  <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    Registration Number *
-                  </label>
-                  <input
-                    type="text"
-                    id="registrationNumber"
-                    value={formData.registrationNumber}
-                    onChange={(e) => handleInputChange('registrationNumber', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.registrationNumber ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter registration number"
-                  />
-                  {errors.registrationNumber && (
-                    <p className="mt-2 text-sm text-red-600">{errors.registrationNumber}</p>
-                  )}
-                </div>
+                <FormField onChange={(e) => handleInputChange('trailerName', e.target.value)} type='text' value={formData.trailerName} placeholder='Enter trailer name' label='Trailer Name *' />
 
-                <div>
-                  <label htmlFor="parkingAddress" className="block text-sm font-medium text-gray-700 mb-2">
-                    Parking Address *
-                  </label>
-                  <input
-                    type="text"
-                    id="parkingAddress"
-                    value={formData.parkingAddress}
-                    onChange={(e) => handleInputChange('parkingAddress', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.parkingAddress ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter parking address"
-                  />
-                  {errors.parkingAddress && (
-                    <p className="mt-2 text-sm text-red-600">{errors.parkingAddress}</p>
-                  )}
-                </div>
 
-                <div>
-                  <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
-                    State *
-                  </label>
-                  <select
-                    id="state"
-                    value={formData.state}
-                    onChange={(e) => handleInputChange('state', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.state ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  >
-                    <option value="">Select state</option>
-                    {USA_STATES.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
-                  {errors.state && (
-                    <p className="mt-2 text-sm text-red-600">{errors.state}</p>
-                  )}
-                </div>
+                <FormField onChange={(e) => handleInputChange('registrationNumber', e.target.value)} type='text' value={formData.registrationNumber} placeholder="Enter registration number" label='Registration Number *' />
 
-                <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                    City *
-                  </label>
-                  <select
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                    disabled={!formData.state}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.city ? 'border-red-300' : 'border-gray-300'
-                    } ${!formData.state ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                  >
-                    <option value="">Select city</option>
-                    {availableCities.map(city => (
-                      <option key={city} value={city}>{city}</option>
-                    ))}
-                  </select>
-                  {errors.city && (
-                    <p className="mt-2 text-sm text-red-600">{errors.city}</p>
-                  )}
-                </div>
+                <FormField onChange={(e) => handleInputChange('parkingAddress', e.target.value)} type='text' value={formData.parkingAddress} placeholder="Enter parking address" label='Parking Address *' />
+
+
+                <SelectField className={''} label={'State *'} value={formData.state} onChange={(e) => handleInputChange('state', e.target.value)} placeholder={'Select State'} options={USA_STATES} />
+
+                <SelectField className={''} label={'City *'} value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} placeholder={'Select City'} options={availableCities} />
+
               </div>
             </div>
           </Card>
@@ -533,44 +447,40 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('cart')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'cart'
-                  ? 'bg-white text-primary shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'cart'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Cart Item
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('caulking')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'caulking'
-                  ? 'bg-white text-primary shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'caulking'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Caulking Supplies
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('trailer')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'trailer'
-                  ? 'bg-white text-primary shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'trailer'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Trailer Item
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('film')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'film'
-                  ? 'bg-white text-primary shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'film'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Film
             </button>

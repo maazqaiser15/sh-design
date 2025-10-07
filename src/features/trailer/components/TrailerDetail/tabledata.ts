@@ -1,0 +1,60 @@
+export const cartItemData = [
+    { name: 'Beer Tank W/ Hose', threshold: 5, inventoryLeft: 6, status: 'Good on stock' },
+    { name: 'Hard Press', threshold: 3, inventoryLeft: 5, status: 'Good on stock' },
+    { name: 'Red Card', threshold: 6, inventoryLeft: 8, status: 'Good on stock' },
+    { name: 'Olfa', threshold: 4, inventoryLeft: 3, status: 'Low on stock' },
+    { name: 'Olfa Blade Pack', threshold: 8, inventoryLeft: 12, status: 'Good on stock' },
+    { name: 'Scrapers', threshold: 4, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Scraper Blade Pack', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+    { name: 'Pick', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+    { name: '1 Qrt Acetone', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Phillips Head SD', threshold: 4, inventoryLeft: 3, status: 'Low on stock' },
+    { name: 'Window Squeegee', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+    { name: 'Sharps Containers', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Headlamps', threshold: 3, inventoryLeft: 5, status: 'Good on stock' },
+    { name: 'Batteries for Headlamps (Pack)', threshold: 5, inventoryLeft: 8, status: 'Good on stock' }
+]
+
+export const caulkingItemData = [
+    { name: 'Rolls of Painters Tape', threshold: 6, inventoryLeft: 8, status: 'Good on stock' },
+    { name: 'Caulk Sausage Case', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Caulk Gun (Sausage)', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Pack Nitrile Gloves', threshold: 10, inventoryLeft: 15, status: 'Good on stock' },
+    { name: 'Case of Blue Towels', threshold: 5, inventoryLeft: 3, status: 'Low on stock' },
+    { name: 'Tub O\' Towels', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+    { name: 'Crocodile Wipes', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+    { name: 'Caulking Gun Tips', threshold: 8, inventoryLeft: 12, status: 'Good on stock' }
+]
+
+export const tailerItemData = [
+    { name: 'Cordless Drill', threshold: 1, inventoryLeft: 2, status: 'Good on stock' },
+    { name: 'Allen Key Set', threshold: 2, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Channel Lock Pliers', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Drill Bit Kit', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+    { name: 'Generator W/ Cord', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+    { name: 'Micro Fiber Package', threshold: 5, inventoryLeft: 7, status: 'Good on stock' },
+    { name: '5 Gal Gas Can', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+    { name: 'Air Compressor W/ Hose', threshold: 1, inventoryLeft: 2, status: 'Good on stock' },
+    { name: 'Trash Can', threshold: 2, inventoryLeft: 3, status: 'Good on stock' },
+    { name: '55 Gal Trash Bags Case', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Bath Towel', threshold: 4, inventoryLeft: 5, status: 'Good on stock' },
+    { name: 'Towel Clips for Hanging', threshold: 6, inventoryLeft: 9, status: 'Good on stock' },
+    { name: '5 Gal Buckets', threshold: 4, inventoryLeft: 3, status: 'Low on stock' },
+    { name: 'Sharpie Pack', threshold: 5, inventoryLeft: 8, status: 'Good on stock' },
+    { name: 'Dry Erase Marker Pack', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+    { name: 'Square', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Non Serated Scissors', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Ladders', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+    { name: 'Tank Fix Kits', threshold: 2, inventoryLeft: 3, status: 'Good on stock' },
+    { name: 'Extras Spray Nozzles', threshold: 4, inventoryLeft: 5, status: 'Good on stock' },
+    { name: 'Broom and Dust Pan', threshold: 2, inventoryLeft: 2, status: 'Good on stock' },
+    { name: 'Scotch Brite Case', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Sos Pad Box', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Glass Thickness Gauge', threshold: 2, inventoryLeft: 1, status: 'Low on stock' },
+    { name: 'PPE Bin/SDS Binder', threshold: 2, inventoryLeft: 2, status: 'Good on stock' },
+    { name: 'Spare Cutter Blades (Box)', threshold: 2, inventoryLeft: 3, status: 'Good on stock' },
+    { name: 'Tire Patch Kit', threshold: 3, inventoryLeft: 2, status: 'Low on stock' },
+    { name: 'Parking Cones', threshold: 4, inventoryLeft: 6, status: 'Good on stock' },
+    { name: 'Wheel Chalks', threshold: 3, inventoryLeft: 4, status: 'Good on stock' },
+    { name: 'Tongue Lock', threshold: 2, inventoryLeft: 1, status: 'Low on stock' }
+  ]
