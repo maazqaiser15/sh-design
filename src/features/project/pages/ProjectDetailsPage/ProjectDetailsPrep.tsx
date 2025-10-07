@@ -861,7 +861,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className=" min-h-screen">
 
       {/* Main Content */}
       <div className="py-6">

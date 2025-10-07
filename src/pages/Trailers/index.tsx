@@ -88,9 +88,9 @@ export const Trailers: React.FC = () => {
 
     // Calculate inventory health
     const totalTools = trailers.reduce((sum, trailer) =>
-      sum + trailer.inventory.tools.reduce((toolSum, tool) => toolSum + tool.currentStock, 0), 0);
+      sum + (trailer.inventory.tools?.reduce((toolSum, tool) => toolSum + tool.currentStock, 0) ?? 0), 0);
     const totalFilmSheets = trailers.reduce((sum, trailer) =>
-      sum + trailer.inventory.filmSheets.reduce((filmSum, film) => filmSum + film.currentStock, 0), 0);
+      sum + (trailer.inventory.filmSheets?.reduce((filmSum, film) => filmSum + film.currentStock, 0) ?? 0), 0);
 
     const averageUtilization = totalTrailers > 0 ?
       ((availableTrailers + lowStockTrailers) / totalTrailers) * 100 : 0;
@@ -161,8 +161,11 @@ export const Trailers: React.FC = () => {
     (newTrailerData: Omit<Trailer, "id" | "createdAt" | "updatedAt">) => {
       const now = new Date().toISOString();
 
-      // Update inventory status and calculate overall status
-      const updatedInventory = updateInventoryStatus(newTrailerData.inventory);
+      // Update inventory status and calculate overall status (legacy arrays only)
+      const updatedInventory = updateInventoryStatus({
+        tools: newTrailerData.inventory.tools ?? [],
+        filmSheets: newTrailerData.inventory.filmSheets ?? [],
+      });
       const status = calculateTrailerStatus(updatedInventory);
 
       const newTrailer: Trailer = {
@@ -467,7 +470,7 @@ export const Trailers: React.FC = () => {
                 { value: "FL", label: "Florida" },
                 { value: "IL", label: "Illinois" },
               ]} />
-              <Button icon={Plus} variant="primary">
+              <Button icon={Plus} variant="primary" onClick={handleCreateNew}>
                 Create new
               </Button>
             </div>

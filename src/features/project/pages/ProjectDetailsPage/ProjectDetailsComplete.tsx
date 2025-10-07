@@ -319,9 +319,9 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
   const pendingChecks = qualityChecks.filter(check => check.status === 'pending').length;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className=" min-h-screen">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200">
+      <div className=" border-b border-gray-200">
         <div className="py-6">
           <div className="flex flex-col gap-6">
             {/* Page Header */}

@@ -560,7 +560,7 @@ export const ProjectListPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="w-full py-0">
         {/* First Row - Page Heading and Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 px-2">
