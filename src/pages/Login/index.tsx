@@ -36,6 +36,7 @@ export const Login: React.FC = () => {
   const [detectedUserType, setDetectedUserType] = useState<UserType | null>(null);
   const [availableLoginMethods, setAvailableLoginMethods] = useState<LoginType[]>([]);
   const [loginTypeInfo, setLoginTypeInfo] = useState<{ type: LoginType; description: string } | null>(null);
+  const [showDemoOptions, setShowDemoOptions] = useState(false);
 
   // Detect user type and login methods when email changes
   useEffect(() => {
@@ -212,6 +213,52 @@ export const Login: React.FC = () => {
               </Form>
             )}
           </Formik>
+
+          {/* Demo Login Section */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <Button
+                variant="secondary"
+                size="md"
+                className="w-full"
+                onClick={() => setShowDemoOptions(!showDemoOptions)}
+              >
+                Continue with Demo Login
+              </Button>
+              
+              {showDemoOptions && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs text-gray-600 text-center mb-3">
+                    Try SafeHavenDefense with sample data — no signup required
+                  </p>
+                  {demoPersonas.map((persona) => (
+                    <button
+                      key={persona.id}
+                      onClick={() => handleDemoLogin(persona.id)}
+                      className={`w-full p-3 rounded-lg border text-left transition-colors ${persona.color}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <persona.icon size={20} />
+                        <div>
+                          <div className="font-medium text-sm">{persona.title}</div>
+                          <div className="text-xs opacity-75">{persona.description}</div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
