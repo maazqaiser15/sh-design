@@ -139,7 +139,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
     }
   };
 
-
+ 
 
   return (
     <div className="space-y-6">
@@ -302,19 +302,48 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
     </button>
   );
 
-
+  const getStatusColor = (status: string): string => {
+    switch (status) {
+      case "Available":
+        return "text-green-600 bg-green-50";
+      case "Unavailable":
+        return "text-red-600 bg-red-50";
+      default:
+        return "text-gray-600 bg-gray-50";
+    }
+  };
   const columns = [
     {
-      name: 'Prompt Title',
+      name: 'Trailer Name', 
       selector: (row: any) => row.trailerName,
     },
     {
-      name: 'Created By',
-      selector: (row: any) => row.state,
+      name: 'Registration',
+      selector: (row: any) => row.registrationNumber,
     },
     {
-      name: 'Created Date',
-      selector: (row: any) => row.createdAt,
+      name: 'Status',
+      selector: (row: any) => row.status,
+      cell: (row:any) => <div>
+            <div className="flex flex-col space-y-1">
+          <span
+            className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(
+              row.status
+            )}`}
+          >
+            {row.status}
+          </span>
+          {row.status === "Unavailable" && row.unavailableUntil && (
+            <span className="text-caption text-text-muted">
+              Until {row.unavailableUntil}
+            </span>
+          )}
+        </div>
+      </div>
+    },
+    {
+      name: 'location',
+      selector: (row: any) => row.state,
     },
     {
       name: 'Actions',
