@@ -1,99 +1,66 @@
+// components/FormikInput.js
+import { Field, ErrorMessage } from "formik";
 import React from "react";
 
 
-interface formFieldProp {
-    as?: any;
-    label?: string;
-    name?: string;
-    value?: any;
-    onChange: (e: any) => void;
-    placeholder?: string;
-    type?: string;
-    helperText?: string;
-    error?: string;
-    required?: boolean;
-    disabled?: boolean;
-    leftIcon?: any;
-    rightIcon?: any;
-    className?: string;
-    containerClassName?: string;
+interface formFieldProps {
+  label: string;
+  name: string;
+  type: string;
+  placeholder?: string;
+  className?: string;
+  isLeftIcon?: any;
+  isRightIcon?: any;
+  // Allow standard input props to pass through to Field
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  value?: string | number | readonly string[];
+  autoComplete?: string;
 }
 
+const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", placeholder, className = "", isLeftIcon, isRightIcon, ...rest }) => {
+  return (
+    <div className={`flex flex-col mb-4 ${className}`}>
+      {label && (
+        <label htmlFor={name} className="mb-1 font-medium text-gray-700">
+          {label}
+        </label>
+      )}
 
-export const FormField: React.FC<formFieldProp> = ({
-    as = "input",
-    label,
-    name,
-    value,
-    onChange,
-    placeholder,
-    type = "text",
-    helperText,
-    error,
-    required = false,
-    disabled = false,
-    leftIcon,
-    rightIcon,
-    className = "",
-    containerClassName = "",
-    ...rest
-}) => {
-    const base =
-        "w-full px-3 py-2 border rounded-md  outline-none backdrop-blur-[42px] shadow-[inset_-5px_-5px_250px_0px_#ffffff05,0px_4px_15px_0px_#0000000a]";
-    const normalBorder = "border-gray-300 focus:ring-primary";
-    const errorBorder = "border-red-400 focus:ring-red-500";
-    const leftPad = leftIcon ? "pl-9" : "pl-3";
-    const rightPad = rightIcon ? "pr-9" : "pr-3";
-    const state = error ? errorBorder : normalBorder;
+      <div className="relative">
+        {/* Left Icon */}
+        {isLeftIcon && (
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+            {isLeftIcon}
+          </span>
+        )}
 
-    const commonProps = {
-        id: name,
-        name,
-        value,
-        onChange,
-        placeholder,
-        disabled,
-        required,
-        "aria-invalid": !!error,
-        className: `${base} ${state} ${leftPad} ${rightPad} ${disabled ? "bg-gray-100 cursor-not-allowed" : ""
-            } ${className}`,
-        ...rest,
-    };
+        <Field
+          id={name}
+          name={name}
+          type={type}
+          placeholder={placeholder}
+          className={`w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none 
+            ${isLeftIcon ? "pl-10" : ""}
+            ${isRightIcon ? "pr-10" : ""}`}
+          {...rest}
+        />
 
-    const field =
-        as === "textarea" ? (
-            <textarea {...commonProps} rows={rest.rows || 4} />
-        ) : (
-            <input {...commonProps} type={type} />
-        );
+        {/* Right Icon */}
+        {isRightIcon && (
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer">
+            {isRightIcon}
+          </span>
+        )}
+      </div>
 
-    return (
-        <div className={`flex flex-col gap-1 ${containerClassName}`}>
-            {label && (
-                <label htmlFor={name} className="text-sm font-medium text-gray-700">
-                    {label} {required && <span className="text-red-500">*</span>}
-                </label>
-            )}
-
-            <div className="relative">
-                {leftIcon && (
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        {leftIcon}
-                    </span>
-                )}
-                {field}
-                {rightIcon && (
-                    <span className=" absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        {rightIcon}
-                    </span>
-                )}
-            </div>
-
-            {error ? (
-                <p className="text-sm text-red-600">{error}</p>
-            ) : helperText ? (
-                <p className="text-sm text-gray-500">{helperText}</p>
-            ) : null}
-        </div>
-    );
+      <ErrorMessage
+        name={name}
+        component="div"
+        className="text-red-500 text-sm mt-1"
+      />
+    </div>
+  )
 };
+
+export default FormField;

@@ -15,8 +15,10 @@ import {
   TrailerFormData,
   updateInventoryStatus
 } from '../../utils/trailerUtils';
-import { FormField } from 'common/components/FormField';
-import SelectField from 'common/components/SelectField';
+import FormField from 'common/components/FormField';
+import FormikSelectField from 'common/components/SelectField/FormikSelectField';
+import { Formik } from 'formik';
+import * as Yup from 'Yup';
 
 interface TrailerFormProps {
   trailer?: Trailer | null; // If provided, it's edit mode; if null, it's create mode
@@ -116,7 +118,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       }), {} as Record<string, number>);
 
       // Override with actual trailer data
-      trailer.inventory.tools.forEach(item => {
+      (trailer.inventory?.tools ?? []).forEach(item => {
         toolThresholds[item.toolName] = item.threshold;
       });
 
@@ -127,7 +129,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       }), {} as Record<FilmSheetType, number>);
 
       // Override with actual trailer data
-      trailer.inventory.filmSheets.forEach(item => {
+      (trailer.inventory?.filmSheets ?? []).forEach(item => {
         filmSheetThresholds[item.sheetType] = item.threshold;
       });
 
@@ -148,7 +150,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       }), {} as Record<string, number>);
 
       // Override with actual trailer data
-      trailer.inventory.tools.forEach(item => {
+      (trailer.inventory?.tools ?? []).forEach(item => {
         toolCurrentStock[item.toolName] = item.currentStock;
       });
 
@@ -161,7 +163,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
       }), {} as Record<FilmSheetType, number>);
 
       // Override with actual trailer data
-      trailer.inventory.filmSheets.forEach(item => {
+      (trailer.inventory?.filmSheets ?? []).forEach(item => {
         filmSheetCurrentStock[item.sheetType] = item.currentStock;
       });
 
@@ -333,12 +335,12 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
 
         // Check for inventory changes
-        const hasToolChanges = trailer.inventory.tools.some(tool => {
+        const hasToolChanges = (trailer.inventory?.tools ?? []).some(tool => {
           const newTool = updatedTools.find(t => t.toolName === tool.toolName);
           return newTool && (newTool.currentStock !== tool.currentStock || newTool.threshold !== tool.threshold);
         });
 
-        const hasFilmSheetChanges = trailer.inventory.filmSheets.some(sheet => {
+        const hasFilmSheetChanges = (trailer.inventory?.filmSheets ?? []).some(sheet => {
           const newSheet = updatedFilmSheets.find(s => s.sheetType === sheet.sheetType);
           return newSheet && (newSheet.currentStock !== sheet.currentStock || newSheet.threshold !== sheet.threshold);
         });
@@ -424,21 +426,80 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                 Basic Information
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Formik
+                enableReinitialize
+                initialValues={{
+                  trailerName: formData.trailerName,
+                  registrationNumber: formData.registrationNumber,
+                  parkingAddress: formData.parkingAddress,
+                  state: formData.state,
+                  city: formData.city,
+                }}
+                validationSchema={Yup.object({
+                  trailerName: Yup.string().trim().required('Trailer name is required'),
+                  registrationNumber: Yup.string().trim().required('Registration number is required'),
+                  parkingAddress: Yup.string().trim().required('Parking address is required'),
+                  state: Yup.string().trim().required('State is required'),
+                  city: Yup.string().trim().required('City is required'),
+                })}
+                onSubmit={() => {}}
+              >
+                {({ values, handleChange }) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      name="trailerName"
+                      type='text'
+                      placeholder='Enter trailer name'
+                      label='Trailer Name *'
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        handleChange(e);
+                        handleInputChange('trailerName', e.target.value);
+                      }}
+                      value={values.trailerName}
+                    />
 
-                <FormField onChange={(e) => handleInputChange('trailerName', e.target.value)} type='text' value={formData.trailerName} placeholder='Enter trailer name' label='Trailer Name *' />
+                    <FormField
+                      name="registrationNumber"
+                      type='text'
+                      placeholder="Enter registration number"
+                      label='Registration Number *'
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        handleChange(e);
+                        handleInputChange('registrationNumber', e.target.value);
+                      }}
+                      value={values.registrationNumber}
+                    />
 
+                    <FormField
+                      name="parkingAddress"
+                      type='text'
+                      placeholder="Enter parking address"
+                      label='Parking Address *'
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        handleChange(e);
+                        handleInputChange('parkingAddress', e.target.value);
+                      }}
+                      value={values.parkingAddress}
+                    />
 
-                <FormField onChange={(e) => handleInputChange('registrationNumber', e.target.value)} type='text' value={formData.registrationNumber} placeholder="Enter registration number" label='Registration Number *' />
+                    <FormikSelectField
+                      name="state"
+                      label={'State *'}
+                      placeholder={'Select State'}
+                      options={USA_STATES}
+                      onChangeOverride={(val) => handleInputChange('state', val)}
+                    />
 
-                <FormField onChange={(e) => handleInputChange('parkingAddress', e.target.value)} type='text' value={formData.parkingAddress} placeholder="Enter parking address" label='Parking Address *' />
-
-
-                <SelectField className={''} label={'State *'} value={formData.state} onChange={(e) => handleInputChange('state', e.target.value)} placeholder={'Select State'} options={USA_STATES} />
-
-                <SelectField className={''} label={'City *'} value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} placeholder={'Select City'} options={availableCities} />
-
-              </div>
+                    <FormikSelectField
+                      name="city"
+                      label={'City *'}
+                      placeholder={'Select City'}
+                      options={availableCities}
+                      onChangeOverride={(val) => handleInputChange('city', val)}
+                    />
+                  </div>
+                )}
+              </Formik>
             </div>
           </Card>
 
