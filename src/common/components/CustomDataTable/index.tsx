@@ -44,7 +44,7 @@ const CustomDataTable: React.FC<tableProps> = ({
     table: {
       style: {
         backgroundColor: "transparent", // ✅ whole table background color
-        tableLayout: "fixed",
+        // tableLayout: "fixed",
       },
     },
     headRow: {

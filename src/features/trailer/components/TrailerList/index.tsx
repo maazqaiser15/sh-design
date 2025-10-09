@@ -314,9 +314,10 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
         return "text-gray-600 bg-gray-50";
     }
   };
+
   const columns = [
     {
-      name: 'Trailer Name', 
+      name: 'Trailer Name',
       selector: (row: any) => row.trailerName,
     },
     {
@@ -326,13 +327,9 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
     {
       name: 'Status',
       selector: (row: any) => row.status,
-      cell: (row:any) => <div>
-            <div className="flex flex-col space-y-1">
-          <span
-            className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(
-              row.status
-            )}`}
-          >
+      cell: (row: any) => (
+        <div className="flex flex-col space-y-1">
+          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(row.status)}`}>
             {row.status}
           </span>
           {row.status === "Unavailable" && row.unavailableUntil && (
@@ -341,85 +338,59 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
             </span>
           )}
         </div>
-      </div>
+      ),
     },
     {
-      name: 'location',
+      name: 'Location',
       selector: (row: any) => row.state,
     },
     {
       name: 'Actions',
       selector: (row: any) => row.action,
+      allowOverflow: true,
+      style: { overflow: 'visible' },
       cell: (row: any) => (
-        <div 
-        className="relative inline-block text-right" 
-        ref={activeDropdown === row.id ? dropdownRef : null}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          className="flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDropdownToggle(row.id);
-          }}
-          id={`menu-button-${row.id}`}
-          aria-expanded={activeDropdown === row.id}
-          aria-haspopup="true"
-        >
-          <MoreVertical size={20} />
-        </button>
-        
-        {activeDropdown === row.id && (
-          <div 
-            className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-            onClick={(e) => e.stopPropagation()}
+        <div className="relative inline-block text-right" ref={activeDropdown === row.id ? dropdownRef : null} onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className="flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDropdownToggle(row.id);
+            }}
+            id={`menu-button-${row.id}`}
+            aria-expanded={activeDropdown === row.id}
+            // aria-haspopup="true"
           >
-            <div className="py-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMenuAction('view', row);
-                }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <Eye size={16} className="mr-2" />
-                View Details
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMenuAction('edit', row);
-                }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <Edit2 size={16} className="mr-2" />
-                Edit Trailer
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMenuAction('delete', row);
-                }}
-                className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-              >
-                <Trash2 size={16} className="mr-2" />
-                Delete Trailer
-              </button>
+            <MoreVertical size={20} />
+          </button>
+        
+          {activeDropdown === row.id && (
+            <div className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" onClick={(e) => e.stopPropagation()}>
+              <div className="py-1">
+                <button onClick={(e) => { e.stopPropagation(); onMenuAction('view', row); }} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Eye size={16} className="mr-2" />
+                  View Details
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); onMenuAction('edit', row); }} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Edit2 size={16} className="mr-2" />
+                  Edit Trailer
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); onMenuAction('delete', row); }} className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50">
+                  <Trash2 size={16} className="mr-2" />
+                  Delete Trailer
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      )
+          )}
+        </div>
+      ),
     },
-  ]
-
+  ];
 
   return (
-
-      <div className="overflow-x-auto">
-        <CustomDataTable title={""}  columns={columns} data={trailers} selectableRows={undefined} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
-      </div>
-
+    <div className="overflow-x-auto">
+      <CustomDataTable title="" columns={columns} data={trailers} selectableRows={false} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
+    </div>
   );
 };

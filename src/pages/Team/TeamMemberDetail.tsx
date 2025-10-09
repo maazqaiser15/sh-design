@@ -499,8 +499,8 @@ export const TeamMemberDetail: React.FC = () => {
           <>
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
-          
-              <CustomDataTable title={""} columns={leaveColumns} data={filteredLeaves} selectableRows={undefined} pagination={false} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined}/>
+
+              <CustomDataTable title={""} columns={leaveColumns} data={filteredLeaves} selectableRows={undefined} pagination={false} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
             </div>
 
             {/* Mobile Card View */}
@@ -538,7 +538,7 @@ export const TeamMemberDetail: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <h3 className="text-lg font-semibold text-gray-900">System Activity</h3>
         <div className="flex items-center space-x-2">
-          <SearchField iconSize={20} value={searchTerm} onChange={ (e) => setSearchTerm(e.target.value)} placeholder={"Search activities..."}/>
+          <SearchField iconSize={20} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={"Search activities..."} />
         </div>
       </div>
 
@@ -575,7 +575,7 @@ export const TeamMemberDetail: React.FC = () => {
     <div className="space-y-4 sm:space-y-6 px-4 sm:px-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-        <Button
+        {/* <Button
           variant="secondary"
           size="sm"
           icon={ArrowLeft}
@@ -591,20 +591,9 @@ export const TeamMemberDetail: React.FC = () => {
           className="w-fit"
         >
           Back
-        </Button>
-        
+        </Button> */}
+
         {/* Resend Invite Button - Show for pending or expired invites */}
-        {member && (member.inviteStatus === 'pending' || member.inviteStatus === 'expired') && (
-          <Button
-            variant="primary"
-            size="sm"
-            icon={Send}
-            onClick={handleResendInvite}
-            className="w-fit"
-          >
-            Resend Invite
-          </Button>
-        )}
       </div>
 
       {/* User Info Header Card */}
@@ -654,7 +643,7 @@ export const TeamMemberDetail: React.FC = () => {
             </div>
           </div>
 
-          <div className="lg:text-right">
+          <div className="lg:text-right flex flex-col justify-between items-start h-full">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Current Assigned Projects</h3>
             {currentProjects.length > 0 ? (
               <div className="space-y-1">
@@ -667,9 +656,22 @@ export const TeamMemberDetail: React.FC = () => {
             ) : (
               <span className="text-sm text-gray-500">No current project</span>
             )}
+            {member && (member.inviteStatus === 'pending' || member.inviteStatus === 'expired') && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={Send}
+                onClick={handleResendInvite}
+                className="w-fit mt-4"
+              >
+                Resend Invite
+              </Button>
+            )}
           </div>
         </div>
+
       </Card>
+
 
       {/* Tab Navigation */}
       <Card>
