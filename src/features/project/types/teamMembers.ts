@@ -16,6 +16,8 @@ export interface TeamMember {
   specializations?: string[];
   projects?: TeamMemberProject[];
   activityLog?: TeamMemberActivity[];
+  inviteStatus?: 'pending' | 'accepted' | 'declined' | 'expired'; // Invitation status
+  invitedAt?: string; // ISO date string when invitation was sent
 }
 
 export interface TeamMemberProject {
@@ -52,6 +54,8 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     location: 'Los Angeles, CA',
     experience: 8,
     specializations: ['Security Film', 'Window Installation', 'Team Management'],
+    inviteStatus: 'accepted',
+    invitedAt: '2024-02-15T10:00:00Z',
     projects: [
       {
         id: 'proj-001',
@@ -96,6 +100,8 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     location: 'Chicago, IL',
     experience: 6,
     specializations: ['Quality Control', 'Safety Protocols'],
+    inviteStatus: 'pending',
+    invitedAt: '2024-03-01T14:30:00Z',
     projects: [
       {
         id: 'proj-003',
@@ -126,6 +132,8 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
     location: 'Houston, TX',
     experience: 4,
     specializations: ['Precision Installation'],
+    inviteStatus: 'expired',
+    invitedAt: '2024-02-20T09:15:00Z',
     projects: [
       {
         id: 'proj-001',

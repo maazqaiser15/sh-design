@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, CheckCircle, Hotel, User } from 'lucide-react';
+import { Plus, CheckCircle, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
@@ -15,6 +15,7 @@ import { TravelAccommodationModal, TravelAccommodationData } from '../../compone
 import { TravelAccommodationRequestModal, TravelAccommodationRequestData } from '../../components/TravelAccommodationRequestModal';
 import { TravelAccommodationDetailsCard } from '../../components/TravelAccommodationDetailsCard';
 import { ProjectNotes } from '../../components/ProjectNotes';
+import { EditProjectDetailsModal } from '../../components/EditProjectDetailsModal';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -24,19 +25,6 @@ import { Window, MOCK_WINDOWS } from '../../types/windows';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 
 // Icons from Figma design
-
-const LocationIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 18.3333C10 18.3333 16.6667 12.5 16.6667 8.33333C16.6667 6.44928 15.7143 4.64236 14.0711 3.28595C12.4278 1.92954 10.2243 1.16667 8.33333 1.16667C6.44238 1.16667 4.23886 1.92954 2.59564 3.28595C0.952427 4.64236 0 6.44928 0 8.33333C0 12.5 6.66667 18.3333 10 18.3333Z" stroke="#667085" strokeWidth="1.5"/>
-    <path d="M10 10.8333C11.3807 10.8333 12.5 9.71405 12.5 8.33333C12.5 6.95262 11.3807 5.83333 10 5.83333C8.61929 5.83333 7.5 6.95262 7.5 8.33333C7.5 9.71405 8.61929 10.8333 10 10.8333Z" stroke="#667085" strokeWidth="1.5"/>
-  </svg>
-);
-
-const CalendarIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6.66667 1.66667V4.16667M13.3333 1.66667V4.16667M2.91667 7.5H17.0833M17.5 7.5V15.8333C17.5 16.2754 17.3244 16.6993 17.0118 17.0118C16.6993 17.3244 16.2754 17.5 15.8333 17.5H4.16667C3.72464 17.5 3.30072 17.3244 2.98816 17.0118C2.67559 16.6993 2.5 16.2754 2.5 15.8333V7.5H17.5ZM2.5 7.5V5.83333C2.5 5.39131 2.67559 4.96738 2.98816 4.65482C3.30072 4.34226 3.72464 4.16667 4.16667 4.16667H15.8333C16.2754 4.16667 16.6993 4.34226 17.0118 4.65482C17.3244 4.96738 17.5 5.39131 17.5 5.83333V7.5H2.5Z" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 
 
 const CheckCircleIcon = () => (
@@ -133,26 +121,33 @@ const ProgressStep: React.FC<ProgressStepProps> = ({ title, status, description 
   const getStepIcon = () => {
     if (status === 'completed') {
       return (
-        <div className="bg-[#027a48] rounded-xl w-6 h-6 flex items-center justify-center">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
           <CheckCircleIcon />
         </div>
       );
     }
     return (
-      <div className="bg-white border border-gray-200 rounded-xl w-6 h-6 flex items-center justify-center">
-        <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
+      <div className="bg-white border-2 border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
       </div>
     );
   };
 
+  const getStatusColor = () => {
+    if (status === 'completed') {
+      return 'text-green-600';
+    }
+    return 'text-gray-500';
+  };
+
   return (
     <div className="flex gap-3 items-start flex-1">
-      <div className="flex flex-col items-center pt-1">
+      <div className="flex flex-col items-center pt-0.5">
         {getStepIcon()}
       </div>
       <div className="flex flex-col gap-1 flex-1">
-        <p className="font-semibold text-sm text-[#344054] leading-5">{title}</p>
-        <p className="font-normal text-xs text-[#475467] leading-4">{description}</p>
+        <p className="font-semibold text-xs text-gray-800 leading-4">{title}</p>
+        <p className={`font-medium text-xs leading-3 ${getStatusColor()}`}>{description}</p>
       </div>
     </div>
   );
@@ -374,6 +369,39 @@ export const ProjectDetailsPrep: React.FC = () => {
         } : null
       };
     });
+  };
+
+  const handleResendInvite = (memberId: string) => {
+    setPreparationData(prev => {
+      if (!prev.assignedTeam) return prev;
+      
+      const updatedMembers = prev.assignedTeam.members.map(member => {
+        if (member.id === memberId) {
+          return {
+            ...member,
+            inviteStatus: 'pending' as const,
+            invitedAt: new Date().toISOString()
+          };
+        }
+        return member;
+      });
+      
+      return {
+        ...prev,
+        assignedTeam: {
+          ...prev.assignedTeam,
+          members: updatedMembers
+        }
+      };
+    });
+    
+    // Show success message
+    console.log(`Invite resent to team member ${memberId}`);
+  };
+
+  const handleSaveProjectDetails = (updatedProject: ProjectDetails) => {
+    setProject(updatedProject);
+    showToast('Project details updated successfully!');
   };
 
   // Handle travel accommodation request modal
@@ -866,45 +894,54 @@ export const ProjectDetailsPrep: React.FC = () => {
       {/* Main Content */}
       <div className="py-6">
         {/* Project Header Card */}
-        <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
-          <div className="flex flex-col gap-6">
+        <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div className="flex flex-col gap-5">
             {/* Project Title and Actions */}
             <div className="flex gap-4 items-start w-full">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex gap-3 items-center">
-                  <h1 className="font-semibold text-2xl text-gray-900 leading-9.5">Marriot Windows Installation</h1>
-                  <div className="bg-[#e6f4fd] flex items-center justify-center px-2 py-1 rounded-md">
-                    <p className="font-semibold text-sm text-[#0d76bf] leading-5">PV90</p>
+                  <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation</h1>
+                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 flex items-center justify-center px-3 py-1.5 rounded-lg shadow-sm">
+                    <p className="font-bold text-sm text-blue-700 leading-5">PV90</p>
                   </div>
                 </div>
-                <div className="flex gap-3 items-center">
-                  <div className="bg-gray-50 flex items-center justify-center px-2 py-1 rounded-md">
-                    <p className="font-semibold text-xs text-[#344054] leading-5">TXDA-SJ1BR1-EETUSC01-P20001</p>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <div className="bg-gray-50 border border-gray-200 flex items-center justify-center px-3 py-1.5 rounded-md shadow-sm">
+                    <p className="font-medium text-xs text-gray-700 leading-5 font-mono">TXDA-SJ1BR1-EETUSC01-P20001</p>
                   </div>
-                  <div className="flex gap-1 items-center">
-                    <LocationIcon />
-                    <p className="font-normal text-xs text-[#475467] leading-5">123 Main Street, Downtown</p>
+                  <div className="flex gap-1.5 items-center bg-gray-50 px-2.5 py-1.5 rounded-md">
+                    <MapPin className="w-4 h-4 text-gray-600" />
+                    <p className="font-medium text-xs text-gray-700 leading-5">123 Main Street, Downtown</p>
                   </div>
-                  <div className="flex gap-1 items-center">
-                    <CalendarIcon />
-                    <p className="font-normal text-xs text-[#475467] leading-5">Feb 1, 2024 – Feb 15, 2024</p>
+                  <div className="flex gap-1.5 items-center bg-gray-50 px-2.5 py-1.5 rounded-md">
+                    <Calendar className="w-4 h-4 text-gray-600" />
+                    <p className="font-medium text-xs text-gray-700 leading-5">Feb 1, 2024 – Feb 15, 2024</p>
                   </div>
                   {project.assignedCoordinator && (
-                    <div className="flex gap-1 items-center">
-                      <User className="w-4 h-4 text-[#475467]" />
-                      <p className="font-normal text-xs text-[#475467] leading-5">Coordinator: {project.assignedCoordinator.name}</p>
+                    <div className="flex gap-1.5 items-center bg-gray-50 px-2.5 py-1.5 rounded-md">
+                      <User className="w-4 h-4 text-gray-600" />
+                      <p className="font-medium text-xs text-gray-700 leading-5">Coordinator: {project.assignedCoordinator.name}</p>
                     </div>
                   )}
                 </div>
               </div>
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-2 items-center">
+                <Button
+                  onClick={() => setShowEditModal(true)}
+                  variant="secondary"
+                  size="sm"
+                  icon={Edit}
+                  className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                >
+                  Edit
+                </Button>
                 <Button
                   onClick={handleMarkStageComplete}
                   disabled={!allStagesCompleted}
-                  className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] ${
+                  className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${
                     allStagesCompleted 
-                      ? 'bg-[#0d76bf] text-white hover:bg-[#0b5a8f]' 
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-blue-200' 
+                      : 'bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300'
                   }`}
                 >
                   Mark Stage as Complete
@@ -915,23 +952,92 @@ export const ProjectDetailsPrep: React.FC = () => {
             {/* Divider */}
             <div className="h-px bg-gray-200 w-full"></div>
 
+            {/* Additional Project Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Site Information */}
+              {project.site && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg">
+                      <Building className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-900">Site</h4>
+                      <p className="text-sm text-gray-700 font-medium">{project.site}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Industry */}
+              {project.industry && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-100 p-2 rounded-lg">
+                      <Building className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-900">Industry</h4>
+                      <p className="text-sm text-gray-700 font-medium">{project.industry}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Contact Person */}
+              {project.contactPerson && (
+                <div className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-purple-100 p-2 rounded-lg">
+                      <User className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-1">Contact Person</h4>
+                      <p className="text-sm text-gray-700 font-medium">{project.contactPerson.name}</p>
+                      <p className="text-sm text-gray-600">{project.contactPerson.phone}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Billing Contact */}
+              {project.billingContact && (
+                <div className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-orange-100 p-2 rounded-lg">
+                      <Mail className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-1">Billing Contact</h4>
+                      <p className="text-sm text-gray-700 font-medium">{project.billingContact.name}</p>
+                      <p className="text-sm text-gray-600">{project.billingContact.email}</p>
+                      <p className="text-sm text-gray-600">{project.billingContact.phone}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Progress Steps */}
-            <div className="flex items-center w-full">
-              <ProgressStep
-                title="Team Assignment"
-                status={isAssignedTeamCompleted ? "completed" : "incomplete"}
-                description={isAssignedTeamCompleted ? "Completed" : "In Progress"}
-              />
-              <ProgressStep
-                title="Travel & Accommodation"
-                status={isTravelAccommodationCompleted ? "completed" : "incomplete"}
-                description={isTravelAccommodationCompleted ? "Completed" : "In Progress"}
-              />
-              <ProgressStep
-                title="Trailer & Films"
-                status={isTrailerCompleted ? "completed" : "incomplete"}
-                description={isTrailerCompleted ? "Completed" : "In Progress"}
-              />
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-800 mb-3">Project Progress</h3>
+              <div className="flex items-center w-full">
+                <ProgressStep
+                  title="Team Assignment"
+                  status={isAssignedTeamCompleted ? "completed" : "incomplete"}
+                  description={isAssignedTeamCompleted ? "Completed" : "In Progress"}
+                />
+                <ProgressStep
+                  title="Travel & Accommodation"
+                  status={isTravelAccommodationCompleted ? "completed" : "incomplete"}
+                  description={isTravelAccommodationCompleted ? "Completed" : "In Progress"}
+                />
+                <ProgressStep
+                  title="Trailer & Films"
+                  status={isTrailerCompleted ? "completed" : "incomplete"}
+                  description={isTrailerCompleted ? "Completed" : "In Progress"}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -945,6 +1051,7 @@ export const ProjectDetailsPrep: React.FC = () => {
               assignedTeam={preparationData.assignedTeam}
               onAddMember={handleAssignTeam}
               onRemoveMember={handleRemoveTeamMember}
+              onResendInvite={handleResendInvite}
               onMarkComplete={handleAssignedTeamComplete}
               isCompleted={isAssignedTeamCompleted}
               showActions={true}
@@ -1245,27 +1352,13 @@ export const ProjectDetailsPrep: React.FC = () => {
           </div>
         </div>
 
-        {/* Edit Project Modal */}
-        <Modal
+        {/* Edit Project Details Modal */}
+        <EditProjectDetailsModal
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
-          title="Edit Project"
-          size="md"
-        >
-          <div className="p-6">
-            <p className="text-gray-600 mb-4">
-              Project editing functionality will be implemented in the next phase.
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </Modal>
+          project={project}
+          onSave={handleSaveProjectDetails}
+        />
 
         {/* Assign Team Modal */}
         <AssignTeamModal

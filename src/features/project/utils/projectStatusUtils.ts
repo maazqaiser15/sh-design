@@ -7,6 +7,8 @@ export interface Project {
   startDate?: string;
   endDate?: string;
   vinCode?: string;
+  site?: string; // Site name
+  industry?: string; // Industry type
   // Add other project properties as needed
 }
 

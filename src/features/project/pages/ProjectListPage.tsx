@@ -120,6 +120,8 @@ const mockProjects: SafeHavenProject[] = [
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20001',
     crew: [],
     assignedTrailer: null,
+    site: 'Seattle Financial Center',
+    industry: 'Commercial Real Estate',
   },
   {
     id: '2',
@@ -161,6 +163,8 @@ const mockProjects: SafeHavenProject[] = [
       },
     ],
     assignedTrailer: 'Trailer Beta',
+    site: 'Bellevue Heights',
+    industry: 'Residential',
   },
   {
     id: '3',
@@ -179,6 +183,8 @@ const mockProjects: SafeHavenProject[] = [
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20003',
     crew: [],
     assignedTrailer: null,
+    site: 'State Capitol Building',
+    industry: 'Government',
   },
   {
     id: '4',
@@ -231,6 +237,8 @@ const mockProjects: SafeHavenProject[] = [
       },
     ],
     assignedTrailer: 'Trailer Gamma',
+    site: 'Tacoma Mall',
+    industry: 'Retail',
   },
   {
     id: '5',
@@ -249,6 +257,8 @@ const mockProjects: SafeHavenProject[] = [
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20005',
     crew: [],
     assignedTrailer: null,
+    site: 'Spokane School District',
+    industry: 'Education',
   },
   {
     id: '6',
@@ -290,6 +300,8 @@ const mockProjects: SafeHavenProject[] = [
       },
     ],
     assignedTrailer: 'Trailer Delta',
+    site: 'Portland General Hospital',
+    industry: 'Healthcare',
   },
   {
     id: '7',
@@ -331,6 +343,8 @@ const mockProjects: SafeHavenProject[] = [
       },
     ],
     assignedTrailer: 'Trailer Echo',
+    site: 'Union Square Mall',
+    industry: 'Retail',
   },
   {
     id: '8',
@@ -372,6 +386,8 @@ const mockProjects: SafeHavenProject[] = [
       }
     ],
     assignedTrailer: 'Trailer Alpha',
+    site: 'Portland Business Center',
+    industry: 'Commercial Real Estate',
   },
   {
     id: '9',
@@ -413,6 +429,49 @@ const mockProjects: SafeHavenProject[] = [
       }
     ],
     assignedTrailer: 'Alpha Trailer',
+    site: 'Vancouver Corporate Plaza',
+    industry: 'Commercial Real Estate',
+  },
+  // Archived projects
+  {
+    id: '10',
+    title: 'Old Office Building Security',
+    description: 'Security film installation for old office building (archived)',
+    status: 'Archived',
+    stage: 'Archived',
+    startDate: '2024-08-01',
+    endDate: '2024-08-15',
+    location: 'Seattle, WA',
+    createdAt: '2024-07-01T00:00:00Z',
+    updatedAt: '2024-08-20T00:00:00Z',
+    assignedTeam: [],
+    assignedTrailers: [],
+    progress: 100,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20010',
+    crew: [],
+    assignedTrailer: null,
+    site: 'Old Seattle Office',
+    industry: 'Commercial Real Estate',
+  },
+  {
+    id: '11',
+    title: 'Legacy Hospital Security',
+    description: 'Security film installation for legacy hospital (archived)',
+    status: 'Archived',
+    stage: 'Archived',
+    startDate: '2024-07-15',
+    endDate: '2024-07-30',
+    location: 'Portland, OR',
+    createdAt: '2024-06-01T00:00:00Z',
+    updatedAt: '2024-08-01T00:00:00Z',
+    assignedTeam: [],
+    assignedTrailers: [],
+    progress: 100,
+    vinCode: 'TXDA-SJ1BR1-EETUSC01-P20011',
+    crew: [],
+    assignedTrailer: null,
+    site: 'Legacy Medical Center',
+    industry: 'Healthcare',
   },
 ];
 
@@ -486,8 +545,13 @@ export const ProjectListPage: React.FC = () => {
       ? filterProjectsByUserRole(projectListItems, user.userType)
       : projectListItems;
     
+    // Hide archived projects from "All" view unless specifically filtering for archived
+    const archivedFilteredProjects = filters.status.length === 0 || !filters.status.includes('Archived')
+      ? roleFilteredProjects.filter(project => project.status !== 'Archived')
+      : roleFilteredProjects;
+    
     // Then apply other filters (search, status, assigned users)
-    const filtered = filterProjects(roleFilteredProjects, {
+    const filtered = filterProjects(archivedFilteredProjects, {
       ...filters,
       searchQuery,
     });
@@ -650,27 +714,46 @@ export const ProjectListPage: React.FC = () => {
 
         {/* Second Row - Status Filter Tabs */}
         <div className="mb-4 px-2">
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-            {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'])].map((status) => (
-              <button
-                key={status}
-                onClick={() => {
-                  const projectStatus = status === 'All' ? '' : status as ProjectStatus;
-                  setFilters({
-                    status: projectStatus ? [projectStatus] : [],
-                    assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
-                  });
-                }}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  (status === 'All' && filters.status.length === 0) || 
-                  (status !== 'All' && filters.status.includes(status as ProjectStatus))
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {status}
-              </button>
-            ))}
+          <div className="flex items-center justify-between">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+              {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'])].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => {
+                    const projectStatus = status === 'All' ? '' : status as ProjectStatus;
+                    setFilters({
+                      status: projectStatus ? [projectStatus] : [],
+                      assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
+                    });
+                  }}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                    (status === 'All' && filters.status.length === 0) || 
+                    (status !== 'All' && filters.status.includes(status as ProjectStatus))
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {status}
+                </button>
+              ))}
+            </div>
+            
+            {/* Archived Button - Positioned on the right */}
+            <button
+              onClick={() => {
+                setFilters({
+                  status: ['Archived'],
+                  assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
+                });
+              }}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                filters.status.includes('Archived')
+                  ? 'bg-gray-600 text-white shadow-sm'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Archived
+            </button>
           </div>
         </div>
 

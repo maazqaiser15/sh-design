@@ -1,7 +1,7 @@
 import { Project } from '../../types';
 
 // Safe Haven Defense Project Stages
-export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
+export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed' | 'Archived';
 
 // Safe Haven Defense Project Status (same as stages for this implementation)
 export type ProjectStatus = ProjectStage;
@@ -14,6 +14,8 @@ export interface SafeHavenProject extends Omit<Project, 'status' | 'stage'> {
   crew: ProjectCrewMember[];
   assignedTrailer: string | null;
   progress: number; // 0-100
+  site: string; // Site name
+  industry: string; // Industry type
 }
 
 export interface ProjectCrewMember {
@@ -57,6 +59,7 @@ export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
   'WIP': 'bg-blue-100 text-blue-700',       // Blue for work in progress
   'QF': 'bg-orange-100 text-orange-700',    // Orange for quality check
   'Completed': 'bg-green-100 text-green-700', // Green for completed
+  'Archived': 'bg-gray-200 text-gray-600',   // Dark gray for archived
 };
 
 // Status descriptions
@@ -68,6 +71,7 @@ export const PROJECT_STATUS_DESCRIPTIONS: Record<ProjectStatus, string> = {
   'WIP': 'WIP',
   'QF': 'QF',
   'Completed': 'Completed',
+  'Archived': 'Archived',
 };
 
 // Status transition rules and prerequisites
@@ -144,6 +148,15 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canEditWindows: false,
     canUploadQualityForm: false,
     requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer', 'qualityForm']
+  },
+  'Archived': {
+    canAssignTeam: false,
+    canAssignTrailer: false,
+    canSetupLogistics: false,
+    canSchedule: false,
+    canEditWindows: false,
+    canUploadQualityForm: false,
+    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description']
   }
 };
 
@@ -155,7 +168,8 @@ export const STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
   'WB': ['WIP'],
   'WIP': ['QF'],
   'QF': ['Completed'],
-  'Completed': [] // No transitions from completed
+  'Completed': ['Archived'], // Can archive completed projects
+  'Archived': [] // No transitions from archived
 };
 
 // Utility functions for status management

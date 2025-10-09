@@ -43,7 +43,8 @@ const CustomDataTable: React.FC<tableProps> = ({
   const customStyles = {
     table: {
       style: {
-        backgroundColor: 'transparent', // Whole table background color
+        backgroundColor: "transparent", // ✅ whole table background color
+        tableLayout: "fixed",
       },
     },
     headRow: {
@@ -61,6 +62,20 @@ const CustomDataTable: React.FC<tableProps> = ({
         fontSize: '16px',
         backgroundColor: 'transparent',
         fontWeight: 400,
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
       },
     },
     rows: {
@@ -134,21 +149,23 @@ const CustomDataTable: React.FC<tableProps> = ({
 
   return (
     <CustomPaginationStyles>
-      <DataTable
-        title={title}
-        columns={columns}
-        data={data}
-        selectableRows={selectableRows}
-        pagination={pagination}
-        highlightOnHover={highlightOnHover}
-        striped={striped}
-        onRowClicked={onRowClicked}
-        paginationIconFirstPage={false}
-        paginationIconLastPage={null}
-        progressPending={progressPending}
-        paginationPerPage={paginationPerPage}
-        customStyles={customStyles}
-      />
+      <div style={{ minWidth: '1400px' }}>
+        <DataTable
+          title={title}
+          columns={columns}
+          data={data}
+          selectableRows={selectableRows}
+          pagination={pagination}
+          highlightOnHover={highlightOnHover}
+          striped={striped}
+          onRowClicked={onRowClicked}
+          paginationIconFirstPage={false}
+          paginationIconLastPage={null}
+          progressPending={progressPending}
+          paginationPerPage={paginationPerPage}
+          customStyles={customStyles}
+        />
+      </div>
     </CustomPaginationStyles>
   );
 };

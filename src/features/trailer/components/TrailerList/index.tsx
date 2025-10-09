@@ -304,9 +304,11 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case "Available":
+      case "available":
         return "text-green-600 bg-green-50";
-      case "Unavailable":
+      case "unavailable":
+        return "text-red-600 bg-red-50";
+        case "unavailable":
         return "text-red-600 bg-red-50";
       default:
         return "text-gray-600 bg-gray-50";

@@ -77,6 +77,8 @@ interface AssignedTeamCardProps {
       role: string;
       avatar?: string;
       location?: string;
+      inviteStatus?: 'pending' | 'accepted' | 'declined' | 'expired';
+      invitedAt?: string;
     }>;
     count: number;
     leadMember?: {
@@ -88,6 +90,7 @@ interface AssignedTeamCardProps {
   } | null;
   onAddMember?: () => void;
   onRemoveMember?: (memberId: string) => void;
+  onResendInvite?: (memberId: string) => void;
   onMarkComplete?: () => void;
   isCompleted?: boolean;
   showActions?: boolean;
@@ -101,6 +104,7 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
   assignedTeam,
   onAddMember,
   onRemoveMember,
+  onResendInvite,
   onMarkComplete,
   isCompleted = false,
   showActions = true
@@ -151,6 +155,7 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
           }))}
           onMemberClick={(member) => console.log('Member clicked:', member)}
           onMemberRemove={onRemoveMember}
+          onMemberResendInvite={onResendInvite}
           maxVisible={4}
         />
       );
