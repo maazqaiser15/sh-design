@@ -5,7 +5,7 @@ import { Button } from '../../common/components/Button';
 import { Logo } from '../../common/components/Logo';
 import { Formik } from 'formik';
 import FormField from 'common/components/FormField';
-import * as Yup from 'Yup';
+import * as Yup from 'yup';
 // import { FormField } from 'common/components/FormField';
 
 /**
