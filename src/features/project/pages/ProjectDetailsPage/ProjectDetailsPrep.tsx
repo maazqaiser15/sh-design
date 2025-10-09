@@ -29,84 +29,84 @@ import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 
 const CheckCircleIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 1.33333C11.6819 1.33333 14.6667 4.3181 14.6667 8C14.6667 11.6819 11.6819 14.6667 8 14.6667C4.3181 14.6667 1.33333 11.6819 1.33333 8C1.33333 4.3181 4.3181 1.33333 8 1.33333Z" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M6 8L7.33333 9.33333L10.6667 6" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 1.33333C11.6819 1.33333 14.6667 4.3181 14.6667 8C14.6667 11.6819 11.6819 14.6667 8 14.6667C4.3181 14.6667 1.33333 11.6819 1.33333 8C1.33333 4.3181 4.3181 1.33333 8 1.33333Z" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6 8L7.33333 9.33333L10.6667 6" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const DotIcon = () => (
   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="4" cy="4" r="4" fill="#667085"/>
+    <circle cx="4" cy="4" r="4" fill="#667085" />
   </svg>
 );
 
 const UsersIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.3333 6.66667C13.3333 8.50761 11.841 10 10 10C8.15905 10 6.66667 8.50761 6.66667 6.66667C6.66667 4.82572 8.15905 3.33333 10 3.33333C11.841 3.33333 13.3333 4.82572 13.3333 6.66667Z" stroke="#0D76BF" strokeWidth="1.5"/>
-    <path d="M10 12.5C7.23858 12.5 5 14.7386 5 17.5H15C15 14.7386 12.7614 12.5 10 12.5Z" stroke="#0D76BF" strokeWidth="1.5"/>
-    <path d="M15.8333 6.66667C15.8333 7.58714 15.4542 8.47052 14.7791 9.14559C14.104 9.82066 13.2206 10.2 12.3 10.2" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round"/>
-    <path d="M17.5 12.5C17.5 13.4205 17.1209 14.3039 16.4458 14.9789C15.7707 15.654 14.8873 16.0333 13.9667 16.0333" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M13.3333 6.66667C13.3333 8.50761 11.841 10 10 10C8.15905 10 6.66667 8.50761 6.66667 6.66667C6.66667 4.82572 8.15905 3.33333 10 3.33333C11.841 3.33333 13.3333 4.82572 13.3333 6.66667Z" stroke="#0D76BF" strokeWidth="1.5" />
+    <path d="M10 12.5C7.23858 12.5 5 14.7386 5 17.5H15C15 14.7386 12.7614 12.5 10 12.5Z" stroke="#0D76BF" strokeWidth="1.5" />
+    <path d="M15.8333 6.66667C15.8333 7.58714 15.4542 8.47052 14.7791 9.14559C14.104 9.82066 13.2206 10.2 12.3 10.2" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M17.5 12.5C17.5 13.4205 17.1209 14.3039 16.4458 14.9789C15.7707 15.654 14.8873 16.0333 13.9667 16.0333" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
 const ExpandIcon = () => (
-  <svg 
-    width="16" 
-    height="16" 
-    viewBox="0 0 16 16" 
-    fill="none" 
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
     xmlns="http://www.w3.org/2000/svg"
     className="w-4 h-4"
   >
-    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const PlusIcon = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 1V11M1 6H11" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M6 1V11M1 6H11" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const TruckIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1.66667 12.5H13.3333V4.16667H1.66667V12.5Z" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M13.3333 8.33333H15.8333L18.3333 10.8333V12.5H13.3333" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="5" cy="15" r="1.66667" stroke="#0D76BF" strokeWidth="1.5"/>
-    <circle cx="15" cy="15" r="1.66667" stroke="#0D76BF" strokeWidth="1.5"/>
+    <path d="M1.66667 12.5H13.3333V4.16667H1.66667V12.5Z" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.3333 8.33333H15.8333L18.3333 10.8333V12.5H13.3333" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="5" cy="15" r="1.66667" stroke="#0D76BF" strokeWidth="1.5" />
+    <circle cx="15" cy="15" r="1.66667" stroke="#0D76BF" strokeWidth="1.5" />
   </svg>
 );
 
 const FileIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.3333 1.66667H5C4.55797 1.66667 4.13405 1.84226 3.82149 2.15482C3.50893 2.46738 3.33333 2.89131 3.33333 3.33333V16.6667C3.33333 17.1087 3.50893 17.5326 3.82149 17.8452C4.13405 18.1577 4.55797 18.3333 5 18.3333H15C15.442 18.3333 15.866 18.1577 16.1785 17.8452C16.4911 17.5326 16.6667 17.1087 16.6667 16.6667V6.66667L13.3333 1.66667Z" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M13.3333 1.66667V6.66667H16.6667" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M13.3333 1.66667H5C4.55797 1.66667 4.13405 1.84226 3.82149 2.15482C3.50893 2.46738 3.33333 2.89131 3.33333 3.33333V16.6667C3.33333 17.1087 3.50893 17.5326 3.82149 17.8452C4.13405 18.1577 4.55797 18.3333 5 18.3333H15C15.442 18.3333 15.866 18.1577 16.1785 17.8452C16.4911 17.5326 16.6667 17.1087 16.6667 16.6667V6.66667L13.3333 1.66667Z" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.3333 1.66667V6.66667H16.6667" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const StickerIcon = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M15 2.5H5C4.17157 2.5 3.5 3.17157 3.5 4V16C3.5 16.8284 4.17157 17.5 5 17.5H15C15.8284 17.5 16.5 16.8284 16.5 16V4C16.5 3.17157 15.8284 2.5 15 2.5Z" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M8.33333 7.5H11.6667" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M8.33333 10.8333H11.6667" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M15 2.5H5C4.17157 2.5 3.5 3.17157 3.5 4V16C3.5 16.8284 4.17157 17.5 5 17.5H15C15.8284 17.5 16.5 16.8284 16.5 16V4C16.5 3.17157 15.8284 2.5 15 2.5Z" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8.33333 7.5H11.6667" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8.33333 10.8333H11.6667" stroke="#0D76BF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const UploadIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 1.33333V10.6667M8 1.33333L5.33333 4M8 1.33333L10.6667 4M2.66667 10.6667H13.3333" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 1.33333V10.6667M8 1.33333L5.33333 4M8 1.33333L10.6667 4M2.66667 10.6667H13.3333" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const XIcon = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9 3L3 9M3 3L9 9" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 3L3 9M3 3L9 9" stroke="#475467" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const PaperclipIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10.6667 4.66667L5.33333 10C4.59695 10.7364 4.59695 11.9302 5.33333 12.6667C6.06971 13.403 7.26362 13.403 8 12.6667L13.3333 7.33333C14.8061 5.86056 14.8061 3.47278 13.3333 2C11.8606 0.527241 9.47278 0.527241 8 2L2.66667 7.33333" stroke="#344054" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M10.6667 4.66667L5.33333 10C4.59695 10.7364 4.59695 11.9302 5.33333 12.6667C6.06971 13.403 7.26362 13.403 8 12.6667L13.3333 7.33333C14.8061 5.86056 14.8061 3.47278 13.3333 2C11.8606 0.527241 9.47278 0.527241 8 2L2.66667 7.33333" stroke="#344054" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -197,7 +197,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  
+
   const [project, setProject] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
   const [preparationData, setPreparationData] = useState<PreparationStageData>(MOCK_PREPARATION_DATA);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -227,13 +227,13 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
   const [showContractRequiredModal, setShowContractRequiredModal] = useState(false);
-  
+
   // Notes State
   const [notes, setNotes] = useState<ProjectNote[]>([]);
-  
+
   // Check if all stages are completed
   const allStagesCompleted = isAssignedTeamCompleted && isTravelAccommodationCompleted && isTrailerCompleted;
-  
+
   // Trailer & Films State
   const [inventoryItems, setInventoryItems] = useState([
     { id: 'sw600br', name: 'SW600BR', required: 1, inTrailer: 0, needToShip: 1 },
@@ -286,7 +286,7 @@ export const ProjectDetailsPrep: React.FC = () => {
       projectId: projectId || '',
       category: category as any
     };
-    
+
     setPreparationData(prev => ({
       ...prev,
       documents: [...prev.documents, newDocument]
@@ -321,7 +321,7 @@ export const ProjectDetailsPrep: React.FC = () => {
       projectId: projectId || '',
       isInternal
     };
-    
+
     setPreparationData(prev => ({
       ...prev,
       notes: [...prev.notes, newNote]
@@ -356,10 +356,10 @@ export const ProjectDetailsPrep: React.FC = () => {
   const handleRemoveTeamMember = (memberId: string) => {
     setPreparationData(prev => {
       if (!prev.assignedTeam) return prev;
-      
+
       const updatedMembers = prev.assignedTeam.members.filter(member => member.id !== memberId);
       const updatedLeadMember = prev.assignedTeam.leadMember?.id === memberId ? undefined : prev.assignedTeam.leadMember;
-      
+
       return {
         ...prev,
         assignedTeam: updatedMembers.length > 0 ? {
@@ -374,7 +374,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   const handleResendInvite = (memberId: string) => {
     setPreparationData(prev => {
       if (!prev.assignedTeam) return prev;
-      
+
       const updatedMembers = prev.assignedTeam.members.map(member => {
         if (member.id === memberId) {
           return {
@@ -385,7 +385,7 @@ export const ProjectDetailsPrep: React.FC = () => {
         }
         return member;
       });
-      
+
       return {
         ...prev,
         assignedTeam: {
@@ -394,7 +394,7 @@ export const ProjectDetailsPrep: React.FC = () => {
         }
       };
     });
-    
+
     // Show success message
     console.log(`Invite resent to team member ${memberId}`);
   };
@@ -545,7 +545,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       const newFiles = Array.from(files);
@@ -584,8 +584,8 @@ export const ProjectDetailsPrep: React.FC = () => {
     setPreparationData(prev => ({
       ...prev,
       assignedTeam,
-      checklist: prev.checklist.map(item => 
-        item.label === 'Team Assigned' 
+      checklist: prev.checklist.map(item =>
+        item.label === 'Team Assigned'
           ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
           : item
       )
@@ -623,8 +623,8 @@ export const ProjectDetailsPrep: React.FC = () => {
     setPreparationData(prev => ({
       ...prev,
       logistics,
-      checklist: prev.checklist.map(item => 
-        item.label === 'Logistics Confirmed' 
+      checklist: prev.checklist.map(item =>
+        item.label === 'Logistics Confirmed'
           ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
           : item
       )
@@ -636,8 +636,8 @@ export const ProjectDetailsPrep: React.FC = () => {
     // Mock travel setup
     setPreparationData(prev => ({
       ...prev,
-      checklist: prev.checklist.map(item => 
-        item.label === 'Travel Setup' 
+      checklist: prev.checklist.map(item =>
+        item.label === 'Travel Setup'
           ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
           : item
       )
@@ -670,8 +670,8 @@ export const ProjectDetailsPrep: React.FC = () => {
         ...prev.logisticsTravel,
         logistics: [...prev.logisticsTravel.logistics, newLogistics]
       },
-      checklist: prev.checklist.map(item => 
-        item.label === 'Logistics Confirmed' 
+      checklist: prev.checklist.map(item =>
+        item.label === 'Logistics Confirmed'
           ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
           : item
       )
@@ -728,8 +728,8 @@ export const ProjectDetailsPrep: React.FC = () => {
         ...prev.logisticsTravel,
         travelPlans: [...prev.logisticsTravel.travelPlans, newTravel]
       },
-      checklist: prev.checklist.map(item => 
-        item.label === 'Travel Setup' 
+      checklist: prev.checklist.map(item =>
+        item.label === 'Travel Setup'
           ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
           : item
       )
@@ -835,15 +835,15 @@ export const ProjectDetailsPrep: React.FC = () => {
 
       // Check if all preparation tasks are completed
       const allTasksCompleted = updatedChecklist.every(item => item.completed);
-      
+
       // If all tasks are completed and project is in PV90 status, update to WB
       if (allTasksCompleted && project.status === 'PV90') {
         // Update project status to WB
         const updatedProject = { ...project, status: 'WB' as const };
-        
+
         // Show success message
         showToast('All preparation tasks completed! Project status updated to WB. Work in Progress stage is now available.');
-        
+
         return {
           ...prev,
           checklist: updatedChecklist,
@@ -906,7 +906,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <p className="font-bold text-sm text-blue-700 leading-5">PV90</p>
                   </div>
                 </div>
-                
+
                 {/* Action Buttons */}
                 <div className="flex gap-2 items-center">
                   <Button
@@ -921,30 +921,29 @@ export const ProjectDetailsPrep: React.FC = () => {
                   <Button
                     onClick={handleMarkStageComplete}
                     disabled={!allStagesCompleted}
-                    className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${
-                      allStagesCompleted 
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-blue-200' 
-                        : 'bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300'
-                    }`}
+                    className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${allStagesCompleted
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-blue-200'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300'
+                      }`}
                   >
                     Mark Stage as Complete
                   </Button>
                 </div>
               </div>
-              
-                  {/* Single Row with All Project Information */}
-                  <div className="flex flex-wrap gap-12 items-center mb-4">
-                    {/* VIN Code */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <div>
-                        <p className="text-xs text-gray-500 font-medium">VIN Code</p>
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          TXDA-SJ1BR1-EETUSC01-P20001
-                        </span>
-                      </div>
-                    </div>
-                
+
+              {/* Single Row with All Project Information */}
+              <div className="flex flex-wrap  items-start justify-between mb-4">
+                {/* VIN Code */}
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">VIN Code</p>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      TXDA-SJ1BR1-EETUSC01-P20001
+                    </span>
+                  </div>
+                </div>
+
                 {/* Site */}
                 {project.site && (
                   <div className="flex items-center gap-2">
@@ -955,7 +954,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {/* Duration */}
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-green-600" />
@@ -964,7 +963,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <p className="text-sm text-gray-900 font-medium">Feb 1, 2024 – Feb 15, 2024</p>
                   </div>
                 </div>
-                
+
                 {/* Industry */}
                 {project.industry && (
                   <div className="flex items-center gap-2">
@@ -975,33 +974,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     </div>
                   </div>
                 )}
-                
-                    {/* Contact Person */}
-                    {project.contactPerson && (
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-orange-600" />
-                        <div>
-                          <p className="text-xs text-gray-500 font-medium">Contact Person</p>
-                          <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
-                          {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
-                          {project.contactPerson.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
-                        </div>
-                      </div>
-                    )}
-                
-                    {/* Billing Information */}
-                    {project.billingContact && (
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-red-600" />
-                        <div>
-                          <p className="text-xs text-gray-500 font-medium">Billing Contact</p>
-                          <p className="text-sm text-gray-900 font-medium">{project.billingContact.name}</p>
-                          {project.billingContact.phone && <p className="text-xs text-gray-700">{project.billingContact.phone}</p>}
-                          {project.billingContact.email && <p className="text-xs text-gray-700">{project.billingContact.email}</p>}
-                        </div>
-                      </div>
-                    )}
-                
+
                 {/* Coordinator */}
                 {project.assignedCoordinator && (
                   <div className="flex items-center gap-2">
@@ -1012,6 +985,33 @@ export const ProjectDetailsPrep: React.FC = () => {
                     </div>
                   </div>
                 )}
+                {/* Contact Person */}
+                {project.contactPerson && (
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-orange-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Contact Person</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
+                      {project.contactPerson.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Billing Information */}
+                {project.billingContact && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-red-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Billing Contact</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.billingContact.name}</p>
+                      {project.billingContact.phone && <p className="text-xs text-gray-700">{project.billingContact.phone}</p>}
+                      {project.billingContact.email && <p className="text-xs text-gray-700">{project.billingContact.email}</p>}
+                    </div>
+                  </div>
+                )}
+
+
               </div>
             </div>
 
@@ -1074,11 +1074,11 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <div className="flex flex-col gap-1 flex-1">
                       <h3 className="font-semibold text-lg text-[#101828] leading-7">Travel & Accommodation</h3>
                       <p className="font-normal text-sm text-[#475467] leading-5">
-                        {travelAccommodationNotRequired 
+                        {travelAccommodationNotRequired
                           ? 'Travel not required for this project'
-                          : travelAccommodationRequestSubmitted 
-                          ? 'Request submitted to logistics manager' 
-                          : 'Assign travel & accommodation'
+                          : travelAccommodationRequestSubmitted
+                            ? 'Request submitted to logistics manager'
+                            : 'Assign travel & accommodation'
                         }
                       </p>
                     </div>
@@ -1160,7 +1160,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                           {travelAccommodationRequestData.travelMethod && (
                             <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
                           )}
-                          
+
                           {/* Travel Team Members */}
                           {travelAccommodationRequestData.travelRequired && (
                             <div className="mt-2">
@@ -1184,7 +1184,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                               )}
                             </div>
                           )}
-                          
+
                           {/* Accommodation Team Members */}
                           {travelAccommodationRequestData.accommodationRequired && (
                             <div className="mt-2">
@@ -1208,7 +1208,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                               )}
                             </div>
                           )}
-                          
+
                           {/* Rental Vehicle Details */}
                           {travelAccommodationRequestData.rentalVehicleRequired && travelAccommodationRequestData.rentalVehicleDetails && (
                             <div className="mt-2">
@@ -1244,12 +1244,11 @@ export const ProjectDetailsPrep: React.FC = () => {
             )}
 
             {/* Project Documents Card */}
-            <div 
-              className={`bg-white rounded-xl p-5 border-2 transition-colors ${
-                isDragOver 
-                  ? 'border-blue-300 bg-blue-50' 
-                  : 'border-gray-200'
-              }`}
+            <div
+              className={`bg-white rounded-xl p-5 border-2 transition-colors ${isDragOver
+                ? 'border-blue-300 bg-blue-50'
+                : 'border-gray-200'
+                }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -1284,7 +1283,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     </label>
                   </div>
                 </div>
-                
+
                 {/* Documents List or Empty State */}
                 {uploadedDocuments.length > 0 ? (
                   <div className="space-y-3">
@@ -1347,154 +1346,154 @@ export const ProjectDetailsPrep: React.FC = () => {
               attachedFiles={uploadedReceipts}
             />
           </div>
-          </div>
         </div>
+      </div>
 
-        {/* Edit Project Details Modal */}
-        <EditProjectDetailsModal
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          project={project}
-          onSave={handleSaveProjectDetails}
-        />
+      {/* Edit Project Details Modal */}
+      <EditProjectDetailsModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        project={project}
+        onSave={handleSaveProjectDetails}
+      />
 
-        {/* Assign Team Modal */}
-        <AssignTeamModal
-          isOpen={showAssignTeamModal}
-          onClose={() => setShowAssignTeamModal(false)}
-          onAssignTeam={handleTeamAssignment}
-          availableMembers={MOCK_TEAM_MEMBERS}
-          projectDetails={project}
-        />
+      {/* Assign Team Modal */}
+      <AssignTeamModal
+        isOpen={showAssignTeamModal}
+        onClose={() => setShowAssignTeamModal(false)}
+        onAssignTeam={handleTeamAssignment}
+        availableMembers={MOCK_TEAM_MEMBERS}
+        projectDetails={project}
+      />
 
-        {/* Edit Team Modal */}
-        <AssignTeamModal
-          isOpen={showEditTeamModal}
-          onClose={() => setShowEditTeamModal(false)}
-          onAssignTeam={handleTeamAssignment}
-          availableMembers={MOCK_TEAM_MEMBERS}
-          assignedMemberIds={preparationData.assignedTeam?.members.map(m => m.id) || []}
-          projectDetails={project}
-        />
+      {/* Edit Team Modal */}
+      <AssignTeamModal
+        isOpen={showEditTeamModal}
+        onClose={() => setShowEditTeamModal(false)}
+        onAssignTeam={handleTeamAssignment}
+        availableMembers={MOCK_TEAM_MEMBERS}
+        assignedMemberIds={preparationData.assignedTeam?.members.map(m => m.id) || []}
+        projectDetails={project}
+      />
 
-        {/* Add Logistics Modal */}
-        <AddLogisticsModal
-          isOpen={showAddLogisticsModal}
-          onClose={() => setShowAddLogisticsModal(false)}
-          onSave={handleSaveLogistics}
-        />
+      {/* Add Logistics Modal */}
+      <AddLogisticsModal
+        isOpen={showAddLogisticsModal}
+        onClose={() => setShowAddLogisticsModal(false)}
+        onSave={handleSaveLogistics}
+      />
 
-        {/* Edit Logistics Modal */}
-        <AddLogisticsModal
-          isOpen={showEditLogisticsModal}
-          onClose={() => setShowEditLogisticsModal(false)}
-          onSave={handleSaveLogistics}
-          onEdit={handleUpdateLogistics}
-          editingLogistics={editingLogistics}
-        />
+      {/* Edit Logistics Modal */}
+      <AddLogisticsModal
+        isOpen={showEditLogisticsModal}
+        onClose={() => setShowEditLogisticsModal(false)}
+        onSave={handleSaveLogistics}
+        onEdit={handleUpdateLogistics}
+        editingLogistics={editingLogistics}
+      />
 
-        {/* Add Travel Modal */}
-        <AddTravelModal
-          isOpen={showAddTravelModal}
-          onClose={() => setShowAddTravelModal(false)}
-          onSave={handleSaveTravel}
-          availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
-            id: member.id,
-            name: member.name,
-            role: member.role
-          }))}
-        />
+      {/* Add Travel Modal */}
+      <AddTravelModal
+        isOpen={showAddTravelModal}
+        onClose={() => setShowAddTravelModal(false)}
+        onSave={handleSaveTravel}
+        availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
+          id: member.id,
+          name: member.name,
+          role: member.role
+        }))}
+      />
 
-        {/* Edit Travel Modal */}
-        <AddTravelModal
-          isOpen={showEditTravelModal}
-          onClose={() => setShowEditTravelModal(false)}
-          onSave={handleSaveTravel}
-          onEdit={handleUpdateTravel}
-          editingTravel={editingTravel}
-          availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
-            id: member.id,
-            name: member.name,
-            role: member.role
-          }))}
-        />
+      {/* Edit Travel Modal */}
+      <AddTravelModal
+        isOpen={showEditTravelModal}
+        onClose={() => setShowEditTravelModal(false)}
+        onSave={handleSaveTravel}
+        onEdit={handleUpdateTravel}
+        editingTravel={editingTravel}
+        availableTeamMembers={MOCK_TEAM_MEMBERS.map(member => ({
+          id: member.id,
+          name: member.name,
+          role: member.role
+        }))}
+      />
 
-        {/* Project Date Modal */}
-        <ProjectDateModal
-          isOpen={showDateModal}
-          onClose={() => setShowDateModal(false)}
-          onConfirm={handleDateConfirm}
-          projectTitle={project.name}
-          projectStatus={project.status as any}
-          initialStartDate={project.startDate}
-          initialEndDate={project.endDate}
-        />
+      {/* Project Date Modal */}
+      <ProjectDateModal
+        isOpen={showDateModal}
+        onClose={() => setShowDateModal(false)}
+        onConfirm={handleDateConfirm}
+        projectTitle={project.name}
+        projectStatus={project.status as any}
+        initialStartDate={project.startDate}
+        initialEndDate={project.endDate}
+      />
 
-        {/* Assign Trailer Modal */}
-        <AssignTrailerModal
-          isOpen={showAssignTrailerModal}
-          onClose={() => setShowAssignTrailerModal(false)}
-          onAssignTrailer={handleAssignTrailer}
-          availableTrailers={availableTrailers}
-          assignedTrailerId={assignedTrailer?.id}
-        />
+      {/* Assign Trailer Modal */}
+      <AssignTrailerModal
+        isOpen={showAssignTrailerModal}
+        onClose={() => setShowAssignTrailerModal(false)}
+        onAssignTrailer={handleAssignTrailer}
+        availableTrailers={availableTrailers}
+        assignedTrailerId={assignedTrailer?.id}
+      />
 
-        {/* Travel & Accommodation Request Modal */}
-        <TravelAccommodationRequestModal
-          isOpen={showTravelAccommodationRequestModal}
-          onClose={() => setShowTravelAccommodationRequestModal(false)}
-          onSubmit={handleTravelAccommodationRequestSubmit}
-          assignedTeamMembers={preparationData.assignedTeam?.members || []}
-          projectLocation="123 Main Street, Downtown"
-        />
+      {/* Travel & Accommodation Request Modal */}
+      <TravelAccommodationRequestModal
+        isOpen={showTravelAccommodationRequestModal}
+        onClose={() => setShowTravelAccommodationRequestModal(false)}
+        onSubmit={handleTravelAccommodationRequestSubmit}
+        assignedTeamMembers={preparationData.assignedTeam?.members || []}
+        projectLocation="123 Main Street, Downtown"
+      />
 
-        {/* Travel & Accommodation Details Modal */}
-        <TravelAccommodationModal
-          isOpen={showTravelAccommodationDetailsModal}
-          onClose={() => setShowTravelAccommodationDetailsModal(false)}
-          onSubmit={handleTravelAccommodationDetailsSubmit}
-        />
+      {/* Travel & Accommodation Details Modal */}
+      <TravelAccommodationModal
+        isOpen={showTravelAccommodationDetailsModal}
+        onClose={() => setShowTravelAccommodationDetailsModal(false)}
+        onSubmit={handleTravelAccommodationDetailsSubmit}
+      />
 
-        {/* Contract Required Modal */}
-        <Modal
-          isOpen={showContractRequiredModal}
-          onClose={() => setShowContractRequiredModal(false)}
-          title="Project Contract Required"
-          size="md"
-        >
-          <div className="p-6">
-            <div className="flex flex-col items-center text-center space-y-4">
-              {/* Warning Icon */}
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              
-              {/* Main Message */}
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Project Cannot Move to Next Status
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  The project cannot move to the next status because the project contract needs to be added. 
-                  Please contact the sales person.
-                </p>
-              </div>
-              
-              
-              {/* Action Buttons */}
-              <div className="flex justify-center w-full">
-                <Button
-                  onClick={() => setShowContractRequiredModal(false)}
-                  className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Close
-                </Button>
-              </div>
+      {/* Contract Required Modal */}
+      <Modal
+        isOpen={showContractRequiredModal}
+        onClose={() => setShowContractRequiredModal(false)}
+        title="Project Contract Required"
+        size="md"
+      >
+        <div className="p-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+            {/* Warning Icon */}
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+
+            {/* Main Message */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Project Cannot Move to Next Status
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                The project cannot move to the next status because the project contract needs to be added.
+                Please contact the sales person.
+              </p>
+            </div>
+
+
+            {/* Action Buttons */}
+            <div className="flex justify-center w-full">
+              <Button
+                onClick={() => setShowContractRequiredModal(false)}
+                className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-2 rounded-lg font-medium transition-colors"
+              >
+                Close
+              </Button>
             </div>
           </div>
-        </Modal>
+        </div>
+      </Modal>
     </div>
   );
 };
