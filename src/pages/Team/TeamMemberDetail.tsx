@@ -15,6 +15,8 @@ import {
   AlertCircle,
   Calendar as CalendarIcon,
   Send,
+  FolderSync,
+  RefreshCcw,
 } from "lucide-react";
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
@@ -266,7 +268,7 @@ export const TeamMemberDetail: React.FC = () => {
   const renderTimeLogTab = () => (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-        <h3 className="text-lg font-semibold text-gray-900">Daily Time Logs</h3>
+        <h3 className="text-lg font-semibold text-gray-900 flex gap-2 items-center">Daily Time Logs <span className="text-sm text-gray-600 flex gap-2 items-center"><RefreshCcw size={16}/> synced at 2025-09-12</span></h3>
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2">
             <div className="relative">

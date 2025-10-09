@@ -176,7 +176,7 @@ export const Sidebar: React.FC = () => {
               <NavLink
                 to={item.href || '#'}
                 className={({ isActive }) => `
-                  flex items-center space-x-3  justify-center md:justify-start px-3 py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
+                  flex items-center space-x-3  justify-center md:justify-start px-[14px] py-3 text-sm font-medium rounded-lg transition-colors mobile-touch-target
                   ${depth > 0 ? 'ml-4 pl-6' : ''}
                   ${
                     isActive
