@@ -14,6 +14,7 @@ import {
   XCircle,
   AlertCircle,
   Calendar as CalendarIcon,
+  Send,
 } from "lucide-react";
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
@@ -71,6 +72,15 @@ export const TeamMemberDetail: React.FC = () => {
   const [leaveDateTo, setLeaveDateTo] = useState('');
 
   const member = MOCK_TEAM_MEMBERS.find((m) => m.id === memberId);
+
+  const handleResendInvite = () => {
+    if (member) {
+      // In a real application, this would make an API call to resend the invite
+      console.log(`Resending invite to ${member.name} (${member.email})`);
+      // You could also show a toast notification here
+      alert(`Invite resent to ${member.name}!`);
+    }
+  };
 
   if (!member) {
     return (
@@ -582,6 +592,19 @@ export const TeamMemberDetail: React.FC = () => {
         >
           Back
         </Button>
+        
+        {/* Resend Invite Button - Show for pending or expired invites */}
+        {member && (member.inviteStatus === 'pending' || member.inviteStatus === 'expired') && (
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Send}
+            onClick={handleResendInvite}
+            className="w-fit"
+          >
+            Resend Invite
+          </Button>
+        )}
       </div>
 
       {/* User Info Header Card */}
@@ -599,6 +622,21 @@ export const TeamMemberDetail: React.FC = () => {
                 {member.status === "Unavailable" && member.unavailableUntil && (
                   <span className="text-sm text-gray-500">
                     Unavailable till {member.unavailableUntil}
+                  </span>
+                )}
+                {member.inviteStatus === 'pending' && (
+                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Invite Pending
+                  </span>
+                )}
+                {member.inviteStatus === 'expired' && (
+                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Invite Expired
+                  </span>
+                )}
+                {member.inviteStatus === 'accepted' && (
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Invite Accepted
                   </span>
                 )}
               </div>

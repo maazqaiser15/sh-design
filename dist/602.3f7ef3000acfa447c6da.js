@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkproject_management_app=self.webpackChunkproject_management_app||[]).push([[602],{9602:(e,a,t)=>{t.r(a),t.d(a,{ProjectDetailsDemo:()=>r});var n=t(4848),p=t(5954),r=function(){return(0,n.jsx)(p.ProjectDetailsPage,{})}}}]);

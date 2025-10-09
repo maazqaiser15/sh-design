@@ -12,6 +12,13 @@ const XCloseIcon = () => (
   </svg>
 );
 
+// Mail/Invite Icon
+const MailIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1.5 3L6 6L10.5 3M1.5 3C1.5 2.17 2.17 1.5 3 1.5H9C9.83 1.5 10.5 2.17 10.5 3M1.5 3V9C1.5 9.83 2.17 10.5 3 10.5H9C9.83 10.5 10.5 9.83 10.5 9V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 interface TeamCardProps {
   member: {
     id: string;
@@ -20,9 +27,12 @@ interface TeamCardProps {
     avatar?: string;
     location?: string;
     isLead?: boolean;
+    inviteStatus?: 'pending' | 'accepted' | 'declined' | 'expired';
+    invitedAt?: string;
   };
   onClick?: () => void;
   onRemove?: (memberId: string) => void;
+  onResendInvite?: (memberId: string) => void;
   className?: string;
 }
 
@@ -34,9 +44,10 @@ export const TeamCard: React.FC<TeamCardProps> = ({
   member,
   onClick,
   onRemove,
+  onResendInvite,
   className = ''
 }) => {
-  const { name, role, avatar, location, isLead } = member;
+  const { name, role, avatar, location, isLead, inviteStatus } = member;
 
   // Use mock avatars for demo, fallback to default avatar
   const getAvatarSrc = () => {
@@ -56,21 +67,43 @@ export const TeamCard: React.FC<TeamCardProps> = ({
     onRemove?.(member.id);
   };
 
+  const handleResendInvite = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click when clicking resend button
+    onResendInvite?.(member.id);
+  };
+
+  // Check if resend invite button should be shown
+  const shouldShowResendButton = inviteStatus === 'pending' || inviteStatus === 'expired';
+
   return (
     <div 
       className={`bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200 group relative ${className}`}
       onClick={onClick}
     >
-      {/* Remove Button - Shows on Hover */}
-      {onRemove && (
-        <button
-          onClick={handleRemove}
-          className="absolute top-2 right-2 w-6 h-6 bg-white border border-gray-300 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
-          title="Remove team member"
-        >
-          <XCloseIcon />
-        </button>
-      )}
+      {/* Action Buttons - Shows on Hover */}
+      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Resend Invite Button */}
+        {shouldShowResendButton && onResendInvite && (
+          <button
+            onClick={handleResendInvite}
+            className="w-6 h-6 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600"
+            title="Resend invite"
+          >
+            <MailIcon />
+          </button>
+        )}
+        
+        {/* Remove Button */}
+        {onRemove && (
+          <button
+            onClick={handleRemove}
+            className="w-6 h-6 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+            title="Remove team member"
+          >
+            <XCloseIcon />
+          </button>
+        )}
+      </div>
 
       <div className="flex gap-3 items-center">
         {/* Avatar */}
@@ -91,6 +124,16 @@ export const TeamCard: React.FC<TeamCardProps> = ({
             {isLead && (
               <span className="bg-[#0D76BF] text-white px-2 py-0.5 rounded text-xs font-medium">
                 Lead
+              </span>
+            )}
+            {inviteStatus === 'pending' && (
+              <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs font-medium">
+                Pending
+              </span>
+            )}
+            {inviteStatus === 'expired' && (
+              <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-medium">
+                Expired
               </span>
             )}
           </div>
@@ -121,9 +164,12 @@ interface TeamCardsGridProps {
     avatar?: string;
     location?: string;
     isLead?: boolean;
+    inviteStatus?: 'pending' | 'accepted' | 'declined' | 'expired';
+    invitedAt?: string;
   }>;
   onMemberClick?: (member: any) => void;
   onMemberRemove?: (memberId: string) => void;
+  onMemberResendInvite?: (memberId: string) => void;
   maxVisible?: number;
   className?: string;
 }
@@ -136,6 +182,7 @@ export const TeamCardsGrid: React.FC<TeamCardsGridProps> = ({
   members,
   onMemberClick,
   onMemberRemove,
+  onMemberResendInvite,
   maxVisible = 6,
   className = ''
 }) => {
@@ -152,6 +199,7 @@ export const TeamCardsGrid: React.FC<TeamCardsGridProps> = ({
             member={member}
             onClick={() => onMemberClick?.(member)}
             onRemove={onMemberRemove}
+            onResendInvite={onMemberResendInvite}
           />
         ))}
       </div>

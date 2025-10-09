@@ -25,6 +25,18 @@ export interface ProjectDetails {
     email: string;
     phone: string;
   };
+  // Additional project information
+  site?: string;
+  industry?: string;
+  contactPerson?: {
+    name: string;
+    phone: string;
+  };
+  billingContact?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
 }
 
 // Key Info Cards Data
@@ -84,10 +96,10 @@ export interface PreparationStageData {
 // Mock data for development
 export const MOCK_PROJECT_DETAILS: ProjectDetails = {
   id: 'proj-001',
-  name: 'Downtown Office Complex Security Film Installation',
+  name: 'Marriot Windows Installation',
   projectId: 'TXDA-SJ1BR1-EETUSC01-P20001',
-  stage: 'PV75',
-  status: 'PV75',
+  stage: 'PV90',
+  status: 'PV90',
   description: 'Comprehensive security film installation for the new downtown office complex',
   location: '123 Main Street, Downtown',
   startDate: '2024-02-01',
@@ -99,6 +111,18 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
     name: 'Jennifer White',
     email: 'jennifer@company.com',
     phone: '+1-555-0130'
+  },
+  // Additional project information
+  site: 'Marriot Downtown Hotel',
+  industry: 'Hospitality',
+  contactPerson: {
+    name: 'Michael Rodriguez',
+    phone: '+1-555-0200'
+  },
+  billingContact: {
+    name: 'Sarah Thompson',
+    email: 'billing@marriot.com',
+    phone: '+1-555-0201'
   }
 };
 
