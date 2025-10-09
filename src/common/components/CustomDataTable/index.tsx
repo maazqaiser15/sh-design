@@ -1,7 +1,6 @@
-import { borderTopLeftRadius, borderTopRightRadius } from 'html2canvas/dist/types/css/property-descriptors/border-radius';
-import React from 'react'
-import DataTable from "react-data-table-component";
-import styled from "styled-components";
+import React from 'react';
+import DataTable from 'react-data-table-component';
+import styled from 'styled-components';
 
 interface tableProps {
   title: string;
@@ -15,39 +14,53 @@ interface tableProps {
   progressPending: any;
   paginationPerPage: any;
 }
-const CustomDataTable: React.FC<tableProps> = ({ title, columns, data, selectableRows, progressPending, paginationPerPage, pagination, highlightOnHover, striped, onRowClicked }) => {
 
+const CustomDataTable: React.FC<tableProps> = ({
+  title,
+  columns,
+  data,
+  selectableRows,
+  progressPending,
+  paginationPerPage,
+  pagination,
+  highlightOnHover,
+  striped,
+  onRowClicked,
+}) => {
+
+  // Custom styled component for pagination styles
   const CustomPaginationStyles = styled.div`
-  .rdt_Pagination{
-  padding-right: 50px
-  }
-  .rdt_Pagination #pagination-first-page,
-  .rdt_Pagination #pagination-last-page {
-    display: none !important;
-  }
-`;
+    .rdt_Pagination {
+      padding-right: 50px;
+    }
+    .rdt_Pagination #pagination-first-page,
+    .rdt_Pagination #pagination-last-page {
+      display: none !important;
+    }
+  `;
 
+  // Custom styles for the table and pagination
   const customStyles = {
     table: {
       style: {
         backgroundColor: "transparent", // ✅ whole table background color
-        tableLayout: "fixed",
+        // tableLayout: "fixed",
       },
     },
     headRow: {
       style: {
-        backgroundColor: "#fff",
+        backgroundColor: '#fff',
         border: 0,
-        minHeight: "48px",
+        minHeight: '48px',
         borderTopLeftRadius: '12px',
         borderTopRightRadius: '12px',
       },
     },
     headCells: {
       style: {
-        color: "#475569",
-        fontSize: "16px",
-        backgroundColor: "transparent",
+        color: '#475569',
+        fontSize: '16px',
+        backgroundColor: 'transparent',
         fontWeight: 400,
         paddingLeft: "16px",
         paddingRight: "16px",
@@ -63,62 +76,72 @@ const CustomDataTable: React.FC<tableProps> = ({ title, columns, data, selectabl
     },
     rows: {
       style: {
-        minHeight: "56px",
-        backgroundColor: "transparent",
+        minHeight: '56px',
+        backgroundColor: 'transparent',
       },
     },
-
+    // columns: columns.map((col, index) => {
+    //   if (index === columns.length - 1) {
+    //     return {
+    //       ...col,
+    //       // Applying right alignment to the last column
+    //       style: {
+    //         justifyContent: 'right',  // Right-aligning the last column cells
+    //         background: 'red'
+    //       },
+    //     };
+    //   }
+    //   return col;
+    // }),
     pagination: {
       style: {
-        backgroundColor: "transparent", // ✅ pagination background color
-        borderTopStyle: "solid" as const,
-        borderTopWidth: "1px",
-        borderTopColor: "#d1d5db",
-        minHeight: "56px",
+        backgroundColor: 'transparent', // Pagination background color
+        borderTopStyle: 'solid',
+        borderTopWidth: '1px',
+        borderTopColor: '#d1d5db',
+        minHeight: '56px',
       },
       pageButtonsStyle: {
-        borderRadius: "50%",
+        borderRadius: '50%',
         border: '1px solid #1E293B',
-        height: "32px",
-        width: "32px",
-        padding: "4px",
-        margin: "0 4px",
-        cursor: "pointer",
-        transition: "all 0.25s",
-        color: "#1f2937",
-        fill: "#1f2937",
-        "&:hover": {
-          backgroundColor: "#dbeafe",
-        }
+        height: '32px',
+        width: '32px',
+        padding: '4px',
+        margin: '0 4px',
+        cursor: 'pointer',
+        transition: 'all 0.25s',
+        color: '#1f2937',
+        fill: '#1f2937',
+        '&:hover': {
+          backgroundColor: '#dbeafe',
+        },
       },
       '&[id="pagination-first-page"], &[id="pagination-last-page"]': {
-        display: "none !important",
+        display: 'none !important',
         margin: 0,
         padding: 0,
-        border: "none",
+        border: 'none',
         width: 0,
         height: 0,
       },
-      "&:disabled": {
-        cursor: "unset",
-        color: "#9ca3af",
-        fill: "#9ca3af",
-        border: "1px solid #9ca3af",
+      '&:disabled': {
+        cursor: 'unset',
+        color: '#9ca3af',
+        fill: '#9ca3af',
+        border: '1px solid #9ca3af',
         opacity: 0.6,
       },
       noData: {
         style: {
-          backgroundColor: "transparent", // background color behind the message
-          color: "#1d4ed8", // ✅ text color of “No records to display”
-          fontSize: "16px",
-          fontWeight: "500",
-          padding: "24px",
+          backgroundColor: 'transparent', // Background color behind "No records to display"
+          color: '#1d4ed8', // Text color for "No records to display"
+          fontSize: '16px',
+          fontWeight: '500',
+          padding: '24px',
         },
       },
     },
-
   };
-
 
   return (
     <CustomPaginationStyles>
@@ -140,9 +163,7 @@ const CustomDataTable: React.FC<tableProps> = ({ title, columns, data, selectabl
         />
       </div>
     </CustomPaginationStyles>
+  );
+};
 
-
-  )
-}
-
-export default CustomDataTable
+export default CustomDataTable;

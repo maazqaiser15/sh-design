@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
   icon: Icon,
   iconPosition = 'left',
   children,
-  className = '',
+  className = '', // Receive the className prop here
   disabled,
   ...props
 }) => {
@@ -39,9 +39,12 @@ export const Button: React.FC<ButtonProps> = ({
 
   const iconSize = size === 'sm' ? 16 : size === 'lg' ? 20 : 18;
 
+  // Use template literals to concatenate className properly
+  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+
   return (
     <button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={combinedClasses}
       disabled={disabled}
       {...props}
     >
