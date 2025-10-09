@@ -192,14 +192,14 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button
+          {/* <Button
             variant="ghost"
             onClick={onBack}
             icon={ArrowLeft}
             className="p-2"
           >
             Back
-          </Button>
+          </Button> */}
           {/* <div>
             <h1 className="text-2xl font-semibold text-gray-900">
               {trailer.trailerName}
@@ -225,7 +225,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
               </div>
             </div>
             <div className='flex'>
-              <Button icon={Archive} className='bg-transparent text-[#334155] hover:bg-transparent'>  Archive</Button>
+              <Button icon={Archive} className='bg-transparent  hover:bg-transparent' variant='ghost'>   Archive</Button>
               <button  className='bg-transparent rounded-lg hover:bg-transparent text-[#334155] border border-[#CBD5E1] p-2'> <Edit size={20}/> </button>
             </div>
           </div>

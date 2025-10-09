@@ -350,7 +350,7 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
       selector: (row: any) => row.action,
       cell: (row: any) => (
         <div 
-        className="relative inline-block text-left" 
+        className="relative inline-block text-right" 
         ref={activeDropdown === row.id ? dropdownRef : null}
         onClick={(e) => e.stopPropagation()}
       >
