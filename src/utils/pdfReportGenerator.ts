@@ -3,7 +3,7 @@ import jsPDF from 'jspdf';
 export interface ProjectReportData {
   projectName: string;
   projectId: string;
-  location: string;
+  site: string;
   startDate: string;
   endDate: string;
   estimatedCompletion: string;
@@ -124,9 +124,9 @@ export const generateProjectReportPDF = (data: ProjectReportData): jsPDF => {
   doc.setTextColor(0, 0, 0);
   doc.text(`Project: ${data.projectName}`, margin, yPosition);
   yPosition += 6;
-  doc.text(`Project ID: ${data.projectId}`, margin, yPosition);
+  doc.text(`Project VIN: ${data.projectId}`, margin, yPosition);
   yPosition += 6;
-  doc.text(`Location: ${data.location}`, margin, yPosition);
+  doc.text(`Site: ${data.site}`, margin, yPosition);
   yPosition += 6;
   doc.text(`Duration: ${data.startDate} - ${data.endDate}`, margin, yPosition);
   yPosition += 6;

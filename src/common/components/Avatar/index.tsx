@@ -54,7 +54,7 @@ export const Avatar: React.FC<AvatarProps> = ({
     setImageLoading(false);
   };
 
-  const shouldShowImage = src && !imageError && !imageLoading;
+  const shouldShowImage = src && !imageError;
 
   if (!shouldShowImage && showInitials) {
     return <DefaultAvatar name={name} size={size} className={className} />;

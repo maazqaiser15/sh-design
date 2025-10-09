@@ -93,7 +93,7 @@ export const ProjectComingSoon: React.FC = () => {
             </Button>
             
             <p className="text-sm text-gray-500">
-              Project ID: {projectId}
+              Project VIN: {projectId}
             </p>
           </div>
         </Card>

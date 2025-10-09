@@ -51,8 +51,6 @@ const CustomDataTable: React.FC<tableProps> = ({ title, columns, data, selectabl
         fontWeight: 400,
         paddingLeft: "16px",
         paddingRight: "16px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
         whiteSpace: "nowrap",
       },
     },
@@ -60,8 +58,6 @@ const CustomDataTable: React.FC<tableProps> = ({ title, columns, data, selectabl
       style: {
         paddingLeft: "16px",
         paddingRight: "16px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
         whiteSpace: "nowrap",
       },
     },
@@ -126,7 +122,7 @@ const CustomDataTable: React.FC<tableProps> = ({ title, columns, data, selectabl
 
   return (
     <CustomPaginationStyles>
-      <div style={{ minWidth: '1400px' }}>
+      <div style={{ minWidth: '1800px' }}>
         <DataTable
           title={title}
           columns={columns}

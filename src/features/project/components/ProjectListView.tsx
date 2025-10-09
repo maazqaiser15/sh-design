@@ -132,20 +132,8 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
             )}
           </div>
 
-          {/* Project Overview */}
-          <div className="p-4">
-            {/* Project Location */}
-            <div className="flex items-center text-gray-700">
-              <MapPin className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
-              <div>
-                <div className="text-xs text-gray-500">Project Location</div>
-                <div className="text-sm font-medium truncate">{project.location}</div>
-              </div>
-            </div>
-          </div>
-
           {/* Additional Project Info */}
-          <div className="px-4 pb-4 flex-1">
+          <div className="px-4 pb-4 pt-4 flex-1">
             <div className="grid grid-cols-2 gap-4">
               {/* Left Column */}
               <div className="space-y-3">
@@ -170,10 +158,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Right Column */}
-              <div className="space-y-3">
                 {/* Industry */}
                 <div className="flex items-center text-gray-700">
                   <Briefcase className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
@@ -182,6 +167,10 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                     <div className="text-sm font-medium">{project.industry}</div>
                   </div>
                 </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-3">
 
                  {/* Crew */}
                  <div className="flex items-center text-gray-700">
@@ -194,26 +183,28 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                            {project.crew.slice(0, 2).map((member, index) => {
                              // Use different placeholder images from the internet
                              const placeholderImages = [
-                               'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-                               'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-                               'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-                               'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
+                               'https://i.pravatar.cc/150?img=1',
+                               'https://i.pravatar.cc/150?img=2',
+                               'https://i.pravatar.cc/150?img=3',
+                               'https://i.pravatar.cc/150?img=4',
+                               'https://i.pravatar.cc/150?img=5',
+                               'https://i.pravatar.cc/150?img=6'
                              ];
+                             const imageUrl = member.avatar || placeholderImages[index % placeholderImages.length];
                              return (
                                <Avatar
                                  key={index}
                                  name={member.name || `Member ${index + 1}`}
-                                 src={member.avatar || placeholderImages[index % placeholderImages.length]}
+                                 src={imageUrl}
                                  size="sm"
                                  className="border border-white shadow-sm"
+                                 showInitials={false}
                                />
                              );
                            })}
-                           {project.crew.length > 2 && (
-                             <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center border border-white shadow-sm">
-                               <span className="text-xs text-gray-600 font-medium">+{project.crew.length - 2}</span>
-                             </div>
-                           )}
+                           <span className="text-sm font-medium text-gray-700 ml-1">
+                             ({project.crew.length})
+                           </span>
                          </>
                        ) : (
                          <span className="text-sm text-gray-500">Not assigned</span>

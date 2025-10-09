@@ -45,7 +45,7 @@ export const ProjectDateSetupDemo: React.FC = () => {
   const handleProjectClick = (projectId: string) => {
     console.log('Navigating to project:', projectId);
     // In a real app, this would navigate to the project details page
-    alert(`Navigating to project details for project ID: ${projectId}`);
+    alert(`Navigating to project details for Project VIN: ${projectId}`);
   };
 
   return (

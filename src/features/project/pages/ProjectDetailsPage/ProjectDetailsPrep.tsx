@@ -897,129 +897,127 @@ export const ProjectDetailsPrep: React.FC = () => {
         <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div className="flex flex-col gap-5">
             {/* Project Title and Actions */}
-            <div className="flex gap-4 items-start w-full">
-              <div className="flex flex-col gap-4 flex-1">
+            <div className="mb-6">
+              {/* Project Name, Status, and Action Buttons */}
+              <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
                   <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation</h1>
                   <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 flex items-center justify-center px-3 py-1.5 rounded-lg shadow-sm">
                     <p className="font-bold text-sm text-blue-700 leading-5">PV90</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-3 items-center">
-                  <div className="bg-gray-50 border border-gray-200 flex items-center justify-center px-3 py-1.5 rounded-md shadow-sm">
-                    <p className="font-medium text-xs text-gray-700 leading-5 font-mono">TXDA-SJ1BR1-EETUSC01-P20001</p>
-                  </div>
-                  <div className="flex gap-1.5 items-center bg-gray-50 px-2.5 py-1.5 rounded-md">
-                    <MapPin className="w-4 h-4 text-gray-600" />
-                    <p className="font-medium text-xs text-gray-700 leading-5">123 Main Street, Downtown</p>
-                  </div>
-                  <div className="flex gap-1.5 items-center bg-gray-50 px-2.5 py-1.5 rounded-md">
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    <p className="font-medium text-xs text-gray-700 leading-5">Feb 1, 2024 – Feb 15, 2024</p>
-                  </div>
-                  {project.assignedCoordinator && (
-                    <div className="flex gap-1.5 items-center bg-gray-50 px-2.5 py-1.5 rounded-md">
-                      <User className="w-4 h-4 text-gray-600" />
-                      <p className="font-medium text-xs text-gray-700 leading-5">Coordinator: {project.assignedCoordinator.name}</p>
-                    </div>
-                  )}
+                
+                {/* Action Buttons */}
+                <div className="flex gap-2 items-center">
+                  <Button
+                    onClick={() => setShowEditModal(true)}
+                    variant="secondary"
+                    size="sm"
+                    icon={Edit}
+                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={handleMarkStageComplete}
+                    disabled={!allStagesCompleted}
+                    className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${
+                      allStagesCompleted 
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-blue-200' 
+                        : 'bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300'
+                    }`}
+                  >
+                    Mark Stage as Complete
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-2 items-center">
-                <Button
-                  onClick={() => setShowEditModal(true)}
-                  variant="secondary"
-                  size="sm"
-                  icon={Edit}
-                  className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={handleMarkStageComplete}
-                  disabled={!allStagesCompleted}
-                  className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${
-                    allStagesCompleted 
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-blue-200' 
-                      : 'bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300'
-                  }`}
-                >
-                  Mark Stage as Complete
-                </Button>
+              
+                  {/* Single Row with All Project Information */}
+                  <div className="flex flex-wrap gap-12 items-center mb-4">
+                    {/* VIN Code */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium">VIN Code</p>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          TXDA-SJ1BR1-EETUSC01-P20001
+                        </span>
+                      </div>
+                    </div>
+                
+                {/* Site */}
+                {project.site && (
+                  <div className="flex items-center gap-2">
+                    <Building className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Site</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.site}</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Duration */}
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-green-600" />
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">Duration</p>
+                    <p className="text-sm text-gray-900 font-medium">Feb 1, 2024 – Feb 15, 2024</p>
+                  </div>
+                </div>
+                
+                {/* Industry */}
+                {project.industry && (
+                  <div className="flex items-center gap-2">
+                    <Building className="w-4 h-4 text-purple-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Industry</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.industry}</p>
+                    </div>
+                  </div>
+                )}
+                
+                    {/* Contact Person */}
+                    {project.contactPerson && (
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-orange-600" />
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium">Contact Person</p>
+                          <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
+                          {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
+                          {project.contactPerson.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+                        </div>
+                      </div>
+                    )}
+                
+                    {/* Billing Information */}
+                    {project.billingContact && (
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-red-600" />
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium">Billing Contact</p>
+                          <p className="text-sm text-gray-900 font-medium">{project.billingContact.name}</p>
+                          {project.billingContact.phone && <p className="text-xs text-gray-700">{project.billingContact.phone}</p>}
+                          {project.billingContact.email && <p className="text-xs text-gray-700">{project.billingContact.email}</p>}
+                        </div>
+                      </div>
+                    )}
+                
+                {/* Coordinator */}
+                {project.assignedCoordinator && (
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-indigo-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Coordinator</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.assignedCoordinator.name}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-gray-200 w-full"></div>
-
-            {/* Additional Project Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Site Information */}
-              {project.site && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <Building className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-900">Site</h4>
-                      <p className="text-sm text-gray-700 font-medium">{project.site}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Industry */}
-              {project.industry && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-green-100 p-2 rounded-lg">
-                      <Building className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-900">Industry</h4>
-                      <p className="text-sm text-gray-700 font-medium">{project.industry}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Contact Person */}
-              {project.contactPerson && (
-                <div className="space-y-2">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-purple-100 p-2 rounded-lg">
-                      <User className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-1">Contact Person</h4>
-                      <p className="text-sm text-gray-700 font-medium">{project.contactPerson.name}</p>
-                      <p className="text-sm text-gray-600">{project.contactPerson.phone}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Billing Contact */}
-              {project.billingContact && (
-                <div className="space-y-2">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-orange-100 p-2 rounded-lg">
-                      <Mail className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-1">Billing Contact</h4>
-                      <p className="text-sm text-gray-700 font-medium">{project.billingContact.name}</p>
-                      <p className="text-sm text-gray-600">{project.billingContact.email}</p>
-                      <p className="text-sm text-gray-600">{project.billingContact.phone}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
 
             {/* Progress Steps */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-200">
+            <div className="p-4">
               <h3 className="text-sm font-semibold text-gray-800 mb-3">Project Progress</h3>
               <div className="flex items-center w-full">
                 <ProgressStep

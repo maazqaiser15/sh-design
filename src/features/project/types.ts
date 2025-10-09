@@ -24,7 +24,7 @@ export interface ProjectCrewMember {
   avatar?: string;
   role: string;
   designation: string;
-  location: string;
+  site: string;
   phone: string;
   productivity: string; // e.g., "Efficient in Installation"
   status: 'available' | 'unavailable';
@@ -42,7 +42,7 @@ export interface ProjectFilters {
 }
 
 export interface ProjectSortOptions {
-  field: 'title' | 'vinCode' | 'status' | 'location' | 'crewCount' | 'assignedTrailer' | 'startDate' | 'endDate' | 'progress';
+  field: 'title' | 'vinCode' | 'status' | 'site' | 'crewCount' | 'assignedTrailer' | 'startDate' | 'endDate' | 'progress';
   direction: 'asc' | 'desc';
 }
 
@@ -93,7 +93,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: false,
     canEditWindows: false,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate']
   },
   'PV90': {
     canAssignTeam: false,
@@ -102,7 +102,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: false,
     canEditWindows: false,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description']
   },
   'UB': {
     canAssignTeam: false,
@@ -111,7 +111,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: false,
     canEditWindows: false,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description']
   },
   'WB': {
     canAssignTeam: true,
@@ -120,7 +120,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: false,
     canEditWindows: false,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
   },
   'WIP': {
     canAssignTeam: true,
@@ -129,7 +129,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: true,
     canEditWindows: true,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
   },
   'QF': {
     canAssignTeam: true,
@@ -138,7 +138,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: true,
     canEditWindows: false,
     canUploadQualityForm: true,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
   },
   'Completed': {
     canAssignTeam: false,
@@ -147,7 +147,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: false,
     canEditWindows: false,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer', 'qualityForm']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer', 'qualityForm']
   },
   'Archived': {
     canAssignTeam: false,
@@ -156,7 +156,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canSchedule: false,
     canEditWindows: false,
     canUploadQualityForm: false,
-    requiredFields: ['name', 'client', 'location', 'startDate', 'endDate', 'description']
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description']
   }
 };
 

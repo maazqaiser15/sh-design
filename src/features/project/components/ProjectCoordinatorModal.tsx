@@ -20,7 +20,7 @@ const mockCoordinators = [
     name: 'Jennifer White',
     email: 'jennifer@company.com',
     phone: '+1-555-0130',
-    location: 'Boston, MA',
+    site: 'Boston, MA',
     specializations: ['Project Coordination', 'Client Communication'],
     avatar: 'JW'
   },
@@ -29,7 +29,7 @@ const mockCoordinators = [
     name: 'Maria Garcia',
     email: 'maria@company.com',
     phone: '+1-555-0134',
-    location: 'Austin, TX',
+    site: 'Austin, TX',
     specializations: ['Client Relations', 'Scheduling'],
     avatar: 'MG'
   },
@@ -38,7 +38,7 @@ const mockCoordinators = [
     name: 'Jessica Miller',
     email: 'jessica@company.com',
     phone: '+1-555-0140',
-    location: 'Tampa, FL',
+    site: 'Tampa, FL',
     specializations: ['Documentation', 'Client Communication'],
     avatar: 'JM'
   },
@@ -47,7 +47,7 @@ const mockCoordinators = [
     name: 'David Brown',
     email: 'david@company.com',
     phone: '+1-555-0127',
-    location: 'Miami, FL',
+    site: 'Miami, FL',
     specializations: ['Large Scale Projects', 'Equipment Management'],
     avatar: 'DB'
   }
@@ -143,7 +143,7 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
-                <span className="text-sm text-gray-500">Project ID</span>
+                <span className="text-sm text-gray-500">Project VIN</span>
                 <p className="font-medium">{project.vinCode}</p>
               </div>
               <div>
@@ -151,8 +151,8 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                 <p className="font-medium">{project.status}</p>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Location</span>
-                <p className="font-medium">{project.location}</p>
+                <span className="text-sm text-gray-500">Site</span>
+                <p className="font-medium">{project.site}</p>
               </div>
             </div>
             
@@ -218,7 +218,7 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">{coordinator.name}</h4>
                         <p className="text-sm text-gray-600">{coordinator.email}</p>
-                        <p className="text-sm text-gray-500">{coordinator.location}</p>
+                        <p className="text-sm text-gray-500">{coordinator.site}</p>
                       </div>
                       <div className="flex items-center">
                         {selectedCoordinator === coordinator.id ? (

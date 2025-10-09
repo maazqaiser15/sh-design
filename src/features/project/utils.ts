@@ -40,7 +40,7 @@ export const filterProjects = (
       const searchableText = [
         project.title,
         project.description,
-        project.location,
+        project.site,
         project.status,
         project.vinCode,
         project.assignedTrailer || '',

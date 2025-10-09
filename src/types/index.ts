@@ -6,7 +6,7 @@ export interface Project {
   stage: ProjectStage;
   startDate: string;
   endDate: string;
-  location: string;
+  site: string;
   createdAt: string;
   updatedAt: string;
   assignedTeam: string[];
@@ -30,7 +30,7 @@ export interface TeamMember {
   name: string;
   designation: string;
   status: MemberStatus;
-  location: string;
+  site: string;
   phone: string;
   email: string;
   avatar?: string;
