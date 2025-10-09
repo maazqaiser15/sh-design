@@ -310,6 +310,8 @@ const TrailerTableView: React.FC<TrailerTableViewProps> = ({
         return "text-red-600 bg-red-50";
         case "unavailable":
         return "text-red-600 bg-red-50";
+        case "low": 
+        return 'text-yellow-600 bg-yellow-50'
       default:
         return "text-gray-600 bg-gray-50";
     }

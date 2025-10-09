@@ -442,7 +442,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                   state: Yup.string().trim().required('State is required'),
                   city: Yup.string().trim().required('City is required'),
                 })}
-                onSubmit={() => {}}
+                onSubmit={() => { }}
               >
                 {({ values, handleChange }) => (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -779,25 +779,40 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                   {/* Protective Films Section */}
                   <div className="space-y-3">
                     <h4 className="text-md font-medium text-gray-800">Protective Films</h4>
-                    
+
                     {/* Column Headers for Protective Films */}
                     <div className="bg-gray-100 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <span className="text-sm font-medium text-gray-700">Film Type</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <div className="w-20 text-center">
-                            <span className="text-xs font-medium text-gray-500">Min Threshold</span>
+                        <div className="flex items-center gap-2">
+
+                          <div className='flex'>     <div className="w-20 text-center">
+                            <span className="text-xs font-medium text-gray-500 flex">Min Threshold </span>
                           </div>
-                          <div className="w-20 text-center">
-                            <span className="text-xs font-medium text-gray-500">48</span>
+                            <span className='bg-gray-200 p-1  rounded-full w-[24px] text-xs h-[24px]'>48</span>
+                            <div className="w-20 text-center">
+                              <span className="text-xs font-medium text-gray-500 flex">Current Inventory </span>
+                            </div> </div>
+
+                          <div className='flex '>
+                            <div className="w-20 text-center">
+                              <span className="text-xs font-medium text-gray-500 flex">Min Threshold </span>
+                            </div>
+                            <span className='bg-gray-200 p-1 rounded-full w-[24px] text-xs h-[24px]'>60</span>
+                            <div className="w-20 text-center">
+                              <span className="text-xs font-medium text-gray-500 flex">Current Inventory </span>
+                            </div>
                           </div>
-                          <div className="w-20 text-center">
-                            <span className="text-xs font-medium text-gray-500">60</span>
-                          </div>
-                          <div className="w-20 text-center">
-                            <span className="text-xs font-medium text-gray-500">72</span>
+                          <div className='flex'>
+                            <div className="w-20 text-center">
+                              <span className="text-xs font-medium text-gray-500 flex">Min Threshold  </span>
+                            </div>
+                            <span className='bg-gray-200 p-1 rounded-full w-[24px] text-xs h-[24px]'>72</span>
+                            <div className="w-20 text-center">
+                              <span className="text-xs font-medium text-gray-500 flex">Current Inventory </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -841,6 +856,18 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                               placeholder="0"
                               className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
                             />
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
                           </div>
                         </div>
                       ))}
@@ -850,7 +877,7 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
                   {/* Tint Films Section */}
                   <div className="space-y-3">
                     <h4 className="text-md font-medium text-gray-800">Tint Films</h4>
-                    
+
                     {/* Column Headers for Tint Films */}
                     <div className="bg-gray-100 rounded-lg p-4">
                       <div className="flex items-center justify-between">

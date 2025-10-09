@@ -114,11 +114,6 @@ export const Team: React.FC = () => {
           >
             {row.status}
           </span>
-          {row.status === "Unavailable" && row.unavailableUntil && (
-            <span className="text-caption text-text-muted">
-              Until {row.unavailableUntil}
-            </span>
-          )}
         </div>
       )
     },
