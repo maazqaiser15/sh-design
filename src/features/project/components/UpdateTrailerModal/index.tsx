@@ -531,9 +531,6 @@ export const UpdateTrailerModal: React.FC<UpdateTrailerModalProps> = ({
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="w-20 text-center">
-                        <span className="text-xs font-medium text-gray-500">Min Threshold</span>
-                      </div>
-                      <div className="w-20 text-center">
                         <span className="text-xs font-medium text-gray-500">48</span>
                       </div>
                       <div className="w-20 text-center">
@@ -578,12 +575,6 @@ export const UpdateTrailerModal: React.FC<UpdateTrailerModalProps> = ({
                           placeholder="0"
                           className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
                         />
-                        <input
-                          type="number"
-                          min="0"
-                          placeholder="0"
-                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
                       </div>
                     </div>
                   ))}
@@ -601,9 +592,6 @@ export const UpdateTrailerModal: React.FC<UpdateTrailerModalProps> = ({
                       <span className="text-sm font-medium text-gray-700">Film Type</span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="w-20 text-center">
-                        <span className="text-xs font-medium text-gray-500">Min Threshold</span>
-                      </div>
                       <div className="w-20 text-center">
                         <span className="text-xs font-medium text-gray-500">Current Inventory</span>
                       </div>
@@ -628,12 +616,6 @@ export const UpdateTrailerModal: React.FC<UpdateTrailerModalProps> = ({
                         </span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <input
-                          type="number"
-                          min="0"
-                          placeholder="0"
-                          className="w-20 px-2 py-1 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
                         <input
                           type="number"
                           min="0"

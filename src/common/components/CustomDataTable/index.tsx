@@ -64,8 +64,6 @@ const CustomDataTable: React.FC<tableProps> = ({
         fontWeight: 400,
         paddingLeft: "16px",
         paddingRight: "16px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
         whiteSpace: "nowrap",
       },
     },
@@ -73,8 +71,6 @@ const CustomDataTable: React.FC<tableProps> = ({
       style: {
         paddingLeft: "16px",
         paddingRight: "16px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
         whiteSpace: "nowrap",
       },
     },
@@ -149,7 +145,7 @@ const CustomDataTable: React.FC<tableProps> = ({
 
   return (
     <CustomPaginationStyles>
-      <div style={{ minWidth: '1400px' }}>
+      <div style={{ minWidth: '1800px' }}>
         <DataTable
           title={title}
           columns={columns}

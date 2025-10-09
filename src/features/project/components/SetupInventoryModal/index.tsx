@@ -4,8 +4,8 @@ import { Button } from '../../../../common/components/Button';
 
 interface InventoryItem {
   id: string;
-  width: number;
-  length: number;
+  width: string;
+  length: string;
   quantity: number;
   product: string;
   interiorLayer: number;
@@ -18,172 +18,139 @@ interface InventoryItem {
   comments: string;
 }
 
-interface ProductQuantity {
-  product: string;
-  required: number;
-}
-
 interface SetupInventoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (productQuantities: ProductQuantity[]) => void;
+  onSave?: (items: InventoryItem[]) => void;
 }
 
-// Mock data
-const initialInventoryData: InventoryItem[] = [
+// Mock data for initial rows
+const mockInventoryData: InventoryItem[] = [
   {
     id: '1',
-    width: 2,
-    length: 2,
-    quantity: 1,
-    product: 'SW450SR',
+    width: '48"',
+    length: '96"',
+    quantity: 10,
+    product: 'Standard Glass',
     interiorLayer: 2,
-    exteriorLayer: 3,
-    color: 'Black',
+    exteriorLayer: 1,
+    color: 'Clear',
     tint: 'None',
     extraTintLayer: false,
-    stripping: false,
-    thickness: '4mm',
-    comments: 'Main window panel'
+    stripping: true,
+    thickness: '1/4"',
+    comments: 'Standard window glass'
   },
   {
     id: '2',
-    width: 2,
-    length: 3,
-    quantity: 2,
-    product: 'SW600FE',
-    interiorLayer: 1,
-    exteriorLayer: 4,
-    color: 'White',
-    tint: 'None',
-    extraTintLayer: false,
+    width: '36"',
+    length: '72"',
+    quantity: 5,
+    product: 'Tempered Glass',
+    interiorLayer: 3,
+    exteriorLayer: 2,
+    color: 'Bronze',
+    tint: 'Medium',
+    extraTintLayer: true,
     stripping: false,
-    thickness: '5mm',
-    comments: 'Front entrance'
+    thickness: '3/8"',
+    comments: 'Tempered for safety'
   },
   {
     id: '3',
-    width: 3,
-    length: 4,
-    quantity: 1,
-    product: 'SW440RC',
-    interiorLayer: 3,
-    exteriorLayer: 2,
-    color: 'Black',
+    width: '24"',
+    length: '48"',
+    quantity: 15,
+    product: 'Laminated Glass',
+    interiorLayer: 1,
+    exteriorLayer: 1,
+    color: 'Blue',
     tint: 'Light',
     extraTintLayer: false,
-    stripping: false,
-    thickness: '6mm',
-    comments: 'Reinforced corner'
+    stripping: true,
+    thickness: '1/2"',
+    comments: 'Laminated for security'
   },
   {
     id: '4',
-    width: 4,
-    length: 4,
+    width: '60"',
+    length: '120"',
     quantity: 3,
-    product: 'SW600RC',
+    product: 'Insulated Glass',
     interiorLayer: 4,
-    exteriorLayer: 1,
-    color: 'Black',
+    exteriorLayer: 3,
+    color: 'Green',
     tint: 'Dark',
     extraTintLayer: true,
     stripping: false,
-    thickness: '5mm',
-    comments: 'Side wall glass'
+    thickness: '5/8"',
+    comments: 'Energy efficient'
   },
   {
     id: '5',
-    width: 4,
-    length: 5,
-    quantity: 2,
-    product: 'SW600RC+',
+    width: '30"',
+    length: '60"',
+    quantity: 8,
+    product: 'Low-E Glass',
     interiorLayer: 2,
     exteriorLayer: 2,
-    color: 'Black',
+    color: 'Silver',
     tint: 'None',
     extraTintLayer: false,
-    stripping: false,
-    thickness: '6mm',
-    comments: 'Heavy duty panel'
-  },
-  {
-    id: '6',
-    width: 3,
-    length: 2,
-    quantity: 1,
-    product: 'SW600BR',
-    interiorLayer: 1,
-    exteriorLayer: 3,
-    color: 'Black',
-    tint: 'None',
-    extraTintLayer: false,
-    stripping: false,
-    thickness: '5mm',
-    comments: 'Balcony section'
-  },
-  {
-    id: '7',
-    width: 2,
-    length: 6,
-    quantity: 2,
-    product: 'Tint Only',
-    interiorLayer: 2,
-    exteriorLayer: 4,
-    color: 'Black',
-    tint: 'Dark',
-    extraTintLayer: true,
-    stripping: false,
-    thickness: '4mm',
-    comments: 'Tint overlay'
-  },
-  {
-    id: '8',
-    width: 5,
-    length: 5,
-    quantity: 1,
-    product: 'Kevlar',
-    interiorLayer: 3,
-    exteriorLayer: 3,
-    color: 'Black',
-    tint: 'None',
-    extraTintLayer: false,
-    stripping: false,
-    thickness: '7mm',
-    comments: 'Safety reinforced'
+    stripping: true,
+    thickness: '1/4"',
+    comments: 'Low emissivity coating'
   }
 ];
 
-const colorOptions = ['Black', 'White', 'Gray', 'Blue', 'Green', 'Red'];
+const colorOptions = ['Clear', 'Bronze', 'Blue', 'Green', 'Silver', 'Gray', 'Black'];
 const tintOptions = ['None', 'Light', 'Medium', 'Dark'];
-const thicknessOptions = ['3mm', '4mm', '5mm', '6mm', '7mm', '8mm'];
+const thicknessOptions = ['1/8"', '1/4"', '3/8"', '1/2"', '5/8"', '3/4"', '1"'];
+const productOptions = ['Standard Glass', 'Tempered Glass', 'Laminated Glass', 'Insulated Glass', 'Low-E Glass', 'Safety Glass'];
 
-/**
- * SetupInventoryModal - Modal for setting up project inventory
- * Features a comprehensive table with editable fields for inventory management
- */
 export const SetupInventoryModal: React.FC<SetupInventoryModalProps> = ({
   isOpen,
   onClose,
-  onSubmit
+  onSave
 }) => {
-  const [inventoryData] = useState<InventoryItem[]>(initialInventoryData);
-  const [productQuantities, setProductQuantities] = useState<ProductQuantity[]>(() => {
-    // Initialize with unique products and default quantity of 1
-    const uniqueProducts = [...new Set(initialInventoryData.map(item => item.product))];
-    return uniqueProducts.map(product => ({ product, required: 1 }));
-  });
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(mockInventoryData);
 
-  const handleQuantityChange = (product: string, quantity: number) => {
-    setProductQuantities(prev => 
+  const handleItemChange = (id: string, field: keyof InventoryItem, value: string | number | boolean) => {
+    setInventoryItems(prev => 
       prev.map(item => 
-        item.product === product ? { ...item, required: quantity } : item
+        item.id === id 
+          ? { ...item, [field]: value }
+          : item
       )
     );
   };
 
-  const handleSubmit = () => {
-    onSubmit(productQuantities);
+  const handleSave = () => {
+    onSave?.(inventoryItems);
     onClose();
+  };
+
+  const addNewItem = () => {
+    const newItem: InventoryItem = {
+      id: Date.now().toString(),
+      width: '',
+      length: '',
+      quantity: 1,
+      product: '',
+      interiorLayer: 1,
+      exteriorLayer: 1,
+      color: '',
+      tint: '',
+      extraTintLayer: false,
+      stripping: false,
+      thickness: '',
+      comments: ''
+    };
+    setInventoryItems(prev => [...prev, newItem]);
+  };
+
+  const removeItem = (id: string) => {
+    setInventoryItems(prev => prev.filter(item => item.id !== id));
   };
 
   return (
@@ -193,79 +160,242 @@ export const SetupInventoryModal: React.FC<SetupInventoryModalProps> = ({
       title="Setup Inventory"
       size="xl"
     >
-      <div className="p-6">
-        {/* Read-only Table Container */}
-        <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 sticky top-0">
-              <tr>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Width</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Length</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Quantity</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Product</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Interior Layer</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Exterior Layer</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Color</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Tint</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Extra Tint</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Stripping</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700 border-r border-gray-200">Thickness</th>
-                <th className="px-3 py-2 text-left font-medium text-gray-700">Comments</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {inventoryData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">{item.width}</td>
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">{item.length}</td>
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">{item.quantity}</td>
-                  <td className="px-3 py-2 border-r border-gray-200 font-medium">{item.product}</td>
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">{item.interiorLayer}</td>
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">{item.exteriorLayer}</td>
-                  <td className="px-3 py-2 border-r border-gray-200">{item.color}</td>
-                  <td className="px-3 py-2 border-r border-gray-200">{item.tint}</td>
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">
-                    {item.extraTintLayer ? '✓' : '✗'}
-                  </td>
-                  <td className="px-3 py-2 border-r border-gray-200 text-center">
-                    {item.stripping ? '✓' : '✗'}
-                  </td>
-                  <td className="px-3 py-2 border-r border-gray-200">{item.thickness}</td>
-                  <td className="px-3 py-2 text-gray-600">{item.comments}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="space-y-6">
+        {/* Add New Item Button */}
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={addNewItem}
+          >
+            Add New Item
+          </Button>
         </div>
 
-        {/* Product Quantity Input Section */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Set Required Quantities</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {productQuantities.map((productQty) => (
-              <div key={productQty.product} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
-                <span className="font-medium text-gray-900">{productQty.product}</span>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600">Required:</label>
-                  <input
-                    type="number"
-                    value={productQty.required}
-                    onChange={(e) => handleQuantityChange(productQty.product, parseInt(e.target.value) || 0)}
-                    className="w-20 px-2 py-1 border border-gray-300 rounded text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    min="0"
-                  />
-                </div>
-              </div>
-            ))}
+        {/* Table Container */}
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto max-h-96 overflow-y-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Width
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Length
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Quantity
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                    Product
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                    Interior Layer
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                    Exterior Layer
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Color
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Tint
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                    Extra Tint
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Stripping
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                    Thickness
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                    Comments/Notes
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[60px]">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {inventoryItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    {/* Width */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="text"
+                        value={item.width}
+                        onChange={(e) => handleItemChange(item.id, 'width', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="e.g., 48&quot;"
+                      />
+                    </td>
+
+                    {/* Length */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="text"
+                        value={item.length}
+                        onChange={(e) => handleItemChange(item.id, 'length', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="e.g., 96&quot;"
+                      />
+                    </td>
+
+                    {/* Quantity */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => handleItemChange(item.id, 'quantity', parseInt(e.target.value) || 1)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </td>
+
+                    {/* Product */}
+                    <td className="px-4 py-3">
+                      <select
+                        value={item.product}
+                        onChange={(e) => handleItemChange(item.id, 'product', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select Product</option>
+                        {productOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Interior Layer */}
+                    <td className="px-4 py-3">
+                      <select
+                        value={item.interiorLayer}
+                        onChange={(e) => handleItemChange(item.id, 'interiorLayer', parseInt(e.target.value))}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        {[1, 2, 3, 4].map(num => (
+                          <option key={num} value={num}>{num}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Exterior Layer */}
+                    <td className="px-4 py-3">
+                      <select
+                        value={item.exteriorLayer}
+                        onChange={(e) => handleItemChange(item.id, 'exteriorLayer', parseInt(e.target.value))}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        {[1, 2, 3, 4].map(num => (
+                          <option key={num} value={num}>{num}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Color */}
+                    <td className="px-4 py-3">
+                      <select
+                        value={item.color}
+                        onChange={(e) => handleItemChange(item.id, 'color', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select Color</option>
+                        {colorOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Tint */}
+                    <td className="px-4 py-3">
+                      <select
+                        value={item.tint}
+                        onChange={(e) => handleItemChange(item.id, 'tint', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select Tint</option>
+                        {tintOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Extra Tint Layer */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={item.extraTintLayer}
+                        onChange={(e) => handleItemChange(item.id, 'extraTintLayer', e.target.checked)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </td>
+
+                    {/* Stripping */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={item.stripping}
+                        onChange={(e) => handleItemChange(item.id, 'stripping', e.target.checked)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </td>
+
+                    {/* Thickness */}
+                    <td className="px-4 py-3">
+                      <select
+                        value={item.thickness}
+                        onChange={(e) => handleItemChange(item.id, 'thickness', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select Thickness</option>
+                        {thicknessOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Comments/Notes */}
+                    <td className="px-4 py-3">
+                      <textarea
+                        value={item.comments}
+                        onChange={(e) => handleItemChange(item.id, 'comments', e.target.value)}
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        rows={2}
+                        placeholder="Add comments..."
+                      />
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 mt-6">
-          <Button variant="secondary" onClick={onClose}>
+        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <Button
+            variant="secondary"
+            onClick={onClose}
+          >
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
+          <Button
+            variant="primary"
+            onClick={handleSave}
+          >
             Save
           </Button>
         </div>

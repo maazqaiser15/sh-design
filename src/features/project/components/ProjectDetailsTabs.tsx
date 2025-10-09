@@ -106,7 +106,7 @@ const ProjectDetailsTabs: React.FC<ProjectDetailsTabsProps> = ({
                     <h4 className="font-semibold text-sm text-[#101828] mb-2">Project Details</h4>
                     <div className="space-y-2 text-sm text-[#475467]">
                       <div className="flex justify-between">
-                        <span>Project ID:</span>
+                        <span>Project VIN:</span>
                         <span className="font-medium">{project.projectId}</span>
                       </div>
                       <div className="flex justify-between">
@@ -125,14 +125,14 @@ const ProjectDetailsTabs: React.FC<ProjectDetailsTabsProps> = ({
                   </div>
                   
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="font-semibold text-sm text-[#101828] mb-2">Location</h4>
+                    <h4 className="font-semibold text-sm text-[#101828] mb-2">Site</h4>
                     <div className="space-y-2 text-sm text-[#475467]">
                       <div className="flex items-center gap-2">
                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span>{project.location}</span>
+                        <span>{project.site}</span>
                       </div>
                     </div>
                   </div>
@@ -196,7 +196,7 @@ const ProjectDetailsTabs: React.FC<ProjectDetailsTabsProps> = ({
                       <path d="M10 18.3333C10 18.3333 16.6667 12.5 16.6667 8.33333C16.6667 6.44928 15.7143 4.64236 14.0711 3.28595C12.4278 1.92954 10.2243 1.16667 8.33333 1.16667C6.44238 1.16667 4.23886 1.92954 2.59564 3.28595C0.952427 4.64236 0 6.44928 0 8.33333C0 12.5 6.66667 18.3333 10 18.3333Z" stroke="#667085" strokeWidth="1.5"/>
                       <path d="M10 10.8333C11.3807 10.8333 12.5 9.71405 12.5 8.33333C12.5 6.95262 11.3807 5.83333 10 5.83333C8.61929 5.83333 7.5 6.95262 7.5 8.33333C7.5 9.71405 8.61929 10.8333 10 10.8333Z" stroke="#667085" strokeWidth="1.5"/>
                     </svg>
-                    <p className="font-normal text-xs text-[#475467] leading-5">{project.location}</p>
+                    <p className="font-normal text-xs text-[#475467] leading-5">{project.site}</p>
                   </div>
                   <div className="flex gap-1 items-center">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

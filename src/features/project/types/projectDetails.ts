@@ -14,7 +14,7 @@ export interface ProjectDetails {
   stage: ProjectStage;
   status: ProjectStatus;
   description?: string;
-  location: string;
+  site: string;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -26,7 +26,6 @@ export interface ProjectDetails {
     phone: string;
   };
   // Additional project information
-  site?: string;
   industry?: string;
   contactPerson?: {
     name: string;
@@ -101,7 +100,7 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
   stage: 'PV90',
   status: 'PV90',
   description: 'Comprehensive security film installation for the new downtown office complex',
-  location: '123 Main Street, Downtown',
+  site: '123 Main Street, Downtown',
   startDate: '2024-02-01',
   endDate: '2024-02-15',
   createdAt: '2024-01-15T00:00:00Z',
@@ -113,7 +112,6 @@ export const MOCK_PROJECT_DETAILS: ProjectDetails = {
     phone: '+1-555-0130'
   },
   // Additional project information
-  site: 'Marriot Downtown Hotel',
   industry: 'Hospitality',
   contactPerson: {
     name: 'Michael Rodriguez',
@@ -134,21 +132,21 @@ export const MOCK_PREPARATION_DATA: PreparationStageData = {
         name: 'John Smith',
         role: 'Lead Supervisor',
         avatar: 'JS',
-        location: 'Los Angeles, CA'
+        site: 'Los Angeles, CA'
       },
       {
         id: 'tm-002',
         name: 'Sarah Johnson',
         role: 'Crew Leader',
         avatar: 'SJ',
-        location: 'Chicago, IL'
+        site: 'Chicago, IL'
       },
       {
         id: 'tm-003',
         name: 'Mike Wilson',
         role: 'Installer',
         avatar: 'MW',
-        location: 'Houston, TX'
+        site: 'Houston, TX'
       }
     ],
     count: 3,
@@ -156,7 +154,7 @@ export const MOCK_PREPARATION_DATA: PreparationStageData = {
       id: 'tm-001',
       name: 'John Smith',
       role: 'Lead Supervisor',
-      location: 'Los Angeles, CA'
+      site: 'Los Angeles, CA'
     }
   },
   assignedTrailer: null, // Initially no trailer assigned for PV90, UB, WB stages

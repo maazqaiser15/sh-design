@@ -281,7 +281,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
       const reportData: ProjectReportData = {
         projectName: project.name || 'Project',
         projectId: project.projectId || 'N/A',
-        location: project.location || 'N/A',
+        site: project.site || 'N/A',
         startDate: project.startDate || 'N/A',
         endDate: project.endDate || 'N/A',
         estimatedCompletion: projectReport.estimatedCompletion,
@@ -343,7 +343,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                       </span>
                       <div className="flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
-                        <span>{project.location || 'N/A'}</span>
+                        <span>{project.site || 'N/A'}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
