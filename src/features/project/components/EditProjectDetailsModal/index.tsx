@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, Phone, Mail, Building, ChevronDown } from 'lucide-react';
+import { Calendar, User, Phone, Building, ChevronDown } from 'lucide-react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Modal } from '../../../../common/components/Modal';
@@ -17,9 +17,6 @@ interface EditProjectDetailsModalProps {
 interface FormData {
   contactPersonName: string;
   contactPersonPhone: string;
-  billingContactName: string;
-  billingContactEmail: string;
-  billingContactPhone: string;
   startDate: string;
   endDate: string;
   coordinatorId: string;
@@ -41,12 +38,6 @@ const validationSchema = Yup.object({
     /^[\+]?[1-9][\d]{0,15}$/,
     'Please enter a valid phone number'
   ),
-  billingContactName: Yup.string(),
-  billingContactEmail: Yup.string().email('Please enter a valid email address'),
-  billingContactPhone: Yup.string().matches(
-    /^[\+]?[1-9][\d]{0,15}$/,
-    'Please enter a valid phone number'
-  ),
   startDate: Yup.date(),
   endDate: Yup.date().when('startDate', (startDate, schema) => {
     return startDate ? schema.min(startDate, 'End date must be after start date') : schema;
@@ -63,9 +54,6 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
   const initialValues: FormData = {
     contactPersonName: project.contactPerson?.name || '',
     contactPersonPhone: project.contactPerson?.phone || '',
-    billingContactName: project.billingContact?.name || '',
-    billingContactEmail: project.billingContact?.email || '',
-    billingContactPhone: project.billingContact?.phone || '',
     startDate: project.startDate,
     endDate: project.endDate,
     coordinatorId: project.assignedCoordinator?.id || ''
@@ -79,11 +67,6 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
       contactPerson: {
         name: values.contactPersonName,
         phone: values.contactPersonPhone
-      },
-      billingContact: {
-        name: values.billingContactName,
-        email: values.billingContactEmail,
-        phone: values.billingContactPhone
       },
       startDate: values.startDate,
       endDate: values.endDate,
@@ -128,38 +111,6 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                 <FormField
                   label="Phone Number"
                   name="contactPersonPhone"
-                  type="tel"
-                  placeholder="Enter phone number"
-                  isLeftIcon={<Phone className="w-4 h-4" />}
-                />
-              </div>
-            </div>
-
-            {/* Billing Contact Section */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                <div className="p-1.5 bg-green-100 rounded-md">
-                  <Mail className="w-4 h-4 text-green-600" />
-                </div>
-                Billing Contact
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <FormField
-                  label="Name"
-                  name="billingContactName"
-                  type="text"
-                  placeholder="Enter billing contact name"
-                />
-                <FormField
-                  label="Email"
-                  name="billingContactEmail"
-                  type="email"
-                  placeholder="Enter email address"
-                  isLeftIcon={<Mail className="w-4 h-4" />}
-                />
-                <FormField
-                  label="Phone Number"
-                  name="billingContactPhone"
                   type="tel"
                   placeholder="Enter phone number"
                   isLeftIcon={<Phone className="w-4 h-4" />}

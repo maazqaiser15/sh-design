@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertCircle, FileText } from 'lucide-react';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
@@ -8,6 +8,7 @@ interface QualityCheckFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: QualityCheckFormData) => void;
+  initialData?: Partial<QualityCheckFormData>;
 }
 
 export interface QualityCheckFormData {
@@ -17,12 +18,15 @@ export interface QualityCheckFormData {
   ownersRep: string;
   signature: string;
   comments: string;
+  markQF: boolean;
+  markQC: boolean;
 }
 
 export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
   isOpen,
   onClose,
-  onSubmit
+  onSubmit,
+  initialData
 }) => {
   const [formData, setFormData] = useState<QualityCheckFormData>({
     todaysDate: new Date().toLocaleDateString(),
@@ -30,11 +34,30 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
     siteLocation: '123 Main Street, Downtown',
     ownersRep: '',
     signature: '',
-    comments: ''
+    comments: '',
+    markQF: false,
+    markQC: false,
+    ...initialData
   });
 
-  const handleInputChange = (field: keyof QualityCheckFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  // Update form data when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData(prev => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
+  const handleInputChange = (field: keyof QualityCheckFormData, value: string | boolean) => {
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // If QF is unchecked, automatically uncheck QC
+      if (field === 'markQF' && value === false) {
+        newData.markQC = false;
+      }
+      
+      return newData;
+    });
   };
 
 
@@ -51,7 +74,9 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
       siteLocation: '123 Main Street, Downtown',
       ownersRep: '',
       signature: '',
-      comments: ''
+      comments: '',
+      markQF: false,
+      markQC: false
     });
     onClose();
   };
@@ -183,6 +208,52 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
             </div>
           </div>
 
+          {/* Note Section */}
+          <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+            <p className="font-medium mb-1">Note:</p>
+            <p>• At least one option must be selected to submit the form</p>
+            <p>• QF must be marked before QC can be marked</p>
+            <p>• If only QF is marked, the project will wait for QC approval</p>
+          </div>
+
+          {/* Quality Control Checkboxes */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Quality Control Actions</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border">
+                <input
+                  type="checkbox"
+                  id="markQF"
+                  checked={formData.markQF}
+                  onChange={(e) => handleInputChange('markQF', e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="markQF" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Mark QF (Quality Form) - Mark this project for Quality Form review
+                </label>
+              </div>
+              
+              <div className={`flex items-center space-x-3 p-4 rounded-lg border ${
+                !formData.markQF ? 'bg-gray-100 opacity-60' : 'bg-gray-50'
+              }`}>
+                <input
+                  type="checkbox"
+                  id="markQC"
+                  checked={formData.markQC}
+                  onChange={(e) => handleInputChange('markQC', e.target.checked)}
+                  disabled={!formData.markQF}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 disabled:cursor-not-allowed"
+                />
+                <label htmlFor="markQC" className={`text-sm font-medium cursor-pointer ${
+                  !formData.markQF ? 'text-gray-400' : 'text-gray-700'
+                }`}>
+                  Mark QC (Quality Control) - Mark this project for Quality Control review
+                  {!formData.markQF && ' (QF must be marked first)'}
+                </label>
+              </div>
+            </div>
+          </div>
+
           {/* Form Actions */}
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
             <Button
@@ -195,7 +266,7 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
             <Button
               type="submit"
               variant="primary"
-              disabled={!formData.signature}
+              disabled={!formData.signature || (!formData.markQF && !formData.markQC)}
             >
               Submit Quality Walk Form
             </Button>

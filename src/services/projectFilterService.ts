@@ -54,7 +54,7 @@ export function filterProjectsByUserRole<T extends { status: ProjectStatus }>(
  * Get available project statuses for a user type
  */
 export function getAvailableProjectStatuses(userType: UserType): ProjectStatus[] {
-  const allStatuses: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed', 'Archived'];
+  const allStatuses: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed', 'Archived'];
   
   return allStatuses.filter(status => 
     isProjectStatusVisibleToUser(status, userType)

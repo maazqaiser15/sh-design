@@ -51,7 +51,7 @@ import { Trailer } from '../../../../types';
 import { EXPANDED_TRAILER_DATA } from '../../../../pages/Trailers/expandedTrailerData';
 
 interface ProjectDetailsWIPProps {
-  projectStatus?: 'WIP' | 'QF' | 'Completed';
+  projectStatus?: 'WIP' | 'QF' | 'QC' | 'Completed';
 }
 
 // Inline Setup Windows Form Component
@@ -407,7 +407,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const { showToast } = useToast();
   
   // State for project status
-  const [projectStatus, setProjectStatus] = useState<'WIP' | 'QF' | 'Completed'>(initialProjectStatus);
+  const [projectStatus, setProjectStatus] = useState<'WIP' | 'QF' | 'QC' | 'Completed'>(initialProjectStatus);
   const { user } = useAuth();
   const { isMobile } = useSidebar();
   const [activeTab, setActiveTab] = useState('job-brief');
@@ -435,6 +435,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   // Modal State
   const [showQualityCheckModal, setShowQualityCheckModal] = useState(false);
+  const [qualityCheckModalInitialData, setQualityCheckModalInitialData] = useState<Partial<QualityCheckFormData> | undefined>(undefined);
   const [showAddUsageModal, setShowAddUsageModal] = useState(false);
   const [showUpdateTrailerModal, setShowUpdateTrailerModal] = useState(false);
   const [selectedTrailer, setSelectedTrailer] = useState<Trailer | null>(null);
@@ -449,6 +450,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
   const [isInventoryUpdated, setIsInventoryUpdated] = useState(false);
   const [isQualityFormSigned, setIsQualityFormSigned] = useState(false);
+  const [qualityFormStatus, setQualityFormStatus] = useState<'none' | 'qf-marked' | 'qc-marked' | 'both-marked'>('none');
+  
+  // Check if all cards are completed
+  const allCardsCompleted = isTrailerUpdated && isInventoryUpdated && isQualityFormSigned && qualityFormStatus === 'both-marked';
   
   // Setup Windows State
   const [showInlineSetup, setShowInlineSetup] = useState(false);
@@ -649,14 +654,53 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   // Modal handlers
   const handleSignQualityCheckForm = () => {
+    // If QF is already marked, pre-populate the form with QF checked
+    if (qualityFormStatus === 'qf-marked') {
+      setQualityCheckModalInitialData({
+        markQF: true,
+        markQC: false
+      });
+    } else {
+      setQualityCheckModalInitialData(undefined);
+    }
     setShowQualityCheckModal(true);
   };
 
   const handleQualityCheckFormSubmit = (formData: QualityCheckFormData) => {
     setShowQualityCheckModal(false);
-    setIsQualityFormSigned(true);
-    showToast('Quality check form submitted successfully');
+    
+    // Determine the quality form status based on checkboxes
+    if (formData.markQF && formData.markQC) {
+      setQualityFormStatus('both-marked');
+      setIsQualityFormSigned(true);
+      setProjectStatus('QC');
+      showToast('Quality check form submitted - Both QF and QC marked, project moved to QC status');
+    } else if (formData.markQF) {
+      setQualityFormStatus('qf-marked');
+      setIsQualityFormSigned(true);
+      setProjectStatus('QF');
+      showToast('Quality check form submitted - QF marked, waiting for QC');
+    } else if (formData.markQC) {
+      setQualityFormStatus('qc-marked');
+      setIsQualityFormSigned(true);
+      setProjectStatus('QC');
+      showToast('Quality check form submitted - QC marked, project moved to QC status');
+    }
+    
     console.log('Quality Check Form Data:', formData);
+  };
+
+  const handleMarkQC = () => {
+    setQualityFormStatus('both-marked');
+    setProjectStatus('QC');
+    showToast('QC marked successfully - Project moved to QC status');
+  };
+
+  const handleMarkProjectAsCompleted = () => {
+    setProjectStatus('Completed');
+    showToast('Project marked as completed successfully');
+    // Navigate to projects page with status and title query parameters
+    navigate(`/projects/${projectId}?status=Completed&title=${encodeURIComponent(project.name)}`);
   };
 
   const handleAddUsage = () => {
@@ -1018,6 +1062,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     <span className={`px-2 py-1 rounded-md text-xs sm:text-sm font-semibold w-fit ${
                       projectStatus === 'WIP' ? 'bg-blue-50 text-blue-700' :
                       projectStatus === 'QF' ? 'bg-orange-50 text-orange-700' :
+                      projectStatus === 'QC' ? 'bg-indigo-50 text-indigo-700' :
                       'bg-green-50 text-green-700'
                     }`}>
                       {projectStatus}
@@ -1054,8 +1099,19 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       variant="primary"
                       onClick={() => showToast('Project approved for completion')}
                       className="px-3 py-2 text-sm w-full sm:w-auto"
+                      disabled={!allCardsCompleted}
                     >
                       Approve Completion
+                    </Button>
+                  )}
+                  {allCardsCompleted && user?.userType !== 'execution-team' && (
+                    <Button
+                      variant="primary"
+                      onClick={handleMarkProjectAsCompleted}
+                      icon={CheckCircle}
+                      className="px-3 py-2 text-sm w-full sm:w-auto"
+                    >
+                      Mark as Completed
                     </Button>
                   )}
                   {projectStatus === 'Completed' && user?.userType !== 'execution-team' && (
@@ -1071,18 +1127,20 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
               </div>
             </div>
 
-            {/* Progress Section - Hidden for execution team and QF state */}
-            {user?.userType !== 'execution-team' && projectStatus !== 'QF' && (
+            {/* Progress Section - Hidden for execution team, QF and QC states */}
+            {user?.userType !== 'execution-team' && projectStatus !== 'QF' && projectStatus !== 'QC' && (
             <div className="bg-gray-50 rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
                   {projectStatus === 'WIP' ? 'Project Progress' :
                    projectStatus === 'QF' ? 'Quality Review Progress' :
+                   projectStatus === 'QC' ? 'Quality Control Progress' :
                    'Project Completion'}
                 </h3>
                 <span className="text-sm text-gray-600">
                   {projectStatus === 'WIP' ? `${project.progress}% Complete` :
                    projectStatus === 'QF' ? 'Under Review' :
+                   projectStatus === 'QC' ? 'Quality Control' :
                    '100% Complete'}
                 </span>
               </div>
@@ -1091,6 +1149,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   className={`h-2 rounded-full transition-all duration-300 ${
                     projectStatus === 'WIP' ? 'bg-blue-600' :
                     projectStatus === 'QF' ? 'bg-orange-600' :
+                    projectStatus === 'QC' ? 'bg-indigo-600' :
                     'bg-green-600'
                   }`}
                   style={{ width: `${projectStatus === 'Completed' ? 100 : project.progress}%` }}
@@ -1101,11 +1160,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   {(user?.userType as string) === 'execution-team' ? '' :
                    projectStatus === 'WIP' ? `Current Phase: ${project.currentPhase}` :
                    projectStatus === 'QF' ? 'Status: Quality Review in Progress' :
+                   projectStatus === 'QC' ? 'Status: Quality Control in Progress' :
                    'Status: Project Completed Successfully'}
                 </span>
                 <span>
                   {projectStatus === 'WIP' ? `Est. Completion: ${project.estimatedCompletion}` :
                    projectStatus === 'QF' ? 'Review Due: 2 days' :
+                   projectStatus === 'QC' ? 'QC Due: 1 day' :
                    `Completed: ${project.endDate}`}
                 </span>
               </div>
@@ -1113,7 +1174,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             )}
 
             {/* Action Cards Section - Hidden for execution team */}
-            {user?.userType !== 'execution-team' && projectStatus === 'QF' && (
+            {user?.userType !== 'execution-team' && (projectStatus === 'QF' || projectStatus === 'QC') && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {/* Update Trailer Card */}
               <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
@@ -1220,15 +1281,25 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
               {/* Sign Quality Form Card */}
               <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
                 isQualityFormSigned 
-                  ? 'border-green-200 bg-green-50' 
+                  ? qualityFormStatus === 'both-marked' 
+                    ? 'border-green-200 bg-green-50' 
+                    : 'border-blue-200 bg-blue-50'
                   : 'border-gray-200 hover:shadow-md cursor-pointer'
               }`}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    isQualityFormSigned ? 'bg-green-100' : 'bg-purple-50'
+                    isQualityFormSigned 
+                      ? qualityFormStatus === 'both-marked' 
+                        ? 'bg-green-100' 
+                        : 'bg-blue-100'
+                      : 'bg-purple-50'
                   }`}>
                     {isQualityFormSigned ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      qualityFormStatus === 'both-marked' ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <Clock className="w-5 h-5 text-blue-600" />
+                      )
                     ) : (
                       <FileCheck className="w-5 h-5 text-purple-600" />
                     )}
@@ -1236,16 +1307,52 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   <h3 className="text-lg font-semibold text-gray-900">Sign Quality Form</h3>
                 </div>
                 <p className="text-sm text-gray-600 mb-4">
-                  {isQualityFormSigned 
-                    ? 'Quality assurance form has been signed successfully.'
-                    : 'Complete and sign the quality assurance form for project approval.'
+                  {!isQualityFormSigned 
+                    ? 'Complete and sign the quality assurance form for project approval.'
+                    : qualityFormStatus === 'both-marked'
+                    ? 'QF & QC submitted successfully.'
+                    : qualityFormStatus === 'qf-marked'
+                    ? 'QF is marked, waiting for QC to mark.'
+                    : qualityFormStatus === 'qc-marked'
+                    ? 'QC is marked, quality control review completed.'
+                    : 'Quality assurance form has been signed successfully.'
                   }
                 </p>
                 {isQualityFormSigned ? (
-                  <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
-                    <CheckCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Completed</span>
-                  </div>
+                  qualityFormStatus === 'qf-marked' ? (
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 text-blue-700 bg-blue-100 px-3 py-2 rounded-md flex-1">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm font-medium">QF Marked - Waiting for QC</span>
+                      </div>
+                      <Button 
+                        variant="primary" 
+                        className="px-4 py-2 text-sm font-medium"
+                        onClick={handleSignQualityCheckForm}
+                        icon={FileCheck}
+                      >
+                        Mark QC
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className={`flex items-center gap-2 px-3 py-2 rounded-md ${
+                      qualityFormStatus === 'both-marked'
+                        ? 'text-green-700 bg-green-100'
+                        : 'text-blue-700 bg-blue-100'
+                    }`}>
+                      {qualityFormStatus === 'both-marked' ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : (
+                        <Clock className="w-4 h-4" />
+                      )}
+                      <span className="text-sm font-medium">
+                        {qualityFormStatus === 'both-marked'
+                          ? 'Completed'
+                          : 'QC Marked'
+                        }
+                      </span>
+                    </div>
+                  )
                 ) : (
                   <Button 
                     variant="primary" 
@@ -1258,6 +1365,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
               </div>
             </div>
             )}
+
 
             {/* Stats Section - Hidden for execution team and only show for WIP status */}
             {user?.userType !== 'execution-team' && projectStatus === 'WIP' && (
@@ -1407,6 +1515,12 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 ] : projectStatus === 'QF' ? [
                   { id: 'quality-check', label: 'Quality Check' },
                   { id: 'issues', label: 'Issues & Fixes' },
+                  { id: 'team', label: 'Team' },
+                  { id: 'document', label: 'Document' },
+                  { id: 'notes', label: 'Notes' }
+                ] : projectStatus === 'QC' ? [
+                  { id: 'quality-control', label: 'Quality Control' },
+                  { id: 'final-review', label: 'Final Review' },
                   { id: 'team', label: 'Team' },
                   { id: 'document', label: 'Document' },
                   { id: 'notes', label: 'Notes' }
@@ -2310,6 +2424,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         isOpen={showQualityCheckModal}
         onClose={() => setShowQualityCheckModal(false)}
         onSubmit={handleQualityCheckFormSubmit}
+        initialData={qualityCheckModalInitialData}
       />
 
       <AddUsageModal

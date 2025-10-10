@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, CheckCircle, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar } from 'lucide-react';
+import { Plus, CheckCircle, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, FileText } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
@@ -23,6 +23,7 @@ import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils'
 import { TrailerForAssignment } from '../../types/trailers';
 import { Window, MOCK_WINDOWS } from '../../types/windows';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
+import { SetupInventoryModal } from '../../components/SetupInventoryModal';
 
 // Icons from Figma design
 
@@ -216,6 +217,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [isTravelAccommodationCompleted, setIsTravelAccommodationCompleted] = useState(false);
   const [isAssignedTeamCompleted, setIsAssignedTeamCompleted] = useState(false);
   const [showTravelAccommodationRequestModal, setShowTravelAccommodationRequestModal] = useState(false);
+  const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
   const [showTravelAccommodationDetailsModal, setShowTravelAccommodationDetailsModal] = useState(false);
   const [travelAccommodationRequestSubmitted, setTravelAccommodationRequestSubmitted] = useState(false);
   const [travelAccommodationNotRequired, setTravelAccommodationNotRequired] = useState(false);
@@ -919,6 +921,15 @@ export const ProjectDetailsPrep: React.FC = () => {
                     Edit
                   </Button>
                   <Button
+                    onClick={() => setShowSetupInventoryModal(true)}
+                    variant="secondary"
+                    size="sm"
+                    icon={FileText}
+                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    View Take Off Sheet
+                  </Button>
+                  <Button
                     onClick={handleMarkStageComplete}
                     disabled={!allStagesCompleted}
                     className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${allStagesCompleted
@@ -998,18 +1009,6 @@ export const ProjectDetailsPrep: React.FC = () => {
                   </div>
                 )}
 
-                {/* Billing Information */}
-                {project.billingContact && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-red-600" />
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium">Billing Contact</p>
-                      <p className="text-sm text-gray-900 font-medium">{project.billingContact.name}</p>
-                      {project.billingContact.phone && <p className="text-xs text-gray-700">{project.billingContact.phone}</p>}
-                      {project.billingContact.email && <p className="text-xs text-gray-700">{project.billingContact.email}</p>}
-                    </div>
-                  </div>
-                )}
 
 
               </div>
@@ -1494,6 +1493,16 @@ export const ProjectDetailsPrep: React.FC = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Setup Inventory Modal */}
+      <SetupInventoryModal
+        isOpen={showSetupInventoryModal}
+        onClose={() => setShowSetupInventoryModal(false)}
+        onSave={(items) => {
+          console.log('Inventory items saved:', items);
+          showToast('Inventory setup saved successfully');
+        }}
+      />
     </div>
   );
 };

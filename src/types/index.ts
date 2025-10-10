@@ -14,7 +14,7 @@ export interface Project {
   progress: number;
 }
 
-export type ProjectStatus = 'UB' | 'WB' | 'WIP' | 'Completed' | 'completed' | 'on-hold';
+export type ProjectStatus = 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed' | 'completed' | 'on-hold';
 export type ProjectStage = 'preparation' | 'execution' | 'completion';
 
 export interface ChecklistItem {

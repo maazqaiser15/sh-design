@@ -1,7 +1,7 @@
 import { Project } from '../../types';
 
 // Safe Haven Defense Project Stages
-export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed' | 'Archived';
+export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed' | 'Archived';
 
 // Safe Haven Defense Project Status (same as stages for this implementation)
 export type ProjectStatus = ProjectStage;
@@ -58,6 +58,7 @@ export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
   'WB': 'bg-yellow-100 text-yellow-700',    // Yellow for waiting for booking
   'WIP': 'bg-blue-100 text-blue-700',       // Blue for work in progress
   'QF': 'bg-orange-100 text-orange-700',    // Orange for quality check
+  'QC': 'bg-indigo-100 text-indigo-700',    // Indigo for quality control
   'Completed': 'bg-green-100 text-green-700', // Green for completed
   'Archived': 'bg-gray-200 text-gray-600',   // Dark gray for archived
 };
@@ -70,6 +71,7 @@ export const PROJECT_STATUS_DESCRIPTIONS: Record<ProjectStatus, string> = {
   'WB': 'WB',
   'WIP': 'WIP',
   'QF': 'QF',
+  'QC': 'QC',
   'Completed': 'Completed',
   'Archived': 'Archived',
 };
@@ -140,6 +142,15 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
     canUploadQualityForm: true,
     requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
   },
+  'QC': {
+    canAssignTeam: true,
+    canAssignTrailer: true,
+    canSetupLogistics: true,
+    canSchedule: true,
+    canEditWindows: false,
+    canUploadQualityForm: true,
+    requiredFields: ['name', 'client', 'site', 'startDate', 'endDate', 'description', 'assignedTeam', 'assignedTrailer']
+  },
   'Completed': {
     canAssignTeam: false,
     canAssignTrailer: false,
@@ -167,7 +178,8 @@ export const STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
   'UB': ['WB'],
   'WB': ['WIP'],
   'WIP': ['QF'],
-  'QF': ['Completed'],
+  'QF': ['QC'],
+  'QC': ['Completed'],
   'Completed': ['Archived'], // Can archive completed projects
   'Archived': [] // No transitions from archived
 };

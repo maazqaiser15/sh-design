@@ -506,7 +506,7 @@ export const ProjectListPage: React.FC = () => {
     if (!isLeadSupervisor) return null;
     
     const totalProjects = projectListItems.length;
-    const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF'].includes(p.status)).length;
+    const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC'].includes(p.status)).length;
     const completedProjects = projectListItems.filter(p => p.status === 'Completed').length;
     const completionRate = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
     
@@ -705,7 +705,7 @@ export const ProjectListPage: React.FC = () => {
         <div className="mb-4 px-2">
           <div className="flex items-center justify-between">
             <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-              {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'])].map((status) => (
+              {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'])].map((status) => (
                 <button
                   key={status}
                   onClick={() => {

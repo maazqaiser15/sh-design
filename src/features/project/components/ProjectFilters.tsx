@@ -17,7 +17,7 @@ export const ProjectFiltersComponent: React.FC<ProjectFiltersProps> = ({
   onSearchChange,
   onClearFilters,
 }) => {
-  const statusOptions: ProjectStatus[] = ['PV90', 'UB', 'WB', 'WIP', 'Completed'];
+  const statusOptions: ProjectStatus[] = ['PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'];
 
   const handleStatusChange = (status: ProjectStatus) => {
     onFiltersChange({

@@ -3,8 +3,8 @@ import { TeamMember } from './teamMembers';
 import { LogisticsTravelData } from './logisticsTravel';
 
 // Project Stages
-export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
-export type ProjectStatus = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'Completed';
+export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed';
+export type ProjectStatus = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed';
 
 // Project Details Types
 export interface ProjectDetails {
