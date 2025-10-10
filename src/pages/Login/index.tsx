@@ -8,6 +8,7 @@ import { LoginType, UserType } from '../../types/auth';
 import { Formik } from 'formik';
 import FormField from 'common/components/FormField';
 import * as Yup from 'yup';
+import { Card } from 'common/components/Card';
 // import FormField from 'common/components/FormField';
 
 /**
@@ -170,7 +171,7 @@ export const Login: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 backgroung-image-container">
       <div className="max-w-md w-full space-y-8">
         {/* Logo and Branding - Centered Top */}
         <div className="text-center">
@@ -183,7 +184,7 @@ export const Login: React.FC = () => {
         </div>
 
         {/* Login Container - Max Width 400px */}
-        <div className="bg-white rounded-lg shadow-card p-8 max-w-md mx-auto w-full">
+        <Card className="p-8 max-w-md mx-auto w-full">
           <Formik initialValues={initialValues} validationSchema={loginSchema} onSubmit={handleSubmit}>
             {({ isSubmitting, errors, touched }) => (
               <Form className="space-y-3">
@@ -259,7 +260,7 @@ export const Login: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="text-center">

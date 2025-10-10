@@ -6,6 +6,7 @@ import { Logo } from '../../common/components/Logo';
 import { Formik } from 'formik';
 import FormField from 'common/components/FormField';
 import * as Yup from 'yup';
+import { Card } from 'common/components/Card';
 // import { FormField } from 'common/components/FormField';
 
 /**
@@ -96,7 +97,7 @@ export const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 backgroung-image-container">
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="text-center">
@@ -104,7 +105,7 @@ export const ForgotPassword: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-card p-8">
+        <Card className="  p-8">
           {!isSubmitted ? (
             <>
               {/* Header */}
@@ -190,12 +191,12 @@ export const ForgotPassword: React.FC = () => {
               Back to Login
             </Link>
           </div>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="text-center">
           <p className="text-sm text-gray-500">
-            © Copyright 2024 Safe Haven Defense
+            © Copyright 2024 Safe Haven Defense  
           </p>
         </div>
       </div>

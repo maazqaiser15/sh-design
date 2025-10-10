@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '../../common/components/Button';
 import { Logo } from '../../common/components/Logo';
+import { Card } from 'common/components/Card';
 
 /**
  * Reset Password page component
@@ -118,7 +119,7 @@ export const ResetPassword: React.FC = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 backgroung-image-container">
         <div className="max-w-md w-full space-y-8">
           {/* Logo */}
           <div className="text-center">
@@ -126,7 +127,7 @@ export const ResetPassword: React.FC = () => {
           </div>
 
           {/* Success State */}
-          <div className="bg-white rounded-lg shadow-card p-8 text-center">
+          <Card className="rounded-lg shadow-card p-8 text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
               <CheckCircle size={32} className="text-green-600" />
             </div>
@@ -152,7 +153,7 @@ export const ResetPassword: React.FC = () => {
                 Go to Login
               </Link>
             </div>
-          </div>
+          </Card>
 
           {/* Footer */}
           <div className="text-center">
@@ -166,7 +167,7 @@ export const ResetPassword: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 backgroung-image-container">
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="text-center">
@@ -174,7 +175,7 @@ export const ResetPassword: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-card p-8">
+        <Card className=" rounded-lg shadow-card p-8">
           {/* Header */}
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -292,7 +293,7 @@ export const ResetPassword: React.FC = () => {
               Back to Login
             </Link>
           </div>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="text-center">
