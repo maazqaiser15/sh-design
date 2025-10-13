@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { Edit, ChevronDown, Check, X } from 'lucide-react';
 
 interface InventoryItem {
   id: string;
@@ -8,8 +9,7 @@ interface InventoryItem {
   length: string;
   quantity: number;
   product: string;
-  interiorLayer: number;
-  exteriorLayer: number;
+  anchoring: 'N' | 'X' | 'B';
   color: string;
   tint: string;
   extraTintLayer: boolean;
@@ -32,8 +32,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '2',
     quantity: 1,
     product: 'SW450SR',
-    interiorLayer: 2,
-    exteriorLayer: 3,
+    anchoring: 'N',
     color: 'Black',
     tint: 'None',
     extraTintLayer: false,
@@ -47,8 +46,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '3',
     quantity: 2,
     product: 'SW600FE',
-    interiorLayer: 1,
-    exteriorLayer: 4,
+    anchoring: 'X',
     color: 'White',
     tint: 'None',
     extraTintLayer: false,
@@ -62,8 +60,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '4',
     quantity: 1,
     product: 'SW440RC',
-    interiorLayer: 3,
-    exteriorLayer: 2,
+    anchoring: 'B',
     color: 'Black',
     tint: 'Light',
     extraTintLayer: false,
@@ -77,8 +74,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '4',
     quantity: 3,
     product: 'SW600RC',
-    interiorLayer: 4,
-    exteriorLayer: 1,
+    anchoring: 'N',
     color: 'Black',
     tint: 'Dark',
     extraTintLayer: true,
@@ -92,8 +88,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '5',
     quantity: 2,
     product: 'SW600RC+',
-    interiorLayer: 2,
-    exteriorLayer: 2,
+    anchoring: 'X',
     color: 'Black',
     tint: 'None',
     extraTintLayer: false,
@@ -107,8 +102,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '2',
     quantity: 1,
     product: 'SW600BR',
-    interiorLayer: 1,
-    exteriorLayer: 3,
+    anchoring: 'B',
     color: 'Black',
     tint: 'None',
     extraTintLayer: false,
@@ -122,8 +116,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '6',
     quantity: 2,
     product: 'Tint Only',
-    interiorLayer: 2,
-    exteriorLayer: 4,
+    anchoring: 'N',
     color: 'Black',
     tint: 'Dark',
     extraTintLayer: true,
@@ -137,8 +130,7 @@ const mockInventoryData: InventoryItem[] = [
     length: '5',
     quantity: 1,
     product: 'Kevlar',
-    interiorLayer: 3,
-    exteriorLayer: 3,
+    anchoring: 'X',
     color: 'Black',
     tint: 'None',
     extraTintLayer: false,
@@ -166,129 +158,504 @@ export const SetupInventoryModal: React.FC<SetupInventoryModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Take Off Sheet"
+      title=""
       size="xl"
+      showCloseButton={false}
     >
-      <div className="space-y-6">
+      <div className="w-full max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-semibold text-gray-900">Take off sheet</h1>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
 
-        {/* Table Container */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="overflow-x-auto max-h-96 overflow-y-auto">
-            <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0">
-              <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Width
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Length
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Quantity
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                    Product
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                    Interior Layer
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                    Exterior Layer
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Color
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Tint
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                    Extra Tint
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Stripping
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                    Thickness
-                  </th>
+        {/* Product Summary Table */}
+        <div className="mb-6">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Product Summary</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Pane Count
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Qty
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Subtotal
+                    </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-                {mockInventoryData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total BR</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Riot+</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Riot</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Riot -</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total FER</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Smash</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Tint NI</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Tint Incl</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Anchoring</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">N/A</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Kevlar</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 text-sm text-gray-900">Total Stripping</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">0.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">1.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 150.00</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$ 10.00</td>
+                  </tr>
+                  <tr className="bg-gray-50 font-semibold">
+                    <td className="px-6 py-3 text-sm text-gray-900">Total</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">-</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">-</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">-</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">$100.00</td>
+                </tr>
+            </tbody>
+          </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Table Container */}
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Width
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Length
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Quantity
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                    Product
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Anchoring
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Color
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Tint
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Extra Tint
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Stripping
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {mockInventoryData.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
                     {/* Width */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.width}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.width}</span>
+                      </div>
                     </td>
 
                     {/* Length */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.length}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.length}</span>
+                      </div>
                     </td>
 
                     {/* Quantity */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.quantity}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.quantity}</span>
+                      </div>
                     </td>
 
                     {/* Product */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.product}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.product}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                      </div>
                     </td>
 
-                    {/* Interior Layer */}
+                    {/* Anchoring */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.interiorLayer}</span>
-                    </td>
-
-                    {/* Exterior Layer */}
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.exteriorLayer}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.anchoring}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                      </div>
                     </td>
 
                     {/* Color */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.color}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.color}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                      </div>
                     </td>
 
                     {/* Tint */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.tint}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-900">{item.tint}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                      </div>
                     </td>
 
                     {/* Extra Tint Layer */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">
-                        {item.extraTintLayer ? 'Yes' : 'No'}
-                      </span>
+                      <div className="flex items-center justify-center">
+                        {item.extraTintLayer ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <X className="w-4 h-4 text-gray-400" />
+                        )}
+                      </div>
                     </td>
 
                     {/* Stripping */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">
-                        {item.stripping ? 'Yes' : 'No'}
-                      </span>
+                      <div className="flex items-center justify-center">
+                        {item.stripping ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <X className="w-4 h-4 text-gray-400" />
+                        )}
+                      </div>
                     </td>
-
-                    {/* Thickness */}
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{item.thickness}</span>
-                    </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </tr>
+            ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-end pt-4 border-t border-gray-200">
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-          >
-            Close
-          </Button>
+        {/* Main Inventory Section */}
+        <div className="mb-6 mt-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Building 1</h2>
+          {/* First Inventory Table */}
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Width
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Length
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Quantity
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                      Product
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Anchoring
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Color
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Tint
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Extra Tint
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Stripping
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {mockInventoryData.map((item, index) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      {/* Width */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.width}</span>
+                        </div>
+                      </td>
+
+                      {/* Length */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.length}</span>
+                        </div>
+                      </td>
+
+                      {/* Quantity */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.quantity}</span>
+                        </div>
+                      </td>
+
+                      {/* Product */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.product}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Anchoring */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.anchoring}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Color */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.color}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Tint */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.tint}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Extra Tint */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center">
+                          {item.extraTintLayer ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <X className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Stripping */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center">
+                          {item.stripping ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <X className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Building 2</h2>
+          {/* Second Inventory Table */}
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Width
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Length
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Quantity
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                      Product
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Anchoring
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Color
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Tint
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Extra Tint
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      Stripping
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {mockInventoryData.map((item, index) => (
+                    <tr key={`second-${item.id}`} className="hover:bg-gray-50">
+                      {/* Width */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.width}</span>
+                        </div>
+                      </td>
+
+                      {/* Length */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.length}</span>
+                        </div>
+                      </td>
+
+                      {/* Quantity */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.quantity}</span>
+                        </div>
+                      </td>
+
+                      {/* Product */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.product}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Anchoring */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.anchoring}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Color */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.color}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Tint */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-900">{item.tint}</span>
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </td>
+
+                      {/* Extra Tint */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center">
+                          {item.extraTintLayer ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <X className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Stripping */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center">
+                          {item.stripping ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <X className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
       </div>
     </Modal>
   );

@@ -32,6 +32,7 @@ import {
   FileCheck
 } from 'lucide-react';
 import { ProjectDetails, MOCK_PROJECT_DETAILS, ProjectNote } from '../../types/projectDetails';
+import { NoteAttachment } from '../../../../types';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
@@ -739,7 +740,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
 
   // Note handlers
-  const handleAddNote = (content: string, isInternal: boolean) => {
+  const handleAddNote = (content: string, isInternal: boolean, attachments?: NoteAttachment[]) => {
     const newNote: ProjectNote = {
       id: `note-${Date.now()}`,
       content,
@@ -748,7 +749,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       projectId: projectId || '',
-      isInternal
+      isInternal,
+      attachments: attachments || []
     };
     setNotes(prev => [...prev, newNote]);
   };
@@ -763,6 +765,42 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   const handleDeleteNote = (noteId: string) => {
     setNotes(prev => prev.filter(note => note.id !== noteId));
+  };
+
+  // Attachment handlers
+  const handleAddAttachment = (noteId: string, file: File) => {
+    const newAttachment: NoteAttachment = {
+      id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: URL.createObjectURL(file),
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: user?.name || 'Current User'
+    };
+
+    setNotes(prev => prev.map(note =>
+      note.id === noteId
+        ? { ...note, attachments: [...(note.attachments || []), newAttachment] }
+        : note
+    ));
+  };
+
+  const handleRemoveAttachment = (noteId: string, attachmentId: string) => {
+    setNotes(prev => prev.map(note =>
+      note.id === noteId
+        ? { ...note, attachments: (note.attachments || []).filter(att => att.id !== attachmentId) }
+        : note
+    ));
+  };
+
+  const handleDownloadAttachment = (attachment: NoteAttachment) => {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
 
@@ -2342,6 +2380,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   onAddNote={handleAddNote}
                   onEditNote={handleEditNote}
                   onDeleteNote={handleDeleteNote}
+                  onAddAttachment={handleAddAttachment}
+                  onRemoveAttachment={handleRemoveAttachment}
+                  onDownloadAttachment={handleDownloadAttachment}
                 />
               </div>
             )}

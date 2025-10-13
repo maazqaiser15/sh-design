@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { MessageSquare, Plus, Edit2, Trash2, User } from 'lucide-react';
+import { MessageSquare, Plus, Edit2, Trash2, User, Paperclip, Download, X, File } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
+import { AttachmentUpload } from '../../../../common/components/AttachmentUpload';
 import { ProjectNote } from '../../types/projectDetails';
+import { NoteAttachment } from '../../../../types';
 
 interface ProjectNotesProps {
   notes: ProjectNote[];
-  onAddNote: (content: string, isInternal: boolean) => void;
+  onAddNote: (content: string, isInternal: boolean, attachments?: NoteAttachment[]) => void;
   onEditNote: (noteId: string, content: string) => void;
   onDeleteNote: (noteId: string) => void;
+  onAddAttachment?: (noteId: string, file: File) => void;
+  onRemoveAttachment?: (noteId: string, attachmentId: string) => void;
+  onDownloadAttachment?: (attachment: NoteAttachment) => void;
 }
 
 /**
@@ -19,12 +24,16 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
   notes,
   onAddNote,
   onEditNote,
-  onDeleteNote
+  onDeleteNote,
+  onAddAttachment,
+  onRemoveAttachment,
+  onDownloadAttachment
 }) => {
   const [newNote, setNewNote] = useState('');
   const [isInternal, setIsInternal] = useState(true);
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [newNoteAttachments, setNewNoteAttachments] = useState<NoteAttachment[]>([]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -38,9 +47,36 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
 
   const handleAddNote = () => {
     if (newNote.trim()) {
-      onAddNote(newNote.trim(), isInternal);
+      onAddNote(newNote.trim(), isInternal, newNoteAttachments);
       setNewNote('');
+      setNewNoteAttachments([]);
     }
+  };
+
+  const handleAddAttachment = (file: File) => {
+    const newAttachment: NoteAttachment = {
+      id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: URL.createObjectURL(file),
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: 'Current User'
+    };
+    setNewNoteAttachments(prev => [...prev, newAttachment]);
+  };
+
+  const handleRemoveNewAttachment = (attachmentId: string) => {
+    setNewNoteAttachments(prev => prev.filter(att => att.id !== attachmentId));
+  };
+
+  const handleDownloadNewAttachment = (attachment: NoteAttachment) => {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleEditNote = (note: ProjectNote) => {
@@ -90,24 +126,34 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
           </label>
         </div>
         
-        <div className="flex space-x-2">
-          <textarea
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Add a note about this project..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            rows={3}
+        <div className="space-y-3">
+          <div className="flex space-x-2">
+            <textarea
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Add a note about this project..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              rows={3}
+            />
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Plus}
+              onClick={handleAddNote}
+              disabled={!newNote.trim()}
+              className="self-start"
+            >
+              Add
+            </Button>
+          </div>
+          
+          {/* Attachment Upload */}
+          <AttachmentUpload
+            attachments={newNoteAttachments}
+            onAddAttachment={handleAddAttachment}
+            onRemoveAttachment={handleRemoveNewAttachment}
+            onDownloadAttachment={handleDownloadNewAttachment}
           />
-          <Button
-            variant="primary"
-            size="sm"
-            icon={Plus}
-            onClick={handleAddNote}
-            disabled={!newNote.trim()}
-            className="self-start"
-          >
-            Add
-          </Button>
         </div>
       </div>
 
@@ -156,6 +202,61 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
                       <p className="text-sm text-gray-900 mb-2">
                         {note.content}
                       </p>
+                      
+                      {/* Attachments */}
+                      {note.attachments && note.attachments.length > 0 && (
+                        <div className="mb-3">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Paperclip className="w-3 h-3 text-gray-400" />
+                            <span className="text-xs font-medium text-gray-600">
+                              Attachments ({note.attachments.length})
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            {note.attachments.map((attachment) => (
+                              <div
+                                key={attachment.id}
+                                className="flex items-center justify-between p-2 bg-white rounded border text-xs"
+                              >
+                                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                  <File className="w-3 h-3 text-gray-400" />
+                                  <span className="text-gray-700 truncate">
+                                    {attachment.name}
+                                  </span>
+                                  <span className="text-gray-500">
+                                    ({(attachment.size / 1024).toFixed(1)} KB)
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  {onDownloadAttachment && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      icon={Download}
+                                      onClick={() => onDownloadAttachment(attachment)}
+                                      className="p-1 text-gray-400 hover:text-gray-600"
+                                    >
+                                      <span className="sr-only">Download</span>
+                                    </Button>
+                                  )}
+                                  {onRemoveAttachment && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      icon={X}
+                                      onClick={() => onRemoveAttachment(note.id, attachment.id)}
+                                      className="p-1 text-gray-400 hover:text-red-600"
+                                    >
+                                      <span className="sr-only">Remove</span>
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="flex items-center space-x-4 text-xs text-gray-500">
                         <div className="flex items-center space-x-1">
                           <User className="w-3 h-3" />

@@ -210,7 +210,18 @@ export const MOCK_PREPARATION_DATA: PreparationStageData = {
       createdAt: '2024-01-20T10:15:00Z',
       updatedAt: '2024-01-20T10:15:00Z',
       projectId: 'proj-001',
-      isInternal: true
+      isInternal: true,
+      attachments: [
+        {
+          id: 'att-1',
+          name: 'security-requirements.pdf',
+          type: 'application/pdf',
+          size: 2048576,
+          url: '/documents/security-requirements.pdf',
+          uploadedAt: '2024-01-20T10:20:00Z',
+          uploadedBy: 'John Smith'
+        }
+      ]
     },
     {
       id: 'note-2',
@@ -220,7 +231,27 @@ export const MOCK_PREPARATION_DATA: PreparationStageData = {
       createdAt: '2024-01-19T16:45:00Z',
       updatedAt: '2024-01-19T16:45:00Z',
       projectId: 'proj-001',
-      isInternal: false
+      isInternal: false,
+      attachments: [
+        {
+          id: 'att-2',
+          name: 'site-photos.jpg',
+          type: 'image/jpeg',
+          size: 1536000,
+          url: '/documents/site-photos.jpg',
+          uploadedAt: '2024-01-19T16:50:00Z',
+          uploadedBy: 'Sarah Johnson'
+        },
+        {
+          id: 'att-3',
+          name: 'measurements.xlsx',
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          size: 512000,
+          url: '/documents/measurements.xlsx',
+          uploadedAt: '2024-01-19T16:52:00Z',
+          uploadedBy: 'Sarah Johnson'
+        }
+      ]
     }
   ]
 };

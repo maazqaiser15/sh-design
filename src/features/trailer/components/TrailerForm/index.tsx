@@ -778,7 +778,6 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
                   {/* Protective Films Section */}
                   <div className="space-y-3">
-                    <h4 className="text-md font-medium text-gray-800">Protective Films</h4>
 
                     {/* Column Headers for Protective Films */}
                     <div className="bg-gray-100 rounded-lg p-4">
@@ -876,7 +875,6 @@ export const TrailerForm: React.FC<TrailerFormProps> = ({
 
                   {/* Tint Films Section */}
                   <div className="space-y-3">
-                    <h4 className="text-md font-medium text-gray-800">Tint Films</h4>
 
                     {/* Column Headers for Tint Films */}
                     <div className="bg-gray-100 rounded-lg p-4">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, CheckCircle, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, FileText } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
+import { NoteAttachment } from '../../../../types';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
 import { AddTravelModal } from '../../components/AddTravelModal';
@@ -312,7 +313,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   };
 
   // Handle note addition
-  const handleAddNote = (content: string, isInternal: boolean) => {
+  const handleAddNote = (content: string, isInternal: boolean, attachments?: NoteAttachment[]) => {
     const newNote = {
       id: `note-${Date.now()}`,
       content,
@@ -321,7 +322,8 @@ export const ProjectDetailsPrep: React.FC = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       projectId: projectId || '',
-      isInternal
+      isInternal,
+      attachments: attachments || []
     };
 
     setPreparationData(prev => ({
@@ -348,6 +350,50 @@ export const ProjectDetailsPrep: React.FC = () => {
       ...prev,
       notes: prev.notes.filter(note => note.id !== noteId)
     }));
+  };
+
+  // Handle attachment addition to existing note
+  const handleAddAttachment = (noteId: string, file: File) => {
+    const newAttachment: NoteAttachment = {
+      id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: URL.createObjectURL(file),
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: 'Current User'
+    };
+
+    setPreparationData(prev => ({
+      ...prev,
+      notes: prev.notes.map(note =>
+        note.id === noteId
+          ? { ...note, attachments: [...(note.attachments || []), newAttachment] }
+          : note
+      )
+    }));
+  };
+
+  // Handle attachment removal from existing note
+  const handleRemoveAttachment = (noteId: string, attachmentId: string) => {
+    setPreparationData(prev => ({
+      ...prev,
+      notes: prev.notes.map(note =>
+        note.id === noteId
+          ? { ...note, attachments: (note.attachments || []).filter(att => att.id !== attachmentId) }
+          : note
+      )
+    }));
+  };
+
+  // Handle attachment download
+  const handleDownloadAttachment = (attachment: NoteAttachment) => {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Handle team assignment
@@ -1328,6 +1374,9 @@ export const ProjectDetailsPrep: React.FC = () => {
               onAddNote={handleAddNote}
               onEditNote={handleEditNote}
               onDeleteNote={handleDeleteNote}
+              onAddAttachment={handleAddAttachment}
+              onRemoveAttachment={handleRemoveAttachment}
+              onDownloadAttachment={handleDownloadAttachment}
             />
           </div>
 
