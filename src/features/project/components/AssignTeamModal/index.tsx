@@ -303,11 +303,6 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
                           }`}>
                             {member.status}
                           </span>
-                          {member.status === 'Unavailable' && member.unavailableUntil && (
-                            <span className="text-xs text-red-500 whitespace-nowrap">
-                              until {formatDate(member.unavailableUntil)}
-                            </span>
-                          )}
                         </div>
                       </td>
                       <td className="px-3 py-2">

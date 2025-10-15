@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, User, Check, AlertCircle, Calendar } from 'lucide-react';
+import { X, User, Check, AlertCircle, Calendar, Mail, LocateOffIcon, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ProjectListItem } from '../types';
+import { PROJECT_STATUS_COLORS, PROJECT_STATUS_DESCRIPTIONS, ProjectListItem } from '../types';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
 
@@ -73,24 +73,24 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
     if (userRole === 'project-coordinator' && (!startDate || !endDate)) {
       return;
     }
-    
+
     // For executives, coordinator selection is required
     if (userRole === 'executive' && !selectedCoordinator) {
       return;
     }
-    
+
     setIsAssigning(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // For project coordinators, we don't need a coordinator ID, just pass empty string
       const coordinatorId = userRole === 'project-coordinator' ? '' : selectedCoordinator!;
       onAssignCoordinator(project.id, coordinatorId, startDate || undefined, endDate || undefined);
-      
+
       // Navigate to project details preparation stage
       navigate(`/projects/${project.id}?status=${project.status}&title=${encodeURIComponent(project.title)}`);
-      
+
       onClose();
       setSelectedCoordinator(null);
       setStartDate('');
@@ -123,7 +123,7 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                 {userRole === 'project-coordinator' ? 'Schedule Project' : 'Assign Project Coordinator'}
               </h2>
               <p className="text-gray-600 mt-1">
-                {userRole === 'project-coordinator' 
+                {userRole === 'project-coordinator'
                   ? `Set project schedule for ${project.title}`
                   : `Select a coordinator for ${project.title}`
                 }
@@ -144,18 +144,19 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
                 <span className="text-sm text-gray-500">Project VIN</span>
-                <p className="font-medium">{project.vinCode}</p>
+
+                <p className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-700">{project.vinCode}</p>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Status</span>
-                <p className="font-medium">{project.status}</p>
+                <div className="text-sm text-gray-500">Status</div>
+                <p className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${PROJECT_STATUS_COLORS[project.status]}`}>{project.status} </p>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Site</span>
                 <p className="font-medium">{project.site}</p>
               </div>
             </div>
-            
+
             {/* Project Dates */}
             <div className="border-t pt-4">
               <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
@@ -167,27 +168,27 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                   <label htmlFor="startDate" className="block text-sm text-gray-500 mb-1">
                     Start Date {userRole === 'project-coordinator' && <span className="text-red-500">*</span>}
                   </label>
-              <input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                required={userRole === 'project-coordinator'}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+                  <input
+                    id="startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    required={userRole === 'project-coordinator'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
                 </div>
                 <div>
                   <label htmlFor="endDate" className="block text-sm text-gray-500 mb-1">
                     End Date {userRole === 'project-coordinator' && <span className="text-red-500">*</span>}
                   </label>
-              <input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                required={userRole === 'project-coordinator'}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+                  <input
+                    id="endDate"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    required={userRole === 'project-coordinator'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
                 </div>
               </div>
             </div>
@@ -196,18 +197,17 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
           {/* Coordinators List - Only show for executives */}
           {userRole === 'executive' && (
             <div className="space-y-4 max-h-[16rem] overflow-y-auto">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Available Coordinators
+              <h3 className="text-lg font-medium text-gray-900 mb-4 flex justify-start items-center gap-2">
+                Available Coordinators <span className='text-xs text-gray-600 w-[20px] h-[20px] flex justify-center items-center rounded-full bg-gray-200'>{mockCoordinators.length}</span>
               </h3>
-              
+
               {mockCoordinators.map((coordinator) => (
                 <div
                   key={coordinator.id}
-                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                    selectedCoordinator === coordinator.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                  className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedCoordinator === coordinator.id
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
                   onClick={() => setSelectedCoordinator(coordinator.id)}
                 >
                   <div className="flex items-center justify-between">
@@ -216,11 +216,12 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                         {coordinator.avatar}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{coordinator.name}</h4>
-                        <p className="text-sm text-gray-600">{coordinator.email}</p>
-                        <p className="text-sm text-gray-500">{coordinator.site}</p>
+                        <h4 className="font-medium text-gray-900">{coordinator.name} </h4>
+                     <div className='flex justify-start items-center gap-2'>    <p className="text-sm flex gap-1 items-center text-gray-600"><Mail size={18} className='text-gray-600' /> {coordinator.email}</p>   <p className="text-sm flex gap-1 items-center text-gray-500"><MapPin size={18} className='text-gray-600' /> {coordinator.site}</p></div>
                       </div>
-                      <div className="flex items-center">
+                  
+                    </div>
+                    <div className="flex items-center">
                         {selectedCoordinator === coordinator.id ? (
                           <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                             <Check className="w-4 h-4 text-white" />
@@ -229,7 +230,6 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                           <div className="w-6 h-6 border-2 border-gray-300 rounded-full"></div>
                         )}
                       </div>
-                    </div>
                   </div>
                 </div>
               ))}
@@ -250,14 +250,14 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
               variant="primary"
               onClick={handleAssign}
               disabled={
-                isAssigning || 
+                isAssigning ||
                 (userRole === 'executive' && !selectedCoordinator) ||
                 (userRole === 'project-coordinator' && (!startDate || !endDate))
               }
               icon={isAssigning ? undefined : User}
             >
-              {isAssigning 
-                ? (userRole === 'project-coordinator' ? 'Scheduling...' : 'Assigning...') 
+              {isAssigning
+                ? (userRole === 'project-coordinator' ? 'Scheduling...' : 'Assigning...')
                 : (userRole === 'project-coordinator' ? 'Schedule Project' : 'Assign Coordinator')
               }
             </Button>

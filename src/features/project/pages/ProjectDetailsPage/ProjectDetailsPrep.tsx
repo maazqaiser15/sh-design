@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, CheckCircle, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar } from 'lucide-react';
+import { Plus, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, CheckCheck } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
 import { AddLogisticsModal } from '../../components/AddLogisticsModal';
@@ -23,6 +23,7 @@ import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils'
 import { TrailerForAssignment } from '../../types/trailers';
 import { Window, MOCK_WINDOWS } from '../../types/windows';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
+import { Card } from 'common/components/Card';
 
 // Icons from Figma design
 
@@ -120,11 +121,14 @@ interface ProgressStepProps {
 const ProgressStep: React.FC<ProgressStepProps> = ({ title, status, description }) => {
   const getStepIcon = () => {
     if (status === 'completed') {
-      return (
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
-          <CheckCircleIcon />
-        </div>
-      );
+    return (
+      <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1.33333C11.6819 1.33333 14.6667 4.3181 14.6667 8C14.6667 11.6819 11.6819 14.6667 8 14.6667C4.3181 14.6667 1.33333 11.6819 1.33333 8C1.33333 4.3181 4.3181 1.33333 8 1.33333Z" stroke="#e5e7eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 8L7.33333 9.33333L10.6667 6" stroke="#e5e7eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    );
     }
     return (
       <div className="bg-white border-2 border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
@@ -894,10 +898,10 @@ export const ProjectDetailsPrep: React.FC = () => {
       {/* Main Content */}
       <div className="py-6">
         {/* Project Header Card */}
-        <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-          <div className="flex flex-col gap-5">
+        <Card className="mb-6 ">
+          <div className="flex flex-col gap-2">
             {/* Project Title and Actions */}
-            <div className="mb-6">
+            <div className="">
               {/* Project Name, Status, and Action Buttons */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
@@ -910,15 +914,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2 items-center">
                   <Button
-                    onClick={() => setShowEditModal(true)}
-                    variant="secondary"
-                    size="sm"
-                    icon={Edit}
-                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
-                  >
-                    Edit
-                  </Button>
-                  <Button
+                    variant='primary'
                     onClick={handleMarkStageComplete}
                     disabled={!allStagesCompleted}
                     className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${allStagesCompleted
@@ -928,11 +924,21 @@ export const ProjectDetailsPrep: React.FC = () => {
                   >
                     Mark Stage as Complete
                   </Button>
+                  <Button
+                    onClick={() => setShowEditModal(true)}
+                    variant="ghost"
+                    size="sm"
+                    icon={Edit}
+                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Edit
+                  </Button>
+
                 </div>
               </div>
 
               {/* Single Row with All Project Information */}
-              <div className="flex flex-wrap  items-start justify-between mb-4">
+              <div className="flex flex-wrap  items-start justify-between mb-0">
                 {/* VIN Code */}
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -957,7 +963,7 @@ export const ProjectDetailsPrep: React.FC = () => {
 
                 {/* Duration */}
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-green-600" />
+                  <Calendar className="w-4 h-4 text-blue-600" />
                   <div>
                     <p className="text-xs text-gray-500 font-medium">Duration</p>
                     <p className="text-sm text-gray-900 font-medium">Feb 1, 2024 – Feb 15, 2024</p>
@@ -967,7 +973,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 {/* Industry */}
                 {project.industry && (
                   <div className="flex items-center gap-2">
-                    <Building className="w-4 h-4 text-purple-600" />
+                    <Building className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Industry</p>
                       <p className="text-sm text-gray-900 font-medium">{project.industry}</p>
@@ -978,7 +984,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 {/* Coordinator */}
                 {project.assignedCoordinator && (
                   <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-indigo-600" />
+                    <User className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Coordinator</p>
                       <p className="text-sm text-gray-900 font-medium">{project.assignedCoordinator.name}</p>
@@ -988,7 +994,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 {/* Contact Person */}
                 {project.contactPerson && (
                   <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-orange-600" />
+                    <User className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Contact Person</p>
                       <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
@@ -998,18 +1004,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                   </div>
                 )}
 
-                {/* Billing Information */}
-                {project.billingContact && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-red-600" />
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium">Billing Contact</p>
-                      <p className="text-sm text-gray-900 font-medium">{project.billingContact.name}</p>
-                      {project.billingContact.phone && <p className="text-xs text-gray-700">{project.billingContact.phone}</p>}
-                      {project.billingContact.email && <p className="text-xs text-gray-700">{project.billingContact.email}</p>}
-                    </div>
-                  </div>
-                )}
+         
 
 
               </div>
@@ -1038,7 +1033,7 @@ export const ProjectDetailsPrep: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Main Content Grid */}
         <div className="flex gap-6">
@@ -1068,7 +1063,7 @@ export const ProjectDetailsPrep: React.FC = () => {
               />
             ) : (
               /* All Other States - Use original card structure */
-              <div className="bg-white rounded-xl p-5 border border-gray-200">
+              <Card>
                 <div className="flex flex-col gap-5">
                   <div className="flex gap-4 items-start w-full">
                     <div className="flex flex-col gap-1 flex-1">
@@ -1240,12 +1235,12 @@ export const ProjectDetailsPrep: React.FC = () => {
                     />
                   )}
                 </div>
-              </div>
+              </Card>
             )}
 
             {/* Project Documents Card */}
-            <div
-              className={`bg-white rounded-xl p-5 border-2 transition-colors ${isDragOver
+            <Card
+              className={`${isDragOver
                 ? 'border-blue-300 bg-blue-50'
                 : 'border-gray-200'
                 }`}
@@ -1321,7 +1316,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                   />
                 )}
               </div>
-            </div>
+            </Card>
 
             {/* Project Notes Card */}
             <ProjectNotes

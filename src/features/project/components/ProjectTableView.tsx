@@ -3,6 +3,7 @@ import { Users, Truck, Calendar, MoreVertical, Eye, Edit2, Trash2, Building2, Br
 import { ProjectListItem, PROJECT_STATUS_COLORS, PROJECT_STATUS_DESCRIPTIONS, ProjectSortOptions } from '../types';
 import { formatProjectDuration } from '../utils';
 import CustomDataTable from '../../../common/components/CustomDataTable';
+import { Card } from 'common/components/Card';
 
 interface ProjectTableViewProps {
   projects: ProjectListItem[];
@@ -218,9 +219,9 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   ];
 
   return (
-    <div className="overflow-x-auto mt-4">
-      <div style={{ minWidth: '1800px' }}>
-        <CustomDataTable
+    <Card>
+      {/* <div className='overflow-x-auto'> */}
+      <CustomDataTable
           title=""
           columns={columns}
           data={projects}
@@ -232,7 +233,8 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
           progressPending={undefined}
           paginationPerPage={10}
         />
-      </div>
-    </div>
+      {/* </div> */}
+  
+    </Card>
   );
 };

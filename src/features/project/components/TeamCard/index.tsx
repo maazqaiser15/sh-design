@@ -77,7 +77,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
 
   return (
     <div 
-      className={`bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200 group relative ${className}`}
+      className={`bg-white rounded-xl  p-4 cursor-pointer hover:shadow-md transition-all duration-200 group relative ${className}`}
       onClick={onClick}
     >
       {/* Action Buttons - Shows on Hover */}
@@ -121,11 +121,11 @@ export const TeamCard: React.FC<TeamCardProps> = ({
             <p className="font-medium text-sm text-[#101828] leading-5 truncate">
               {name}
             </p>
-            {isLead && (
+            {/* {isLead && (
               <span className="bg-[#0D76BF] text-white px-2 py-0.5 rounded text-xs font-medium">
                 Lead
               </span>
-            )}
+            )} */}
             {inviteStatus === 'pending' && (
               <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs font-medium">
                 Pending

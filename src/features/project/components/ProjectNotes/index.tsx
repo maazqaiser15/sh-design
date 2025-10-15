@@ -66,7 +66,7 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
   );
 
   return (
-    <Card className="p-6 bg-white">
+    <Card>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Project Notes</h3>
         <div className="flex items-center space-x-2">

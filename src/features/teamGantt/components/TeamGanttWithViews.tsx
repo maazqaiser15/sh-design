@@ -310,10 +310,6 @@ export const TeamGanttWithViews: React.FC<TeamGanttProps> = ({
                 </button>
               ))}
             </div>
-
-
-
-
           </div>
         </div>
 

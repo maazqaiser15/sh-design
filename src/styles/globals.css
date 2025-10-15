@@ -71,4 +71,6 @@
   background: url('../assets/images/bg.png');
   background-size: cover;
   background-repeat: no-repeat;
+  height: 100%;
+  background-position: center,center;
 }

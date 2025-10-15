@@ -50,7 +50,7 @@ export const PieChart: React.FC<PieChartProps> = ({
         
         {/* Percentage text */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-semibold text-gray-700">
+          <span className="text-sm font-semibold text-gray-700">
             {percentage}%
           </span>
         </div>

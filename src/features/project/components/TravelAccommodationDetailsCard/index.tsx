@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, CheckCircle, Maximize2, Paperclip, Plane, Hotel, Calendar, Clock, User, Download, Car, Phone, Check } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
+import { Card } from 'common/components/Card';
 
 export interface TicketDetails {
   id: string;
@@ -86,7 +87,7 @@ export const TravelAccommodationDetailsCard: React.FC<TravelAccommodationDetails
 
   if (!hasData) {
     return (
-      <div className="bg-white rounded-xl p-5 border border-gray-200">
+      <Card className="">
         <div className="flex flex-col gap-4">
           {/* Header */}
           <div className="flex gap-4 items-start w-full">
@@ -104,7 +105,7 @@ export const TravelAccommodationDetailsCard: React.FC<TravelAccommodationDetails
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     );
   }
 

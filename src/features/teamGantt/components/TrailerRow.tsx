@@ -40,7 +40,7 @@ export const TrailerRow: React.FC<TrailerRowProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
               <h3 className="text-sm font-medium text-gray-900 truncate">
-                {trailer.trailerName}
+                {trailer.trailerName} 
               </h3>
             </div>
             <div className="flex items-center space-x-2 mt-1">

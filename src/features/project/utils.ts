@@ -118,3 +118,27 @@ export const formatProjectDuration = (startDate: string, endDate: string): strin
   if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks`;
   return `${Math.ceil(diffDays / 30)} months`;
 };
+
+
+export const getProgressBarColor = (status: string): string => {
+  switch (status) {
+    case 'PV75':
+      return 'bg-gray-500';
+    case 'PV90':
+      return 'bg-purple-500';
+    case 'UB':
+      return 'bg-blue-500';
+    case 'WB':
+      return 'bg-yellow-500';
+    case 'WIP':
+      return 'bg-blue-500';
+    case 'QF':
+      return 'bg-orange-500';
+    case 'Completed':
+      return 'bg-green-500';
+    case 'Archived':
+      return 'bg-gray-500';
+    default:
+      return 'bg-gray-400';
+  }
+};

@@ -52,7 +52,7 @@ export interface ProjectViewMode {
 
 // Status color mapping for Safe Haven Defense
 export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
-  'PV75': 'bg-gray-100 text-gray-700',      // Gray for initial planning
+  'PV75': 'bg-gray-200 text-gray-700',      // Gray for initial planning
   'PV90': 'bg-purple-100 text-purple-700',  // Purple for planning phase
   'UB': 'bg-blue-100 text-blue-700',        // Blue for unbooked
   'WB': 'bg-yellow-100 text-yellow-700',    // Yellow for waiting for booking

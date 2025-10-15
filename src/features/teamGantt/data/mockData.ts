@@ -223,7 +223,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-1',
     trailerName: 'Alpha Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10001',
+    registrationNumber: 'APD-123',
     status: 'available',
     location: 'Vancouver, WA',
     assignedProjects: [
@@ -241,7 +241,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-2',
     trailerName: 'Beta Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10002',
+    registrationNumber: 'APD-123',
     status: 'low',
     location: 'Houston, TX',
     assignedProjects: [
@@ -259,7 +259,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-3',
     trailerName: 'Gamma Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10003',
+    registrationNumber: 'APD-123',
     status: 'unavailable',
     unavailableUntil: '2024-12-20T00:00:00Z',
     location: 'Miami, FL',
@@ -278,7 +278,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-4',
     trailerName: 'Delta Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10004',
+    registrationNumber: 'APD-123',
     status: 'available',
     location: 'New York, NY',
     assignedProjects: [
@@ -296,7 +296,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-5',
     trailerName: 'Echo Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10005',
+    registrationNumber: 'APD-123',
     status: 'low',
     location: 'Chicago, IL',
     assignedProjects: [
@@ -313,7 +313,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-6',
     trailerName: 'Foxtrot Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10006',
+    registrationNumber: 'APD-123',
     status: 'available',
     location: 'Phoenix, AZ',
     assignedProjects: [
@@ -330,7 +330,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-7',
     trailerName: 'Golf Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10007',
+    registrationNumber: 'APD-123',
     status: 'low',
     location: 'Denver, CO',
     assignedProjects: [
@@ -347,7 +347,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-8',
     trailerName: 'Hotel Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10008',
+    registrationNumber: 'APD-123',
     status: 'available',
     location: 'Seattle, WA',
     assignedProjects: [
@@ -364,7 +364,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-9',
     trailerName: 'India Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10009',
+    registrationNumber: 'APD-123',
     status: 'unavailable',
     unavailableUntil: '2024-12-30T00:00:00Z',
     location: 'Portland, OR',
@@ -382,7 +382,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-10',
     trailerName: 'Juliet Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10010',
+    registrationNumber: 'APD-123',
     status: 'available',
     location: 'Las Vegas, NV',
     assignedProjects: [
@@ -399,7 +399,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-11',
     trailerName: 'Kilo Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10011',
+    registrationNumber: 'APD-123',
     status: 'low',
     location: 'Salt Lake City, UT',
     assignedProjects: [
@@ -416,7 +416,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
   {
     trailerId: 'trailer-12',
     trailerName: 'Lima Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10012',
+    registrationNumber: 'APD-123',
     status: 'available',
     location: 'Billings, MT',
     assignedProjects: [

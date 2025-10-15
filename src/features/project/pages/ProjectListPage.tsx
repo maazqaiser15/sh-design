@@ -6,13 +6,13 @@ import { ProjectTableView } from '../components/ProjectTableView';
 import { ProjectGanttView } from '../components/ProjectGanttView';
 import { ProjectDateModal } from '../components/ProjectDateModal';
 import { ProjectCoordinatorModal } from '../components/ProjectCoordinatorModal';
-import { 
-  SafeHavenProject, 
-  ProjectListItem, 
-  ProjectFilters, 
-  ProjectSortOptions, 
+import {
+  SafeHavenProject,
+  ProjectListItem,
+  ProjectFilters,
+  ProjectSortOptions,
   ProjectViewMode,
-  ProjectStatus 
+  ProjectStatus
 } from '../types';
 import { projectToListItem, filterProjects, sortProjects } from '../utils';
 import { Trailer } from '../../../types';
@@ -21,6 +21,7 @@ import { useSidebar } from '../../../contexts/SidebarContext';
 import { filterProjectsByUserRole, getAvailableProjectStatuses } from '../../../services/projectFilterService';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
+import SearchField from 'common/components/SearchField';
 
 // Mock trailer data
 const mockTrailers: Trailer[] = [
@@ -137,27 +138,27 @@ const mockProjects: SafeHavenProject[] = [
     progress: 40,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20002',
     crew: [
-      { 
-        id: '4', 
-        name: 'Lisa Wilson', 
-        role: 'Project Manager', 
+      {
+        id: '4',
+        name: 'Lisa Wilson',
+        role: 'Project Manager',
         designation: 'Project Manager',
         site: 'Bellevue, WA',
         phone: '+1-555-0104',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '5', 
-        name: 'Tom Brown', 
-        role: 'Installer', 
+      {
+        id: '5',
+        name: 'Tom Brown',
+        role: 'Installer',
         designation: 'Installer',
         site: 'Bellevue, WA',
         phone: '+1-555-0105',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
       },
     ],
     assignedTrailer: 'Trailer Beta',
@@ -198,38 +199,38 @@ const mockProjects: SafeHavenProject[] = [
     progress: 100,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20004',
     crew: [
-      { 
-        id: '6', 
-        name: 'Alex Rodriguez', 
-        role: 'Lead Installer', 
+      {
+        id: '6',
+        name: 'Alex Rodriguez',
+        role: 'Lead Installer',
         designation: 'Lead Installer',
         site: 'Tacoma, WA',
         phone: '+1-555-0106',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '7', 
-        name: 'Emma Thompson', 
-        role: 'Technician', 
+      {
+        id: '7',
+        name: 'Emma Thompson',
+        role: 'Technician',
         designation: 'Technician',
         site: 'Tacoma, WA',
         phone: '+1-555-0107',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '8', 
-        name: 'David Lee', 
-        role: 'Assistant', 
+      {
+        id: '8',
+        name: 'David Lee',
+        role: 'Assistant',
         designation: 'Assistant',
         site: 'Tacoma, WA',
         phone: '+1-555-0108',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
       },
     ],
     assignedTrailer: 'Trailer Gamma',
@@ -270,27 +271,27 @@ const mockProjects: SafeHavenProject[] = [
     progress: 75,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20006',
     crew: [
-      { 
-        id: '9', 
-        name: 'Jennifer Taylor', 
-        role: 'Installer', 
+      {
+        id: '9',
+        name: 'Jennifer Taylor',
+        role: 'Installer',
         designation: 'Installer',
         site: 'Portland, OR',
         phone: '+1-555-0109',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '10', 
-        name: 'Robert Garcia', 
-        role: 'Coordinator', 
+      {
+        id: '10',
+        name: 'Robert Garcia',
+        role: 'Coordinator',
         designation: 'Coordinator',
         site: 'Portland, OR',
         phone: '+1-555-0110',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face'
       },
     ],
     assignedTrailer: 'Trailer Delta',
@@ -312,27 +313,27 @@ const mockProjects: SafeHavenProject[] = [
     progress: 25,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20007',
     crew: [
-      { 
-        id: '11', 
-        name: 'Amanda Lee', 
-        role: 'Lead', 
+      {
+        id: '11',
+        name: 'Amanda Lee',
+        role: 'Lead',
         designation: 'Lead',
         site: 'San Francisco, CA',
         phone: '+1-555-0111',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '12', 
-        name: 'Christopher Davis', 
-        role: 'Installer', 
+      {
+        id: '12',
+        name: 'Christopher Davis',
+        role: 'Installer',
         designation: 'Installer',
         site: 'San Francisco, CA',
         phone: '+1-555-0112',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face'
       },
     ],
     assignedTrailer: 'Trailer Echo',
@@ -354,27 +355,27 @@ const mockProjects: SafeHavenProject[] = [
     progress: 90,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20008',
     crew: [
-      { 
-        id: '1', 
-        name: 'John Smith', 
-        role: 'Lead Installer', 
+      {
+        id: '1',
+        name: 'John Smith',
+        role: 'Lead Installer',
         designation: 'Lead Installer',
         site: 'Portland, OR',
         phone: '+1-555-0101',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '2', 
-        name: 'Sarah Johnson', 
-        role: 'Technician', 
+      {
+        id: '2',
+        name: 'Sarah Johnson',
+        role: 'Technician',
         designation: 'Technician',
         site: 'Portland, OR',
         phone: '+1-555-0102',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
       }
     ],
     assignedTrailer: 'Trailer Alpha',
@@ -396,27 +397,27 @@ const mockProjects: SafeHavenProject[] = [
     progress: 0,
     vinCode: 'TXDA-SJ1BR1-EETUSC01-P20009',
     crew: [
-      { 
-        id: '2', 
-        name: 'Alex Martin', 
-        role: 'Installer', 
+      {
+        id: '2',
+        name: 'Alex Martin',
+        role: 'Installer',
         designation: 'Installer',
         site: 'Vancouver, WA',
         phone: '+1-555-0102',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
       },
-      { 
-        id: '3', 
-        name: 'Maria Rodriguez', 
-        role: 'Crew Leader', 
+      {
+        id: '3',
+        name: 'Maria Rodriguez',
+        role: 'Crew Leader',
         designation: 'Crew Leader',
         site: 'Vancouver, WA',
         phone: '+1-555-0103',
         productivity: 'Efficient in Installation',
         status: 'available' as const,
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face' 
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
       }
     ],
     assignedTrailer: 'Alpha Trailer',
@@ -488,13 +489,13 @@ export const ProjectListPage: React.FC = () => {
     field: 'title',
     direction: 'asc',
   });
-  
+
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [projectForDateAssignment, setProjectForDateAssignment] = useState<ProjectListItem | null>(null);
   const [showLeadSupervisorAnalytics, setShowLeadSupervisorAnalytics] = useState(true);
   const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false);
   const [projectForCoordinatorAssignment, setProjectForCoordinatorAssignment] = useState<ProjectListItem | null>(null);
-  
+
 
   // Convert projects to list items
   const projectListItems = useMemo(() => {
@@ -504,19 +505,19 @@ export const ProjectListPage: React.FC = () => {
   // Lead Supervisor analytics calculations
   const leadSupervisorAnalytics = useMemo(() => {
     if (!isLeadSupervisor) return null;
-    
+
     const totalProjects = projectListItems.length;
     const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF'].includes(p.status)).length;
     const completedProjects = projectListItems.filter(p => p.status === 'Completed').length;
     const completionRate = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
-    
+
     const projectsByStatus = projectListItems.reduce((acc, project) => {
       acc[project.status] = (acc[project.status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     const averageProgress = projectListItems.reduce((sum, project) => sum + (project.progress || 0), 0) / totalProjects;
-    
+
     return {
       totalProjects,
       activeProjects,
@@ -530,21 +531,21 @@ export const ProjectListPage: React.FC = () => {
   // Filter projects by user role first, then apply other filters
   const filteredAndSortedProjects = useMemo(() => {
     // First filter by user role (hide certain statuses for Execution Team)
-    const roleFilteredProjects = user?.userType 
+    const roleFilteredProjects = user?.userType
       ? filterProjectsByUserRole(projectListItems, user.userType)
       : projectListItems;
-    
+
     // Hide archived projects from "All" view unless specifically filtering for archived
     const archivedFilteredProjects = filters.status.length === 0 || !filters.status.includes('Archived')
       ? roleFilteredProjects.filter(project => project.status !== 'Archived')
       : roleFilteredProjects;
-    
+
     // Then apply other filters (search, status, assigned users)
     const filtered = filterProjects(archivedFilteredProjects, {
       ...filters,
       searchQuery,
     });
-    
+
     return sortProjects(filtered, sortOptions.field, sortOptions.direction);
   }, [projectListItems, filters, searchQuery, sortOptions, user?.userType]);
 
@@ -584,7 +585,7 @@ export const ProjectListPage: React.FC = () => {
     if (projectForDateAssignment) {
       // Update the project with new dates
       console.log(`Setting dates for project ${projectForDateAssignment.title}:`, { startDate, endDate });
-      
+
       // In a real app, you would update the project in the database here
       // For now, we'll just navigate to the project details page
       navigate(`/projects/${projectForDateAssignment.id}`);
@@ -615,96 +616,10 @@ export const ProjectListPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="w-full py-0">
-        {/* First Row - Page Heading and Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 px-2">
-          {/* Left side - Title and count */}
-          <div className="mb-4 lg:mb-0">
-            <h1 className="text-3xl font-bold text-gray-900">
-              {isExecutive ? 'Project Management' : 'Project Portfolio'}
-            </h1>
-            <p className="text-base text-gray-500">
-              {projectListItems.length} Projects
-              {isLeadSupervisor && leadSupervisorAnalytics && (
-                <span className="ml-2 text-sm text-green-600">
-                  • {leadSupervisorAnalytics.completionRate.toFixed(1)}% Completion Rate
-                </span>
-              )}
-            </p>
-          </div>
-          
-          {/* Right side - Search and View Controls */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            {/* Lead Supervisor Controls */}
-            {isLeadSupervisor && (
-              <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  icon={BarChart3}
-                  onClick={() => setShowLeadSupervisorAnalytics(!showLeadSupervisorAnalytics)}
-                >
-                  Analytics
-                </Button>
-              </div>
-            )}
-
-            {/* Search Bar */}
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search by project name, site, or ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-
-            {/* View Toggle - Icons Only */}
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode({ type: 'list' })}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode.type === 'list'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-                title="Card-based project view"
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode({ type: 'table' })}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode.type === 'table'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-                title="Detailed project table"
-              >
-                <List className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode({ type: 'gantt' })}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode.type === 'gantt'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-                title="Timeline and resource view"
-              >
-                <Calendar className="w-4 h-4" />
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Second Row - Status Filter Tabs */}
+        {/* first Row - Status Filter Tabs */}
         <div className="mb-4 px-2">
           <div className="flex items-center justify-between">
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+            <nav className="flex overflow-x-auto sm:space-x-8 mb-2 px-2 scrollbar-hide border-b border-b-gray-300 space-x-1 ">
               {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'])].map((status) => (
                 <button
                   key={status}
@@ -715,34 +630,85 @@ export const ProjectListPage: React.FC = () => {
                       assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
                     });
                   }}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                    (status === 'All' && filters.status.length === 0) || 
+                  className={`py-4 px-3  sm:px-1 font-medium text-sm flex items-center space-x-2 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${(status === 'All' && filters.status.length === 0) ||
                     (status !== 'All' && filters.status.includes(status as ProjectStatus))
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                    ? 'border-blue-500 text-blue-600 border-b-2 '
+                    : 'text-gray-600 hover:border-b-gray-400 hover:border-b-2'
+                    }`}
                 >
-                  {status}
+                  <div className='flex gap-2'>{status} <span className='bg-gray-200 rounded-full p-1 text-sx w-[20px] h-[20px] flex justify-center items-center'>4</span> </div>
+
                 </button>
               ))}
-            </div>
-            
-            {/* Archived Button - Positioned on the right */}
-            <button
-              onClick={() => {
-                setFilters({
-                  status: ['Archived'],
-                  assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
-                });
-              }}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                filters.status.includes('Archived')
+            </nav>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              {/* Lead Supervisor Controls */}
+              {isLeadSupervisor && (
+                <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={BarChart3}
+                    onClick={() => setShowLeadSupervisorAnalytics(!showLeadSupervisorAnalytics)}
+                  >
+                    Analytics
+                  </Button>
+                </div>
+              )}
+              <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} />
+
+              {/* Archived Button - Positioned on the center */}
+              <button
+                onClick={() => {
+                  setFilters({
+                    status: ['Archived'],
+                    assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
+                  });
+                }}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${filters.status.includes('Archived')
                   ? 'bg-gray-600 text-white shadow-sm'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Archived
-            </button>
+                  : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                  }`}
+              >
+                Archived
+              </button>
+              {/* View Toggle - Icons Only */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode({ type: 'list' })}
+                  className={`p-2 rounded-md transition-colors ${viewMode.type === 'list'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  title="Card-based project view"
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode({ type: 'table' })}
+                  className={`p-2 rounded-md transition-colors ${viewMode.type === 'table'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  title="Detailed project table"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode({ type: 'gantt' })}
+                  className={`p-2 rounded-md transition-colors ${viewMode.type === 'gantt'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  title="Timeline and resource view"
+                >
+                  <Calendar className="w-4 h-4" />
+                </button>
+              </div>
+
+
+
+            </div>
           </div>
         </div>
 
@@ -759,33 +725,33 @@ export const ProjectListPage: React.FC = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Total Projects */}
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">{leadSupervisorAnalytics.totalProjects}</div>
                   <div className="text-sm text-gray-600">Total Projects</div>
                 </div>
-                
+
                 {/* Active Projects */}
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-600">{leadSupervisorAnalytics.activeProjects}</div>
                   <div className="text-sm text-gray-600">Active Projects</div>
                 </div>
-                
+
                 {/* Completion Rate */}
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">{leadSupervisorAnalytics.completionRate.toFixed(1)}%</div>
                   <div className="text-sm text-gray-600">Completion Rate</div>
                 </div>
-                
+
                 {/* Average Progress */}
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">{leadSupervisorAnalytics.averageProgress.toFixed(1)}%</div>
                   <div className="text-sm text-gray-600">Avg Progress</div>
                 </div>
               </div>
-              
+
               {/* Projects by Status Breakdown */}
               <div className="mt-6">
                 <h4 className="text-md font-medium text-gray-900 mb-3">Projects by Status</h4>
@@ -824,27 +790,27 @@ export const ProjectListPage: React.FC = () => {
           />
         )}
 
-      {/* Project Date Modal */}
-      {projectForDateAssignment && (
-        <ProjectDateModal
-          isOpen={isDateModalOpen}
-          onClose={handleDateModalClose}
-          onConfirm={handleDateConfirm}
-          projectTitle={projectForDateAssignment.title}
-          projectStatus={projectForDateAssignment.status}
-          initialStartDate={projectForDateAssignment.startDate}
-          initialEndDate={projectForDateAssignment.endDate}
-        />
-      )}
+        {/* Project Date Modal */}
+        {projectForDateAssignment && (
+          <ProjectDateModal
+            isOpen={isDateModalOpen}
+            onClose={handleDateModalClose}
+            onConfirm={handleDateConfirm}
+            projectTitle={projectForDateAssignment.title}
+            projectStatus={projectForDateAssignment.status}
+            initialStartDate={projectForDateAssignment.startDate}
+            initialEndDate={projectForDateAssignment.endDate}
+          />
+        )}
 
-      {/* Project Coordinator Assignment Modal */}
-      <ProjectCoordinatorModal
-        isOpen={isCoordinatorModalOpen}
-        onClose={handleCloseCoordinatorModal}
-        project={projectForCoordinatorAssignment}
-        onAssignCoordinator={handleAssignCoordinator}
-        userRole={user?.userType as 'executive' | 'project-coordinator'}
-      />
+        {/* Project Coordinator Assignment Modal */}
+        <ProjectCoordinatorModal
+          isOpen={isCoordinatorModalOpen}
+          onClose={handleCloseCoordinatorModal}
+          project={projectForCoordinatorAssignment}
+          onAssignCoordinator={handleAssignCoordinator}
+          userRole={user?.userType as 'executive' | 'project-coordinator'}
+        />
 
       </div>
     </div>

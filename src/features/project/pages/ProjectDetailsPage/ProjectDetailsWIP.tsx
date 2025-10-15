@@ -1440,9 +1440,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 <div className="space-y-6">
                   {/* Inline Setup Interface - Only show when not setup and not Role 3 */}
                   {!windowsSetup && showInlineSetup && user?.userType !== 'execution-team' && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                    <Card>
                       <MobileWindowsConfiguration onSave={handleSetupSave} onCancel={() => setShowInlineSetup(false)} onAddBuilding={handleAddBuilding} />
-                    </div>
+                    </Card>
                   )}
 
                   {/* Second Windows Setup Interface - Only show when not setup and not Role 3 */}
@@ -1933,7 +1933,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
             {activeTab === 'team' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <Card>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Members</h3>
                   <div className="space-y-4">
                     {[
@@ -1960,13 +1960,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       </div>
                     ))}
                   </div>
-                </div>
+                </Card>
               </div>
             )}
 
             {activeTab === 'travel-hotel' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <Card >
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Travel & Hotel</h3>
                   <div className="space-y-6">
                     {/* Travel Details Section */}
@@ -2015,14 +2015,14 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card>
               </div>
             )}
 
             {activeTab === 'document' && (
               <div className="space-y-6">
                 {/* Project Documents Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <Card>
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Project Documents</h3>
@@ -2105,10 +2105,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card>
 
                 {/* Installation Guides Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <Card>
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Installation Guides</h3>
@@ -2129,7 +2129,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     <p className="text-gray-500">No installation guides uploaded yet</p>
                     <p className="text-sm text-gray-400 mt-1">Upload guides to help your team with installation procedures</p>
                   </div>
-                </div>
+                </Card>
               </div>
             )}
 

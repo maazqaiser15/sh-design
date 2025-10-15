@@ -6,6 +6,7 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   showInitials?: boolean;
+  style?: any
 }
 
 const sizeClasses = {
@@ -40,7 +41,8 @@ export const Avatar: React.FC<AvatarProps> = ({
   name,
   size = 'md',
   className = '',
-  showInitials = true
+  showInitials = true,
+  style
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -62,14 +64,14 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   if (!shouldShowImage) {
     return (
-      <div className={`bg-gray-200 rounded-full flex items-center justify-center ${sizeClasses[size]} ${className}`}>
+      <div className={`bg-gray-200 rounded-full flex items-center justify-center ${sizeClasses[size]} ${className} `}>
         <span className="text-gray-500 font-medium">?</span>
       </div>
     );
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={style}>
       {imageLoading && (
         <div className={`bg-gray-200 rounded-full flex items-center justify-center ${sizeClasses[size]} absolute inset-0`}>
           <div className="animate-pulse bg-gray-300 rounded-full w-full h-full"></div>

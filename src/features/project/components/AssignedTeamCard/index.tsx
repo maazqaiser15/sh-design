@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '../../../../common/components/Button';
 import { TeamCardsGrid } from '../TeamCard';
+import { Card } from 'common/components/Card';
 
 // Icons from Figma design
 const CheckCircleIcon = () => (
@@ -54,7 +55,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ icon, message }) => (
 // Section Header Component
 interface SectionHeaderProps {
   title: string;
-  subtitle: string;
+  subtitle: any;
   actionButtons?: React.ReactNode;
 }
 
@@ -170,15 +171,15 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl p-5 border border-gray-200">
+    <Card className="">
       <div className="flex flex-col gap-5">
         <SectionHeader
           title="Assigned team"
-          subtitle="Select team members"
+          subtitle={`${assignedTeam && assignedTeam.members.length} members`}
           actionButtons={renderActionButtons()}
         />
         {renderTeamContent()}
       </div>
-    </div>
+    </Card>
   );
 };

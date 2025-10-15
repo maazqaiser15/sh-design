@@ -1,3 +1,4 @@
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
 import React from 'react';
 import DataTable from 'react-data-table-component';
 import styled from 'styled-components';
@@ -41,6 +42,12 @@ const CustomDataTable: React.FC<tableProps> = ({
 
   // Custom styles for the table and pagination
   const customStyles = {
+    tableWrapper: {
+      style: {
+        width: '100%',
+        overflowX: 'auto',         // ← horizontal scroll lives here
+      },
+    },
     table: {
       style: {
         backgroundColor: "transparent", // ✅ whole table background color
@@ -145,7 +152,6 @@ const CustomDataTable: React.FC<tableProps> = ({
 
   return (
     <CustomPaginationStyles>
-      <div style={{ minWidth: '1800px' }}>
         <DataTable
           title={title}
           columns={columns}
@@ -161,7 +167,6 @@ const CustomDataTable: React.FC<tableProps> = ({
           paginationPerPage={paginationPerPage}
           customStyles={customStyles}
         />
-      </div>
     </CustomPaginationStyles>
   );
 };

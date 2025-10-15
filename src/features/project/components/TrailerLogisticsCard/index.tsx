@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Truck, Plus, Paperclip, FileText, CheckCircle } from 'lucide-react';
 import { AssignTrailerModal } from '../AssignTrailerModal';
 import { TrailerForAssignment } from '../../types/trailers';
+import { Card } from 'common/components/Card';
 
 interface TrailerLogisticsCardProps {
   assignedTrailer?: TrailerForAssignment | null;
@@ -77,7 +78,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
 
   return (
     <>
-      <div className="bg-white rounded-xl p-5 border border-gray-200">
+      <Card>
         <div className="flex flex-col gap-4">
           {/* Header */}
           <div className="flex gap-4 items-start w-full">
@@ -196,7 +197,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Assign Trailer Modal */}
       <AssignTrailerModal
