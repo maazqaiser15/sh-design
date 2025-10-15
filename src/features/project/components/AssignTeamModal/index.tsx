@@ -8,6 +8,7 @@ import SearchField from 'common/components/SearchField';
 import SelectField from 'common/components/SelectField';
 import CustomDataTable from 'common/components/CustomDataTable';
 import { Card } from 'common/components/Card';
+import { getProjectStatusColor, getStatusColor } from '../../utils';
 
 interface AssignTeamModalProps {
   isOpen: boolean;
@@ -126,7 +127,8 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
             />
           </div>
         )
-      }
+      },
+      width: '80px'
     },
     {
       name: 'Name',
@@ -143,6 +145,17 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
     {
       name: 'Status',
       selector: (row: any) => row.status,
+      cell: (row: any) => (
+        <div className="flex flex-col space-y-1">
+          <span
+            className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(
+              row.status
+            )}`}
+          >
+            {row.status}
+          </span>
+        </div>
+      )
     },
 
     {
@@ -155,7 +168,6 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
         </div>
       </div>
     },
-
   ]
 
   return (
@@ -182,40 +194,41 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
         )}
 
         {/* Search and Filters */}
-        <div className="flex space-x-4 mb-6">
+        <div className="flex justify-between space-x-4 mb-6">
           <SearchField iconSize={20} inputClassName='border border-gray-300 w-full pl-4 pr-4 py-2' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} />
-          <SelectField value={roleFilter} inputClassName={'border border-gray-300'} onChange={(e) => setRoleFilter(e.target.value as TeamRole | '')} placeholder={'All Roles'} options={[{
-            value: '', label: 'All Roles'
-          },
-          {
-            value: 'Lead Supervisor', label: 'Lead Supervisor'
-          }
-            ,
-          {
-            value: 'Crew Leader', label: 'Crew Leader'
-          },
-          {
-            value: 'Installer', label: 'Installer'
-          },
-          {
-            value: 'Project Coordinator', label: 'Project Coordinator'
-          },
-          ]} />
 
-          <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as TeamMemberStatus | '')} placeholder={'All Status'} options={[{
-            value: '', label: 'All Status'
-          },
-          {
-            value: 'Available', label: 'Available'
-          }
-            ,
-          {
-            value: 'Unavailable', label: 'Unavailable'
-          }
-          ]} />
+          <div className='flex space-x-4'>
+            <SelectField value={roleFilter} inputClassName={'border border-gray-300'} onChange={(e) => setRoleFilter(e.target.value as TeamRole | '')} placeholder={'All Roles'} options={[{
+              value: '', label: 'All Roles'
+            },
+            {
+              value: 'Lead Supervisor', label: 'Lead Supervisor'
+            }
+              ,
+            {
+              value: 'Crew Leader', label: 'Crew Leader'
+            },
+            {
+              value: 'Installer', label: 'Installer'
+            },
+            {
+              value: 'Project Coordinator', label: 'Project Coordinator'
+            },
+            ]} />
 
-
-          <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'All Status'} options={availableLocations} />
+            <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as TeamMemberStatus | '')} placeholder={'All Status'} options={[{
+              value: '', label: 'All Status'
+            },
+            {
+              value: 'Available', label: 'Available'
+            }
+              ,
+            {
+              value: 'Unavailable', label: 'Unavailable'
+            }
+            ]} />
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'All Status'} options={availableLocations} />
+          </div>
         </div>
 
         {/* Selection Summary */}
@@ -253,10 +266,8 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
         </div>
 
         <Card className='max-h-[60vh] overflow-y-auto'>
-          <CustomDataTable title={''} columns={columns} data={paginatedMembers} selectableRows={undefined} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={5} />
+          <CustomDataTable title={''} columns={columns} data={paginatedMembers} selectableRows={undefined} pagination={false} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={5} />
         </Card>
-
-
 
         {/* Empty State */}
         {filteredMembers.length === 0 && (

@@ -5,6 +5,8 @@ import { Modal } from '../../../../common/components/Modal';
 import { TrailerForAssignment } from '../../types/trailers';
 import SearchField from 'common/components/SearchField';
 import SelectField from 'common/components/SelectField';
+import CustomDataTable from 'common/components/CustomDataTable';
+import { getStatusColor } from '../../utils';
 
 interface AssignTrailerModalProps {
   isOpen: boolean;
@@ -111,135 +113,91 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
     return trailer.status === 'available';
   };
 
+
+  const columns = [
+    {
+      name: 'Select',
+      selector: (row: any) => '',
+      cell: (row: any) => {
+        const isUnavailable = row.status === 'Unavailable';
+        return (
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              // checked={isSelected}
+              disabled={isUnavailable}
+              // onChange={() => !isUnavailable && handleMemberToggle(row.id)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+            />
+          </div>
+        )
+      },
+      width: '80px'
+    },
+    {
+      name: 'Name',
+      selector: (row: any) => row.trailerName,
+    },
+    {
+      name: 'Registration',
+      selector: (row: any) => row.registrationNumber,
+    },
+    {
+      name: 'Status',
+      selector: (row: any) => row.status,
+      cell: (row: any) => (
+        <div className="flex flex-col space-y-1">
+          <span
+            className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(
+              row.status
+            )}`}
+          >
+            {row.status}
+          </span>
+        </div>
+      )
+    },
+
+    {
+      name: 'Location',
+      selector: (row: any) => row.currentLocation,
+      cell: (row: any) => <div>
+        <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
+          <MapPin className="w-3 h-3 mr-1 text-gray-400 flex-shrink-0" />
+          <span className="truncate">{row.location || '—'}</span>
+        </div>
+      </div>
+    },
+
+  ]
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
       title="Assign Trailer to Project"
-      size="lg"
+      size="xl"
     >
       <div className="">
         {/* Search and Filters */}
-        <div className="flex flex-col lg:flex-row items-center space-y-3 lg:space-y-0 lg:space-x-4 mb-6">
+        <div className="flex flex-col lg:flex-row justify-between items-center space-y-3 lg:space-y-0 lg:space-x-4 mb-6">
           {/* Search Bar */}
-
-
           <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} inputClassName={'border border-gray-300'} />
 
-          {/* Status Filter */}
-          <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as any)} placeholder={'All Status'} options={[{ value: '', label: 'All Status' }, { value: 'available', label: 'Available' }, { value: 'low_stock', label: 'Low Stock' }, { value: 'unavailable', label: 'Unavailable' }]} />
+          <div className='flex items-center gap-4'>
+            {/* Status Filter */}
+            <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as any)} placeholder={'All Status'} options={[{ value: '', label: 'All Status' }, { value: 'available', label: 'Available' }, { value: 'low_stock', label: 'Low Stock' }, { value: 'unavailable', label: 'Unavailable' }]} />
 
-          {/* Location Filter */}
-          <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Locations'} options={[uniqueLocations]} />
+            {/* Location Filter */}
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Locations'} options={[uniqueLocations]} />
+          </div>
+
 
         </div>
 
         {/* Trailer List */}
         <div className="max-h-96 overflow-y-auto">
-          {filteredTrailers.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p>No trailers found matching your criteria.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredTrailers.map(trailer => {
-                const isSelectable = isTrailerSelectable(trailer);
-                const isSelected = selectedTrailer === trailer.id;
-                const inventory = getInventorySummary(trailer);
-
-                return (
-                  <div
-                    key={trailer.id}
-                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 ${isSelectable
-                      ? isSelected
-                        ? 'border-blue-500 bg-blue-50 shadow-md cursor-pointer'
-                        : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm cursor-pointer'
-                      : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
-                      }`}
-                    onClick={() => isSelectable && handleTrailerSelect(trailer.id)}
-                  >
-                    <div className="flex items-start space-x-4">
-                      {/* Checkbox */}
-                      <div className="flex-shrink-0 pt-1">
-                        {isSelectable ? (
-                          isSelected ? (
-                            <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
-                          )
-                        ) : (
-                          <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
-                            <X className="w-3 h-3 text-gray-500" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Avatar */}
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center">
-                          <Truck className="w-4 h-4 text-blue-600" />
-                        </div>
-                      </div>
-
-                      {/* Trailer Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            {/* Trailer Name */}
-                            <h3 className={`text-base font-semibold mb-1 ${isSelectable ? 'text-gray-900' : 'text-gray-500'
-                              }`}>
-                              {trailer.trailerName}
-                            </h3>
-
-                            {/* Registration and Location Row */}
-                            <div className="flex items-center space-x-4">
-                              <p className={`text-sm ${isSelectable ? 'text-gray-600' : 'text-gray-400'
-                                }`}>
-                                {trailer.registrationNumber}
-                              </p>
-                              <div className="flex items-center space-x-1 text-sm text-gray-600">
-                                <MapPin className="w-4 h-4 text-gray-400" />
-                                <span>{trailer.currentLocation}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Status Badge - Moved to right */}
-                          <div className="flex-shrink-0 ml-4 flex flex-col items-end">
-                            {trailer.status === 'available' ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <Check className="w-3 h-3 mr-1" />
-                                Available
-                              </span>
-                            ) : trailer.status === 'low_stock' ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                <AlertTriangle className="w-3 h-3 mr-1" />
-                                Low Stock
-                              </span>
-                            ) : (
-                              <div className="flex flex-col items-end">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                  <X className="w-3 h-3 mr-1" />
-                                  Unavailable
-                                </span>
-                                <span className="text-xs text-red-600 mt-1">
-                                  until {trailer.unavailableUntil ? new Date(trailer.unavailableUntil).toLocaleDateString() : 'TBD'}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <CustomDataTable title={''} columns={columns} data={filteredTrailers} selectableRows={undefined} pagination={false} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
         </div>
 
         {/* Footer */}

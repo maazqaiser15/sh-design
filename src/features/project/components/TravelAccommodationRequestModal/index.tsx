@@ -194,7 +194,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
         {/* Travel Section */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Plane className="w-5 h-5 text-blue-600" />
               <h3 className="text-lg font-semibold text-blue-900">Travel Required</h3>
@@ -319,7 +319,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
         {/* Accommodation Section */}
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Hotel className="w-5 h-5 text-green-600" />
               <h3 className="text-lg font-semibold text-green-900">Accommodation Required</h3>
@@ -407,7 +407,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
         {/* Rental Vehicle Section */}
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between ">
             <div className="flex items-center gap-2">
               <Car className="w-5 h-5 text-orange-600" />
               <h3 className="text-lg font-semibold text-orange-900">Rental Vehicle Required</h3>

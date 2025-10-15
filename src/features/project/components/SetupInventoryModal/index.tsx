@@ -162,7 +162,7 @@ export const SetupInventoryModal: React.FC<SetupInventoryModalProps> = ({
       size="xl"
       showCloseButton={false}
     >
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-h-[80vh] overflow-y-auto scroll-hide max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">

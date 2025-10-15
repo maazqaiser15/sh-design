@@ -21,6 +21,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import SearchField from "common/components/SearchField";
 import SelectField from "common/components/SelectField";
 import CustomDataTable from "common/components/CustomDataTable";
+import { getStatusColor } from "src/features/project";
 
 /**
  * Team Management page component
@@ -77,16 +78,7 @@ export const Team: React.FC = () => {
     };
   }, [canManageTeam]);
 
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case "Available":
-        return "text-green-600 bg-green-50";
-      case "Unavailable":
-        return "text-red-600 bg-red-50";
-      default:
-        return "text-gray-600 bg-gray-50";
-    }
-  };
+ 
 
   const handleViewMember = (memberId: string) => {
     navigate(`/team/${memberId}`);
@@ -177,7 +169,7 @@ export const Team: React.FC = () => {
           {/* Filters & Search */}
           <div className="flex items-center space-x-4">
             <div className="relative flex-1 max-w-md">
-              <SearchField className={""} iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={"Search"} />
+              <SearchField className={""} iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={"Search"} inputClassName={""} />
             </div>
 
             <SelectField className={""} label={""} value={selectedMembers} onChange={(e) => setSelectedMembers(e.target.value)} placeholder={""} options={[

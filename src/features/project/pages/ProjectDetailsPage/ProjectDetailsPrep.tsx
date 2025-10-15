@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, CheckCheck } from 'lucide-react';
+import { Plus, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, CheckCheck, Sheet, File, FileText } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
 import { NoteAttachment } from '../../../../types';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
@@ -26,6 +26,7 @@ import { Window, MOCK_WINDOWS } from '../../types/windows';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 import { Card } from 'common/components/Card';
 import { SetupInventoryModal } from '../../components/SetupInventoryModal';
+import { ConfirmationModal } from 'common/components/ConfimationModal';
 
 // Icons from Figma design
 
@@ -123,14 +124,14 @@ interface ProgressStepProps {
 const ProgressStep: React.FC<ProgressStepProps> = ({ title, status, description }) => {
   const getStepIcon = () => {
     if (status === 'completed') {
-    return (
-      <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 1.33333C11.6819 1.33333 14.6667 4.3181 14.6667 8C14.6667 11.6819 11.6819 14.6667 8 14.6667C4.3181 14.6667 1.33333 11.6819 1.33333 8C1.33333 4.3181 4.3181 1.33333 8 1.33333Z" stroke="#e5e7eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M6 8L7.33333 9.33333L10.6667 6" stroke="#e5e7eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-    );
+      return (
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1.33333C11.6819 1.33333 14.6667 4.3181 14.6667 8C14.6667 11.6819 11.6819 14.6667 8 14.6667C4.3181 14.6667 1.33333 11.6819 1.33333 8C1.33333 4.3181 4.3181 1.33333 8 1.33333Z" stroke="#e5e7eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M6 8L7.33333 9.33333L10.6667 6" stroke="#e5e7eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      );
     }
     return (
       <div className="bg-white border-2 border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
@@ -195,6 +196,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, actionBu
   </div>
 );
 
+
 /**
  * ProjectDetailsPage - Main project details page
  * Shows project information, team assignments, logistics, and documents
@@ -234,7 +236,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
   const [showContractRequiredModal, setShowContractRequiredModal] = useState(false);
-
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   // Notes State
   const [notes, setNotes] = useState<ProjectNote[]>([]);
 
@@ -940,13 +942,73 @@ export const ProjectDetailsPrep: React.FC = () => {
     return <ProjectDetailsWIP projectStatus="WIP" />;
   }
 
+  const activityLog = [
+    {
+      id: '1',
+      user: 'John Smith',
+      action: 'updated Marriot Windows Installation project',
+      time: '2 hours ago',
+      type: 'update',
+      fileName: 'project-update.pdf',
+      fileSize: '2.4 MB',
+      note: 'All windows have been measured and marked for installation'
+    },
+    {
+      id: '2',
+      user: 'Sarah Johnson',
+      action: 'uploaded document for Marriot Windows Installation',
+      time: '4 hours ago',
+      type: 'document',
+      fileName: 'site-measurements.pdf',
+      fileSize: '1.8 MB'
+    },
+    {
+      id: '3',
+      user: 'Mike Lee',
+      action: 'completed window installation for Marriot Windows Installation',
+      time: '6 hours ago',
+      type: 'completion',
+      fileName: null,
+      fileSize: null,
+      note: 'Windows 1-5 successfully installed with BR film'
+    },
+    {
+      id: '4',
+      user: 'Emily Rodriguez',
+      action: 'uploaded document for Marriot Windows Installation',
+      time: '1 day ago',
+      type: 'document',
+      fileName: 'safety-checklist.pdf',
+      fileSize: '0.9 MB'
+    },
+    {
+      id: '5',
+      user: 'David Chen',
+      action: 'updated Marriot Windows Installation project',
+      time: '1 day ago',
+      type: 'update',
+      fileName: null,
+      fileSize: null,
+      note: 'Site preparation completed, ready for installation'
+    },
+    {
+      id: '6',
+      user: 'Ayesha Khan',
+      action: 'uploaded document for Marriot Windows Installation',
+      time: '2 days ago',
+      type: 'document',
+      fileName: 'architectural-plans.pdf',
+      fileSize: '3.2 MB'
+    }
+  ]
+
   return (
     <div className=" min-h-screen">
 
       {/* Main Content */}
       <div className="py-6">
         {/* Project Header Card */}
-        <Card className="mb-6 ">
+        <Card className="mb-6">
           <div className="flex flex-col gap-2">
             {/* Project Title and Actions */}
             <div className="">
@@ -962,6 +1024,25 @@ export const ProjectDetailsPrep: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2 items-center">
                   <Button
+                    onClick={() => setShowEditModal(true)}
+                    variant="ghost"
+                    size="sm"
+                    icon={Edit}
+                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowSetupInventoryModal(true)}
+                    variant="ghost"
+                    size="sm"
+                    icon={File}
+                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    View Take Off Sheet
+                  </Button>
+                  <Button
                     variant='primary'
                     onClick={handleMarkStageComplete}
                     disabled={!allStagesCompleted}
@@ -972,16 +1053,6 @@ export const ProjectDetailsPrep: React.FC = () => {
                   >
                     Mark Stage as Complete
                   </Button>
-                  <Button
-                    onClick={() => setShowEditModal(true)}
-                    variant="ghost"
-                    size="sm"
-                    icon={Edit}
-                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
-                  >
-                    Edit
-                  </Button>
-
                 </div>
               </div>
 
@@ -1041,7 +1112,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 )}
                 {/* Contact Person */}
                 {project.contactPerson && (
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-2 pr-6">
                     <User className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Contact Person</p>
@@ -1051,10 +1122,6 @@ export const ProjectDetailsPrep: React.FC = () => {
                     </div>
                   </div>
                 )}
-
-         
-
-
               </div>
             </div>
 
@@ -1084,9 +1151,9 @@ export const ProjectDetailsPrep: React.FC = () => {
         </Card>
 
         {/* Main Content Grid */}
-        <div className="flex gap-6">
+        <div className="grid grid-cols-3 gap-6">
           {/* Left Column */}
-          <div className="flex flex-col gap-6 flex-1">
+          <div className="space-y-6 col-span-2 gap-6 flex-1">
             {/* Assigned Team Card */}
             <AssignedTeamCard
               assignedTeam={preparationData.assignedTeam}
@@ -1097,7 +1164,16 @@ export const ProjectDetailsPrep: React.FC = () => {
               isCompleted={isAssignedTeamCompleted}
               showActions={true}
             />
-
+            <TrailerLogisticsCard
+              assignedTrailer={assignedTrailer}
+              onAssignTrailer={handleAssignTrailer}
+              onAddAttachment={handleFileAttachment}
+              onMarkComplete={handleMarkTrailerComplete}
+              hasReceipt={uploadedReceipts.length > 0}
+              isCompleted={isTrailerCompleted}
+              availableTrailers={availableTrailers}
+              attachedFiles={uploadedReceipts}
+            />
             {/* Travel & Accommodation Card */}
             {travelAccommodationDetailsAdded ? (
               /* Details Added State - Show comprehensive travel details using TravelAccommodationDetailsCard */
@@ -1152,7 +1228,8 @@ export const ProjectDetailsPrep: React.FC = () => {
                         <>
                           {/* Not Required Button */}
                           <button
-                            onClick={handleMarkTravelNotRequired}
+                            // onClick={handleMarkTravelNotRequired}
+                            onClick={() => setShowConfirmationModal(true)}
                             className="bg-white border border-[#d0d5dd] text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
                           >
                             <CheckCircleIcon />
@@ -1186,92 +1263,102 @@ export const ProjectDetailsPrep: React.FC = () => {
                   ) : travelAccommodationRequestSubmitted ? (
                     /* Request Submitted State */
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <div className="flex items-center gap-2">
-                        <CheckCircleIcon />
-                        <span className="text-sm font-medium text-green-800">
-                          Request submitted successfully
-                        </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className='flex items-center gap-1'>
+                          <CheckCircleIcon />
+                          <span className="text-sm font-medium text-green-800">
+                            Request submitted successfully
+                          </span>
+                        </div>
+                        <Button variant='ghost' onClick={handleOpenTravelAccommodationRequestModal} className='bg-transparent flex justify-center hover:bg-transparent cursor-pointer' icon={Edit}><></></Button>
                       </div>
+
                       <p className="text-xs text-green-600 mt-1">
                         Logistics manager will review and provide details
                       </p>
+
+
+
                       {travelAccommodationRequestData && (
-                        <div className="mt-3 text-xs text-green-700">
-                          <p><strong>Travel Required:</strong> {travelAccommodationRequestData.travelRequired ? 'Yes' : 'No'}</p>
-                          <p><strong>Accommodation Required:</strong> {travelAccommodationRequestData.accommodationRequired ? 'Yes' : 'No'}</p>
-                          <p><strong>Rental Vehicle Required:</strong> {travelAccommodationRequestData.rentalVehicleRequired ? 'Yes' : 'No'}</p>
-                          {travelAccommodationRequestData.travelMethod && (
-                            <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
-                          )}
+                        <div className="mt-3 text-xs text-green-700 flex justify-between items-start">
+                          <div>
+                            <p><strong>Travel Required:</strong> {travelAccommodationRequestData.travelRequired ? 'Yes' : 'No'}</p>
+                            <p><strong>Accommodation Required:</strong> {travelAccommodationRequestData.accommodationRequired ? 'Yes' : 'No'}</p>
+                            <p><strong>Rental Vehicle Required:</strong> {travelAccommodationRequestData.rentalVehicleRequired ? 'Yes' : 'No'}</p>
+                            {travelAccommodationRequestData.travelMethod && (
+                              <p><strong>Travel Method:</strong> {travelAccommodationRequestData.travelMethod === 'air' ? 'Air' : 'Road'}</p>
+                            )}
 
-                          {/* Travel Team Members */}
-                          {travelAccommodationRequestData.travelRequired && (
-                            <div className="mt-2">
-                              <p><strong>Travel Team Members:</strong> {travelAccommodationRequestData.selectedTeamMembers.length} selected</p>
-                              {travelAccommodationRequestData.selectedTeamMembers.length > 0 && (
+                            {/* Travel Team Members */}
+                            {travelAccommodationRequestData.travelRequired && (
+                              <div className="mt-2">
+                                <p><strong>Travel Team Members:</strong> {travelAccommodationRequestData.selectedTeamMembers.length} selected</p>
+                                {travelAccommodationRequestData.selectedTeamMembers.length > 0 && (
+                                  <div className="mt-1">
+                                    <div className="space-y-1">
+                                      {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
+                                        <div key={member.id} className="flex items-center gap-2 text-sm">
+                                          <div className="w-7 h-7 bg-blue-100 p rounded-full flex items-center justify-center">
+                                            <span className="text-xs font-medium text-blue-700">
+                                              {member.name.split(' ').map(n => n[0]).join('')}
+                                            </span>
+                                          </div>
+                                          <span className="text-gray-700">{member.name}</span>
+                                          <span className="text-gray-500">({member.role})</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Accommodation Team Members */}
+                            {travelAccommodationRequestData.accommodationRequired && (
+                              <div className="mt-2">
+                                <p><strong>Accommodation Team Members:</strong> {travelAccommodationRequestData.selectedAccommodationMembers.length} selected</p>
+                                {travelAccommodationRequestData.selectedAccommodationMembers.length > 0 && (
+                                  <div className="mt-1">
+                                    <div className="space-y-1">
+                                      {travelAccommodationRequestData.selectedAccommodationMembers.map((member) => (
+                                        <div key={member.id} className="flex items-center gap-2 text-sm">
+                                          <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
+                                            <span className="text-xs font-medium text-green-700">
+                                              {member.name.split(' ').map(n => n[0]).join('')}
+                                            </span>
+                                          </div>
+                                          <span className="text-gray-700">{member.name}</span>
+                                          <span className="text-gray-500">({member.role})</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Rental Vehicle Details */}
+                            {travelAccommodationRequestData.rentalVehicleRequired && travelAccommodationRequestData.rentalVehicleDetails && (
+                              <div className="mt-2">
+                                <p><strong>Rental Vehicle Details:</strong></p>
                                 <div className="mt-1">
                                   <div className="space-y-1">
-                                    {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
-                                      <div key={member.id} className="flex items-center gap-2 text-sm">
-                                        <div className="w-7 h-7 bg-blue-100 p rounded-full flex items-center justify-center">
-                                          <span className="text-xs font-medium text-blue-700">
-                                            {member.name.split(' ').map(n => n[0]).join('')}
-                                          </span>
-                                        </div>
-                                        <span className="text-gray-700">{member.name}</span>
-                                        <span className="text-gray-500">({member.role})</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Accommodation Team Members */}
-                          {travelAccommodationRequestData.accommodationRequired && (
-                            <div className="mt-2">
-                              <p><strong>Accommodation Team Members:</strong> {travelAccommodationRequestData.selectedAccommodationMembers.length} selected</p>
-                              {travelAccommodationRequestData.selectedAccommodationMembers.length > 0 && (
-                                <div className="mt-1">
-                                  <div className="space-y-1">
-                                    {travelAccommodationRequestData.selectedAccommodationMembers.map((member) => (
-                                      <div key={member.id} className="flex items-center gap-2 text-sm">
-                                        <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
-                                          <span className="text-xs font-medium text-green-700">
-                                            {member.name.split(' ').map(n => n[0]).join('')}
-                                          </span>
-                                        </div>
-                                        <span className="text-gray-700">{member.name}</span>
-                                        <span className="text-gray-500">({member.role})</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Rental Vehicle Details */}
-                          {travelAccommodationRequestData.rentalVehicleRequired && travelAccommodationRequestData.rentalVehicleDetails && (
-                            <div className="mt-2">
-                              <p><strong>Rental Vehicle Details:</strong></p>
-                              <div className="mt-1">
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <span className="text-gray-700">
-                                      <strong>Duration:</strong> {new Date(travelAccommodationRequestData.rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(travelAccommodationRequestData.rentalVehicleDetails.toDate).toLocaleDateString()}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <span className="text-gray-700">
-                                      <strong>Number of Cars:</strong> {travelAccommodationRequestData.rentalVehicleDetails.numberOfCars}
-                                    </span>
+                                    <div className="flex items-center gap-2 text-sm">
+                                      <span className="text-gray-700">
+                                        <strong>Duration:</strong> {new Date(travelAccommodationRequestData.rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(travelAccommodationRequestData.rentalVehicleDetails.toDate).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm">
+                                      <span className="text-gray-700">
+                                        <strong>Number of Cars:</strong> {travelAccommodationRequestData.rentalVehicleDetails.numberOfCars}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            )}
+
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1379,18 +1466,59 @@ export const ProjectDetailsPrep: React.FC = () => {
           </div>
 
           {/* Right Column */}
-          <div className="flex flex-col gap-6 flex-1">
+          <div className="col-span-1 space-x-6">
             {/* Trailer & Films Card */}
-            <TrailerLogisticsCard
-              assignedTrailer={assignedTrailer}
-              onAssignTrailer={handleAssignTrailer}
-              onAddAttachment={handleFileAttachment}
-              onMarkComplete={handleMarkTrailerComplete}
-              hasReceipt={uploadedReceipts.length > 0}
-              isCompleted={isTrailerCompleted}
-              availableTrailers={availableTrailers}
-              attachedFiles={uploadedReceipts}
-            />
+            <Card className="p-5 h-fit">
+              <div className="flex flex-col gap-5">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Activity Log</h3>
+                  <p className="text-sm text-gray-500">6 recent updates</p>
+                </div>
+
+                <div className="space-y-4">
+                  {activityLog.map((activity: any) => (
+                    <div key={activity.id} className="relative">
+                      <div className="flex gap-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-600">
+                              {activity.user.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-medium text-gray-900">{activity.user}</span>
+                            <span className="text-xs text-gray-500">{activity.time}</span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {activity.action.split('Marriot Windows Installation')[0]}
+                            <span className="font-semibold text-blue-600 underline">Marriot Windows Installation</span>
+                            {activity.action.split('Marriot Windows Installation')[1]}
+                          </p>
+                          {activity.type === 'document' && activity.fileName && (
+                            <div className="mt-2 flex items-center gap-2">
+                              <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
+                                <FileText className="w-3 h-3 text-blue-600" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">{activity.fileName}</div>
+                                <div className="text-xs text-gray-500">{activity.fileSize}</div>
+                              </div>
+                            </div>
+                          )}
+                          {(activity.type === 'update' || activity.type === 'completion') && activity.note && (
+                            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                              <p className="text-sm text-gray-600 italic">"{activity.note}"</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
@@ -1437,7 +1565,10 @@ export const ProjectDetailsPrep: React.FC = () => {
         onEdit={handleUpdateLogistics}
         editingLogistics={editingLogistics}
       />
-
+      {/* confirmation Modal */}
+      <ConfirmationModal isOpen={showConfirmationModal} onClose={() => setShowConfirmationModal(false)} title={'Are your Sure?'} onClick={handleMarkTravelNotRequired}>
+        <></>
+      </ConfirmationModal>
       {/* Add Travel Modal */}
       <AddTravelModal
         isOpen={showAddTravelModal}

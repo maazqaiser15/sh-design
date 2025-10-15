@@ -7,10 +7,10 @@ export const projectToListItem = (project: SafeHavenProject): ProjectListItem =>
   const startDate = new Date(project.startDate);
   const endDate = new Date(project.endDate);
   const today = new Date();
-  
+
   // Calculate days remaining
   const daysRemaining = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   return {
     ...project,
     crewCount: project.crew?.length || 0,
@@ -33,7 +33,7 @@ export const filterProjects = (
     if (filters.status && filters.status.length > 0) {
       if (!filters.status.includes(project.status)) return false;
     }
-    
+
     // Search query filter
     if (filters.searchQuery) {
       const query = filters.searchQuery.toLowerCase();
@@ -46,10 +46,10 @@ export const filterProjects = (
         project.assignedTrailer || '',
         ...project.crew.map(member => member.name),
       ].join(' ').toLowerCase();
-      
+
       if (!searchableText.includes(query)) return false;
     }
-    
+
     return true;
   });
 };
@@ -65,7 +65,7 @@ export const sortProjects = (
   return [...projects].sort((a, b) => {
     let aValue = a[field];
     let bValue = b[field];
-    
+
     // Handle different data types
     if (field === 'startDate' || field === 'endDate') {
       aValue = new Date(aValue as string).getTime();
@@ -74,7 +74,7 @@ export const sortProjects = (
       aValue = aValue.toLowerCase();
       bValue = (bValue as string).toLowerCase();
     }
-    
+
     if (direction === 'asc') {
       return (aValue || '') < (bValue || '') ? -1 : (aValue || '') > (bValue || '') ? 1 : 0;
     } else {
@@ -112,7 +112,7 @@ export const formatProjectDuration = (startDate: string, endDate: string): strin
   const end = new Date(endDate);
   const diffTime = end.getTime() - start.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 1) return '1 day';
   if (diffDays < 7) return `${diffDays} days`;
   if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks`;
@@ -140,5 +140,19 @@ export const getProgressBarColor = (status: string): string => {
       return 'bg-gray-500';
     default:
       return 'bg-gray-400';
+  }
+};
+
+
+export const getStatusColor = (status: string): string => {
+  switch (status.toLowerCase()) {
+    case "available":
+      return "text-green-600 bg-green-50";
+    case "unavailable":
+      return "text-red-600 bg-red-50";
+    case "low_stock":
+      return "text-yellow-600 bg-yellow-50"
+    default:
+      return "text-gray-600 bg-gray-50";
   }
 };
