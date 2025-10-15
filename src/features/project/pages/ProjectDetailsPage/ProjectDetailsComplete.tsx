@@ -37,7 +37,9 @@ import {
   FileBarChart,
   Printer
 } from 'lucide-react';
-import { ProjectDetails, MOCK_PROJECT_DETAILS } from '../../types/projectDetails';
+import { ProjectDetails, MOCK_PROJECT_DETAILS, ProjectNote } from '../../types/projectDetails';
+import { NoteAttachment } from '../../../../types';
+import { ProjectNotes } from '../../components/ProjectNotes';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
@@ -57,6 +59,9 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  
+  // Notes State
+  const [notes, setNotes] = useState<ProjectNote[]>([]);
   
   // Project Report Data
   const [projectReport] = useState({
@@ -272,6 +277,70 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
   // Handlers
   const handleCreateAssociatedProject = () => {
     showToast('Create Associated Project functionality coming soon');
+  };
+
+  // Note handlers
+  const handleAddNote = (content: string, isInternal: boolean, attachments?: NoteAttachment[]) => {
+    const newNote: ProjectNote = {
+      id: `note-${Date.now()}`,
+      content,
+      author: 'Current User',
+      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      projectId: projectId || '',
+      isInternal,
+      attachments: attachments || []
+    };
+    setNotes(prev => [...prev, newNote]);
+  };
+
+  const handleEditNote = (noteId: string, content: string) => {
+    setNotes(prev => prev.map(note =>
+      note.id === noteId
+        ? { ...note, content, updatedAt: new Date().toISOString() }
+        : note
+    ));
+  };
+
+  const handleDeleteNote = (noteId: string) => {
+    setNotes(prev => prev.filter(note => note.id !== noteId));
+  };
+
+  // Attachment handlers
+  const handleAddAttachment = (noteId: string, file: File) => {
+    const newAttachment: NoteAttachment = {
+      id: `attachment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: URL.createObjectURL(file),
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: 'Current User'
+    };
+
+    setNotes(prev => prev.map(note =>
+      note.id === noteId
+        ? { ...note, attachments: [...(note.attachments || []), newAttachment] }
+        : note
+    ));
+  };
+
+  const handleRemoveAttachment = (noteId: string, attachmentId: string) => {
+    setNotes(prev => prev.map(note =>
+      note.id === noteId
+        ? { ...note, attachments: (note.attachments || []).filter(att => att.id !== attachmentId) }
+        : note
+    ));
+  };
+
+  const handleDownloadAttachment = (attachment: NoteAttachment) => {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
 
@@ -923,106 +992,15 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
 
             {activeTab === 'notes' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Project Notes</h3>
-                      <p className="text-sm text-gray-500 mt-1">4 notes</p>
-                    </div>
-                    <button 
-                      onClick={() => showToast('Add note functionality coming soon')}
-                      className="w-8 h-8 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center hover:border-gray-400 hover:bg-gray-50"
-                    >
-                      <Plus className="w-4 h-4 text-gray-600" />
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {/* Note 1 */}
-                    <div className="py-4 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-900">John Smith</span>
-                            <span className="text-sm text-gray-500">Jan 20, 2024, 04:00 PM</span>
-                          </div>
-                          <p className="text-gray-700">"Project completed successfully! All 15 windows installed and quality approved. Client is very satisfied with the work."</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Delete note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Note 2 */}
-                    <div className="py-4 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-900">Sarah Johnson</span>
-                            <span className="text-sm text-gray-500">Jan 20, 2024, 02:30 PM</span>
-                          </div>
-                          <p className="text-gray-700">"Final quality inspection completed. All windows passed with excellent results. Ready for client handover."</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Delete note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Note 3 */}
-                    <div className="py-4 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-900">Mike Lee</span>
-                            <span className="text-sm text-gray-500">Jan 19, 2024, 03:15 PM</span>
-                          </div>
-                          <p className="text-gray-700">"Reinstallation of windows #12 and #8 completed successfully. Both windows now pass quality standards."</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Delete note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Note 4 */}
-                    <div className="py-4 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-900">David Chen</span>
-                            <span className="text-sm text-gray-500">Jan 18, 2024, 05:30 PM</span>
-                          </div>
-                          <p className="text-gray-700">"Site cleanup completed. All materials properly disposed and site returned to original condition."</p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button 
-                            onClick={() => showToast('Delete note functionality coming soon')}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ProjectNotes
+                  notes={notes}
+                  onAddNote={handleAddNote}
+                  onEditNote={handleEditNote}
+                  onDeleteNote={handleDeleteNote}
+                  onAddAttachment={handleAddAttachment}
+                  onRemoveAttachment={handleRemoveAttachment}
+                  onDownloadAttachment={handleDownloadAttachment}
+                />
               </div>
             )}
           </div>

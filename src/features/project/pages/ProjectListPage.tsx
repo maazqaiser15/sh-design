@@ -507,7 +507,7 @@ export const ProjectListPage: React.FC = () => {
     if (!isLeadSupervisor) return null;
 
     const totalProjects = projectListItems.length;
-    const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF'].includes(p.status)).length;
+    const activeProjects = projectListItems.filter(p => ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC'].includes(p.status)).length;
     const completedProjects = projectListItems.filter(p => p.status === 'Completed').length;
     const completionRate = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
 
@@ -619,8 +619,8 @@ export const ProjectListPage: React.FC = () => {
         {/* first Row - Status Filter Tabs */}
         <div className="mb-4 px-2">
           <div className="flex items-center justify-between">
-            <nav className="flex overflow-x-auto sm:space-x-8 mb-2 px-2 scrollbar-hide border-b border-b-gray-300 space-x-1 ">
-              {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'Completed'])].map((status) => (
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+              {['All', ...(user?.userType ? getAvailableProjectStatuses(user.userType) : ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'])].map((status) => (
                 <button
                   key={status}
                   onClick={() => {

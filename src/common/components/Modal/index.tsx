@@ -7,6 +7,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  showCloseButton?: boolean;
 }
 
 /**
@@ -18,7 +19,8 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  size = 'md'
+  size = 'md',
+  showCloseButton = true
 }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -63,13 +65,15 @@ export const Modal: React.FC<ModalProps> = ({
             <h2 className="text-h2 font-semibold text-text-primary">
               {title}
             </h2>
-            <button
-              onClick={onClose}
-              className="btn-icon"
-              aria-label="Close modal"
-            >
-              <X size={20} />
-            </button>
+            {showCloseButton && (
+              <button
+                onClick={onClose}
+                className="btn-icon"
+                aria-label="Close modal"
+              >
+                <X size={20} />
+              </button>
+            )}
           </div>
 
           {/* Content */}

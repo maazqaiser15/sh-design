@@ -14,7 +14,7 @@ export interface Project {
   progress: number;
 }
 
-export type ProjectStatus = 'UB' | 'WB' | 'WIP' | 'Completed' | 'completed' | 'on-hold';
+export type ProjectStatus = 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed' | 'completed' | 'on-hold';
 export type ProjectStage = 'preparation' | 'execution' | 'completion';
 
 export interface ChecklistItem {
@@ -176,6 +176,16 @@ export interface Document {
 
 export type DocumentLabel = 'contract' | 'site-map' | 'excel-sheet' | 'installation-guide' | 'permit' | 'other';
 
+export interface NoteAttachment {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  url: string;
+  uploadedAt: string;
+  uploadedBy: string;
+}
+
 export interface Note {
   id: string;
   content: string;
@@ -184,6 +194,7 @@ export interface Note {
   createdAt: string;
   updatedAt: string;
   projectId?: string;
+  attachments?: NoteAttachment[];
 }
 
 export interface TravelPlan {
