@@ -25,6 +25,7 @@ import { TrailerForAssignment } from '../../types/trailers';
 import { Window, MOCK_WINDOWS } from '../../types/windows';
 import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 import { Card } from 'common/components/Card';
+import { SetupInventoryModal } from '../../components/SetupInventoryModal';
 
 // Icons from Figma design
 
