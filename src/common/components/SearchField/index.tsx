@@ -6,9 +6,10 @@ interface searchFieldProps {
     iconSize: number;
     value: string;
     onChange: (e:any) => void;
-    placeholder: string
+    placeholder: string;
+    inputClassName: string;
 }
-const SearchField: React.FC<searchFieldProps> = ({ className, iconSize, value, onChange, placeholder }) => {
+const SearchField: React.FC<searchFieldProps> = ({ className, iconSize, value, onChange, placeholder, inputClassName }) => {
     return (
 
         <div className={`relative ${className}`}>
@@ -18,11 +19,15 @@ const SearchField: React.FC<searchFieldProps> = ({ className, iconSize, value, o
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className="w-full pl-4 border-0 pr-4 py-2  border-gray-300 rounded-lg  outline-none"
+                className={
+                    inputClassName
+                      ? `w-full pl-4 pr-4 py-2  rounded-lg outline-none ${inputClassName}` // defaults + custom
+                      : "w-full pl-4 pr-4 py-2 border-0 border-gray-300 rounded-lg outline-none"
+                  }
             />
              <Search
                 size={iconSize}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 text-gray-400`}
             />
         </div>
 

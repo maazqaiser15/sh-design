@@ -3,6 +3,7 @@ import { Avatar } from '../../../../common/components/Avatar';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { Plane, Hotel, Car } from 'lucide-react';
+import FormField from 'common/components/FormField';
 
 export interface TravelAccommodationRequestData {
   travelRequired: boolean;
@@ -186,7 +187,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Request Travel & Accommodation" size="lg">
-      <div className="space-y-6">
+      <div className="space-y-6 max-h-[80vh] overflow-y-auto">
         <p className="text-gray-600 text-sm">
           Please specify your travel and accommodation requirements. You can add detailed information later.
         </p>
@@ -246,11 +247,11 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                                 </span>
                               </div>
                               <div className="flex items-center gap-1 mt-1">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg width="20" height="20" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M6 1C4.34 1 3 2.34 3 4C3 6.5 6 9 6 9C6 9 9 6.5 9 4C9 2.34 7.66 1 6 1ZM6 5.25C5.45 5.25 5 4.8 5 4.25C5 3.7 5.45 3.25 6 3.25C6.55 3.25 7 3.7 7 4.25C7 4.8 6.55 5.25 6 5.25Z" fill="#6B7280"/>
                                 </svg>
                                 <p className="text-xs text-gray-600 truncate">
-                                  {member.location} → {projectLocation}
+                                  {projectLocation} → {projectLocation}
                                 </p>
                               </div>
                             </div>
@@ -436,7 +437,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                       type="date"
                       value={rentalVehicleDetails.fromDate}
                       onChange={(e) => handleRentalVehicleDetailsChange('fromDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-3 py-2 border border-orange-200 rounded-lg outline-none"
                       required
                     />
                   </div>
@@ -450,11 +451,12 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                       type="date"
                       value={rentalVehicleDetails.toDate}
                       onChange={(e) => handleRentalVehicleDetailsChange('toDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-3 py-2 border border-orange-200 rounded-lg outline-none"
                       required
                     />
                   </div>
                 </div>
+
 
                 {/* Number of Cars */}
                 <div>
@@ -467,7 +469,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                     max="10"
                     value={rentalVehicleDetails.numberOfCars}
                     onChange={(e) => handleRentalVehicleDetailsChange('numberOfCars', parseInt(e.target.value) || 1)}
-                    className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-orange-200 rounded-lg outline-none"
                     required
                   />
                 </div>
@@ -482,7 +484,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                     value={rentalVehicleDetails.pickupLocation}
                     onChange={(e) => handleRentalVehicleDetailsChange('pickupLocation', e.target.value)}
                     placeholder="Enter pickup location (e.g., Airport, Hotel, Office)"
-                    className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-orange-200 rounded-lg outline-none"
                     required
                   />
                 </div>

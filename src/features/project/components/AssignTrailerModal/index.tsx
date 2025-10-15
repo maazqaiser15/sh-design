@@ -3,6 +3,8 @@ import { Search, X, Check, AlertTriangle, Circle, Truck, MapPin, Package, Filter
 import { Button } from '../../../../common/components/Button';
 import { Modal } from '../../../../common/components/Modal';
 import { TrailerForAssignment } from '../../types/trailers';
+import SearchField from 'common/components/SearchField';
+import SelectField from 'common/components/SelectField';
 
 interface AssignTrailerModalProps {
   isOpen: boolean;
@@ -38,11 +40,11 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
   const filteredTrailers = useMemo(() => {
     return availableTrailers.filter(trailer => {
       const matchesSearch = trailer.trailerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           trailer.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           trailer.currentLocation.toLowerCase().includes(searchQuery.toLowerCase());
+        trailer.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        trailer.currentLocation.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = !statusFilter || trailer.status === statusFilter;
       const matchesLocation = !locationFilter || trailer.currentLocation === locationFilter;
-      
+
       return matchesSearch && matchesStatus && matchesLocation;
     });
   }, [availableTrailers, searchQuery, statusFilter, locationFilter]);
@@ -116,52 +118,20 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       title="Assign Trailer to Project"
       size="lg"
     >
-      <div className="p-6">
+      <div className="">
         {/* Search and Filters */}
         <div className="flex flex-col lg:flex-row items-center space-y-3 lg:space-y-0 lg:space-x-4 mb-6">
           {/* Search Bar */}
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by trailer name, registration, or location..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
+
+
+          <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} inputClassName={'border border-gray-300'} />
 
           {/* Status Filter */}
-          <select
-            className="w-full lg:w-auto px-3 py-2 pr-7 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-          >
-            <option value="">All Status</option>
-            <option value="available">Available</option>
-            <option value="low_stock">Low Stock</option>
-            <option value="unavailable">Unavailable</option>
-          </select>
+          <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as any)} placeholder={'All Status'} options={[{ value: '', label: 'All Status' }, { value: 'available', label: 'Available' }, { value: 'low_stock', label: 'Low Stock' }, { value: 'unavailable', label: 'Unavailable' }]} />
 
           {/* Location Filter */}
-          <select
-            className="w-full lg:w-auto px-3 py-2 pr-7 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-          >
-            <option value="">All Locations</option>
-            {uniqueLocations.map(location => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
+          <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Locations'} options={[uniqueLocations]} />
+
         </div>
 
         {/* Trailer List */}
@@ -181,13 +151,12 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
                 return (
                   <div
                     key={trailer.id}
-                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 ${
-                      isSelectable
-                        ? isSelected 
-                          ? 'border-blue-500 bg-blue-50 shadow-md cursor-pointer'
-                          : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm cursor-pointer'
-                        : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
-                    }`}
+                    className={`relative p-4 rounded-lg border-2 transition-all duration-200 ${isSelectable
+                      ? isSelected
+                        ? 'border-blue-500 bg-blue-50 shadow-md cursor-pointer'
+                        : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm cursor-pointer'
+                      : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                      }`}
                     onClick={() => isSelectable && handleTrailerSelect(trailer.id)}
                   >
                     <div className="flex items-start space-x-4">
@@ -220,17 +189,15 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
                             {/* Trailer Name */}
-                            <h3 className={`text-base font-semibold mb-1 ${
-                              isSelectable ? 'text-gray-900' : 'text-gray-500'
-                            }`}>
+                            <h3 className={`text-base font-semibold mb-1 ${isSelectable ? 'text-gray-900' : 'text-gray-500'
+                              }`}>
                               {trailer.trailerName}
                             </h3>
 
                             {/* Registration and Location Row */}
                             <div className="flex items-center space-x-4">
-                              <p className={`text-sm ${
-                                isSelectable ? 'text-gray-600' : 'text-gray-400'
-                              }`}>
+                              <p className={`text-sm ${isSelectable ? 'text-gray-600' : 'text-gray-400'
+                                }`}>
                                 {trailer.registrationNumber}
                               </p>
                               <div className="flex items-center space-x-1 text-sm text-gray-600">

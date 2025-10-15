@@ -133,9 +133,8 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
               variant="ghost"
               size="sm"
               onClick={onClose}
-              icon={X}
             >
-              Close
+              <X/>
             </Button>
           </div>
 

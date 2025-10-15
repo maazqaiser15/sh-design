@@ -45,7 +45,7 @@ const CustomDataTable: React.FC<tableProps> = ({
     tableWrapper: {
       style: {
         width: '100%',
-        overflowX: 'auto',         // ← horizontal scroll lives here
+        overflowX: 'auto',      // ← horizontal scroll lives here
       },
     },
     table: {

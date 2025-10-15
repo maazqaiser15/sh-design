@@ -2,12 +2,13 @@ import { ChevronDown } from 'lucide-react';
 import React from 'react';
 
 interface SelectFieldProps {
-  className: string;
-  label: string;
+  className?: string;
+  label?: string;
   value: any;
   onChange: (e: any) => void;
   placeholder: string;
   options: any[];
+  inputClassName?:any
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -17,6 +18,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onChange,
   placeholder,
   options,
+  inputClassName
 }) => {
   return (
     <div className={`relative flex flex-col ${className}`}>
@@ -28,7 +30,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
         <select
           value={value}
           onChange={onChange}
-          className="w-full px-3 py-2 pr-10  border-0 rounded-md focus:outline-none appearance-none"
+          className={
+            inputClassName
+              ? `w-full px-3 py-2 pr-10  rounded-lg focus:outline-none appearance-none ${inputClassName}` // defaults + custom
+              : "w-full px-3 py-2 pr-10  border-0 rounded-lg focus:outline-none appearance-none"
+          }
         >
           {placeholder && (
             <option value="">{placeholder}</option>

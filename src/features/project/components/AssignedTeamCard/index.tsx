@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '../../../../common/components/Button';
 import { TeamCardsGrid } from '../TeamCard';
 import { Card } from 'common/components/Card';
+import { CheckCircle } from 'lucide-react';
 
 // Icons from Figma design
 const CheckCircleIcon = () => (
@@ -121,7 +122,7 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
         {hasTeam && (
           isCompleted ? (
             <div className="bg-green-50 border border-green-200 text-green-700 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5">
-              <CheckCircleIcon />
+              <CheckCircle className={`w-4 h-4 ${isCompleted ? 'text-green-600' : 'text-gray-400'}`} />
               Completed
             </div>
           ) : (

@@ -4,6 +4,10 @@ import { Button } from '../../../../common/components/Button';
 import { Modal } from '../../../../common/components/Modal';
 import { TeamMember, TeamRole, TeamMemberStatus } from '../../types/teamMembers';
 import { ProjectDetails } from '../../types/projectDetails';
+import SearchField from 'common/components/SearchField';
+import SelectField from 'common/components/SelectField';
+import CustomDataTable from 'common/components/CustomDataTable';
+import { Card } from 'common/components/Card';
 
 interface AssignTeamModalProps {
   isOpen: boolean;
@@ -47,12 +51,12 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
   const filteredMembers = useMemo(() => {
     return availableMembers.filter(member => {
       const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           member.phone?.toLowerCase().includes(searchQuery.toLowerCase());
+        member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.phone?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesRole = !roleFilter || member.role === roleFilter;
       const matchesStatus = !statusFilter || member.status === statusFilter;
       const matchesLocation = !locationFilter || member.location === locationFilter;
-      
+
       return matchesSearch && matchesRole && matchesStatus && matchesLocation;
     });
   }, [availableMembers, searchQuery, roleFilter, statusFilter, locationFilter]);
@@ -67,7 +71,7 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
   const handleMemberToggle = (memberId: string) => {
     const member = availableMembers.find(m => m.id === memberId);
     if (member && member.status === 'Available') {
-      setSelectedMembers(prev => 
+      setSelectedMembers(prev =>
         prev.includes(memberId)
           ? prev.filter(id => id !== memberId)
           : [...prev, memberId]
@@ -80,7 +84,7 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
   };
 
   const handleAssign = () => {
-    const selectedTeamMembers = availableMembers.filter(member => 
+    const selectedTeamMembers = availableMembers.filter(member =>
       selectedMembers.includes(member.id)
     );
     onAssignTeam(selectedTeamMembers);
@@ -104,6 +108,56 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
   const filteredCount = filteredMembers.length;
   const selectedMembersData = availableMembers.filter(member => selectedMembers.includes(member.id));
 
+  const columns = [
+    {
+      name: 'Select',
+      selector: (row: any) => '',
+      cell: (row: any) => {
+        const isUnavailable = row.status === 'Unavailable';
+        const isSelected = selectedMembers.includes(row.id);
+        return (
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              disabled={isUnavailable}
+              onChange={() => !isUnavailable && handleMemberToggle(row.id)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+            />
+          </div>
+        )
+      }
+    },
+    {
+      name: 'Name',
+      selector: (row: any) => row.name,
+    },
+    {
+      name: 'Role',
+      selector: (row: any) => row.role,
+    },
+    {
+      name: ' Phone Number',
+      selector: (row: any) => row.phone,
+    },
+    {
+      name: 'Status',
+      selector: (row: any) => row.status,
+    },
+
+    {
+      name: 'Location',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
+          <MapPin className="w-3 h-3 mr-1 text-gray-400 flex-shrink-0" />
+          <span className="truncate">{row.location || '—'}</span>
+        </div>
+      </div>
+    },
+
+  ]
+
   return (
     <Modal
       isOpen={isOpen}
@@ -111,7 +165,7 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
       title="Assign Team Members"
       size="xl"
     >
-      <div className="p-6 max-h-[80vh] flex flex-col">
+      <div className="max-h-[80vh] flex flex-col">
         {/* Project Duration Card */}
         {projectDetails && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -129,51 +183,39 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
 
         {/* Search and Filters */}
         <div className="flex space-x-4 mb-6">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search by name, phone, or role..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+          <SearchField iconSize={20} inputClassName='border border-gray-300 w-full pl-4 pr-4 py-2' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} />
+          <SelectField value={roleFilter} inputClassName={'border border-gray-300'} onChange={(e) => setRoleFilter(e.target.value as TeamRole | '')} placeholder={'All Roles'} options={[{
+            value: '', label: 'All Roles'
+          },
+          {
+            value: 'Lead Supervisor', label: 'Lead Supervisor'
+          }
+            ,
+          {
+            value: 'Crew Leader', label: 'Crew Leader'
+          },
+          {
+            value: 'Installer', label: 'Installer'
+          },
+          {
+            value: 'Project Coordinator', label: 'Project Coordinator'
+          },
+          ]} />
 
-          {/* Filters */}
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value as TeamRole | '')}
-            className="px-3 py-2 pr-7 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px]"
-          >
-            <option value="">All Roles</option>
-            <option value="Lead Supervisor">Lead Supervisor</option>
-            <option value="Crew Leader">Crew Leader</option>
-            <option value="Installer">Installer</option>
-            <option value="Project Coordinator">Project Coordinator</option>
-          </select>
+          <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as TeamMemberStatus | '')} placeholder={'All Status'} options={[{
+            value: '', label: 'All Status'
+          },
+          {
+            value: 'Available', label: 'Available'
+          }
+            ,
+          {
+            value: 'Unavailable', label: 'Unavailable'
+          }
+          ]} />
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as TeamMemberStatus | '')}
-            className="px-3 py-2 pr-7 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px]"
-          >
-            <option value="">All Status</option>
-            <option value="Available">Available</option>
-            <option value="Unavailable">Unavailable</option>
-          </select>
 
-          <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-            className="px-3 py-2 pr-7 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px]"
-          >
-            <option value="">All Locations</option>
-            {availableLocations.map(location => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
+          <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'All Status'} options={availableLocations} />
         </div>
 
         {/* Selection Summary */}
@@ -210,144 +252,11 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
           </p>
         </div>
 
-        {/* Team Members Table */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden flex-1">
-          <div className="max-h-96 overflow-y-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
-                <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
-                    Select
-                  </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone Number
-                  </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {paginatedMembers.map((member) => {
-                  const isUnavailable = member.status === 'Unavailable';
-                  const isSelected = selectedMembers.includes(member.id);
-                  
-                  return (
-                    <tr
-                      key={member.id}
-                      className={`${
-                        isUnavailable 
-                          ? 'bg-gray-50 opacity-60' 
-                          : 'hover:bg-gray-50 cursor-pointer'
-                      } ${
-                        isSelected ? 'bg-blue-50' : ''
-                      }`}
-                      onClick={() => !isUnavailable && handleMemberToggle(member.id)}
-                      title={isUnavailable ? `Unavailable until ${member.unavailableUntil ? formatDate(member.unavailableUntil) : 'TBD'} — cannot assign.` : ''}
-                    >
-                      <td className="px-3 py-2">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            disabled={isUnavailable}
-                            onChange={() => !isUnavailable && handleMemberToggle(member.id)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
-                          />
-                        </div>
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex items-center">
-                          <div className="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center mr-2">
-                            {member.avatar ? (
-                              <img
-                                src={member.avatar}
-                                alt={member.name}
-                                className="w-full h-full rounded-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-xs font-medium text-gray-700">
-                                {getInitials(member.name)}
-                              </span>
-                            )}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {member.name}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-3 py-2">
-                        <span className="text-sm text-gray-900">{member.role}</span>
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
-                          <Phone className="w-3 h-3 mr-1 text-gray-400 flex-shrink-0" />
-                          <span className="truncate">{member.phone || '—'}</span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex flex-col">
-                          <span className={`text-sm font-medium ${
-                            member.status === 'Available' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {member.status}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
-                          <MapPin className="w-3 h-3 mr-1 text-gray-400 flex-shrink-0" />
-                          <span className="truncate">{member.location || '—'}</span>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <Card className='max-h-[60vh] overflow-y-auto'>
+          <CustomDataTable title={''} columns={columns} data={paginatedMembers} selectableRows={undefined} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={5} />
+        </Card>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4">
-            <div className="text-sm text-gray-600">
-              Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredCount)} of {filteredCount} results
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span className="px-3 py-1 text-sm text-gray-600">
-                {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
+
 
         {/* Empty State */}
         {filteredMembers.length === 0 && (

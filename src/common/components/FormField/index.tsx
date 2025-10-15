@@ -20,7 +20,7 @@ interface formFieldProps {
 
 const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", placeholder, className = "", isLeftIcon, isRightIcon, ...rest }) => {
   return (
-    <div className={`flex flex-col mb-4 ${className}`}>
+    <div className={`flex flex-col  ${className ? className : 'mb-4'}`}>
       {label && (
         <label htmlFor={name} className="mb-1 font-medium text-gray-700">
           {label}

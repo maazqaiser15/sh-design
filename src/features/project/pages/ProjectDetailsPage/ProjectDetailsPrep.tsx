@@ -954,8 +954,8 @@ export const ProjectDetailsPrep: React.FC = () => {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
                   <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation</h1>
-                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 flex items-center justify-center px-3 py-1.5 rounded-lg shadow-sm">
-                    <p className="font-bold text-sm text-blue-700 leading-5">PV90</p>
+                  <div className="font-bold text-sm text-blue-700 leading-5 px-2 py-1.5 rounded-full  bg-blue-100">
+                    <p>PV90</p>
                   </div>
                 </div>
 
@@ -988,8 +988,8 @@ export const ProjectDetailsPrep: React.FC = () => {
               {/* Single Row with All Project Information */}
               <div className="flex flex-wrap  items-start justify-between mb-0">
                 {/* VIN Code */}
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
                   <div>
                     <p className="text-xs text-gray-500 font-medium">VIN Code</p>
                     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -1000,7 +1000,7 @@ export const ProjectDetailsPrep: React.FC = () => {
 
                 {/* Site */}
                 {project.site && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     <Building className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Site</p>
@@ -1010,7 +1010,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 )}
 
                 {/* Duration */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2">
                   <Calendar className="w-4 h-4 text-blue-600" />
                   <div>
                     <p className="text-xs text-gray-500 font-medium">Duration</p>
@@ -1020,7 +1020,7 @@ export const ProjectDetailsPrep: React.FC = () => {
 
                 {/* Industry */}
                 {project.industry && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     <Building className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Industry</p>
@@ -1031,7 +1031,7 @@ export const ProjectDetailsPrep: React.FC = () => {
 
                 {/* Coordinator */}
                 {project.assignedCoordinator && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     <User className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Coordinator</p>
@@ -1041,7 +1041,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                 )}
                 {/* Contact Person */}
                 {project.contactPerson && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     <User className="w-4 h-4 text-blue-600" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Contact Person</p>
@@ -1213,7 +1213,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                                   <div className="space-y-1">
                                     {travelAccommodationRequestData.selectedTeamMembers.map((member) => (
                                       <div key={member.id} className="flex items-center gap-2 text-sm">
-                                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <div className="w-7 h-7 bg-blue-100 p rounded-full flex items-center justify-center">
                                           <span className="text-xs font-medium text-blue-700">
                                             {member.name.split(' ').map(n => n[0]).join('')}
                                           </span>
@@ -1237,7 +1237,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                                   <div className="space-y-1">
                                     {travelAccommodationRequestData.selectedAccommodationMembers.map((member) => (
                                       <div key={member.id} className="flex items-center gap-2 text-sm">
-                                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                        <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
                                           <span className="text-xs font-medium text-green-700">
                                             {member.name.split(' ').map(n => n[0]).join('')}
                                           </span>

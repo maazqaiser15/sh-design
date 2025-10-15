@@ -6,6 +6,7 @@ import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import FormField from '../../../../common/components/FormField';
 import { ProjectDetails } from '../../types/projectDetails';
+import SelectField from 'common/components/SelectField';
 
 interface EditProjectDetailsModalProps {
   isOpen: boolean;
@@ -24,11 +25,11 @@ interface FormData {
 
 // Mock coordinator data
 const MOCK_COORDINATORS = [
-  { id: '1', name: 'Jennifer White', email: 'jennifer.white@company.com' },
-  { id: '2', name: 'Michael Rodriguez', email: 'michael.rodriguez@company.com' },
-  { id: '3', name: 'Sarah Johnson', email: 'sarah.johnson@company.com' },
-  { id: '4', name: 'David Lee', email: 'david.lee@company.com' },
-  { id: '5', name: 'Lisa Wilson', email: 'lisa.wilson@company.com' },
+  { label: 'Jennifer White', value: 'jennifer.white@company.com' },
+  { label: 'Michael Rodriguez', value: 'michael.rodriguez@company.com' },
+  { label: 'Sarah Johnson', value: 'sarah.johnson@company.com' },
+  { label: 'David Lee', value: 'david.lee@company.com' },
+  { label: 'Lisa Wilson', value: 'lisa.wilson@company.com' },
 ];
 
 // Validation schema
@@ -61,7 +62,7 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
 
   const handleSubmit = (values: FormData) => {
     const selectedCoordinator = MOCK_COORDINATORS.find(c => c.id === values.coordinatorId);
-    
+
     const updatedProject: ProjectDetails = {
       ...project,
       contactPerson: {
@@ -107,6 +108,7 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   name="contactPersonName"
                   type="text"
                   placeholder="Enter contact person name"
+                  className='mb-0'
                 />
                 <FormField
                   label="Phone Number"
@@ -114,6 +116,7 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   type="tel"
                   placeholder="Enter phone number"
                   isLeftIcon={<Phone className="w-4 h-4" />}
+                  className='mb-0'
                 />
               </div>
             </div>
@@ -131,11 +134,13 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   label="Start Date"
                   name="startDate"
                   type="date"
+                  className='mb-0'
                 />
                 <FormField
                   label="End Date"
                   name="endDate"
                   type="date"
+                  className='mb-0'
                 />
               </div>
             </div>
@@ -148,27 +153,7 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                 </div>
                 Project Coordinator
               </h3>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Coordinator Name
-                </label>
-                <div className="relative">
-                  <select
-                    name="coordinatorId"
-                    value={values.coordinatorId}
-                    onChange={(e) => setFieldValue('coordinatorId', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-                  >
-                    <option value="">Select a coordinator</option>
-                    {MOCK_COORDINATORS.map((coordinator) => (
-                      <option key={coordinator.id} value={coordinator.id}>
-                        {coordinator.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
-              </div>
+              <SelectField inputClassName={'border border-gray-300'} className={''} label={'Coordinator Name'} value={values.coordinatorId} onChange={(e) => setFieldValue('coordinatorId', e.target.value)} placeholder={'Select a coordinator'} options={MOCK_COORDINATORS} />
             </div>
 
             {/* Footer */}
