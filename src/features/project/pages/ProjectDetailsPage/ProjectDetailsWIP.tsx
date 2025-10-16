@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Truck, 
-  FileText, 
-  CheckCircle2, 
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Truck,
+  FileText,
+  CheckCircle2,
   CheckCircle,
-  Clock, 
+  Clock,
   AlertCircle,
   Edit,
   Plus,
@@ -29,8 +29,9 @@ import {
   Settings,
   Package,
   ClipboardCheck,
-  FileCheck
+  FileCheck,
 } from 'lucide-react';
+import { PieChart } from '../../../../common/components/PieChart';
 import { ProjectDetails, MOCK_PROJECT_DETAILS, ProjectNote } from '../../types/projectDetails';
 import { NoteAttachment } from '../../../../types';
 import { Button } from '../../../../common/components/Button';
@@ -50,6 +51,8 @@ import { AddUsageModal, InventoryItem } from '../../components/AddUsageModal';
 import { UpdateTrailerModal } from '../../components/UpdateTrailerModal';
 import { Trailer } from '../../../../types';
 import { EXPANDED_TRAILER_DATA } from '../../../../pages/Trailers/expandedTrailerData';
+import { ProjectListItem } from '../../types';
+import { getProgressBarColor } from '../../utils';
 
 interface ProjectDetailsWIPProps {
   projectStatus?: 'WIP' | 'QF' | 'QC' | 'Completed';
@@ -135,8 +138,8 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
   const handleBuildingChange = (buildingId: string, field: keyof BuildingRow, value: any) => {
     setFormData((prev: SetupBuildingsData) => ({
       ...prev,
-      buildings: prev.buildings.map((building: BuildingRow) => 
-        building.id === buildingId 
+      buildings: prev.buildings.map((building: BuildingRow) =>
+        building.id === buildingId
           ? { ...building, [field]: value }
           : building
       )
@@ -175,11 +178,11 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     if (formData.buildings.length === 0) {
       newErrors.buildings = 'At least one building is required';
     }
-    
+
     formData.buildings.forEach((building: BuildingRow, index: number) => {
       if (!building.buildingName.trim()) {
         newErrors[`building-${index}-name`] = 'Building name is required';
@@ -191,7 +194,7 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
         newErrors[`building-${index}-length`] = 'Length must be greater than 0';
       }
     });
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -262,9 +265,8 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
                         type="text"
                         value={building.buildingName}
                         onChange={(e) => handleBuildingChange(building.id, 'buildingName', e.target.value)}
-                        className={`w-full px-2 py-1 border rounded text-sm ${
-                          errors[`building-${index}-name`] ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-2 py-1 border rounded text-sm ${errors[`building-${index}-name`] ? 'border-red-500' : 'border-gray-300'
+                          }`}
                       />
                       {errors[`building-${index}-name`] && (
                         <p className="text-xs text-red-500 mt-0.5">{errors[`building-${index}-name`]}</p>
@@ -275,9 +277,8 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
                         type="number"
                         value={building.width}
                         onChange={(e) => handleBuildingChange(building.id, 'width', parseFloat(e.target.value) || 0)}
-                        className={`w-full px-2 py-1 border rounded text-sm ${
-                          errors[`building-${index}-width`] ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-2 py-1 border rounded text-sm ${errors[`building-${index}-width`] ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         min="0"
                         step="0.1"
                       />
@@ -290,9 +291,8 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({ onSave, onCance
                         type="number"
                         value={building.length}
                         onChange={(e) => handleBuildingChange(building.id, 'length', parseFloat(e.target.value) || 0)}
-                        className={`w-full px-2 py-1 border rounded text-sm ${
-                          errors[`building-${index}-length`] ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-2 py-1 border rounded text-sm ${errors[`building-${index}-length`] ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         min="0"
                         step="0.1"
                       />
@@ -406,16 +406,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  
+
   // State for project status
   const [projectStatus, setProjectStatus] = useState<'WIP' | 'QF' | 'QC' | 'Completed'>(initialProjectStatus);
   const { user } = useAuth();
   const { isMobile } = useSidebar();
   const [activeTab, setActiveTab] = useState('job-brief');
-  
+
   // Notes State
   const [notes, setNotes] = useState<ProjectNote[]>([]);
-  
+
   // Window Management State
   const [windows, setWindows] = useState<Window[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -446,16 +446,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
   const [updateCounter, setUpdateCounter] = useState(0);
-  
+
   // Card completion states
   const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
   const [isInventoryUpdated, setIsInventoryUpdated] = useState(false);
   const [isQualityFormSigned, setIsQualityFormSigned] = useState(false);
   const [qualityFormStatus, setQualityFormStatus] = useState<'none' | 'qf-marked' | 'qc-marked' | 'both-marked'>('none');
-  
+
   // Check if all cards are completed
   const allCardsCompleted = isTrailerUpdated && isInventoryUpdated && isQualityFormSigned && qualityFormStatus === 'both-marked';
-  
+
   // Setup Windows State
   const [showInlineSetup, setShowInlineSetup] = useState(false);
   const [isCreatingWindows, setIsCreatingWindows] = useState(false);
@@ -527,10 +527,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   // Calculate project progress based on window completion
   const calculateProjectProgress = (windows: Window[]) => {
     if (windows.length === 0) return 0;
-    
+
     const completedWindows = windows.filter(w => w.status === 'Complete').length;
     const totalWindows = windows.length;
-    
+
     return Math.round((completedWindows / totalWindows) * 100);
   };
 
@@ -555,8 +555,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const project = {
     ...MOCK_PROJECT_DETAILS,
     progress: projectProgress,
-    currentPhase: projectProgress === 100 ? 'Project Completed' : 
-                  projectProgress > 0 ? 'Window Installation' : 'Ready to Start',
+    currentPhase: projectProgress === 100 ? 'Project Completed' :
+      projectProgress > 0 ? 'Window Installation' : 'Ready to Start',
     estimatedCompletion: '2024-02-15',
     teamOnSite: 4, // Team Assigned: 4
     windowsCompleted: 10, // Windows Completed: 10/300
@@ -621,16 +621,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       }
     ]
   };
-  
+
   // Update project status based on prop
   const currentProject = { ...project, status: projectStatus };
 
   // Helper function to calculate interior and exterior counts from layers
   const calculateLayerCounts = (layers: any[]) => {
-    const interiorCount = layers.filter(layer => 
+    const interiorCount = layers.filter(layer =>
       layer.layerName?.toLowerCase().includes('interior')
     ).length;
-    const exteriorCount = layers.filter(layer => 
+    const exteriorCount = layers.filter(layer =>
       layer.layerName?.toLowerCase().includes('exterior')
     ).length;
     return { interiorCount, exteriorCount };
@@ -643,7 +643,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     const matchesStatus = filters.status === 'all' || window.status === filters.status;
     const matchesLayers = filters.layers === 'all' || (window.layers?.length || 0).toString() === filters.layers;
     const matchesBuilding = filters.building === 'all' || (window.buildingName || 'Main Building') === filters.building;
-    
+
     return matchesSearch && matchesFilmType && matchesStatus && matchesLayers && matchesBuilding;
   });
 
@@ -669,7 +669,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   const handleQualityCheckFormSubmit = (formData: QualityCheckFormData) => {
     setShowQualityCheckModal(false);
-    
+
     // Determine the quality form status based on checkboxes
     if (formData.markQF && formData.markQC) {
       setQualityFormStatus('both-marked');
@@ -687,7 +687,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       setProjectStatus('QC');
       showToast('Quality check form submitted - QC marked, project moved to QC status');
     }
-    
+
     console.log('Quality Check Form Data:', formData);
   };
 
@@ -725,8 +725,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
   const handleTrailerUpdate = (updatedTrailer: Omit<Trailer, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (selectedTrailer) {
-      const updatedTrailers = trailers.map(t => 
-        t.id === selectedTrailer.id 
+      const updatedTrailers = trailers.map(t =>
+        t.id === selectedTrailer.id
           ? { ...t, ...updatedTrailer, updatedAt: new Date().toISOString() }
           : t
       );
@@ -814,17 +814,17 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const handleSetupSave = async (data: SetupWindowsData) => {
     setShowInlineSetup(false);
     setIsCreatingWindows(true);
-    
+
     // Simulate API call to create windows
     setTimeout(() => {
       // Generate windows based on the table data
       const generatedWindows: Window[] = data.windows.map((windowRow, index) => {
         const randomStatus = ['Pending', 'In Progress', 'Complete'][Math.floor(Math.random() * 3)] as 'Pending' | 'In Progress' | 'Complete';
-        
+
         // Generate layer installations based on interior and exterior layers
         const layerInstallations: LayerInstallation[] = [];
         const totalLayers = windowRow.interiorLayer + windowRow.exteriorLayer;
-        
+
         for (let j = 1; j <= totalLayers; j++) {
           const isInterior = j <= windowRow.interiorLayer;
           layerInstallations.push({
@@ -836,7 +836,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             notes: isInterior ? `Interior layer ${j}` : `Exterior layer ${j - windowRow.interiorLayer}`
           });
         }
-        
+
         // Map product to film type
         const productToFilmType: Record<string, FilmType> = {
           'SW450SR': 'BR',
@@ -848,11 +848,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
           'Tint Only': 'PER',
           'Kevlar': 'Custom'
         };
-        
+
         // Assign building names randomly
         const buildingNames = ['Main Building', 'Office Block', 'Warehouse', 'Annex'];
         const randomBuilding = buildingNames[Math.floor(Math.random() * buildingNames.length)];
-        
+
         return {
           id: `window-${index + 1}`,
           windowName: windowRow.windowLabel,
@@ -870,7 +870,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
           buildingName: randomBuilding
         };
       });
-      
+
       setWindows(generatedWindows);
       setWindowsSetup(true);
       setIsCreatingWindows(false);
@@ -882,7 +882,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const handleBuildingsSave = async (data: SetupBuildingsData) => {
     setShowBuildingsForm(false);
     setIsCreatingBuildings(true);
-    
+
     // Simulate API call to create buildings
     setTimeout(() => {
       setBuildingsSetup(true);
@@ -920,19 +920,19 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       assignedTeamMembers: [...window.assignedTeamMembers, user?.name || 'Current User'],
       updatedAt: new Date()
     };
-    
-    setWindows(prev => prev.map(w => 
+
+    setWindows(prev => prev.map(w =>
       w.id === window.id ? updatedWindow : w
     ));
-    
+
     // Update selectedWindow if it's the same window being viewed
     if (selectedWindow && selectedWindow.id === window.id) {
       setSelectedWindow(updatedWindow);
     }
-    
+
     // Force re-render
     setUpdateCounter(prev => prev + 1);
-    
+
     showToast(`Started working on ${window.windowName}`);
   };
 
@@ -952,23 +952,23 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       assignedTeamMembers: [...window.assignedTeamMembers, user?.name || 'Current User'],
       updatedAt: new Date()
     };
-    
-    setWindows(prev => prev.map(w => 
+
+    setWindows(prev => prev.map(w =>
       w.id === window.id ? updatedWindow : w
     ));
-    
+
     // Update selectedWindow if it's the same window being viewed
     if (selectedWindow && selectedWindow.id === window.id) {
       setSelectedWindow(updatedWindow);
     }
-    
+
     // Force re-render
     setUpdateCounter(prev => prev + 1);
-    
+
     // Check if all windows are completed
     const updatedWindows = windows.map(w => w.id === window.id ? updatedWindow : w);
     const allCompleted = updatedWindows.every(w => w.status === 'Complete');
-    
+
     if (allCompleted) {
       showToast(`🎉 Project Completed! All ${updatedWindows.length} windows have been successfully installed.`);
     } else {
@@ -1003,8 +1003,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     if (editingWindow) {
       // Update existing window
       const layerCounts = calculateLayerCounts(windowData.layers || editingWindow.layers);
-      setWindows(prev => prev.map(w => 
-        w.id === editingWindow.id 
+      setWindows(prev => prev.map(w =>
+        w.id === editingWindow.id
           ? { ...w, ...windowData, ...layerCounts }
           : w
       ));
@@ -1036,30 +1036,60 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
   const handleUpdateWindow = (windowData: Partial<Window>) => {
     if (selectedWindow) {
       // Create the updated window with new status
-      const updatedWindow = { 
-        ...selectedWindow, 
+      const updatedWindow = {
+        ...selectedWindow,
         ...windowData,
         status: calculateWindowStatus(windowData.layers || selectedWindow.layers),
         updatedAt: new Date()
       };
-      
+
       // Update the windows list immediately
-      setWindows(prev => prev.map(w => 
+      setWindows(prev => prev.map(w =>
         w.id === selectedWindow.id ? updatedWindow : w
       ));
-      
+
       // Update selectedWindow
       setSelectedWindow(updatedWindow);
-      
+
       // Force re-render
       setUpdateCounter(prev => prev + 1);
-      
+
       showToast('Window updated successfully');
     }
   };
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+
+  const getProgressPercentage = (project: ProjectListItem): number => {
+    // Use actual progress value from project data if available
+    if (project.progress !== undefined) {
+      return project.progress;
+    }
+
+    // Fallback to status-based progress for backward compatibility
+    switch (project.status) {
+      case 'PV75':
+        return 5;
+      case 'PV90':
+        return 15;
+      case 'UB':
+        return 25;
+      case 'WB':
+        return 40;
+      case 'WIP':
+        return 75;
+      case 'QF':
+        return 90;
+      case 'Completed':
+        return 100;
+      case 'Archived':
+        return 100;
+      default:
+        return 0;
+    }
   };
 
   return (
@@ -1086,33 +1116,32 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         }
       `}</style>
       {/* Header Section */}
-      <div className="border-b border-gray-200">
+      <Card className="border-b border-gray-200">
         <div className="py-4 px-4 sm:py-6 sm:px-6">
-          <div className="flex flex-col gap-4 sm:gap-6">
+          <div className="flex flex-col gap-4  sm:gap-6">
             {/* Page Header */}
-            <div className="flex flex-col gap-4 sm:gap-5">
+            <div className="flex flex-col border-b  pb-3 border-gray-300 gap-4 sm:gap-5">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex flex-col gap-3 sm:gap-4">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                     <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
                       Marriot Windows Installation
                     </h1>
-                    <span className={`px-2 py-1 rounded-md text-xs sm:text-sm font-semibold w-fit ${
-                      projectStatus === 'WIP' ? 'bg-blue-50 text-blue-700' :
+                    <span className={`px-2 py-1 rounded-md text-xs sm:text-sm font-semibold w-fit ${projectStatus === 'WIP' ? 'bg-blue-50 text-blue-700' :
                       projectStatus === 'QF' ? 'bg-orange-50 text-orange-700' :
-                      projectStatus === 'QC' ? 'bg-indigo-50 text-indigo-700' :
-                      'bg-green-50 text-green-700'
-                    }`}>
+                        projectStatus === 'QC' ? 'bg-indigo-50 text-indigo-700' :
+                          'bg-green-50 text-green-700'
+                      }`}>
                       {projectStatus}
                     </span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
-                    <span className="bg-gray-50 text-gray-700 px-2 py-1 rounded-md font-semibold w-fit">
+                    <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full font-semibold w-fit">
                       {project.projectId}
                     </span>
                     <div className="flex items-center gap-1">
                       <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="truncate">{project.location}</span>
+                      <span className="truncate">{project.location || '123 Main Street, Downtown'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -1122,15 +1151,26 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
                   {projectStatus === 'WIP' && user?.userType !== 'execution-team' && (
-                    <Button
-                      variant="primary"
-                      onClick={handleMarkForQF}
-                      disabled={!windowsSetup}
-                      className="px-3 py-2 text-sm w-full sm:w-auto"
-                      title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
-                    >
-                      Mark for QF
-                    </Button>
+                    <>
+                      <Button
+                        variant="primary"
+                        onClick={handleMarkForQF}
+                        disabled={!windowsSetup}
+                        className="px-3 py-2 text-sm w-full sm:w-auto"
+                        title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
+                      >
+                        Mark for QF
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        icon={Edit}
+                        className="px-3 py-2 text-sm bg-gray-200 w-full sm:w-auto"
+                        title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
+                      >
+                        Edit
+                      </Button>
+                    </>
+
                   )}
                   {projectStatus === 'QF' && user?.userType !== 'execution-team' && (
                     <Button
@@ -1166,381 +1206,332 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             </div>
 
             {/* Progress Section - Hidden for execution team, QF and QC states */}
-            {user?.userType !== 'execution-team' && projectStatus !== 'QF' && projectStatus !== 'QC' && (
-            <div className="bg-gray-50 rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {projectStatus === 'WIP' ? 'Project Progress' :
-                   projectStatus === 'QF' ? 'Quality Review Progress' :
-                   projectStatus === 'QC' ? 'Quality Control Progress' :
-                   'Project Completion'}
-                </h3>
-                <span className="text-sm text-gray-600">
-                  {projectStatus === 'WIP' ? `${project.progress}% Complete` :
-                   projectStatus === 'QF' ? 'Under Review' :
-                   projectStatus === 'QC' ? 'Quality Control' :
-                   '100% Complete'}
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                <div 
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    projectStatus === 'WIP' ? 'bg-blue-600' :
-                    projectStatus === 'QF' ? 'bg-orange-600' :
-                    projectStatus === 'QC' ? 'bg-indigo-600' :
-                    'bg-green-600'
-                  }`}
-                  style={{ width: `${projectStatus === 'Completed' ? 100 : project.progress}%` }}
-                ></div>
-              </div>
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>
-                  {(user?.userType as string) === 'execution-team' ? '' :
-                   projectStatus === 'WIP' ? `Current Phase: ${project.currentPhase}` :
-                   projectStatus === 'QF' ? 'Status: Quality Review in Progress' :
-                   projectStatus === 'QC' ? 'Status: Quality Control in Progress' :
-                   'Status: Project Completed Successfully'}
-                </span>
-                <span>
-                  {projectStatus === 'WIP' ? `Est. Completion: ${project.estimatedCompletion}` :
-                   projectStatus === 'QF' ? 'Review Due: 2 days' :
-                   projectStatus === 'QC' ? 'QC Due: 1 day' :
-                   `Completed: ${project.endDate}`}
-                </span>
-              </div>
-            </div>
-            )}
+
 
             {/* Action Cards Section - Hidden for execution team */}
             {user?.userType !== 'execution-team' && (projectStatus === 'QF' || projectStatus === 'QC') && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              {/* Update Trailer Card */}
-              <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                isTrailerUpdated 
-                  ? 'border-green-200 bg-green-50' 
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                {/* Update Trailer Card */}
+                <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${isTrailerUpdated
+                  ? 'border-green-200 bg-green-50'
                   : 'border-gray-200 hover:shadow-md cursor-pointer'
-              }`}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      isTrailerUpdated ? 'bg-green-100' : 'bg-blue-50'
-                    }`}>
-                      {isTrailerUpdated ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <Truck className="w-5 h-5 text-blue-600" />
-                      )}
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Update Trailer</h3>
-                  </div>
-                  {isTrailerUpdated && (
-                    <button
-                      onClick={handleUpdateTrailer}
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit Trailer"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  {isTrailerUpdated 
-                    ? 'Trailer information has been updated successfully.'
-                    : 'Update trailer information and logistics details for the project.'
-                  }
-                </p>
-                {isTrailerUpdated ? (
-                  <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
-                    <CheckCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Completed</span>
-                  </div>
-                ) : (
-                  <Button 
-                    variant="primary" 
-                    className="w-full"
-                    onClick={handleUpdateTrailer}
-                  >
-                    Update Trailer
-                  </Button>
-                )}
-              </div>
-
-              {/* Update Inventory Card */}
-              <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                isInventoryUpdated 
-                  ? 'border-green-200 bg-green-50' 
-                  : 'border-gray-200 hover:shadow-md cursor-pointer'
-              }`}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      isInventoryUpdated ? 'bg-green-100' : 'bg-green-50'
-                    }`}>
-                      {isInventoryUpdated ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <Package className="w-5 h-5 text-green-600" />
-                      )}
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Update Inventory</h3>
-                  </div>
-                  {isInventoryUpdated && (
-                    <button
-                      onClick={handleAddUsage}
-                      className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      title="Edit Inventory"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  {isInventoryUpdated 
-                    ? 'Inventory levels have been updated successfully.'
-                    : 'Manage and update inventory levels for project materials.'
-                  }
-                </p>
-                {isInventoryUpdated ? (
-                  <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
-                    <CheckCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Completed</span>
-                  </div>
-                ) : (
-                  <Button 
-                    variant="primary" 
-                    className="w-full"
-                    onClick={handleAddUsage}
-                  >
-                    Update Inventory
-                  </Button>
-                )}
-              </div>
-
-              {/* Sign Quality Form Card */}
-              <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                isQualityFormSigned 
-                  ? qualityFormStatus === 'both-marked' 
-                    ? 'border-green-200 bg-green-50' 
-                    : 'border-blue-200 bg-blue-50'
-                  : 'border-gray-200 hover:shadow-md cursor-pointer'
-              }`}>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    isQualityFormSigned 
-                      ? qualityFormStatus === 'both-marked' 
-                        ? 'bg-green-100' 
-                        : 'bg-blue-100'
-                      : 'bg-purple-50'
                   }`}>
-                    {isQualityFormSigned ? (
-                      qualityFormStatus === 'both-marked' ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <Clock className="w-5 h-5 text-blue-600" />
-                      )
-                    ) : (
-                      <FileCheck className="w-5 h-5 text-purple-600" />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isTrailerUpdated ? 'bg-green-100' : 'bg-blue-50'
+                        }`}>
+                        {isTrailerUpdated ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <Truck className="w-5 h-5 text-blue-600" />
+                        )}
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Update Trailer</h3>
+                    </div>
+                    {isTrailerUpdated && (
+                      <button
+                        onClick={handleUpdateTrailer}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edit Trailer"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">Sign Quality Form</h3>
-                </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  {!isQualityFormSigned 
-                    ? 'Complete and sign the quality assurance form for project approval.'
-                    : qualityFormStatus === 'both-marked'
-                    ? 'QF & QC submitted successfully.'
-                    : qualityFormStatus === 'qf-marked'
-                    ? 'QF is marked, waiting for QC to mark.'
-                    : qualityFormStatus === 'qc-marked'
-                    ? 'QC is marked, quality control review completed.'
-                    : 'Quality assurance form has been signed successfully.'
-                  }
-                </p>
-                {isQualityFormSigned ? (
-                  qualityFormStatus === 'qf-marked' ? (
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 text-blue-700 bg-blue-100 px-3 py-2 rounded-md flex-1">
-                        <Clock className="w-4 h-4" />
-                        <span className="text-sm font-medium">QF Marked - Waiting for QC</span>
-                      </div>
-                      <Button 
-                        variant="primary" 
-                        className="px-4 py-2 text-sm font-medium"
-                        onClick={handleSignQualityCheckForm}
-                        icon={FileCheck}
-                      >
-                        Mark QC
-                      </Button>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {isTrailerUpdated
+                      ? 'Trailer information has been updated successfully.'
+                      : 'Update trailer information and logistics details for the project.'
+                    }
+                  </p>
+                  {isTrailerUpdated ? (
+                    <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-sm font-medium">Completed</span>
                     </div>
                   ) : (
-                    <div className={`flex items-center gap-2 px-3 py-2 rounded-md ${
-                      qualityFormStatus === 'both-marked'
+                    <Button
+                      variant="primary"
+                      className="w-full"
+                      onClick={handleUpdateTrailer}
+                    >
+                      Update Trailer
+                    </Button>
+                  )}
+                </div>
+
+                {/* Update Inventory Card */}
+                <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${isInventoryUpdated
+                  ? 'border-green-200 bg-green-50'
+                  : 'border-gray-200 hover:shadow-md cursor-pointer'
+                  }`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isInventoryUpdated ? 'bg-green-100' : 'bg-green-50'
+                        }`}>
+                        {isInventoryUpdated ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <Package className="w-5 h-5 text-green-600" />
+                        )}
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Update Inventory</h3>
+                    </div>
+                    {isInventoryUpdated && (
+                      <button
+                        onClick={handleAddUsage}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Edit Inventory"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {isInventoryUpdated
+                      ? 'Inventory levels have been updated successfully.'
+                      : 'Manage and update inventory levels for project materials.'
+                    }
+                  </p>
+                  {isInventoryUpdated ? (
+                    <div className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-2 rounded-md">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-sm font-medium">Completed</span>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      className="w-full"
+                      onClick={handleAddUsage}
+                    >
+                      Update Inventory
+                    </Button>
+                  )}
+                </div>
+
+                {/* Sign Quality Form Card */}
+                <div className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${isQualityFormSigned
+                  ? qualityFormStatus === 'both-marked'
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-blue-200 bg-blue-50'
+                  : 'border-gray-200 hover:shadow-md cursor-pointer'
+                  }`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isQualityFormSigned
+                      ? qualityFormStatus === 'both-marked'
+                        ? 'bg-green-100'
+                        : 'bg-blue-100'
+                      : 'bg-purple-50'
+                      }`}>
+                      {isQualityFormSigned ? (
+                        qualityFormStatus === 'both-marked' ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <Clock className="w-5 h-5 text-blue-600" />
+                        )
+                      ) : (
+                        <FileCheck className="w-5 h-5 text-purple-600" />
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Sign Quality Form</h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {!isQualityFormSigned
+                      ? 'Complete and sign the quality assurance form for project approval.'
+                      : qualityFormStatus === 'both-marked'
+                        ? 'QF & QC submitted successfully.'
+                        : qualityFormStatus === 'qf-marked'
+                          ? 'QF is marked, waiting for QC to mark.'
+                          : qualityFormStatus === 'qc-marked'
+                            ? 'QC is marked, quality control review completed.'
+                            : 'Quality assurance form has been signed successfully.'
+                    }
+                  </p>
+                  {isQualityFormSigned ? (
+                    qualityFormStatus === 'qf-marked' ? (
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 text-blue-700 bg-blue-100 px-3 py-2 rounded-md flex-1">
+                          <Clock className="w-4 h-4" />
+                          <span className="text-sm font-medium">QF Marked - Waiting for QC</span>
+                        </div>
+                        <Button
+                          variant="primary"
+                          className="px-4 py-2 text-sm font-medium"
+                          onClick={handleSignQualityCheckForm}
+                          icon={FileCheck}
+                        >
+                          Mark QC
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className={`flex items-center gap-2 px-3 py-2 rounded-md ${qualityFormStatus === 'both-marked'
                         ? 'text-green-700 bg-green-100'
                         : 'text-blue-700 bg-blue-100'
-                    }`}>
-                      {qualityFormStatus === 'both-marked' ? (
-                        <CheckCircle className="w-4 h-4" />
-                      ) : (
-                        <Clock className="w-4 h-4" />
-                      )}
-                      <span className="text-sm font-medium">
-                        {qualityFormStatus === 'both-marked'
-                          ? 'Completed'
-                          : 'QC Marked'
-                        }
-                      </span>
-                    </div>
-                  )
-                ) : (
-                  <Button 
-                    variant="primary" 
-                    className="w-full"
-                    onClick={handleSignQualityCheckForm}
-                  >
-                    Sign Quality Form
-                  </Button>
-                )}
+                        }`}>
+                        {qualityFormStatus === 'both-marked' ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          <Clock className="w-4 h-4" />
+                        )}
+                        <span className="text-sm font-medium">
+                          {qualityFormStatus === 'both-marked'
+                            ? 'Completed'
+                            : 'QC Marked'
+                          }
+                        </span>
+                      </div>
+                    )
+                  ) : (
+                    <Button
+                      variant="primary"
+                      className="w-full"
+                      onClick={handleSignQualityCheckForm}
+                    >
+                      Sign Quality Form
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
             )}
 
 
             {/* Stats Section - Hidden for execution team and only show for WIP status */}
             {user?.userType !== 'execution-team' && projectStatus === 'WIP' && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              {/* Team on Site */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+
+                <div className="flex-shrink-0   flex items-center gap-3 justify-start">
+                  <PieChart
+                    percentage={30}
+                    size={100}
+
+                  />
+                  <div>
+                    <h2>42/60  <br/> windows completed</h2>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Assigned</span>
-              </div>
 
 
-              {/* Layers Completed */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-50 rounded-md flex items-center justify-center">
-                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                {/* Team on Site */}
+                <div className="flex flex-col items-start gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                      <Calendar className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.completedLayers}/{projectMetrics.totalLayers}</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-start">Windows Started</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Installed</span>
-              </div>
 
-              {/* Windows Completed */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+
+                {/* Layers Completed */}
+                <div className="flex flex-col items-start gap-2 sm:gap-3 ">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-100 rounded-md flex items-center justify-center">
+                      <Calendar className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.completedLayers}/{projectMetrics.totalLayers}</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}/{projectMetrics.total}</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-start">Windows Completed</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Windows Completed</span>
-              </div>
 
-
-              {/* Issues Reported */}
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-50 rounded-md flex items-center justify-center">
-                    <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
+                {/* Windows Completed */}
+                <div className="flex flex-col items-start gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                      <Calendar className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}/{projectMetrics.total}</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.reinstallation}</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-start">Issues Reported</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Issues Reported</span>
               </div>
-            </div>
             )}
 
 
             {/* Completed Status Stats - Show when project is completed */}
             {user?.userType !== 'execution-team' && projectStatus === 'Completed' && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Windows</span>
-              </div>
 
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">15</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Successfully Installed</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Successfully Installed</span>
-              </div>
 
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">14</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">14</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Duration</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Days Duration</span>
-              </div>
 
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-md flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">100%</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">100%</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Success Rate</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Success Rate</span>
-              </div>
 
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-md flex items-center justify-center">
+                      <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">4</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">4</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Members</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Team Members</span>
-              </div>
 
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-50 rounded-md flex items-center justify-center">
-                    <Layers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-50 rounded-md flex items-center justify-center">
+                      <Layers className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">340</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">340</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Layers</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Total Layers</span>
-              </div>
 
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-50 rounded-md flex items-center justify-center">
-                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-50 rounded-md flex items-center justify-center">
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                    </div>
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">340</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-semibold text-gray-700">340</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Completed</span>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">Layers Completed</span>
               </div>
-            </div>
             )}
 
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Main Content */}
-      <div className="py-4 px-4 sm:py-6 sm:px-6">
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div className="py-4 sm:py-6">
+        <div className="grid gap-6 grid-cols-3">
           {/* Left Content */}
-          <div className="flex-1">
+          <div className="col-span-2">
             {/* Tabs */}
             <div className="border-b border-gray-200 mb-4 sm:mb-6">
               <nav className="flex space-x-1 sm:space-x-4 lg:space-x-8 overflow-x-auto mobile-scroll">
@@ -1572,11 +1563,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-2 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
-                      activeTab === tab.id
-                        ? 'border-blue-600 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                    className={`py-2 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
                   >
                     {tab.label}
                   </button>
@@ -1587,7 +1577,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             {/* Tab Content */}
             {activeTab === 'job-brief' && (
               <div className="space-y-6">
-                
+
                 {/* Window Management Section */}
                 <div className="space-y-6">
                   {/* Inline Setup Interface - Only show when not setup and not Role 3 */}
@@ -1599,7 +1589,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
                   {/* Second Windows Setup Interface - Only show when not setup and not Role 3 */}
                   {!windowsSetup && showBuildingsForm && user?.userType !== 'execution-team' && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                    <Card className="">
                       {/* Building Name Input */}
                       <div className="space-y-2 mb-6">
                         <label htmlFor="building-name" className="block text-sm font-medium text-gray-700">
@@ -1613,7 +1603,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         />
                       </div>
                       <MobileWindowsConfiguration onSave={handleSetupSave} onCancel={() => setShowBuildingsForm(false)} onAddBuilding={handleAddBuilding} showSetupButton={false} />
-                    </div>
+                    </Card>
                   )}
 
                   {/* Loading States */}
@@ -1636,8 +1626,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-4">
                           <h3 className="text-base sm:text-lg font-semibold text-gray-900">Window Management</h3>
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <Button 
-                              variant="primary" 
+                            <Button
+                              variant="primary"
                               icon={Plus}
                               onClick={handleAddWindow}
                               className="w-full sm:w-auto text-sm"
@@ -1659,7 +1649,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             />
                           </div>
-                          
+
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto">
                             <select
                               value={filters.filmType}
@@ -1700,21 +1690,19 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                           <div className="hidden sm:flex items-center gap-2 justify-center sm:justify-start">
                             <button
                               onClick={() => setViewMode('list')}
-                              className={`p-2 rounded-lg ${
-                                viewMode === 'list' 
-                                  ? 'bg-blue-600 text-white' 
-                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                              }`}
+                              className={`p-2 rounded-lg ${viewMode === 'list'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
                             >
                               <List className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => setViewMode('grid')}
-                              className={`p-2 rounded-lg ${
-                                viewMode === 'grid' 
-                                  ? 'bg-blue-600 text-white' 
-                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                              }`}
+                              className={`p-2 rounded-lg ${viewMode === 'grid'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
                             >
                               <Grid className="w-4 h-4" />
                             </button>
@@ -1746,151 +1734,151 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                     <th className="text-right py-2 px-2 text-xs font-medium text-gray-900 w-20">ACTIONS</th>
                                   </tr>
                                 </thead>
-                              <tbody>
-                                {filteredWindows.map((window) => (
-                                  <tr key={window.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-2 px-2 w-32">
-                                      <div>
-                                        <div className="text-sm font-medium text-gray-900 truncate">{window.windowName}</div>
-                                        <div className="text-xs text-gray-500">{window.createdAt?.toLocaleDateString() || 'Unknown'}</div>
-                                      </div>
-                                    </td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-20">{window.width}"</td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-20">{window.length}"</td>
-                                    <td className="py-2 px-2 w-24">
-                                      <span className="text-xs text-blue-600 font-medium truncate">{window.filmType}</span>
-                                    </td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-16 text-center">{window.interiorCount || 0}</td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-16 text-center">{window.exteriorCount || 0}</td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 font-semibold w-20 text-center">
-                                      {(window.interiorCount || 0) + (window.exteriorCount || 0)}
-                                    </td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-16 truncate">{window.color || 'N/A'}</td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-16 truncate">{window.tint || 'N/A'}</td>
-                                    <td className="py-2 px-2 text-xs text-gray-900 w-20 text-center">
-                                      {window.stripping ? 'Yes' : 'No'}
-                                    </td>
-                                    <td className="py-2 px-2 w-20">
-                                      <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
-                                    </td>
-                                    <td className="py-2 px-2 w-20">
-                                      <div className="flex items-center justify-end gap-2">
-                                        {/* Mobile: Direct action buttons */}
-                                        <div className="flex space-x-1 md:hidden">
-                                          {user?.userType !== 'execution-team' && (
-                                            <>
-                                              <button
-                                                onClick={() => {
-                                                  handleViewWindow(window);
-                                                }}
-                                                className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
-                                              >
-                                                <Eye className="w-3 h-3" />
-                                              </button>
-                                              <button
-                                                onClick={() => {
-                                                  handleEditWindow(window);
-                                                }}
-                                                className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
-                                              >
-                                                <Edit className="w-3 h-3" />
-                                              </button>
-                                              <button
-                                                onClick={() => {
-                                                  handleDeleteWindow(window.id);
-                                                }}
-                                                className="text-gray-400 hover:text-red-600 p-2 touch-manipulation"
-                                              >
-                                                <Trash2 className="w-3 h-3" />
-                                              </button>
-                                            </>
-                                          )}
-                                          {getActionButton(window) && (
-                                            <button
-                                              onClick={() => {
-                                                getActionButton(window)?.action();
-                                              }}
-                                              className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${getActionButton(window)?.className}`}
-                                            >
-                                              <CheckCircle2 className="w-3 h-3" />
-                                              <span>{getActionButton(window)?.text || 'Complete'}</span>
-                                            </button>
-                                          )}
+                                <tbody>
+                                  {filteredWindows.map((window) => (
+                                    <tr key={window.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                      <td className="py-2 px-2 w-32">
+                                        <div>
+                                          <div className="text-sm font-medium text-gray-900 truncate">{window.windowName}</div>
+                                          <div className="text-xs text-gray-500">{window.createdAt?.toLocaleDateString() || 'Unknown'}</div>
                                         </div>
-
-                                        {/* Desktop: 3-dots menu */}
-                                        <div className="hidden md:block relative dropdown-container">
-                                          <button 
-                                            onClick={() => {
-                                              // Toggle dropdown for this specific window
-                                              const dropdown = document.getElementById(`dropdown-${window.id}`);
-                                              if (dropdown) {
-                                                dropdown.classList.toggle('hidden');
-                                              }
-                                            }}
-                                            className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
-                                          >
-                                            <MoreVertical className="w-4 h-4" />
-                                          </button>
-                                          <div 
-                                            id={`dropdown-${window.id}`}
-                                            className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
-                                          >
-                                            <div className="py-1">
-                                              {user?.userType !== 'execution-team' && (
-                                                <>
-                                                  <button
-                                                    onClick={() => {
-                                                      handleViewWindow(window);
-                                                      document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                    }}
-                                                    className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
-                                                  >
-                                                    <Eye className="w-3 h-3" />
-                                                    View Details
-                                                  </button>
-                                                  <button
-                                                    onClick={() => {
-                                                      handleEditWindow(window);
-                                                      document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                    }}
-                                                    className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
-                                                  >
-                                                    <Edit className="w-3 h-3" />
-                                                    Edit Window
-                                                  </button>
-                                                  <button
-                                                    onClick={() => {
-                                                      handleDeleteWindow(window.id);
-                                                      document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                    }}
-                                                    className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
-                                                  >
-                                                    <Trash2 className="w-3 h-3" />
-                                                    Delete Window
-                                                  </button>
-                                                </>
-                                              )}
-                                              {getActionButton(window) && (
+                                      </td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-20">{window.width}"</td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-20">{window.length}"</td>
+                                      <td className="py-2 px-2 w-24">
+                                        <span className="text-xs text-blue-600 font-medium truncate">{window.filmType}</span>
+                                      </td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 text-center">{window.interiorCount || 0}</td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 text-center">{window.exteriorCount || 0}</td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 font-semibold w-20 text-center">
+                                        {(window.interiorCount || 0) + (window.exteriorCount || 0)}
+                                      </td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 truncate">{window.color || 'N/A'}</td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 truncate">{window.tint || 'N/A'}</td>
+                                      <td className="py-2 px-2 text-xs text-gray-900 w-20 text-center">
+                                        {window.stripping ? 'Yes' : 'No'}
+                                      </td>
+                                      <td className="py-2 px-2 w-20">
+                                        <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
+                                      </td>
+                                      <td className="py-2 px-2 w-20">
+                                        <div className="flex items-center justify-end gap-2">
+                                          {/* Mobile: Direct action buttons */}
+                                          <div className="flex space-x-1 md:hidden">
+                                            {user?.userType !== 'execution-team' && (
+                                              <>
                                                 <button
                                                   onClick={() => {
-                                                    getActionButton(window)?.action();
-                                                    document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                    handleViewWindow(window);
                                                   }}
-                                                  className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(window)?.className}`}
+                                                  className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
                                                 >
-                                                  <CheckCircle2 className="w-3 h-3" />
-                                                  {getActionButton(window)?.text}
+                                                  <Eye className="w-3 h-3" />
                                                 </button>
-                                              )}
+                                                <button
+                                                  onClick={() => {
+                                                    handleEditWindow(window);
+                                                  }}
+                                                  className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
+                                                >
+                                                  <Edit className="w-3 h-3" />
+                                                </button>
+                                                <button
+                                                  onClick={() => {
+                                                    handleDeleteWindow(window.id);
+                                                  }}
+                                                  className="text-gray-400 hover:text-red-600 p-2 touch-manipulation"
+                                                >
+                                                  <Trash2 className="w-3 h-3" />
+                                                </button>
+                                              </>
+                                            )}
+                                            {getActionButton(window) && (
+                                              <button
+                                                onClick={() => {
+                                                  getActionButton(window)?.action();
+                                                }}
+                                                className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${getActionButton(window)?.className}`}
+                                              >
+                                                <CheckCircle2 className="w-3 h-3" />
+                                                <span>{getActionButton(window)?.text || 'Complete'}</span>
+                                              </button>
+                                            )}
+                                          </div>
+
+                                          {/* Desktop: 3-dots menu */}
+                                          <div className="hidden md:block relative dropdown-container">
+                                            <button
+                                              onClick={() => {
+                                                // Toggle dropdown for this specific window
+                                                const dropdown = document.getElementById(`dropdown-${window.id}`);
+                                                if (dropdown) {
+                                                  dropdown.classList.toggle('hidden');
+                                                }
+                                              }}
+                                              className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
+                                            >
+                                              <MoreVertical className="w-4 h-4" />
+                                            </button>
+                                            <div
+                                              id={`dropdown-${window.id}`}
+                                              className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                                            >
+                                              <div className="py-1">
+                                                {user?.userType !== 'execution-team' && (
+                                                  <>
+                                                    <button
+                                                      onClick={() => {
+                                                        handleViewWindow(window);
+                                                        document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                      }}
+                                                      className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
+                                                    >
+                                                      <Eye className="w-3 h-3" />
+                                                      View Details
+                                                    </button>
+                                                    <button
+                                                      onClick={() => {
+                                                        handleEditWindow(window);
+                                                        document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                      }}
+                                                      className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
+                                                    >
+                                                      <Edit className="w-3 h-3" />
+                                                      Edit Window
+                                                    </button>
+                                                    <button
+                                                      onClick={() => {
+                                                        handleDeleteWindow(window.id);
+                                                        document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                      }}
+                                                      className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
+                                                    >
+                                                      <Trash2 className="w-3 h-3" />
+                                                      Delete Window
+                                                    </button>
+                                                  </>
+                                                )}
+                                                {getActionButton(window) && (
+                                                  <button
+                                                    onClick={() => {
+                                                      getActionButton(window)?.action();
+                                                      document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
+                                                    }}
+                                                    className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(window)?.className}`}
+                                                  >
+                                                    <CheckCircle2 className="w-3 h-3" />
+                                                    {getActionButton(window)?.text}
+                                                  </button>
+                                                )}
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
                               </table>
                             </div>
                           </div>
@@ -1968,7 +1956,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
                                   {/* Desktop: 3-dots menu */}
                                   <div className="hidden md:block relative dropdown-container">
-                                    <button 
+                                    <button
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         const dropdown = document.getElementById(`dropdown-grid-${window.id}`);
@@ -1980,7 +1968,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                                     >
                                       <MoreVertical className="w-4 h-4" />
                                     </button>
-                                    <div 
+                                    <div
                                       id={`dropdown-grid-${window.id}`}
                                       className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
                                     >
@@ -2071,13 +2059,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       </div>
                     </>
                   ) : user?.userType !== 'lead-supervisor' ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Settings className="w-8 h-8 text-gray-400" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Setup Windows First</h3>
-                      <p className="text-gray-600">Click "Setup Windows" to configure your windows and start managing them</p>
-                    </div>
+                    <></>
                   ) : null}
                 </div>
               </div>
@@ -2189,7 +2171,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       Upload document
                     </Button>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {/* Document 1 */}
                     <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
@@ -2209,13 +2191,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button 
+                        <button
                           onClick={() => showToast('Downloading Site Map - Floor Plan.pdf')}
                           className="p-2 text-gray-400 hover:text-gray-600"
                         >
                           <Download className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => showToast('Delete document functionality coming soon')}
                           className="p-2 text-gray-400 hover:text-red-600"
                         >
@@ -2242,13 +2224,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button 
+                        <button
                           onClick={() => showToast('Downloading Architectural Plan.txt')}
                           className="p-2 text-gray-400 hover:text-gray-600"
                         >
                           <Download className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => showToast('Delete document functionality coming soon')}
                           className="p-2 text-gray-400 hover:text-red-600"
                         >
@@ -2275,7 +2257,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       Upload document
                     </Button>
                   </div>
-                  
+
                   <div className="text-center py-8">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500">No installation guides uploaded yet</p>
@@ -2389,7 +2371,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
           </div>
 
           {/* Right Sidebar - Activity Log */}
-          <div className="w-80 flex-shrink-0">
+          <div className="grid-cols-1">
             <Card className="p-5 h-fit">
               <div className="flex flex-col gap-5">
                 <div>
