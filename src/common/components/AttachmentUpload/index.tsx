@@ -78,7 +78,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
     <div className="space-y-3">
       {/* Upload Area */}
       <div
-        className={`border-2 border-dashed rounded-lg p-4 transition-colors ${
+        className={`rounded-lg outline-none bg-gray-300 py-1.5 px-3 transition-colors ${
           isDragOver
             ? 'border-blue-400 bg-blue-50'
             : 'border-gray-300 hover:border-gray-400'
@@ -88,13 +88,10 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
         onDrop={handleDrop}
         onClick={() => !disabled && fileInputRef.current?.click()}
       >
-        <div className="text-center">
-          <Paperclip className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+        <div className="text-center flex justify-center items-center gap-2">
+          <Paperclip size={20} className=" mx-auto text-gray-400 " />
           <p className="text-sm text-gray-600 mb-1">
-            {disabled ? 'Attachments disabled' : 'Click to upload or drag files here'}
-          </p>
-          <p className="text-xs text-gray-500">
-            Supports images, PDFs, documents, and other files
+            {disabled ? 'Attachments disabled' : 'Add attachment'}
           </p>
         </div>
         
