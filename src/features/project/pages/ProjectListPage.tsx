@@ -551,14 +551,14 @@ export const ProjectListPage: React.FC = () => {
 
   const handleProjectClick = (project: ProjectListItem) => {
     // Check if user is executive or project coordinator and project status requires coordinator assignment
-    if ((isExecutive || isProjectCoordinator) && ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)) {
-      setProjectForCoordinatorAssignment(project);
-      setIsCoordinatorModalOpen(true);
-    } else {
-      // Route based on project status - all statuses now go to the same route
-      // The ProjectDetailsRouter will handle showing the appropriate layout
-      navigate(`/projects/${project.id}?status=${project.status}&title=${encodeURIComponent(project.title)}`);
-    }
+    // if ((isExecutive || isProjectCoordinator) && ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)) {
+    //   setProjectForCoordinatorAssignment(project);
+    //   setIsCoordinatorModalOpen(true);
+    // } else {
+    // Route based on project status - all statuses now go to the same route
+    // The ProjectDetailsRouter will handle showing the appropriate layout
+    navigate(`/projects/${project.id}?status=${project.status}&title=${encodeURIComponent(project.title)}`);
+    // }
   };
 
   const handleAssignCoordinator = (projectId: string, coordinatorId: string, startDate?: string, endDate?: string) => {
@@ -636,7 +636,7 @@ export const ProjectListPage: React.FC = () => {
                     : 'text-gray-600 hover:border-b-gray-400 hover:border-b-2'
                     }`}
                 >
-                  <div className='flex gap-2'>{status} <span className='bg-gray-200 rounded-full p-1 text-sx w-[20px] h-[20px] flex justify-center items-center'>4</span> </div>
+                  <div className='flex gap-2'>{status} <span className='bg-gray-300 rounded-full p-1 text-sx w-[20px] h-[20px] flex justify-center items-center'>4</span> </div>
 
                 </button>
               ))}
@@ -803,7 +803,6 @@ export const ProjectListPage: React.FC = () => {
           />
         )}
 
-        {/* Project Coordinator Assignment Modal */}
         <ProjectCoordinatorModal
           isOpen={isCoordinatorModalOpen}
           onClose={handleCloseCoordinatorModal}

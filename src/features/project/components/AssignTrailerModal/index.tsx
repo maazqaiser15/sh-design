@@ -6,7 +6,7 @@ import { TrailerForAssignment } from '../../types/trailers';
 import SearchField from 'common/components/SearchField';
 import SelectField from 'common/components/SelectField';
 import CustomDataTable from 'common/components/CustomDataTable';
-import { getStatusColor } from '../../utils';
+import { formatDate, getStatusColor } from '../../utils';
 
 interface AssignTrailerModalProps {
   isOpen: boolean;
@@ -99,8 +99,8 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
   };
 
   const getInventorySummary = (trailer: TrailerForAssignment) => {
-    const totalFilm = trailer.inventory.filmSheets.reduce((sum, film) => sum + film.currentStock, 0);
-    const goodTools = trailer.inventory.tools.filter(tool => tool.status === 'good').length;
+    const totalFilm = trailer.inventory.filmSheets.reduce((sum, film) => sum + film.available, 0);
+    const goodTools = trailer.inventory.tools.filter(tool => tool.available > 0).length;
     const totalTools = trailer.inventory.tools.length;
 
     return {
@@ -119,14 +119,14 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       name: 'Select',
       selector: (row: any) => '',
       cell: (row: any) => {
-        const isUnavailable = row.status === 'Unavailable';
+        const isUnavailable = row.status === 'unavailable';
         return (
           <div className="flex items-center">
             <input
-              type="checkbox"
-              // checked={isSelected}
+              type="radio"
+              checked={selectedTrailer === row.id}
               disabled={isUnavailable}
-              // onChange={() => !isUnavailable && handleMemberToggle(row.id)}
+              onChange={() => !isUnavailable && handleTrailerSelect(row.id)}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
             />
           </div>
@@ -148,7 +148,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       cell: (row: any) => (
         <div className="flex flex-col space-y-1">
           <span
-            className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(
+            className={`inline-flex px-2 py-0.5 text-xs capitalize font-medium rounded-full ${getStatusColor(
               row.status
             )}`}
           >
@@ -168,7 +168,6 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
         </div>
       </div>
     },
-
   ]
 
   return (
@@ -178,11 +177,23 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       title="Assign Trailer to Project"
       size="xl"
     >
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center space-x-2">
+          <Calendar className="w-4 h-4 text-blue-600" />
+          <h3 className="text-sm font-medium text-blue-900">Project Duration</h3>
+          <span className="text-sm text-blue-800">
+            <span className="font-medium">{formatDate(filteredTrailers[0].lastMaintenance)}</span>
+            <span className="mx-2">→</span>
+            <span className="font-medium">{formatDate(filteredTrailers[0].nextMaintenance)}</span>
+          </span>
+        </div>
+      </div>
+
       <div className="">
         {/* Search and Filters */}
         <div className="flex flex-col lg:flex-row justify-between items-center space-y-3 lg:space-y-0 lg:space-x-4 mb-6">
           {/* Search Bar */}
-          <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} inputClassName={'border border-gray-300'} />
+          <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search by name...'} inputClassName={'border border-gray-300'} />
 
           <div className='flex items-center gap-4'>
             {/* Status Filter */}
@@ -191,8 +202,6 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             {/* Location Filter */}
             <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Locations'} options={[uniqueLocations]} />
           </div>
-
-
         </div>
 
         {/* Trailer List */}

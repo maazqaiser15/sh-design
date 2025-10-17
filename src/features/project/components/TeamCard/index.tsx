@@ -121,21 +121,6 @@ export const TeamCard: React.FC<TeamCardProps> = ({
             <p className="font-medium text-sm text-[#101828] leading-5 truncate">
               {name}
             </p>
-            {/* {isLead && (
-              <span className="bg-[#0D76BF] text-white px-2 py-0.5 rounded text-xs font-medium">
-                Lead
-              </span>
-            )} */}
-            {inviteStatus === 'pending' && (
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs font-medium">
-                Pending
-              </span>
-            )}
-            {inviteStatus === 'expired' && (
-              <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-medium">
-                Expired
-              </span>
-            )}
           </div>
           <p className="font-normal text-sm text-[#475467] leading-5 truncate">
             {role}

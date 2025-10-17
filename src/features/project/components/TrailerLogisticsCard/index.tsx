@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Truck, Plus, Paperclip, FileText, CheckCircle } from 'lucide-react';
+import { Truck, Plus, Paperclip, FileText, CheckCircle, Edit } from 'lucide-react';
 import { AssignTrailerModal } from '../AssignTrailerModal';
 import { TrailerForAssignment } from '../../types/trailers';
 import { Card } from 'common/components/Card';
@@ -88,7 +88,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
           </div>
 
           {/* Trailer Assignment Section */}
-          <div className="flex items-center justify-between">
+          <div className={`flex ${assignedTrailer && 'bg-white rounded-lg p-2 border border-gray-200'}  items-center justify-between`}>
             <div className="flex items-center gap-2">
               <Truck className="w-5 h-5 text-gray-600" />
               <span className="text-sm text-gray-700">
@@ -99,7 +99,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
               onClick={() => setShowAssignTrailerModal(true)}
               className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
             >
-              <Plus className="w-4 h-4" />
+              {assignedTrailer ? <Edit className='w-4 h-4' /> : <Plus className="w-4 h-4" />}
               {assignedTrailer ? 'Change trailer' : 'Add trailer'}
             </button>
           </div>
@@ -122,7 +122,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
                 Add attachment
               </button>
             </div>
-            
+
             {/* Hidden file input */}
             <input
               ref={fileInputRef}
@@ -132,7 +132,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
               onChange={handleFileChange}
               className="hidden"
             />
-            
+
             {/* Show attached files */}
             {uploadedFiles.length > 0 && (
               <div className="mt-3 space-y-2">
@@ -182,7 +182,7 @@ export const TrailerLogisticsCard: React.FC<TrailerLogisticsCardProps> = ({
                 >
                   <div className="w-4 h-4 rounded-full border border-gray-600 flex items-center justify-center">
                     <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 3L3 5L7 1" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 3L3 5L7 1" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   Mark as complete

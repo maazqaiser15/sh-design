@@ -27,6 +27,10 @@ import { ProjectDetailsWIP } from './ProjectDetailsWIP';
 import { Card } from 'common/components/Card';
 import { SetupInventoryModal } from '../../components/SetupInventoryModal';
 import { ConfirmationModal } from 'common/components/ConfimationModal';
+import { ProjectCoordinatorModal } from '../../components/ProjectCoordinatorModal';
+import { ProjectListItem, SafeHavenProject } from '../../types';
+import { projectToListItem } from '../../utils';
+import { useAuth } from 'src/contexts/AuthContext';
 
 // Icons from Figma design
 
@@ -237,8 +241,16 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [windows, setWindows] = useState<Window[]>(MOCK_WINDOWS);
   const [showContractRequiredModal, setShowContractRequiredModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false);
+  const [projectForCoordinatorAssignment, setProjectForCoordinatorAssignment] = useState<ProjectListItem | null>(null);
+  const { user, hasPermission } = useAuth();
   // Notes State
   const [notes, setNotes] = useState<ProjectNote[]>([]);
+
+
+  const handleCloseCoordinatorModal = () => {
+    setIsCoordinatorModalOpen(false);
+  };
 
   // Check if all stages are completed
   const allStagesCompleted = isAssignedTeamCompleted && isTravelAccommodationCompleted && isTrailerCompleted;
@@ -302,21 +314,7 @@ export const ProjectDetailsPrep: React.FC = () => {
     }));
   };
 
-  // Handle document deletion
-  const handleDeleteDocument = (documentId: string) => {
-    setPreparationData(prev => ({
-      ...prev,
-      documents: prev.documents.filter(doc => doc.id !== documentId)
-    }));
-  };
 
-  // Handle document download
-  const handleDownloadDocument = (document: any) => {
-    // In a real app, this would trigger a download
-    console.log('Downloading document:', document.name);
-    // For demo purposes, we'll just log it
-    alert(`Downloading ${document.name}`);
-  };
 
   // Handle note addition
   const handleAddNote = (content: string, isInternal: boolean, attachments?: NoteAttachment[]) => {
@@ -517,57 +515,28 @@ export const ProjectDetailsPrep: React.FC = () => {
   };
 
 
-  // Handle trailer assignment
-  const handleOpenAssignTrailerModal = () => {
-    setShowAssignTrailerModal(true);
-  };
 
-
-  // Handle receipt upload
-  const handleOpenReceiptUploadModal = () => {
-    setShowReceiptUploadModal(true);
-  };
 
   // Handle file attachment
   const handleFileAttachment = (files: File[]) => {
     setUploadedReceipts(files);
   };
 
-  const handleReceiptUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files);
-      setUploadedReceipts(prev => [...prev, ...newFiles]);
-      showToast(`${newFiles.length} receipt(s) uploaded successfully!`);
+
+  const handleAssignCoordinator = (projectId: string, coordinatorId: string, startDate?: string, endDate?: string) => {
+    console.log(`Assigning coordinator ${coordinatorId} to project ${projectId}`);
+    if (startDate) {
+      console.log(`Project start date: ${startDate}`);
     }
-    event.target.value = '';
+    if (endDate) {
+      console.log(`Project end date: ${endDate}`);
+    }
+    // Here you would typically make an API call to assign the coordinator
+    // In a real app, you would update the project data with coordinator information
+    // and store it in state or make an API call to persist the assignment
   };
 
-  const handleRemoveReceipt = (index: number) => {
-    setUploadedReceipts(prev => prev.filter((_, i) => i !== index));
-    showToast('Receipt removed successfully!');
-  };
 
-  // Handle inventory updates
-  const handleUpdateInventoryItem = (itemId: string, field: 'required' | 'inTrailer', value: number) => {
-    setInventoryItems(prev => prev.map(item => {
-      if (item.id === itemId) {
-        const updated = { ...item, [field]: value };
-        updated.needToShip = Math.max(0, updated.required - updated.inTrailer);
-        return updated;
-      }
-      return item;
-    }));
-  };
-
-  // Calculate totals
-  const totalRequired = inventoryItems.reduce((sum, item) => sum + item.required, 0);
-  const totalInTrailer = inventoryItems.reduce((sum, item) => sum + item.inTrailer, 0);
-  const totalNeedToShip = inventoryItems.reduce((sum, item) => sum + item.needToShip, 0);
-
-  // Get visible film types
-  const visibleFilmTypes = showAllFilmTypes ? inventoryItems : inventoryItems.slice(0, 4);
-  const hiddenFilmTypesCount = inventoryItems.length - 4;
 
   const handleEditTeam = () => {
     setShowEditTeamModal(true);
@@ -648,66 +617,29 @@ export const ProjectDetailsPrep: React.FC = () => {
 
 
 
-  // Handle team view
-  const handleViewTeam = () => {
-    console.log('View team details');
-    // In a real app, this would navigate to team details or open a modal
-    alert('View Team Details - Coming Soon');
-  };
+  // // Handle logistics assignment
+  // const handleAssignLogistics = () => {
+  //   // Mock logistics assignment
+  //   const logistics = {
+  //     partner: 'LogiCorp Solutions',
+  //     eta: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+  //     notes: 'Equipment delivery scheduled for early morning',
+  //     contactPerson: 'Jane Doe',
+  //     contactPhone: '+1-555-0199'
+  //   };
+
+  //   setPreparationData(prev => ({
+  //     ...prev,
+  //     logistics,
+  //     checklist: prev.checklist.map(item =>
+  //       item.label === 'Logistics Confirmed'
+  //         ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
+  //         : item
+  //     )
+  //   }));
+  // };
 
 
-  // Handle logistics view
-  const handleViewLogistics = () => {
-    console.log('View logistics details');
-    // In a real app, this would navigate to logistics details or open a modal
-    alert('View Logistics Details - Coming Soon');
-  };
-
-  // Handle logistics assignment
-  const handleAssignLogistics = () => {
-    // Mock logistics assignment
-    const logistics = {
-      partner: 'LogiCorp Solutions',
-      eta: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-      notes: 'Equipment delivery scheduled for early morning',
-      contactPerson: 'Jane Doe',
-      contactPhone: '+1-555-0199'
-    };
-
-    setPreparationData(prev => ({
-      ...prev,
-      logistics,
-      checklist: prev.checklist.map(item =>
-        item.label === 'Logistics Confirmed'
-          ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
-          : item
-      )
-    }));
-  };
-
-  // Handle travel setup
-  const handleSetupTravel = () => {
-    // Mock travel setup
-    setPreparationData(prev => ({
-      ...prev,
-      checklist: prev.checklist.map(item =>
-        item.label === 'Travel Setup'
-          ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
-          : item
-      )
-    }));
-  };
-
-  // Handle logistics management
-  const handleAddLogistics = () => {
-    setEditingLogistics(null);
-    setShowAddLogisticsModal(true);
-  };
-
-  const handleEditLogistics = (logistics: LogisticsItem) => {
-    setEditingLogistics(logistics);
-    setShowEditLogisticsModal(true);
-  };
 
   const handleSaveLogistics = (logisticsData: Omit<LogisticsItem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>) => {
     const newLogistics: LogisticsItem = {
@@ -1003,14 +935,53 @@ export const ProjectDetailsPrep: React.FC = () => {
   ]
 
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen">
 
       {/* Main Content */}
-      <div className="py-6">
+      <div className="pb-6">
         {/* Project Header Card */}
+        <div className='rounded-2xl px-2 py-3 mb-6 bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-between'>
+          <div className='flex justify-start items-center gap-2'>
+            <Calendar size={20} className='text-[#1F3A8A]'/> <p className='mb-0 text-[#1F3A8A] font-sm'>You haven’t assigned a coordinator or timeline yet.</p>
+          </div>
+          <Button
+            className='text-[#043A65]'
+            variant='secondary'
+            onClick={() => {
+              // Build a ProjectListItem from current project details
+              const safeHavenProject: SafeHavenProject = {
+                id: project.id,
+                title: project.name,
+                description: project.description || '',
+                status: project.status as any,
+                stage: project.stage as any,
+                startDate: project.startDate,
+                endDate: project.endDate,
+                site: project.site,
+                createdAt: project.createdAt,
+                updatedAt: project.updatedAt,
+                assignedTeam: [],
+                assignedTrailers: [],
+                progress: 0,
+                vinCode: project.projectId,
+                crew: [],
+                assignedTrailer: null,
+                // Provide reasonable defaults for fields expected by SafeHavenProject
+                industry: project.industry || 'General',
+              } as unknown as SafeHavenProject;
+
+              const listItem: ProjectListItem = projectToListItem(safeHavenProject);
+              setProjectForCoordinatorAssignment(listItem);
+              setIsCoordinatorModalOpen(true);
+            }}
+          >
+            Assign Coordinator & Timeline
+          </Button>
+        </div>
         <Card className="mb-6">
           <div className="flex flex-col gap-2">
             {/* Project Title and Actions */}
+
             <div className="">
               {/* Project Name, Status, and Action Buttons */}
               <div className="flex items-start justify-between mb-4">
@@ -1118,7 +1089,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                       <p className="text-xs text-gray-500 font-medium">Contact Person</p>
                       <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
                       {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
-                      {project.contactPerson.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+                      {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
                     </div>
                   </div>
                 )}
@@ -1680,6 +1651,16 @@ export const ProjectDetailsPrep: React.FC = () => {
           console.log('Inventory items saved:', items);
           showToast('Inventory setup saved successfully');
         }}
+      />
+
+
+      {/* Project Coordinator Assignment Modal */}
+      <ProjectCoordinatorModal
+        isOpen={isCoordinatorModalOpen}
+        onClose={handleCloseCoordinatorModal}
+        project={projectForCoordinatorAssignment}
+        onAssignCoordinator={handleAssignCoordinator}
+        userRole={user?.userType as 'executive' | 'project-coordinator'}
       />
     </div>
   );

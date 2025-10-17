@@ -191,7 +191,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
       sortable: true,
       width: '200px',
       cell: (row: ProjectListItem) => (
-        <div className="flex items-center whitespace-nowrap">
+        <div className={`flex items-center whitespace-nowrap py-1 px-2 rounded-full ${row.assignedTrailer ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'} `}>
           <Truck className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
           {row.assignedTrailer || 'Not Assigned'}
         </div>

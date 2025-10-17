@@ -7,7 +7,7 @@ interface searchFieldProps {
     value: string;
     onChange: (e:any) => void;
     placeholder: string;
-    inputClassName: string;
+    inputClassName?: string;
 }
 const SearchField: React.FC<searchFieldProps> = ({ className, iconSize, value, onChange, placeholder, inputClassName }) => {
     return (

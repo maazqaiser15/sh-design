@@ -195,7 +195,7 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
 
         {/* Search and Filters */}
         <div className="flex justify-between space-x-4 mb-6">
-          <SearchField iconSize={20} inputClassName='border border-gray-300 w-full pl-4 pr-4 py-2' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} />
+          <SearchField iconSize={20} inputClassName='border border-gray-300 w-full pl-4 pr-4 py-2' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search by name...'} />
 
           <div className='flex space-x-4'>
             <SelectField value={roleFilter} inputClassName={'border border-gray-300'} onChange={(e) => setRoleFilter(e.target.value as TeamRole | '')} placeholder={'All Roles'} options={[{
@@ -227,7 +227,7 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
               value: 'Unavailable', label: 'Unavailable'
             }
             ]} />
-            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'All Status'} options={availableLocations} />
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'All Locations'} options={availableLocations} />
           </div>
         </div>
 
