@@ -173,7 +173,6 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                               const imageUrl = member.avatar || placeholderImages[index % placeholderImages.length];
                               const leftOffset = index * 10;
                               return (
-
                                 <Avatar
                                   key={index}
                                   name={member.name || `Member ${index + 1}`}
@@ -183,8 +182,6 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                                   showInitials={false}
                                   style={{ right: `${leftOffset}px` }}
                                 />
-
-
                               );
                             })}
                             <span className="text-sm font-medium text-gray-700 ml-1 relative right-2">

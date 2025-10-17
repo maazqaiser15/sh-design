@@ -54,7 +54,7 @@ export interface ProjectViewMode {
 export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
   'PV75': 'bg-gray-200 text-gray-700',      // Gray for initial planning
   'PV90': 'bg-purple-100 text-purple-700',  // Purple for planning phase
-  'UB': 'bg-blue-100 text-blue-700',        // Blue for unbooked
+  'UB': 'bg-cyan-100 text-cyan-700',        // Blue for unbooked
   'WB': 'bg-yellow-100 text-yellow-700',    // Yellow for waiting for booking
   'WIP': 'bg-blue-100 text-blue-700',       // Blue for work in progress
   'QF': 'bg-orange-100 text-orange-700',    // Orange for quality check

@@ -605,13 +605,7 @@ export const ProjectListPage: React.FC = () => {
     }));
   };
 
-  const handleClearFilters = () => {
-    setFilters({
-      status: [],
-      assignedUsers: [],
-    });
-    setSearchQuery('');
-  };
+
 
   return (
     <div className="min-h-screen">
