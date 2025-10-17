@@ -167,3 +167,4 @@ export const formatDate = (dateInput: string | Date): string => {
     year: 'numeric',
   });
 };
+

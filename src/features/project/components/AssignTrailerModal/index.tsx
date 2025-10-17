@@ -119,7 +119,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       name: 'Select',
       selector: (row: any) => '',
       cell: (row: any) => {
-        const isUnavailable = row.status === 'unavailable';
+        const isUnavailable = row.status === 'unavailable' || row.status === 'low_stock';
         return (
           <div className="flex items-center">
             <input
@@ -145,17 +145,21 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
     {
       name: 'Status',
       selector: (row: any) => row.status,
-      cell: (row: any) => (
-        <div className="flex flex-col space-y-1">
-          <span
-            className={`inline-flex px-2 py-0.5 text-xs capitalize font-medium rounded-full ${getStatusColor(
-              row.status
-            )}`}
-          >
-            {row.status}
-          </span>
-        </div>
-      )
+      cell: (row: any) => {
+        const isUnavailable = row.status === 'unavailable' || row.status === 'low_stock';
+        return (
+          <div className="flex flex-col space-y-1">
+            <span
+              className={`inline-flex w-min px-2 py-0.5 text-xs capitalize font-medium rounded-full ${getStatusColor(
+                row.status
+              )}`}
+            >
+              {row.status}
+            </span>
+            <div> {isUnavailable && <p className='text-[10px] text-red-600'> Unavailable until  {formatDate(row.unavailableUntil) }</p>}</div>
+          </div>
+        )
+      }
     },
 
     {
