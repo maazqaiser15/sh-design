@@ -649,7 +649,7 @@ export const ProjectListPage: React.FC = () => {
                   </Button>
                 </div>
               )}
-              <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search...'} />
+              <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search by name...'} />
 
               {/* Archived Button - Positioned on the center */}
               <button

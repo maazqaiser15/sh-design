@@ -83,7 +83,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
       {/* Action Buttons - Shows on Hover */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         {/* Resend Invite Button */}
-        {shouldShowResendButton && onResendInvite && (
+        {/* {shouldShowResendButton && onResendInvite && (
           <button
             onClick={handleResendInvite}
             className="w-6 h-6 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600"
@@ -91,7 +91,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
           >
             <MailIcon />
           </button>
-        )}
+        )} */}
         
         {/* Remove Button */}
         {onRemove && (

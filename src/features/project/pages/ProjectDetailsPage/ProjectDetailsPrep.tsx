@@ -1019,7 +1019,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     disabled={!allStagesCompleted}
                     className={`px-3 py-1.5 rounded-md font-semibold text-sm leading-5 shadow-sm transition-all duration-200 ${allStagesCompleted
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-blue-200'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300'
+                      : 'bg-gray-500 text-gray-900 cursor-not-allowed border border-gray-300'
                       }`}
                   >
                     Mark Stage as Complete
