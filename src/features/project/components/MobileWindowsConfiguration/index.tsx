@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Trash2, Plus, Edit2, Save, X, ChevronDown, ChevronUp, Building2, AppWindow } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { useSidebar } from '../../../../contexts/SidebarContext';
+import FormField from 'common/components/FormField';
+import { Form, Formik } from 'formik';
 
 interface WindowRow {
   id: string;
@@ -73,8 +75,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
   const handleWindowChange = (windowId: string, field: keyof WindowRow, value: any) => {
     setFormData((prev: SetupWindowsData) => ({
       ...prev,
-      windows: prev.windows.map((window: WindowRow) => 
-        window.id === windowId 
+      windows: prev.windows.map((window: WindowRow) =>
+        window.id === windowId
           ? { ...window, [field]: value }
           : window
       )
@@ -129,7 +131,7 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     if (formData.windows.length === 0) {
       newErrors.windows = 'At least one window is required';
     }
@@ -195,7 +197,7 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
                 <div className="text-sm text-gray-900 mt-1">{window.length}</div>
               </div>
             </div>
-            
+
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Interior</label>
@@ -496,40 +498,45 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
       {/* Header */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900">Windows Configuration</h2>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <Button
-            variant="secondary"
-            icon={Plus}
-            onClick={onAddBuilding}
-            className="text-sm mobile-touch-target w-full sm:w-auto"
+        <div className="flex flex-col items-center justify-between sm:flex-row gap-2 sm:gap-3">
+          <div className='flex-1'>
+          <Formik
+            initialValues={{ building: "" }}
+            onSubmit={(vals) => console.log(vals)}
           >
-            <Building2 className="w-4 h-4 mr-2" />
-            Add Building
-          </Button>
-          <Button
-            variant="secondary"
-            icon={Plus}
-            onClick={addWindow}
-            className="text-sm mobile-touch-target w-full sm:w-auto"
-          >
-            <AppWindow className="w-4 h-4 mr-2" />
-            Add Window
-          </Button>
+            <Form>
+              <FormField className='mb-0' label="" name="building" type="text" placeholder='Enter building name (e.g., Main Building, Office Block, etc.)' />
+            </Form>
+          </Formik>
+          </div>
+       
+          <div className='flex gap-2'>
+            <Button
+              variant="secondary"
+              icon={Plus}
+              onClick={onAddBuilding}
+              size='md'
+              className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto"
+            >
+              <Building2 className="w-4 h-4 mr-2" />
+              Add Building
+            </Button>
+            <Button
+              variant="secondary"
+              icon={Plus}
+              onClick={addWindow}
+              className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto"
+            >
+              <AppWindow className="w-4 h-4 mr-2" />
+              Add Window
+            </Button>
+          </div>
+
         </div>
       </div>
 
-      {/* Building Name Input */}
-      <div className="space-y-2">
-        <label htmlFor="building-name" className="block text-sm font-medium text-gray-700">
-          Building Name
-        </label>
-        <input
-          type="text"
-          id="building-name"
-          placeholder="Enter building name (e.g., Main Building, Office Block, etc.)"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm mobile-touch-target"
-        />
-      </div>
+
+
 
       {/* Error Display */}
       {errors.windows && (
@@ -558,7 +565,7 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
               )}
             </button>
           </div>
-          
+
           {/* Windows List */}
           {expandedBuildings.has('building-1') && (
             <div className="space-y-3">

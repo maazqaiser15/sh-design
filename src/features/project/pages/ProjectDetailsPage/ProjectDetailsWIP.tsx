@@ -30,6 +30,8 @@ import {
   Package,
   ClipboardCheck,
   FileCheck,
+  Building,
+  User,
 } from 'lucide-react';
 import { PieChart } from '../../../../common/components/PieChart';
 import { ProjectDetails, MOCK_PROJECT_DETAILS, ProjectNote } from '../../types/projectDetails';
@@ -1116,11 +1118,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
         }
       `}</style>
       {/* Header Section */}
-      <Card className="border-b border-gray-200">
+      <Card className="">
         <div className="py-4 px-4 sm:py-6 sm:px-6">
           <div className="flex flex-col gap-4  sm:gap-6">
             {/* Page Header */}
-            <div className="flex flex-col border-b  pb-3 border-gray-300 gap-4 sm:gap-5">
+            <div className="flex flex-col  pb-3  gap-6 sm:gap-5">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex flex-col gap-3 sm:gap-4">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
@@ -1135,19 +1137,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       {projectStatus}
                     </span>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
-                    <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full font-semibold w-fit">
-                      {project.projectId}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="truncate">{project.location || '123 Main Street, Downtown'}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="truncate">{project.startDate} - {project.endDate}</span>
-                    </div>
-                  </div>
+            
+
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
                   {projectStatus === 'WIP' && user?.userType !== 'execution-team' && (
@@ -1202,6 +1193,73 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                     </Button>
                   )}
                 </div>
+
+              </div>
+              <div className="flex flex-wrap  items-start justify-between mb-0">
+                {/* VIN Code */}
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">VIN Code</p>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      TXDA-SJ1BR1-EETUSC01-P20001
+                    </span>
+                  </div>
+                </div>
+
+                {/* Site */}
+                {project.site && (
+                  <div className="flex items-start gap-2">
+                    <Building className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Site</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.site}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Duration */}
+                <div className="flex items-start gap-2">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">Duration</p>
+                    <p className="text-sm text-gray-900 font-medium">Feb 1, 2024 – Feb 15, 2024</p>
+                  </div>
+                </div>
+
+                {/* Industry */}
+                {project.industry && (
+                  <div className="flex items-start gap-2">
+                    <Building className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Industry</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.industry}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Coordinator */}
+                {project.assignedCoordinator && (
+                  <div className="flex items-start gap-2">
+                    <User className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Coordinator</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.assignedCoordinator.name}</p>
+                    </div>
+                  </div>
+                )}
+                {/* Contact Person */}
+                {project.contactPerson && (
+                  <div className="flex items-start gap-2 pr-6">
+                    <User className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Contact Person</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
+                      {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1398,15 +1456,13 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
             {/* Stats Section - Hidden for execution team and only show for WIP status */}
             {user?.userType !== 'execution-team' && projectStatus === 'WIP' && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-
                 <div className="flex-shrink-0   flex items-center gap-3 justify-start">
                   <PieChart
                     percentage={30}
                     size={100}
-
                   />
                   <div>
-                    <h2>42/60  <br/> windows completed</h2>
+                    <h2>42/60  <br /> windows completed</h2>
                   </div>
                 </div>
 

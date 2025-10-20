@@ -261,8 +261,6 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
                           </div>
                         </div>
                       )}
-
-
                     </div>
                   </div>
                 </div>
