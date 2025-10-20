@@ -4,6 +4,7 @@ import { Button } from '../../../../common/components/Button';
 import { useSidebar } from '../../../../contexts/SidebarContext';
 import FormField from 'common/components/FormField';
 import { Form, Formik } from 'formik';
+import CustomDataTable from 'common/components/CustomDataTable';
 
 interface WindowRow {
   id: string;
@@ -156,7 +157,7 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
         <div className="flex items-center justify-between mb-3">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-900 text-base">{window.windowLabel}</h3>
+              <h3 className="font-semibold text-gray-900 text-base">{window.windowLabel} </h3>
               <span className="text-sm text-gray-500">{window.product}</span>
             </div>
             <div className="flex items-center gap-2 mt-1">
@@ -351,133 +352,155 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
     );
   };
 
+  const columns = [
+    {
+      name: 'Window',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <input
+          type="text"
+          value={row.windowLabel}
+          onChange={(e) => handleWindowChange(row.id, 'windowLabel', e.target.value)}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        />
+      </div>
+    },
+    {
+      name: 'Width',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <input
+          type="number"
+          value={row.width}
+          onChange={(e) => handleWindowChange(row.id, 'width', parseInt(e.target.value) || 0)}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        />
+      </div>
+    },
+    {
+      name: 'Length',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <input
+          type="number"
+          value={row.length}
+          onChange={(e) => handleWindowChange(row.id, 'length', parseInt(e.target.value) || 0)}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        />
+      </div>
+    },
+    {
+      name: 'Product',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <select
+          value={row.product}
+          onChange={(e) => handleWindowChange(row.id, 'product', e.target.value)}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        >
+          {PRODUCTS.map((product) => (
+            <option key={product} value={product}>{product}</option>
+          ))}
+        </select>
+      </div>
+    },
+    {
+      name: 'Interior',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <select
+          value={row.interiorLayer}
+          onChange={(e) => handleWindowChange(row.id, 'interiorLayer', parseInt(e.target.value))}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        >
+          {LAYER_OPTIONS.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+      </div>
+    },
+    {
+      name: 'Exterior',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <select
+          value={row.exteriorLayer}
+          onChange={(e) => handleWindowChange(row.id, 'exteriorLayer', parseInt(e.target.value))}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        >
+          {LAYER_OPTIONS.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+      </div>
+    },
+    {
+      name: 'Color',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <select
+          value={row.color}
+          onChange={(e) => handleWindowChange(row.id, 'color', e.target.value)}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        >
+          {COLORS.map((color) => (
+            <option key={color} value={color}>{color}</option>
+          ))}
+        </select>
+      </div>
+    },
+    {
+      name: 'Tint',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <select
+          value={row.tint}
+          onChange={(e) => handleWindowChange(row.id, 'tint', e.target.value)}
+          className="w-full px-2 py-1 border border-gray-300 rounded "
+        >
+          {TINTS.map((tint) => (
+            <option key={tint} value={tint}>{tint}</option>
+          ))}
+        </select>
+      </div>
+    },
+    {
+      name: 'Stripping',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <input
+          type="checkbox"
+          checked={row.stripping}
+          onChange={(e) => handleWindowChange(row.id, 'stripping', e.target.checked)}
+          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        />
+      </div>
+    },
+    {
+      name: 'Actions',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <button
+          onClick={() => removeWindow(row.id)}
+          className="text-red-600 hover:text-red-800 p-1"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    }
+
+  ]
   // Desktop Table View
   const DesktopTableView = () => (
     <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
       <div className="overflow-x-auto max-h-96 overflow-y-auto">
-        <table className="w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50 sticky top-0">
-            <tr>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Window</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[60px]">Width</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[60px]">Length</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Product</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[70px]">Interior</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[70px]">Exterior</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[70px]">Color</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[70px]">Tint</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Stripping</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {formData.windows.map((window) => (
-              <tr key={window.id}>
-                <td className="px-3 py-3">
-                  <input
-                    type="text"
-                    value={window.windowLabel}
-                    onChange={(e) => handleWindowChange(window.id, 'windowLabel', e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </td>
-                <td className="px-3 py-3">
-                  <input
-                    type="number"
-                    value={window.width}
-                    onChange={(e) => handleWindowChange(window.id, 'width', parseInt(e.target.value) || 0)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </td>
-                <td className="px-3 py-3">
-                  <input
-                    type="number"
-                    value={window.length}
-                    onChange={(e) => handleWindowChange(window.id, 'length', parseInt(e.target.value) || 0)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </td>
-                <td className="px-3 py-3">
-                  <select
-                    value={window.product}
-                    onChange={(e) => handleWindowChange(window.id, 'product', e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {PRODUCTS.map((product) => (
-                      <option key={product} value={product}>{product}</option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-3 py-3">
-                  <select
-                    value={window.interiorLayer}
-                    onChange={(e) => handleWindowChange(window.id, 'interiorLayer', parseInt(e.target.value))}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {LAYER_OPTIONS.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-3 py-3">
-                  <select
-                    value={window.exteriorLayer}
-                    onChange={(e) => handleWindowChange(window.id, 'exteriorLayer', parseInt(e.target.value))}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {LAYER_OPTIONS.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-3 py-3">
-                  <select
-                    value={window.color}
-                    onChange={(e) => handleWindowChange(window.id, 'color', e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {COLORS.map((color) => (
-                      <option key={color} value={color}>{color}</option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-3 py-3">
-                  <select
-                    value={window.tint}
-                    onChange={(e) => handleWindowChange(window.id, 'tint', e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {TINTS.map((tint) => (
-                      <option key={tint} value={tint}>{tint}</option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-3 py-3 text-center">
-                  <input
-                    type="checkbox"
-                    checked={window.stripping}
-                    onChange={(e) => handleWindowChange(window.id, 'stripping', e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                </td>
-                <td className="px-3 py-3 text-center">
-                  <button
-                    onClick={() => removeWindow(window.id)}
-                    className="text-red-600 hover:text-red-800 p-1"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <CustomDataTable title={''} columns={columns} data={formData?.windows} selectableRows={undefined} pagination={false} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
       </div>
     </div>
   );
 
   return (
-    <div className="space-y-6">
+    <div className="">
       <style>{`
         @media (max-width: 640px) {
           .mobile-touch-target {
@@ -496,20 +519,40 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
         }
       `}</style>
       {/* Header */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">Windows Configuration</h2>
+      <div className="mb-4 mt-0">
+        <div className='flex justify-between items-center mb-4'>
+          <h2 className="text-lg font-semibold text-gray-900">Windows Configuration</h2>
+          {showSetupButton ? 
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              className="w-full sm:w-auto mobile-touch-target"
+            >
+              Setup Windows
+            </Button>:
+            <Button
+              variant="secondary"
+              onClick={handleSave}
+              className="w-full sm:w-auto mobile-touch-target"
+            >
+             <Trash2/>  Remove
+            </Button>
+          }
+        </div>
+
         <div className="flex flex-col items-center justify-between sm:flex-row gap-2 sm:gap-3">
           <div className='flex-1'>
-          <Formik
-            initialValues={{ building: "" }}
-            onSubmit={(vals) => console.log(vals)}
-          >
-            <Form>
-              <FormField className='mb-0' label="" name="building" type="text" placeholder='Enter building name (e.g., Main Building, Office Block, etc.)' />
-            </Form>
-          </Formik>
+            <Formik
+              initialValues={{ building: "" }}
+              onSubmit={(vals) => console.log(vals)}
+            >
+              <Form>
+                <FormField className='mb-0' label="" name="building" type="text" placeholder='Enter building name (e.g., Main Building, Office Block, etc.)' />
+              </Form>
+            </Formik>
+
           </div>
-       
+
           <div className='flex gap-2'>
             <Button
               variant="secondary"
@@ -534,8 +577,6 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
 
         </div>
       </div>
-
-
 
 
       {/* Error Display */}
@@ -578,27 +619,6 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
       ) : (
         <DesktopTableView />
       )}
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
-        <Button
-          variant="secondary"
-          onClick={onCancel}
-          className="w-full sm:w-auto mobile-touch-target"
-        >
-          Cancel
-        </Button>
-        {showSetupButton && (
-          <Button
-            variant="primary"
-            onClick={handleSave}
-            className="w-full sm:w-auto mobile-touch-target"
-          >
-            Setup Windows
-          </Button>
-        )}
-      </div>
-
     </div>
   );
 };

@@ -1119,7 +1119,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
       `}</style>
       {/* Header Section */}
       <Card className="">
-        <div className="py-4 px-4 sm:py-6 sm:px-6">
+        <div className="">
           <div className="flex flex-col gap-4  sm:gap-6">
             {/* Page Header */}
             <div className="flex flex-col  pb-3  gap-6 sm:gap-5">
@@ -1137,7 +1137,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       {projectStatus}
                     </span>
                   </div>
-            
+
 
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -1151,14 +1151,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
                       >
                         Mark for QF
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        icon={Edit}
-                        className="px-3 py-2 text-sm bg-gray-200 w-full sm:w-auto"
-                        title={!windowsSetup ? "Please set up windows before marking for QF" : ""}
-                      >
-                        Edit
                       </Button>
                     </>
 
@@ -1459,7 +1451,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 <div className="flex-shrink-0   flex items-center gap-3 justify-start">
                   <PieChart
                     percentage={30}
-                    size={100}
+                    size={80}
                   />
                   <div>
                     <h2>42/60  <br /> windows completed</h2>
@@ -1646,18 +1638,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   {/* Second Windows Setup Interface - Only show when not setup and not Role 3 */}
                   {!windowsSetup && showBuildingsForm && user?.userType !== 'execution-team' && (
                     <Card className="">
-                      {/* Building Name Input */}
-                      <div className="space-y-2 mb-6">
-                        <label htmlFor="building-name" className="block text-sm font-medium text-gray-700">
-                          Building Name
-                        </label>
-                        <input
-                          type="text"
-                          id="building-name"
-                          placeholder="Enter building name (e.g., Main Building, Office Block, etc.)"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                        />
-                      </div>
                       <MobileWindowsConfiguration onSave={handleSetupSave} onCancel={() => setShowBuildingsForm(false)} onAddBuilding={handleAddBuilding} showSetupButton={false} />
                     </Card>
                   )}
@@ -2123,7 +2103,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
             {activeTab === 'team' && (
               <div className="space-y-6">
-                <Card>
+                <Card className=''>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Members</h3>
                   <div className="space-y-4">
                     {[
@@ -2134,7 +2114,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                       { name: 'David Chen', role: 'Installer', phone: '+1-555-0127' },
                       { name: 'Emily Rodriguez', role: 'Safety Coordinator', phone: '+1-555-0128' }
                     ].map((member, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg">
+                      <Card key={index} className="flex items-center gap-3  bg-white">
                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                           <span className="text-sm font-medium text-gray-600">
                             {member.name.split(' ').map(n => n[0]).join('')}
@@ -2142,12 +2122,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         </div>
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">{member.name}</p>
-                          <p className="text-sm text-gray-500">{member.role}</p>
+                          <p className="text-xs text-gray-500">{member.role} <span>({member.phone})</span></p>
                         </div>
-                        <div className="text-sm text-gray-600">
-                          {member.phone}
-                        </div>
-                      </div>
+
+                      </Card>
                     ))}
                   </div>
                 </Card>
