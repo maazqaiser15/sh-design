@@ -244,8 +244,8 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
                                 className="p-2 bg-gray-200 rounded-lg"
                               >
                                 <div className=" flex">
-                                  <div>
-                                    <File size={40} className=" text-gray-400" />
+                                  <div className='bg-blue-100 p-2 rounded-lg mr-2 flex items-center justify-center'>
+                                    <File size={30} className=" text-blue-500" />
                                   </div>
                                   <div className='flex flex-col'>
                                     <span className="text-gray-700 text-xs truncate">

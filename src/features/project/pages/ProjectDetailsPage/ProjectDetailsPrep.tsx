@@ -1403,7 +1403,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     {/* Upload Document Button */}
                     <label
                       htmlFor="document-upload"
-                      className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="bg-white border  border-[#d0d5dd] border-dashed text-[#475467] px-3 py-1.5 rounded-lg font-semibold text-xs leading-5 flex items-center gap-1.5 hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -1419,7 +1419,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     {uploadedDocuments.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
                         <div className="flex items-center gap-3 flex-1">
-                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <div className="w-8 h-8 bg-blue-100  rounded-lg flex items-center justify-center">
                             <FileIcon />
                           </div>
                           <div className="flex-1 min-w-0">
