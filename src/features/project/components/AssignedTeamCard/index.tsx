@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '../../../../common/components/Button';
 import { TeamCardsGrid } from '../TeamCard';
 import { Card } from 'common/components/Card';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Edit } from 'lucide-react';
 
 // Icons from Figma design
 const CheckCircleIcon = () => (
@@ -136,12 +136,13 @@ export const AssignedTeamCard: React.FC<AssignedTeamCardProps> = ({
           )
         )}
 
+
         {/* Add Team Button - Always show */}
         <button
           onClick={onAddMember}
           className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
         >
-          <PlusIcon />
+         {!hasTeam ?  <PlusIcon /> : <Edit size={18}/>}
         </button>
       </div>
     );

@@ -242,6 +242,11 @@ export const ProjectDetailsPrep: React.FC = () => {
   const [showContractRequiredModal, setShowContractRequiredModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false);
+  // Document name editing modal state
+  const [uploadedDocumentNames, setUploadedDocumentNames] = useState<string[]>([]);
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [pendingRenameIndex, setPendingRenameIndex] = useState<number | null>(null);
+  const [pendingRenameValue, setPendingRenameValue] = useState('');
   const [projectForCoordinatorAssignment, setProjectForCoordinatorAssignment] = useState<ProjectListItem | null>(null);
   const { user, hasPermission } = useAuth();
   // Notes State
@@ -545,10 +550,26 @@ export const ProjectDetailsPrep: React.FC = () => {
   // Handle document upload
   const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
+    if (files && files.length > 0) {
       const newFiles = Array.from(files);
-      setUploadedDocuments(prev => [...prev, ...newFiles]);
-      showToast(`${newFiles.length} document(s) uploaded successfully!`);
+      setUploadedDocuments(prev => {
+        const updated = [...prev, ...newFiles];
+        // Initialize names for new files (default to file.name)
+        setUploadedDocumentNames(prevNames => {
+          const names = [...prevNames];
+          newFiles.forEach(f => names.push(f.name));
+          return names;
+        });
+        return updated;
+      });
+
+      // Open rename modal for the first newly added file (single-file UX)
+      const firstNewIndex = uploadedDocuments.length; // index where first new file lands
+      setPendingRenameIndex(firstNewIndex);
+      setPendingRenameValue(newFiles[0].name);
+      setIsRenameModalOpen(true);
+
+      showToast(`${newFiles.length} document(s) selected`);
     }
     // Reset the input value so the same file can be uploaded again if needed
     event.target.value = '';
@@ -573,6 +594,12 @@ export const ProjectDetailsPrep: React.FC = () => {
     if (files.length > 0) {
       const newFiles = Array.from(files);
       setUploadedDocuments(prev => [...prev, ...newFiles]);
+      // Initialize names for new files (default to file.name)
+      setUploadedDocumentNames(prevNames => {
+        const names = [...prevNames];
+        newFiles.forEach(f => names.push(f.name));
+        return names;
+      });
       showToast(`${newFiles.length} document(s) uploaded successfully!`);
     }
   };
@@ -580,6 +607,7 @@ export const ProjectDetailsPrep: React.FC = () => {
   // Handle document removal
   const handleRemoveDocument = (index: number) => {
     setUploadedDocuments(prev => prev.filter((_, i) => i !== index));
+    setUploadedDocumentNames(prev => prev.filter((_, i) => i !== index));
     showToast('Document removed successfully!');
   };
 
@@ -940,7 +968,7 @@ export const ProjectDetailsPrep: React.FC = () => {
       {/* Main Content */}
       <div className="pb-6">
         {/* Project Header Card */}
-        <div className='rounded-2xl px-2 py-3 mb-6 bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-between'>
+        <div className='rounded-2xl px-6 py-3 mb-6 bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-between'>
           <div className='flex justify-start items-center gap-2'>
             <Calendar size={20} className='text-[#1F3A8A]'/> <p className='mb-0 text-[#1F3A8A] font-sm'>You haven’t assigned a coordinator or timeline yet.</p>
           </div>
@@ -987,7 +1015,7 @@ export const ProjectDetailsPrep: React.FC = () => {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
                   <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation</h1>
-                  <div className="font-bold text-sm text-blue-700 leading-5 px-2 py-1.5 rounded-full  bg-blue-100">
+                  <div className="font-bold text-xs text-blue-700 leading-5 px-2 py-1.5 rounded-full  bg-blue-100">
                     <p>PV90</p>
                   </div>
                 </div>
@@ -1396,22 +1424,37 @@ export const ProjectDetailsPrep: React.FC = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                              {file.name}
+                              {uploadedDocumentNames[index] || file.name}
                             </p>
                             <p className="text-xs text-gray-500">
                               {formatFileSize(file.size)}
                             </p>
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleRemoveDocument(index)}
-                          className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
-                          title="Remove document"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setPendingRenameIndex(index);
+                              setPendingRenameValue(uploadedDocumentNames[index] || file.name);
+                              setIsRenameModalOpen(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors"
+                            title="Rename document"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleRemoveDocument(index)}
+                            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                            title="Remove document"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1662,6 +1705,56 @@ export const ProjectDetailsPrep: React.FC = () => {
         onAssignCoordinator={handleAssignCoordinator}
         userRole={user?.userType as 'executive' | 'project-coordinator'}
       />
+
+      {/* Rename Uploaded Document Modal */}
+      <Modal
+        isOpen={isRenameModalOpen}
+        onClose={() => setIsRenameModalOpen(false)}
+        title="Rename Document"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Current file</label>
+            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded">
+              {typeof pendingRenameIndex === 'number' && uploadedDocuments[pendingRenameIndex]
+                ? uploadedDocuments[pendingRenameIndex].name
+                : ''}
+            </div>
+          </div>
+          <div>
+            <label htmlFor="rename-input" className="block text-sm font-medium text-gray-700 mb-1">Display name</label>
+            <input
+              id="rename-input"
+              type="text"
+              value={pendingRenameValue}
+              onChange={(e) => setPendingRenameValue(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <p className="mt-1 text-xs text-gray-500">This name will be shown in the documents list.</p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setIsRenameModalOpen(false)}>Cancel</Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (typeof pendingRenameIndex === 'number' && pendingRenameValue.trim()) {
+                  setUploadedDocumentNames(prev => {
+                    const names = [...prev];
+                    names[pendingRenameIndex] = pendingRenameValue.trim();
+                    return names;
+                  });
+                }
+                setIsRenameModalOpen(false);
+                setPendingRenameIndex(null);
+                setPendingRenameValue('');
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
