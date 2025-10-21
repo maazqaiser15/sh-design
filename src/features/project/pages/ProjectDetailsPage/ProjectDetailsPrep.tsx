@@ -208,8 +208,6 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, actionBu
 export const ProjectDetailsPrep: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { showToast } = useToast();
-  const navigate = useNavigate();
-
   const [project, setProject] = useState<ProjectDetails>(MOCK_PROJECT_DETAILS);
   const [preparationData, setPreparationData] = useState<PreparationStageData>(MOCK_PREPARATION_DATA);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -259,65 +257,8 @@ export const ProjectDetailsPrep: React.FC = () => {
 
   // Check if all stages are completed
   const allStagesCompleted = isAssignedTeamCompleted && isTravelAccommodationCompleted && isTrailerCompleted;
-
-  // Trailer & Films State
-  const [inventoryItems, setInventoryItems] = useState([
-    { id: 'sw600br', name: 'SW600BR', required: 1, inTrailer: 0, needToShip: 1 },
-    { id: 'sw600rc-plus', name: 'SW600RC+', required: 2, inTrailer: 0, needToShip: 2 },
-    { id: 'sw600rc', name: 'SW600RC', required: 3, inTrailer: 0, needToShip: 3 },
-    { id: 'sw440rc', name: 'SW440RC', required: 1, inTrailer: 0, needToShip: 1 },
-    { id: 'sw600fe', name: 'SW600FE', required: 2, inTrailer: 0, needToShip: 2 },
-    { id: 'sw450sr', name: 'SW450SR', required: 1, inTrailer: 0, needToShip: 1 },
-    { id: 'tint-only', name: 'Tint Only', required: 2, inTrailer: 0, needToShip: 2 },
-    { id: 'kevlar', name: 'Kevlar', required: 1, inTrailer: 0, needToShip: 1 }
-  ]);
-  const [showAllFilmTypes, setShowAllFilmTypes] = useState(false);
   const [uploadedReceipts, setUploadedReceipts] = useState<File[]>([]);
-  const [showReceiptUploadModal, setShowReceiptUploadModal] = useState(false);
 
-
-
-  // Handle checklist item toggle
-  const handleToggleChecklistItem = (itemId: string) => {
-    setPreparationData(prev => ({
-      ...prev,
-      checklist: prev.checklist.map(item => {
-        if (item.id === itemId) {
-          const updated = { ...item, completed: !item.completed };
-          if (updated.completed) {
-            updated.completedAt = new Date().toISOString();
-            updated.completedBy = 'Current User';
-          } else {
-            updated.completedAt = undefined;
-            updated.completedBy = undefined;
-          }
-          return updated;
-        }
-        return item;
-      })
-    }));
-  };
-
-  // Handle document upload
-  const handleUploadDocument = (file: File, category: string) => {
-    const newDocument = {
-      id: `doc-${Date.now()}`,
-      name: file.name,
-      type: file.type,
-      label: category as any,
-      size: file.size,
-      url: URL.createObjectURL(file),
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: 'Current User',
-      projectId: projectId || '',
-      category: category as any
-    };
-
-    setPreparationData(prev => ({
-      ...prev,
-      documents: [...prev.documents, newDocument]
-    }));
-  };
 
 
 
@@ -543,9 +484,6 @@ export const ProjectDetailsPrep: React.FC = () => {
 
 
 
-  const handleEditTeam = () => {
-    setShowEditTeamModal(true);
-  };
 
   // Handle document upload
   const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -643,32 +581,6 @@ export const ProjectDetailsPrep: React.FC = () => {
     }));
   };
 
-
-
-  // // Handle logistics assignment
-  // const handleAssignLogistics = () => {
-  //   // Mock logistics assignment
-  //   const logistics = {
-  //     partner: 'LogiCorp Solutions',
-  //     eta: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-  //     notes: 'Equipment delivery scheduled for early morning',
-  //     contactPerson: 'Jane Doe',
-  //     contactPhone: '+1-555-0199'
-  //   };
-
-  //   setPreparationData(prev => ({
-  //     ...prev,
-  //     logistics,
-  //     checklist: prev.checklist.map(item =>
-  //       item.label === 'Logistics Confirmed'
-  //         ? { ...item, completed: true, completedAt: new Date().toISOString(), completedBy: 'Current User' }
-  //         : item
-  //     )
-  //   }));
-  // };
-
-
-
   const handleSaveLogistics = (logisticsData: Omit<LogisticsItem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>) => {
     const newLogistics: LogisticsItem = {
       ...logisticsData,
@@ -706,26 +618,6 @@ export const ProjectDetailsPrep: React.FC = () => {
     }));
   };
 
-  const handleDeleteLogistics = (id: string) => {
-    setPreparationData(prev => ({
-      ...prev,
-      logisticsTravel: {
-        ...prev.logisticsTravel,
-        logistics: prev.logisticsTravel.logistics.filter(item => item.id !== id)
-      }
-    }));
-  };
-
-  // Handle travel management
-  const handleAddTravel = () => {
-    setEditingTravel(null);
-    setShowAddTravelModal(true);
-  };
-
-  const handleEditTravel = (travel: TravelPlan) => {
-    setEditingTravel(travel);
-    setShowEditTravelModal(true);
-  };
 
   const handleSaveTravel = (travelData: Omit<TravelPlan, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>) => {
     const newTravel: TravelPlan = {
@@ -762,23 +654,6 @@ export const ProjectDetailsPrep: React.FC = () => {
         )
       }
     }));
-  };
-
-  const handleDeleteTravel = (id: string) => {
-    setPreparationData(prev => ({
-      ...prev,
-      logisticsTravel: {
-        ...prev.logisticsTravel,
-        travelPlans: prev.logisticsTravel.travelPlans.filter(item => item.id !== id)
-      }
-    }));
-  };
-
-
-
-  // Handle edit dates
-  const handleEditDates = () => {
-    setShowDateModal(true);
   };
 
   // Handle date confirmation
@@ -872,20 +747,6 @@ export const ProjectDetailsPrep: React.FC = () => {
     });
   };
 
-  // Mock project film requirements
-  const projectFilmRequirements = [
-    { sheetType: 'BR', required: 30, available: 0, status: 'missing' as const },
-    { sheetType: 'Riot+', required: 25, available: 0, status: 'missing' as const },
-    { sheetType: 'Riot', required: 20, available: 0, status: 'missing' as const },
-    { sheetType: 'Riot -', required: 15, available: 0, status: 'missing' as const },
-    { sheetType: 'FER', required: 12, available: 0, status: 'missing' as const },
-    { sheetType: 'Smash', required: 10, available: 0, status: 'missing' as const },
-    { sheetType: 'Tint NI', required: 8, available: 0, status: 'missing' as const },
-    { sheetType: 'Tint Incl', required: 6, available: 0, status: 'missing' as const },
-    { sheetType: 'Anchoring', required: 5, available: 0, status: 'missing' as const },
-    { sheetType: 'Kevlar', required: 3, available: 0, status: 'missing' as const },
-    { sheetType: 'Stripping', required: 2, available: 0, status: 'missing' as const }
-  ];
 
   // Check if project is in preparation stage
 
@@ -970,7 +831,7 @@ export const ProjectDetailsPrep: React.FC = () => {
         {/* Project Header Card */}
         <div className='rounded-2xl px-6 py-3 mb-6 bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-between'>
           <div className='flex justify-start items-center gap-2'>
-            <Calendar size={20} className='text-[#1F3A8A]'/> <p className='mb-0 text-[#1F3A8A] font-sm'>You haven’t assigned a coordinator or timeline yet.</p>
+            <Calendar size={20} className='text-[#1F3A8A]' /> <p className='mb-0 text-[#1F3A8A] font-sm'>You haven’t assigned a coordinator or timeline yet.</p>
           </div>
           <Button
             className='text-[#043A65]'
@@ -1014,7 +875,7 @@ export const ProjectDetailsPrep: React.FC = () => {
               {/* Project Name, Status, and Action Buttons */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
-                  <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation</h1>
+                  <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation <span className='text-gray-500 font-normal text-lg  ps-1'>(Testing Subtitle)</span></h1>
                   <div className="font-bold text-xs text-blue-700 leading-5 px-2 py-1.5 rounded-full  bg-blue-100">
                     <p>PV90</p>
                   </div>
@@ -1114,7 +975,19 @@ export const ProjectDetailsPrep: React.FC = () => {
                   <div className="flex items-start gap-2 pr-6">
                     <User className="w-4 h-4 text-blue-600" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">Contact Person</p>
+                      <p className="text-xs text-gray-500 font-medium">Primary Contact Person</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
+                      {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+                    </div>
+                  </div>
+                )}
+
+                {project.contactPerson && (
+                  <div className="flex items-start gap-2 pr-6">
+                    <User className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Secondary Contact Person</p>
                       <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
                       {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
                       {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}

@@ -208,7 +208,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                 </div>
               </div>
             </div>
-
+            <div className='bg-white rounded-lg p-2 text-center text-xs'>Associated Project</div>
           </Card>
         ))}
       </div>

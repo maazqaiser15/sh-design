@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   CheckCircle,
   Clock,
-  AlertCircle,
   Edit,
   Plus,
   Eye,
@@ -55,6 +54,9 @@ import { Trailer } from '../../../../types';
 import { EXPANDED_TRAILER_DATA } from '../../../../pages/Trailers/expandedTrailerData';
 import { ProjectListItem } from '../../types';
 import { getProgressBarColor } from '../../utils';
+import SearchField from 'common/components/SearchField';
+import SelectField from 'common/components/SelectField';
+import CustomDataTable from 'common/components/CustomDataTable';
 
 interface ProjectDetailsWIPProps {
   projectStatus?: 'WIP' | 'QF' | 'QC' | 'Completed';
@@ -1094,6 +1096,198 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
     }
   };
 
+
+
+  const columns = [
+
+    {
+      name: <div className='text-sm '>WINDOW</div>,
+      selector: (row: any) => { row.name },
+      cell: (row: any) => <div>
+        <div className="text-sm font-medium text-gray-900 truncate">{row.windowName}</div>
+        <div className="text-xs text-gray-500">{row.createdAt?.toLocaleDateString() || 'Unknown'}</div>
+      </div>,
+      width: '100px'
+    },
+    {
+      name: <div className='text-sm '>WIDTH</div>,
+      selector: (row: any) => { row.length },
+      cell: (row: any) => <div>{row.width}</div>,
+      width: '80px'
+    },
+    {
+      name: <div className='text-sm '> LENGTH</div>,
+      selector: (row: any) => { row.width },
+      cell: (row: any) => <div>{row.width}</div>,
+      width: '92px'
+    },
+    {
+      name: <div className='text-sm '>PRODUCT</div>,
+      selector: (row: any) => { row.filmType },
+      cell: (row: any) => <div>{row.filmType}</div>,
+      width: '100px'
+    },
+    {
+      name: <div className='text-sm '> INT</div>,
+      selector: (row: any) => { row.interiorCount },
+      cell: (row: any) => <div>{row.interiorCount || 0}</div>,
+      width: '55px'
+    },
+    {
+      name: <div className='text-sm '>EXT </div>,
+      selector: (row: any) => { row.exteriorCount },
+      cell: (row: any) => <div>{row.exteriorCount || 0}</div>,
+      width: '57px'
+    },
+    {
+      name: <div className='text-sm '>TOTAL </div>,
+      selector: (row: any) => { row.total },
+      cell: (row: any) => <div>{(row.interiorCount || 0) + (row.exteriorCount || 0)}</div>,
+      width: '74px'
+    },
+    {
+      name: <div className='text-sm '>COLOR</div>,
+      selector: (row: any) => { row.color },
+      cell: (row: any) => <div>{row.color || 'N/A'}</div>,
+      width: '80px'
+    },
+    {
+      name: <div className='text-sm '> TINT</div>,
+      selector: (row: any) => { row.tint },
+      cell: (row: any) => <div>{row.tint || 'N/A'}</div>,
+      width: '65px'
+    },
+    {
+      name: <div className='text-sm '>STRIP</div>,
+      selector: (row: any) => { row.stripping },
+      cell: (row: any) => <div> {row.stripping ? 'Yes' : 'No'}</div>,
+      width: '72px'
+    },
+    {
+      name: <div className='text-sm '>STATUS</div>,
+      selector: (row: any) => { row.status },
+      cell: (row: any) => <StatusBadge key={`${row.id}-${updateCounter}`} status={row.status} />,
+      width: '93px'
+    },
+    {
+      name: <div className='text-sm '>ACTIONS</div>,
+      selector: (row: any) => { row.name },
+      cell: (row: any) => <div className="flex items-center justify-end gap-2">
+        <div className="flex space-x-1 md:hidden">
+          {user?.userType !== 'execution-team' && (
+            <>
+              <button
+                onClick={() => {
+                  handleViewWindow(row);
+                }}
+                className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
+              >
+                <Eye className="w-3 h-3" />
+              </button>
+              <button
+                onClick={() => {
+                  handleEditWindow(row);
+                }}
+                className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
+              >
+                <Edit className="w-3 h-3" />
+              </button>
+              <button
+                onClick={() => {
+                  handleDeleteWindow(row.id);
+                }}
+                className="text-gray-400 hover:text-red-600 p-2 touch-manipulation"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </>
+          )}
+          {getActionButton(row) && (
+            <button
+              onClick={() => {
+                getActionButton(row)?.action();
+              }}
+              className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${getActionButton(row)?.className}`}
+            >
+              <CheckCircle2 className="w-3 h-3" />
+              <span>{getActionButton(row)?.text || 'Complete'}</span>
+            </button>
+          )}
+        </div>
+
+
+        <div className="hidden md:block relative dropdown-container">
+          <button
+            onClick={() => {
+
+              const dropdown = document.getElementById(`dropdown-${row.id}`);
+              if (dropdown) {
+                dropdown.classList.toggle('hidden');
+              }
+            }}
+            className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
+          >
+            <MoreVertical className="w-4 h-4" />
+          </button>
+          <div
+            id={`dropdown-${row.id}`}
+            className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+          >
+            <div className="py-1">
+              {user?.userType !== 'execution-team' && (
+                <>
+                  <button
+                    onClick={() => {
+                      handleViewWindow(row);
+                      document.getElementById(`dropdown-${row.id}`)?.classList.add('hidden');
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
+                  >
+                    <Eye className="w-3 h-3" />
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleEditWindow(row);
+                      document.getElementById(`dropdown-${row.id}`)?.classList.add('hidden');
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
+                  >
+                    <Edit className="w-3 h-3" />
+                    Edit Window
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDeleteWindow(row.id);
+                      document.getElementById(`dropdown-${row.id}`)?.classList.add('hidden');
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Delete Window
+                  </button>
+                </>
+              )}
+              {getActionButton(row) && (
+                <button
+                  onClick={() => {
+                    getActionButton(row)?.action();
+                    document.getElementById(`dropdown-${row.id}`)?.classList.add('hidden');
+                  }}
+                  className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(row)?.className}`}
+                >
+                  <CheckCircle2 className="w-3 h-3" />
+                  {getActionButton(row)?.text}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>,
+      width: '100px'
+    }
+  ]
+
   return (
     <div className="min-h-screen">
       <style>{`
@@ -1463,7 +1657,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 <div className="flex flex-col items-start gap-2 sm:gap-3">
                   <div className="flex items-center gap-1 sm:gap-2">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                      <Calendar className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                      <Calendar className="w-3 h-3 sm:w-5 sm:h-5 text-blue-600" />
                     </div>
                     <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.teamOnSite}</span>
                   </div>
@@ -1475,7 +1669,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 <div className="flex flex-col items-start gap-2 sm:gap-3 ">
                   <div className="flex items-center gap-1 sm:gap-2">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-100 rounded-md flex items-center justify-center">
-                      <Calendar className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                      <Calendar className="w-3 h-3 sm:w-5 sm:h-5 text-blue-600" />
                     </div>
                     <span className="text-lg sm:text-xl font-semibold text-gray-700">{projectMetrics.completedLayers}/{projectMetrics.totalLayers}</span>
                   </div>
@@ -1486,7 +1680,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 <div className="flex flex-col items-start gap-2 sm:gap-3">
                   <div className="flex items-center gap-1 sm:gap-2">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                      <Calendar className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                      <Calendar className="w-3 h-3 sm:w-5 sm:h-5 text-blue-600" />
                     </div>
                     <span className="text-lg sm:text-xl font-semibold text-gray-700">{project.windowsCompleted}/{projectMetrics.total}</span>
                   </div>
@@ -1570,7 +1764,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </Card>
@@ -1658,7 +1851,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                   ) : windowsSetup ? (
                     <>
                       {/* Window Management Header */}
-                      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                      <Card className="">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-4">
                           <h3 className="text-base sm:text-lg font-semibold text-gray-900">Window Management</h3>
                           <div className="flex items-center gap-2 sm:gap-3">
@@ -1675,59 +1868,71 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
 
                         {/* Search and Filters */}
                         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                          <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <input
-                              type="text"
-                              placeholder="Search by window name"
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                            />
+
+                          <div className='flex-1'>
+                            <SearchField iconSize={20} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={'Search by name...'} className='border border-gray-300 rounded-lg' />
                           </div>
 
+
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto">
-                            <select
-                              value={filters.filmType}
-                              onChange={(e) => handleFilterChange('filmType', e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                            >
-                              <option value="all">All Film Types</option>
-                              <option value="BR">BR</option>
-                              <option value="Riot">Riot</option>
-                              <option value="Riot+">Riot+</option>
-                            </select>
 
-                            <select
-                              value={filters.status}
-                              onChange={(e) => handleFilterChange('status', e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                            >
-                              <option value="all">All Status</option>
-                              <option value="Pending">Pending</option>
-                              <option value="In Progress">In Progress</option>
-                              <option value="Complete">Complete</option>
-                              <option value="Reinstallation Needed">Reinstallation Needed</option>
-                            </select>
+                            <SelectField value={filters.filmType} inputClassName={'border border-gray-300'} onChange={(e) => handleFilterChange('filmType', e.target.value)} placeholder={'All Film Types'} options={[{
+                              value: 'all',
+                              label: 'All Film Types'
+                            }, {
+                              value: 'BR',
+                              label: 'BR'
+                            }, {
+                              value: 'Riot',
+                              label: 'Riot'
+                            }, {
+                              value: 'Riot+',
+                              label: 'Riot+'
+                            }]} />
 
-                            <select
-                              value={filters.building}
-                              onChange={(e) => handleFilterChange('building', e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm col-span-2 sm:col-span-1"
-                            >
-                              <option value="all">All Buildings</option>
-                              <option value="Main Building">Main Building</option>
-                              <option value="Office Block">Office Block</option>
-                              <option value="Warehouse">Warehouse</option>
-                              <option value="Annex">Annex</option>
-                            </select>
+                            <SelectField value={filters.status} inputClassName={'border border-gray-300'} onChange={(e) => handleFilterChange('status', e.target.value)} placeholder={'All Status'} options={[{
+                              value: 'all',
+                              label: 'All Status'
+                            }, {
+                              value: 'Pending',
+                              label: 'Pending'
+                            }, {
+                              value: 'In Progress',
+                              label: 'In Progress'
+                            }, {
+                              value: 'Complete',
+                              label: 'Complete'
+                            },
+                            {
+                              value: 'Reinstallation Needed',
+                              label: 'Reinstallation Needed'
+                            }]} />
+
+
+                            <SelectField value={filters.building} inputClassName={'border border-gray-300'} onChange={(e) => handleFilterChange('building', e.target.value)} placeholder={'All Buildings'} options={[{
+                              value: 'all',
+                              label: 'All Buildings'
+                            }, {
+                              value: 'Main Building',
+                              label: 'Main Building'
+                            }, {
+                              value: 'Office Block',
+                              label: 'Office Block'
+                            }, {
+                              value: 'Warehouse',
+                              label: 'Warehouse'
+                            },
+                            {
+                              value: 'Annex',
+                              label: 'Annex'
+                            }]} />
                           </div>
 
                           <div className="hidden sm:flex items-center gap-2 justify-center sm:justify-start">
                             <button
                               onClick={() => setViewMode('list')}
                               className={`p-2 rounded-lg ${viewMode === 'list'
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-[#0D76BF] text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                             >
@@ -1736,7 +1941,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                             <button
                               onClick={() => setViewMode('grid')}
                               className={`p-2 rounded-lg ${viewMode === 'grid'
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-[#0D76BF] text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                             >
@@ -1753,346 +1958,189 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         ) : viewMode === 'list' && !isMobile ? (
                           <div className="overflow-x-auto -mx-4 sm:mx-0 mobile-scroll">
                             <div className="min-w-full px-4 sm:px-0">
-                              <table className="w-full min-w-[800px]">
-                                <thead>
-                                  <tr className="border-b border-gray-200">
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-32">WINDOW</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">WIDTH</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">LENGTH</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-24">PRODUCT</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">INT</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">EXT</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">TOTAL</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">COLOR</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-16">TINT</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">STRIP</th>
-                                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-900 w-20">STATUS</th>
-                                    <th className="text-right py-2 px-2 text-xs font-medium text-gray-900 w-20">ACTIONS</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {filteredWindows.map((window) => (
-                                    <tr key={window.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                      <td className="py-2 px-2 w-32">
-                                        <div>
-                                          <div className="text-sm font-medium text-gray-900 truncate">{window.windowName}</div>
-                                          <div className="text-xs text-gray-500">{window.createdAt?.toLocaleDateString() || 'Unknown'}</div>
-                                        </div>
-                                      </td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-20">{window.width}"</td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-20">{window.length}"</td>
-                                      <td className="py-2 px-2 w-24">
-                                        <span className="text-xs text-blue-600 font-medium truncate">{window.filmType}</span>
-                                      </td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 text-center">{window.interiorCount || 0}</td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 text-center">{window.exteriorCount || 0}</td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 font-semibold w-20 text-center">
-                                        {(window.interiorCount || 0) + (window.exteriorCount || 0)}
-                                      </td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 truncate">{window.color || 'N/A'}</td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-16 truncate">{window.tint || 'N/A'}</td>
-                                      <td className="py-2 px-2 text-xs text-gray-900 w-20 text-center">
-                                        {window.stripping ? 'Yes' : 'No'}
-                                      </td>
-                                      <td className="py-2 px-2 w-20">
-                                        <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
-                                      </td>
-                                      <td className="py-2 px-2 w-20">
-                                        <div className="flex items-center justify-end gap-2">
-                                          {/* Mobile: Direct action buttons */}
-                                          <div className="flex space-x-1 md:hidden">
-                                            {user?.userType !== 'execution-team' && (
-                                              <>
-                                                <button
-                                                  onClick={() => {
-                                                    handleViewWindow(window);
-                                                  }}
-                                                  className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
-                                                >
-                                                  <Eye className="w-3 h-3" />
-                                                </button>
-                                                <button
-                                                  onClick={() => {
-                                                    handleEditWindow(window);
-                                                  }}
-                                                  className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
-                                                >
-                                                  <Edit className="w-3 h-3" />
-                                                </button>
-                                                <button
-                                                  onClick={() => {
-                                                    handleDeleteWindow(window.id);
-                                                  }}
-                                                  className="text-gray-400 hover:text-red-600 p-2 touch-manipulation"
-                                                >
-                                                  <Trash2 className="w-3 h-3" />
-                                                </button>
-                                              </>
-                                            )}
-                                            {getActionButton(window) && (
-                                              <button
-                                                onClick={() => {
-                                                  getActionButton(window)?.action();
-                                                }}
-                                                className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${getActionButton(window)?.className}`}
-                                              >
-                                                <CheckCircle2 className="w-3 h-3" />
-                                                <span>{getActionButton(window)?.text || 'Complete'}</span>
-                                              </button>
-                                            )}
-                                          </div>
-
-                                          {/* Desktop: 3-dots menu */}
-                                          <div className="hidden md:block relative dropdown-container">
-                                            <button
-                                              onClick={() => {
-                                                // Toggle dropdown for this specific window
-                                                const dropdown = document.getElementById(`dropdown-${window.id}`);
-                                                if (dropdown) {
-                                                  dropdown.classList.toggle('hidden');
-                                                }
-                                              }}
-                                              className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
-                                            >
-                                              <MoreVertical className="w-4 h-4" />
-                                            </button>
-                                            <div
-                                              id={`dropdown-${window.id}`}
-                                              className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
-                                            >
-                                              <div className="py-1">
-                                                {user?.userType !== 'execution-team' && (
-                                                  <>
-                                                    <button
-                                                      onClick={() => {
-                                                        handleViewWindow(window);
-                                                        document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                      }}
-                                                      className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
-                                                    >
-                                                      <Eye className="w-3 h-3" />
-                                                      View Details
-                                                    </button>
-                                                    <button
-                                                      onClick={() => {
-                                                        handleEditWindow(window);
-                                                        document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                      }}
-                                                      className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
-                                                    >
-                                                      <Edit className="w-3 h-3" />
-                                                      Edit Window
-                                                    </button>
-                                                    <button
-                                                      onClick={() => {
-                                                        handleDeleteWindow(window.id);
-                                                        document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                      }}
-                                                      className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
-                                                    >
-                                                      <Trash2 className="w-3 h-3" />
-                                                      Delete Window
-                                                    </button>
-                                                  </>
-                                                )}
-                                                {getActionButton(window) && (
-                                                  <button
-                                                    onClick={() => {
-                                                      getActionButton(window)?.action();
-                                                      document.getElementById(`dropdown-${window.id}`)?.classList.add('hidden');
-                                                    }}
-                                                    className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(window)?.className}`}
-                                                  >
-                                                    <CheckCircle2 className="w-3 h-3" />
-                                                    {getActionButton(window)?.text}
-                                                  </button>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                              <CustomDataTable title={''} columns={columns} data={filteredWindows} selectableRows={undefined} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined} />
                             </div>
                           </div>
                         ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                            {filteredWindows.map((window) => (
-                              <Card key={window.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewWindow(window)}>
-                                <div className="flex items-start justify-between mb-3">
-                                  <div>
-                                    <h4 className="text-sm font-medium text-gray-900">{window.windowName}</h4>
-                                    <p className="text-xs text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
+                          <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                              {filteredWindows.map((window) => (
+                                <Card key={window.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewWindow(window)}>
+                                  <div className="flex items-start justify-between mb-3">
+                                    <div>
+                                      <h4 className="text-sm font-medium text-gray-900">{window.windowName}</h4>
+                                      <p className="text-xs text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
+                                      {/* Action buttons removed */}
+                                    </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <StatusBadge key={`${window.id}-${updateCounter}`} status={window.status} />
-                                    {/* Action buttons removed */}
+                                  <div className="space-y-1 text-xs text-gray-600">
+                                    <div>Product: {window.filmType}</div>
+                                    <div>Dimensions: {window.width}" x {window.length}"</div>
+                                    <div>Interior: {window.interiorCount || 0}</div>
+                                    <div>Exterior: {window.exteriorCount || 0}</div>
+                                    <div className="font-semibold text-gray-900">Total Layers: {(window.interiorCount || 0) + (window.exteriorCount || 0)}</div>
+                                    <div>Color: {window.color || 'N/A'}</div>
+                                    <div>Tint: {window.tint || 'N/A'}</div>
+                                    <div>Stripping: {window.stripping ? 'Yes' : 'No'}</div>
                                   </div>
-                                </div>
-                                <div className="space-y-1 text-xs text-gray-600">
-                                  <div>Product: {window.filmType}</div>
-                                  <div>Dimensions: {window.width}" x {window.length}"</div>
-                                  <div>Interior: {window.interiorCount || 0}</div>
-                                  <div>Exterior: {window.exteriorCount || 0}</div>
-                                  <div className="font-semibold text-gray-900">Total Layers: {(window.interiorCount || 0) + (window.exteriorCount || 0)}</div>
-                                  <div>Color: {window.color || 'N/A'}</div>
-                                  <div>Tint: {window.tint || 'N/A'}</div>
-                                  <div>Stripping: {window.stripping ? 'Yes' : 'No'}</div>
-                                </div>
-                                <div className="flex items-center justify-end mt-4">
-                                  {/* Mobile: Direct action buttons */}
-                                  <div className="flex space-x-1 md:hidden">
-                                    {user?.userType !== 'execution-team' && (
-                                      <>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleViewWindow(window);
-                                          }}
-                                          className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
-                                        >
-                                          <Eye className="w-3 h-3" />
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEditWindow(window);
-                                          }}
-                                          className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
-                                        >
-                                          <Edit className="w-3 h-3" />
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteWindow(window.id);
-                                          }}
-                                          className="text-gray-400 hover:text-red-600 p-2 touch-manipulation"
-                                        >
-                                          <Trash2 className="w-3 h-3" />
-                                        </button>
-                                      </>
-                                    )}
-                                    {getActionButton(window) && (
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          getActionButton(window)?.action();
-                                        }}
-                                        className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md touch-manipulation min-h-[32px] ${getActionButton(window)?.mobileClassName}`}
-                                      >
-                                        <CheckCircle2 className="w-3.5 h-3.5" />
-                                        <span>{getActionButton(window)?.text || 'Complete'}</span>
-                                      </button>
-                                    )}
-                                  </div>
-
-                                  {/* Desktop: 3-dots menu */}
-                                  <div className="hidden md:block relative dropdown-container">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        const dropdown = document.getElementById(`dropdown-grid-${window.id}`);
-                                        if (dropdown) {
-                                          dropdown.classList.toggle('hidden');
-                                        }
-                                      }}
-                                      className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
-                                    >
-                                      <MoreVertical className="w-4 h-4" />
-                                    </button>
-                                    <div
-                                      id={`dropdown-grid-${window.id}`}
-                                      className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
-                                    >
-                                      <div className="py-1">
-                                        {user?.userType !== 'execution-team' && (
-                                          <>
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleViewWindow(window);
-                                                document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
-                                              }}
-                                              className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
-                                            >
-                                              <Eye className="w-3 h-3" />
-                                              View Details
-                                            </button>
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleEditWindow(window);
-                                                document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
-                                              }}
-                                              className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
-                                            >
-                                              <Edit className="w-3 h-3" />
-                                              Edit Window
-                                            </button>
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteWindow(window.id);
-                                                document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
-                                              }}
-                                              className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
-                                            >
-                                              <Trash2 className="w-3 h-3" />
-                                              Delete Window
-                                            </button>
-                                          </>
-                                        )}
-                                        {getActionButton(window) && (
+                                  <div className="flex items-center justify-end mt-4">
+                                    {/* Mobile: Direct action buttons */}
+                                    <div className="flex space-x-1 md:hidden">
+                                      {user?.userType !== 'execution-team' && (
+                                        <>
                                           <button
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              getActionButton(window)?.action();
-                                              document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                              handleViewWindow(window);
                                             }}
-                                            className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(window)?.className}`}
+                                            className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
                                           >
-                                            <CheckCircle2 className="w-3 h-3" />
-                                            {getActionButton(window)?.text}
+                                            <Eye className="w-3 h-3" />
                                           </button>
-                                        )}
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleEditWindow(window);
+                                            }}
+                                            className="text-gray-400 hover:text-gray-600 p-2 touch-manipulation"
+                                          >
+                                            <Edit className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteWindow(window.id);
+                                            }}
+                                            className="text-gray-400 hover:text-red-600 p-2 touch-manipulation"
+                                          >
+                                            <Trash2 className="w-3 h-3" />
+                                          </button>
+                                        </>
+                                      )}
+                                      {getActionButton(window) && (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            getActionButton(window)?.action();
+                                          }}
+                                          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md touch-manipulation min-h-[32px] ${getActionButton(window)?.mobileClassName}`}
+                                        >
+                                          <CheckCircle2 className="w-3.5 h-3.5" />
+                                          <span>{getActionButton(window)?.text || 'Complete'}</span>
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    {/* Desktop: 3-dots menu */}
+                                    <div className="hidden md:block relative dropdown-container">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const dropdown = document.getElementById(`dropdown-grid-${window.id}`);
+                                          if (dropdown) {
+                                            dropdown.classList.toggle('hidden');
+                                          }
+                                        }}
+                                        className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
+                                      >
+                                        <MoreVertical className="w-4 h-4" />
+                                      </button>
+                                      <div
+                                        id={`dropdown-grid-${window.id}`}
+                                        className="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                                      >
+                                        <div className="py-1">
+                                          {user?.userType !== 'execution-team' && (
+                                            <>
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleViewWindow(window);
+                                                  document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                                }}
+                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
+                                              >
+                                                <Eye className="w-3 h-3" />
+                                                View Details
+                                              </button>
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleEditWindow(window);
+                                                  document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                                }}
+                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation"
+                                              >
+                                                <Edit className="w-3 h-3" />
+                                                Edit Window
+                                              </button>
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleDeleteWindow(window.id);
+                                                  document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                                }}
+                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation"
+                                              >
+                                                <Trash2 className="w-3 h-3" />
+                                                Delete Window
+                                              </button>
+                                            </>
+                                          )}
+                                          {getActionButton(window) && (
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                getActionButton(window)?.action();
+                                                document.getElementById(`dropdown-grid-${window.id}`)?.classList.add('hidden');
+                                              }}
+                                              className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(window)?.className}`}
+                                            >
+                                              <CheckCircle2 className="w-3 h-3" />
+                                              {getActionButton(window)?.text}
+                                            </button>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
+                                </Card>
+
+
+                              ))}
+                          
+                            </div>
+                                {filteredWindows.length > 0 && (
+                                <div className="flex flex-col sm:flex-row items-center justify-between mt-4 sm:mt-6 gap-4">
+                                  <div className="flex items-center gap-2">
+                                    <Button variant="secondary" size="sm" icon={ArrowLeft} className="text-xs">
+                                      Previous
+                                    </Button>
+                                  </div>
+                                  <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
+                                    <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs sm:text-sm whitespace-nowrap">1</span>
+                                    <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">2</span>
+                                    <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">3</span>
+                                    <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">...</span>
+                                    <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">8</span>
+                                    <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">9</span>
+                                    <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">10</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Button variant="secondary" size="sm" icon={ArrowRight} className="text-xs">
+                                      Next
+                                    </Button>
+                                  </div>
                                 </div>
-                              </Card>
-                            ))}
-                          </div>
+                              )}
+                          </>
+
                         )}
 
-                        {/* Pagination */}
-                        {filteredWindows.length > 0 && (
-                          <div className="flex flex-col sm:flex-row items-center justify-between mt-4 sm:mt-6 gap-4">
-                            <div className="flex items-center gap-2">
-                              <Button variant="secondary" size="sm" icon={ArrowLeft} className="text-xs">
-                                Previous
-                              </Button>
-                            </div>
-                            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
-                              <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs sm:text-sm whitespace-nowrap">1</span>
-                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">2</span>
-                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">3</span>
-                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">...</span>
-                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">8</span>
-                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">9</span>
-                              <span className="px-2 sm:px-3 py-1 text-gray-600 text-xs sm:text-sm whitespace-nowrap">10</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button variant="secondary" size="sm" icon={ArrowRight} className="text-xs">
-                                Next
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      </Card>
                     </>
                   ) : user?.userType !== 'lead-supervisor' ? (
                     <></>
@@ -2122,7 +2170,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({ projectSta
                         </div>
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">{member.name}</p>
-                          <p className="text-xs text-gray-500">{member.role} <span>({member.phone})</span></p>
+                          <p className="text-xs text-gray-500">{member.role}. <span>({member.phone})</span></p>
                         </div>
 
                       </Card>

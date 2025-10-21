@@ -22,7 +22,7 @@ const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", place
   return (
     <div className={`flex flex-col  ${className ? className : 'mb-4'}`}>
       {label && (
-        <label htmlFor={name} className="mb-1 font-medium text-gray-700">
+        <label htmlFor={name} className="mb-1 text-sm font-medium text-gray-700">
           {label}
         </label>
       )}

@@ -100,6 +100,42 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
       ),
     },
     {
+      name: 'Subtitle',
+      selector: (row: ProjectListItem) => row.title,
+      sortable: true,
+      width: '250px',
+      cell: (row: ProjectListItem) => (
+        <div className="flex items-center whitespace-nowrap">
+          Testing subtitile
+        </div>
+      ),
+    },
+    {
+      name: 'Stage',
+      selector: (row: ProjectListItem) => row.status,
+      sortable: true,
+      width: '140px',
+      cell: (row: ProjectListItem) => (
+        <div className="flex flex-col space-y-1">
+          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap bg-gray-300`}>
+            Show
+          </span>
+        </div>
+      ),
+    },
+    {
+      name: 'Industry',
+      selector: (row: ProjectListItem) => row.industry,
+      sortable: true,
+      width: '200px',
+      cell: (row: ProjectListItem) => (
+        <div className="flex items-center whitespace-nowrap">
+          <Briefcase className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
+          {row.industry}
+        </div>
+      ),
+    },
+    {
       name: 'VIN Code',
       selector: (row: ProjectListItem) => row.vinCode,
       sortable: true,
@@ -135,18 +171,8 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
         </div>
       ),
     },
-    {
-      name: 'Industry',
-      selector: (row: ProjectListItem) => row.industry,
-      sortable: true,
-      width: '200px',
-      cell: (row: ProjectListItem) => (
-        <div className="flex items-center whitespace-nowrap">
-          <Briefcase className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
-          {row.industry}
-        </div>
-      ),
-    },
+   
+
     {
       name: 'Crew',
       selector: (row: ProjectListItem) => row.crewCount,
@@ -206,7 +232,6 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
         <div className="flex items-center whitespace-nowrap">
           <Calendar className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
           <div>
-            <div className="text-xs text-gray-500">Project Duration</div>
             <div className="text-sm font-medium">
               <span>{new Date(row.startDate).toLocaleDateString('en-GB')}</span>
               <span className="mx-2 text-gray-400">→</span>

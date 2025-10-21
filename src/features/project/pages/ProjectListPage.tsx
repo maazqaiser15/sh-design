@@ -22,6 +22,7 @@ import { filterProjectsByUserRole, getAvailableProjectStatuses } from '../../../
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
 import SearchField from 'common/components/SearchField';
+import SelectField from 'common/components/SelectField';
 
 // Mock trailer data
 const mockTrailers: Trailer[] = [
@@ -107,6 +108,7 @@ const mockProjects: SafeHavenProject[] = [
   {
     id: '1',
     title: 'Downtown Office Complex Security',
+    
     description: 'Complete security film installation for 15-story office complex downtown',
     status: 'PV75',
     stage: 'PV75',
@@ -651,7 +653,11 @@ export const ProjectListPage: React.FC = () => {
               )}
               <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search by name...'} />
 
+
+              <SelectField value={undefined} onChange={() => console.log('click')} placeholder={''} options={[{ value: 'new', label: 'New' }, { value: 'Rework', label: 'Rework' }, { value: 'warrenty', label: 'Warrenty' }]} />
+
               {/* Archived Button - Positioned on the center */}
+
               <button
                 onClick={() => {
                   setFilters({

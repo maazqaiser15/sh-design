@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check, Building, FileText } from 'lucide-react';
+import SelectField from 'common/components/SelectField';
+import FormField from 'common/components/FormField';
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik';
 
 export interface TicketDetails {
   id: string;
@@ -110,7 +113,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   };
 
   const updateTicket = (ticketId: string, field: keyof TicketDetails, value: string | number | File) => {
-    setTickets(prev => prev.map(ticket => 
+    setTickets(prev => prev.map(ticket =>
       ticket.id === ticketId ? { ...ticket, [field]: value } : ticket
     ));
   };
@@ -142,7 +145,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   };
 
   const updateRentalVehicle = (index: number, field: keyof RentalVehicleDetails, value: string | File[]) => {
-    setRentalVehicles(prev => prev.map((vehicle, i) => 
+    setRentalVehicles(prev => prev.map((vehicle, i) =>
       i === index ? { ...vehicle, [field]: value } : vehicle
     ));
   };
@@ -176,7 +179,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   };
 
   const updateHotel = (index: number, field: keyof HotelDetails, value: string | number | File[]) => {
-    setHotels(prev => prev.map((hotel, i) => 
+    setHotels(prev => prev.map((hotel, i) =>
       i === index ? { ...hotel, [field]: value } : hotel
     ));
   };
@@ -206,7 +209,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   };
 
   const isFormValid = () => {
-    const accommodationValid = hotels.length > 0 && hotels.every(hotel => 
+    const accommodationValid = hotels.length > 0 && hotels.every(hotel =>
       hotel.hotelName && hotel.checkInDate && hotel.checkOutDate
     );
     const ticketsValid = tickets.length > 0 && tickets.every(ticket => {
@@ -217,7 +220,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
         ticket.arrivalTime !== '' &&
         ticket.airline.trim() !== '' &&
         ticket.cost.trim() !== '';
-      
+
       if (ticket.isRoundTrip) {
         return baseValid &&
           ticket.returnDate !== '' &&
@@ -227,10 +230,10 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
           ticket.returnAirline?.trim() !== '' &&
           ticket.returnCost?.trim() !== '';
       }
-      
+
       return baseValid;
     });
-    const rentalVehicleValid = rentalVehicles.every(vehicle => 
+    const rentalVehicleValid = rentalVehicles.every(vehicle =>
       !vehicle.companyName || (
         vehicle.companyName &&
         vehicle.bookingName &&
@@ -245,7 +248,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add Travel & Accommodation Details" size="xl">
-      <div className="space-y-6">
+      <div className="space-y-6 max-h-[80vh] overflow-y-auto">
         {/* Flight Tickets Management */}
         <div className="bg-gray-50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
@@ -264,7 +267,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
               Add Ticket
             </Button>
           </div>
-          
+
           <div className="space-y-4">
             {tickets.map((ticket, index) => (
               <div key={ticket.id} className="bg-white border border-gray-200 rounded-lg p-4">
@@ -291,155 +294,65 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                     </button>
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Passenger Selection */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Passenger *
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <select
-                        value={ticket.passengerName}
-                        onChange={(e) => updateTicket(ticket.id, 'passengerName', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="">Select passenger</option>
-                        {MOCK_PASSENGERS.map((passenger) => (
-                          <option key={passenger.id} value={passenger.name}>
-                            {passenger.name} - {passenger.role}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
 
-                  {/* Departure Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Departure Date *
-                    </label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="date"
-                        value={ticket.departureDate}
-                        onChange={(e) => updateTicket(ticket.id, 'departureDate', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
+                <Formik initialValues={null} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                  throw new Error('Function not implemented.');
+                }}>
+                  <Form>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Passenger Selection */}
+                      <SelectField value={ticket.passengerName} label='Passenger *' onChange={(e) => updateTicket(ticket.id, 'passengerName', e.target.value)} inputClassName={'border border-gray-300'} placeholder={'Select passenger'} options={MOCK_PASSENGERS} />
 
-                  {/* Departure Time */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Departure Time *
-                    </label>
-                    <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="time"
-                        value={ticket.departureTime}
-                        onChange={(e) => updateTicket(ticket.id, 'departureTime', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
 
-                  {/* Arrival Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Arrival Date *
-                    </label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="date"
-                        value={ticket.arrivalDate}
-                        onChange={(e) => updateTicket(ticket.id, 'arrivalDate', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
+                      <FormField label={' Departure Date *'} onChange={(e) => updateTicket(ticket.id, 'departureDate', e.target.value)} value={ticket.departureDate} name={'departureDate'} type={'date'} />
 
-                  {/* Arrival Time */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Arrival Time *
-                    </label>
-                    <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="time"
-                        value={ticket.arrivalTime}
-                        onChange={(e) => updateTicket(ticket.id, 'arrivalTime', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
+                      {/* Departure Time */}
+                      <FormField label={'Departure Time *'} onChange={(e) => updateTicket(ticket.id, 'departureTime', e.target.value)} value={ticket.departureTime} name={'departureTime'} type={'time'} />
+                      {/* Arrival Date */}
 
-                  {/* Airline */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Airline *
-                    </label>
-                    <div className="relative">
-                      <Plane className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        value={ticket.airline}
-                        onChange={(e) => updateTicket(ticket.id, 'airline', e.target.value)}
-                        placeholder="Enter airline name"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
+                      <FormField label={'Arrival Date *'} onChange={(e) => updateTicket(ticket.id, 'arrivalDate', e.target.value)} value={ticket.arrivalDate} name={'arrivalDate'} type={'date'} />
 
-                  {/* Ticket Cost */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ticket Cost *
-                    </label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={ticket.cost}
-                        onChange={(e) => updateTicket(ticket.id, 'cost', e.target.value)}
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
+                      {/* Arrival Time */}
 
-                  {/* Ticket Upload */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ticket Upload
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        id={`ticket-${ticket.id}`}
-                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                        onChange={(e) => handleTicketFileUpload(ticket.id, e)}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor={`ticket-${ticket.id}`}
-                        className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
-                      >
-                        <Upload className="w-4 h-4 text-gray-400 mr-2" />
-                        <span className="text-sm text-gray-600">
-                          {ticket.attachment ? ticket.attachment.name : 'Upload ticket'}
-                        </span>
-                      </label>
+                      <FormField label={'Arrival Time *'} onChange={(e) => updateTicket(ticket.id, 'arrivalTime', e.target.value)} value={ticket.arrivalTime} name={'arrivalTime'} type={'time'} />
+
+                      {/* Airline */}
+
+                      <FormField isLeftIcon={<Plane />} placeholder='Enter airline name' label={'Airline *'} onChange={(e) => updateTicket(ticket.id, 'airline', e.target.value)} value={ticket.airline} name={'airline'} type={'text'} />
+
+                      {/* Ticket Cost */}
+
+                      <FormField isLeftIcon={<DollarSign />} placeholder='0.00' label={'Ticket Cost *'} onChange={(e) => updateTicket(ticket.id, 'cost', e.target.value)} value={ticket.cost} name={'cost'} type={'number'} />
+
+                      {/* Ticket Upload */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Ticket Upload
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="file"
+                            id={`ticket-${ticket.id}`}
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                            onChange={(e) => handleTicketFileUpload(ticket.id, e)}
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor={`ticket-${ticket.id}`}
+                            className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                          >
+                            <Upload className="w-4 h-4 text-gray-400 mr-2" />
+                            <span className="text-sm text-gray-600">
+                              {ticket.attachment ? ticket.attachment.name : 'Upload ticket'}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </Form>
+                </Formik>
+
+
 
                 {/* Return Ticket Details - Only show when round trip is checked */}
                 {ticket.isRoundTrip && (
@@ -448,143 +361,72 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                       <Check className="w-4 h-4 text-green-600" />
                       <h5 className="font-medium text-gray-900">Return Ticket Details</h5>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Return Date */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Date *
-                        </label>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="date"
-                            value={ticket.returnDate || ''}
-                            onChange={(e) => updateTicket(ticket.id, 'returnDate', e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
+                    <Formik initialValues={undefined} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                      throw new Error('Function not implemented.');
+                    }}>
+                      <Form>
 
-                      {/* Return Time */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Time *
-                        </label>
-                        <div className="relative">
-                          <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="time"
-                            value={ticket.returnTime || ''}
-                            onChange={(e) => updateTicket(ticket.id, 'returnTime', e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {/* Return Date */}
+                          <FormField isLeftIcon={<Calendar />} label={'Return Date *'} onChange={(e) => updateTicket(ticket.id, 'returnDate', e.target.value)} value={ticket.returnDate} name={'returnDate'} type={'date'} />
 
-                      {/* Return Arrival Date */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Arrival Date *
-                        </label>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="date"
-                            value={ticket.returnArrivalDate || ''}
-                            onChange={(e) => updateTicket(ticket.id, 'returnArrivalDate', e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
+                          {/* Return Time */}
+                          <FormField isLeftIcon={<Clock />} label={'Return Time *'} onChange={(e) => updateTicket(ticket.id, 'returnTime', e.target.value)} value={ticket.returnTime} name={'returnTime'} type={'time'} />
 
-                      {/* Return Arrival Time */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Arrival Time *
-                        </label>
-                        <div className="relative">
-                          <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="time"
-                            value={ticket.returnArrivalTime || ''}
-                            onChange={(e) => updateTicket(ticket.id, 'returnArrivalTime', e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
+                          {/* Return Arrival Date */}
 
-                      {/* Return Airline */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Airline *
-                        </label>
-                        <div className="relative">
-                          <Plane className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            value={ticket.returnAirline || ''}
-                            onChange={(e) => updateTicket(ticket.id, 'returnAirline', e.target.value)}
-                            placeholder="Enter return airline name"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
+                          <FormField isLeftIcon={<Calendar />} label={'Return Arrival Date *'} onChange={(e) => updateTicket(ticket.id, 'returnArrivalDate', e.target.value)} value={ticket.returnArrivalDate} name={'returnArrivalDate'} type={'date'} />
+                          {/* Return Arrival Time */}
 
-                      {/* Return Cost */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Cost *
-                        </label>
-                        <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="number"
-                            value={ticket.returnCost || ''}
-                            onChange={(e) => updateTicket(ticket.id, 'returnCost', e.target.value)}
-                            placeholder="0.00"
-                            min="0"
-                            step="0.01"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
+                          <FormField isLeftIcon={<Clock />} label={'Return Arrival Date *'} onChange={(e) => updateTicket(ticket.id, 'returnArrivalTime', e.target.value)} value={ticket.returnArrivalTime} name={'returnArrivalTime'} type={'time'} />
 
-                      {/* Return Ticket Upload */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Return Ticket Upload
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="file"
-                            id={`return-ticket-${ticket.id}`}
-                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                updateTicket(ticket.id, 'returnAttachment', file);
-                              }
-                            }}
-                            className="hidden"
-                          />
-                          <label
-                            htmlFor={`return-ticket-${ticket.id}`}
-                            className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
-                          >
-                            <Upload className="w-4 h-4 text-gray-400 mr-2" />
-                            <span className="text-sm text-gray-600">
-                              {ticket.returnAttachment ? ticket.returnAttachment.name : 'Upload return ticket'}
-                            </span>
-                          </label>
+                          {/* Return Airline */}
+
+                          <FormField isLeftIcon={<Plane />} label={'Return Airline *'} onChange={(e) => updateTicket(ticket.id, 'returnAirline', e.target.value)} value={ticket.returnAirline} name={'returnAirline'} type={'text'} />
+
+                          {/* Return Cost */}
+
+                          <FormField isLeftIcon={<DollarSign />} label={'Return Cost *'} onChange={(e) => updateTicket(ticket.id, 'returnCost', e.target.value)} value={ticket.returnCost} name={'returnCost'} type={'number'} />
+
+                          {/* Return Ticket Upload */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Return Ticket Upload
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="file"
+                                id={`return-ticket-${ticket.id}`}
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    updateTicket(ticket.id, 'returnAttachment', file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                              <label
+                                htmlFor={`return-ticket-${ticket.id}`}
+                                className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                              >
+                                <Upload className="w-4 h-4 text-gray-400 mr-2" />
+                                <span className="text-sm text-gray-600">
+                                  {ticket.returnAttachment ? ticket.returnAttachment.name : 'Upload return ticket'}
+                                </span>
+                              </label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+
+                      </Form>
+                    </Formik>
+
                   </div>
                 )}
               </div>
             ))}
-            
+
             {tickets.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 <Plane className="w-12 h-12 mx-auto mb-2 text-gray-300" />
@@ -632,90 +474,87 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                       Remove
                     </button>
                   </div>
+                  <Formik initialValues={undefined} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                    throw new Error('Function not implemented.');
+                  }}>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Hotel Name */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Hotel Name *
-                      </label>
-                      <div className="relative">
-                        <Hotel className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type="text"
-                          value={hotel.hotelName}
-                          onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)}
-                          placeholder="Enter hotel name"
-                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                        />
+                    <Form>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Hotel Name */}
+                  
+                          <FormField isLeftIcon={<Hotel />} label={'Hotel Name *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.hotelName} name={'hotelName'} type={'text'} />
+
+                        {/* Number of Rooms */}
+                        {/* <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Number of Rooms *
+                          </label>
+                          <input
+                            type="number"
+                            value={hotel.numberOfRooms}
+                            onChange={(e) => updateHotel(hotelIndex, 'numberOfRooms', Math.max(1, Number(e.target.value)))}
+                            min="1"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div> */}
+                          <FormField isLeftIcon={<Hotel />} label={'Number of Rooms *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.numberOfRooms} name={'hotelName'} type={'text'} />
+
+                        {/* Check-in Date */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Check-in Date *
+                          </label>
+                          <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input
+                              type="date"
+                              value={hotel.checkInDate}
+                              onChange={(e) => updateHotel(hotelIndex, 'checkInDate', e.target.value)}
+                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Check-out Date */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Check-out Date *
+                          </label>
+                          <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input
+                              type="date"
+                              value={hotel.checkOutDate}
+                              onChange={(e) => updateHotel(hotelIndex, 'checkOutDate', e.target.value)}
+                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Hotel Cost */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Hotel Cost *
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">$</span>
+                            <input
+                              type="number"
+                              value={hotel.hotelCost}
+                              onChange={(e) => updateHotel(hotelIndex, 'hotelCost', Math.max(0, Number(e.target.value)))}
+                              min="0"
+                              step="0.01"
+                              placeholder="0.00"
+                              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Number of Rooms */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Number of Rooms *
-                      </label>
-                      <input
-                        type="number"
-                        value={hotel.numberOfRooms}
-                        onChange={(e) => updateHotel(hotelIndex, 'numberOfRooms', Math.max(1, Number(e.target.value)))}
-                        min="1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                      />
-                    </div>
+                    </Form>
+                  </Formik>
 
-                    {/* Check-in Date */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Check-in Date *
-                      </label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type="date"
-                          value={hotel.checkInDate}
-                          onChange={(e) => updateHotel(hotelIndex, 'checkInDate', e.target.value)}
-                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Check-out Date */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Check-out Date *
-                      </label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type="date"
-                          value={hotel.checkOutDate}
-                          onChange={(e) => updateHotel(hotelIndex, 'checkOutDate', e.target.value)}
-                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Hotel Cost */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Hotel Cost *
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">$</span>
-                        <input
-                          type="number"
-                          value={hotel.hotelCost}
-                          onChange={(e) => updateHotel(hotelIndex, 'hotelCost', Math.max(0, Number(e.target.value)))}
-                          min="0"
-                          step="0.01"
-                          placeholder="0.00"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Attach Reservation Slips */}
                   <div className="mt-4">
@@ -740,7 +579,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                         <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
                       </label>
                     </div>
-                    
+
                     {/* Display uploaded files */}
                     {hotel.reservationSlipFiles.length > 0 && (
                       <div className="mt-3 space-y-2">
@@ -782,7 +621,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
               Add Vehicle
             </button>
           </div>
-          
+
           {rentalVehicles.map((vehicle, vehicleIndex) => (
             <div key={vehicleIndex} className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
               <div className="flex items-center justify-between mb-4">
@@ -797,7 +636,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                   </button>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Company Name */}
                 <div>
@@ -942,7 +781,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                     <span className="text-xs text-gray-500 mt-1">PDF, JPG, PNG, DOC up to 10MB</span>
                   </label>
                 </div>
-                
+
                 {/* Display uploaded files */}
                 {vehicle.bookingSlipFiles.length > 0 && (
                   <div className="mt-3 space-y-2">

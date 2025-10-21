@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, Phone, Building, ChevronDown } from 'lucide-react';
+import { Calendar, User, Phone, Building, ChevronDown, PlusCircle, MinusCircle, Subtitles } from 'lucide-react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Modal } from '../../../../common/components/Modal';
@@ -60,6 +60,8 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
     coordinatorId: project.assignedCoordinator?.id || ''
   };
 
+  const [isShowSecondaryContact, setIsShowSecondaryContact] = useState(false)
+
   const handleSubmit = (values: FormData) => {
     const selectedCoordinator = MOCK_COORDINATORS.find(c => c.id === values.coordinatorId);
 
@@ -93,14 +95,17 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
         enableReinitialize
       >
         {({ isSubmitting, values, setFieldValue }) => (
-          <Form className="space-y-6">
+          <Form className="space-y-6 max-h-[80vh] overflow-y-auto">
             {/* Contact Person Section */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                <div className="p-1.5 bg-blue-100 rounded-md">
-                  <User className="w-4 h-4 text-blue-600" />
+              <h3 className="text-base flex justify-between  font-semibold text-gray-900  items-center gap-2 mb-3">
+                <div className='flex items-center gap-2'>
+                  <div className="p-1.5 bg-blue-100 rounded-md">
+                    <User className="w-4 h-4 text-blue-600" />
+                  </div>
+                  Primary Contact Person
                 </div>
-                Contact Person
+                <Button variant='ghost' onClick={() => setIsShowSecondaryContact(!isShowSecondaryContact)}>{isShowSecondaryContact ? <MinusCircle /> : <PlusCircle />} </Button>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField
@@ -118,14 +123,72 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   isLeftIcon={<Phone className="w-4 h-4" />}
                   className='mb-0'
                 />
+                <FormField
+                  label="Role"
+                  name="role"
+                  type="text"
+                  placeholder="Enter Role"
+                  className='mb-0'
+                />
+              </div>
+            </div>
+
+            {isShowSecondaryContact && <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-3">
+                <div className="p-1.5 bg-blue-100 rounded-md">
+                  <User className="w-4 h-4 text-blue-600" />
+                </div>
+                Secondary Contact Person
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <FormField
+                  label="Name"
+                  name="contactPersonName"
+                  type="text"
+                  placeholder="Enter contact person name"
+                  className='mb-0'
+                />
+                <FormField
+                  label="Phone Number"
+                  name="contactPersonPhone"
+                  type="tel"
+                  placeholder="Enter phone number"
+                  isLeftIcon={<Phone className="w-4 h-4" />}
+                  className='mb-0'
+                />
+                <FormField
+                  label="Role"
+                  name="role"
+                  type="text"
+                  placeholder="Enter Role"
+                  className='mb-0'
+                />
+              </div>
+            </div>}
+            {/* {Project Subtite} */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-3">
+                <div className="p-1.5 bg-purple-100 rounded-md">
+                  <Subtitles className="w-4 h-4 text-purple-600" />
+                </div>
+                Project Subtitle
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <FormField
+                  label="Project Subtitle"
+                  name="projectSubtitle"
+                  type="text"
+                  className='mb-0'
+                  placeholder='Enter Project Subtitle'
+                />
               </div>
             </div>
 
             {/* Project Dates Section */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                <div className="p-1.5 bg-purple-100 rounded-md">
-                  <Calendar className="w-4 h-4 text-purple-600" />
+                <div className="p-1.5 bg-yellow-100 rounded-md">
+                  <Calendar className="w-4 h-4 text-yellow-600" />
                 </div>
                 Project Dates
               </h3>

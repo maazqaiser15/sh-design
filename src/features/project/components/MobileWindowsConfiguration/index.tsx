@@ -363,7 +363,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
           onChange={(e) => handleWindowChange(row.id, 'windowLabel', e.target.value)}
           className="w-full px-2 py-1 border border-gray-300 rounded "
         />
-      </div>
+      </div>,
+      width: '92px'
     },
     {
       name: 'Width',
@@ -375,7 +376,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
           onChange={(e) => handleWindowChange(row.id, 'width', parseInt(e.target.value) || 0)}
           className="w-full px-2 py-1 border border-gray-300 rounded "
         />
-      </div>
+      </div>,
+      width: '82px'
     },
     {
       name: 'Length',
@@ -387,7 +389,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
           onChange={(e) => handleWindowChange(row.id, 'length', parseInt(e.target.value) || 0)}
           className="w-full px-2 py-1 border border-gray-300 rounded "
         />
-      </div>
+      </div>,
+      width: '92px'
     },
     {
       name: 'Product',
@@ -402,7 +405,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
             <option key={product} value={product}>{product}</option>
           ))}
         </select>
-      </div>
+      </div>,
+      width: '140px'
     },
     {
       name: 'Interior',
@@ -417,7 +421,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
             <option key={option} value={option}>{option}</option>
           ))}
         </select>
-      </div>
+      </div>,
+      width: '84px'
     },
     {
       name: 'Exterior',
@@ -432,7 +437,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
             <option key={option} value={option}>{option}</option>
           ))}
         </select>
-      </div>
+      </div>,
+      width: '90px'
     },
     {
       name: 'Color',
@@ -447,7 +453,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
             <option key={color} value={color}>{color}</option>
           ))}
         </select>
-      </div>
+      </div>,
+      width: '120px'
     },
     {
       name: 'Tint',
@@ -462,7 +469,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
             <option key={tint} value={tint}>{tint}</option>
           ))}
         </select>
-      </div>
+      </div>,
+      width: '120px'
     },
     {
       name: 'Stripping',
@@ -474,7 +482,8 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
           onChange={(e) => handleWindowChange(row.id, 'stripping', e.target.checked)}
           className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
         />
-      </div>
+      </div>,
+      width: '100px'
     },
     {
       name: 'Actions',
@@ -522,20 +531,20 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
       <div className="mb-4 mt-0">
         <div className='flex justify-between items-center mb-4'>
           <h2 className="text-lg font-semibold text-gray-900">Windows Configuration</h2>
-          {showSetupButton ? 
+          {showSetupButton ?
             <Button
               variant="primary"
               onClick={handleSave}
               className="w-full sm:w-auto mobile-touch-target"
             >
               Setup Windows
-            </Button>:
+            </Button> :
             <Button
               variant="secondary"
               onClick={handleSave}
               className="w-full sm:w-auto mobile-touch-target"
             >
-             <Trash2/>  Remove
+              <Trash2 size={18} />  Remove
             </Button>
           }
         </div>
@@ -561,7 +570,7 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
               size='md'
               className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto"
             >
-              <Building2 className="w-4 h-4 mr-2" />
+             
               Add Building
             </Button>
             <Button
@@ -570,7 +579,7 @@ export const MobileWindowsConfiguration: React.FC<MobileWindowsConfigurationProp
               onClick={addWindow}
               className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto"
             >
-              <AppWindow className="w-4 h-4 mr-2" />
+             
               Add Window
             </Button>
           </div>
