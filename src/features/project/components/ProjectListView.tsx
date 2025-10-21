@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Users, Truck, Calendar, Building2, Briefcase } from 'lucide-react';
+import { MapPin, Users, Truck, Calendar, Building2, Briefcase, FileIcon, ArrowUp01Icon, Folder, ArrowUpRight } from 'lucide-react';
 import { ProjectListItem, PROJECT_STATUS_COLORS, PROJECT_STATUS_DESCRIPTIONS } from '../types';
 import { formatProjectDuration, getProgressBarColor } from '../utils';
 import { PieChart } from '../../../common/components/PieChart';
@@ -208,7 +208,8 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                 </div>
               </div>
             </div>
-            <div className='bg-white rounded-lg p-2 text-center text-xs'>Associated Project</div>
+            <div className='bg-white rounded-lg p-2 text-center text-xs flex justify-between'>
+              <div className='flex items-center gap-2'><Folder size={18}/>Associated Project</div>  <ArrowUpRight size={18}/> </div>
           </Card>
         ))}
       </div>

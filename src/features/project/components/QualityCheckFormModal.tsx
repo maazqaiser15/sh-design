@@ -83,7 +83,7 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="xl" title="Quality Walk Form">
-      <div className="w-full">
+      <div className="w-full max-h-[80vh] overflow-y-auto">
         {/* Header with Safe Haven Defense Branding */}
         <div className="bg-blue-600 text-white p-6">
           <div className="flex items-center justify-between">
@@ -266,7 +266,7 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
             <Button
               type="submit"
               variant="primary"
-              disabled={!formData.signature || (!formData.markQF && !formData.markQC)}
+              // disabled={(!formData.markQF && !formData}
             >
               Submit Quality Walk Form
             </Button>
