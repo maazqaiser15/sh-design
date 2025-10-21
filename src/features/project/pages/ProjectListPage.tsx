@@ -653,8 +653,9 @@ export const ProjectListPage: React.FC = () => {
               )}
               <SearchField iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Search by name...'} />
 
+              <SelectField value={undefined} onChange={() => console.log('click')} placeholder={'Industry'} options={[{ value: 'new', label: 'New' }, { value: 'Rework', label: 'Rework' }, { value: 'warrenty', label: 'Warrenty' }]} />
 
-              <SelectField value={undefined} onChange={() => console.log('click')} placeholder={''} options={[{ value: 'new', label: 'New' }, { value: 'Rework', label: 'Rework' }, { value: 'warrenty', label: 'Warrenty' }]} />
+              <SelectField value={undefined} onChange={() => console.log('click')} placeholder={'Project Type'} options={[{ value: 'new', label: 'New' }, { value: 'Rework', label: 'Rework' }, { value: 'warrenty', label: 'Warrenty' }]} />
 
               {/* Archived Button - Positioned on the center */}
 

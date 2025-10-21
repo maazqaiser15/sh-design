@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, CheckCheck, Sheet, File, FileText } from 'lucide-react';
+import { Plus, Hotel, User, Edit, Building, Phone, Mail, MapPin, Calendar, CheckCheck, Sheet, File, FileText, Dot } from 'lucide-react';
 import { ProjectDetails, PreparationStageData, MOCK_PROJECT_DETAILS, MOCK_PREPARATION_DATA, ProjectNote } from '../../types/projectDetails';
 import { NoteAttachment } from '../../../../types';
 import { AssignTeamModal } from '../../components/AssignTeamModal';
@@ -874,13 +874,19 @@ export const ProjectDetailsPrep: React.FC = () => {
             <div className="">
               {/* Project Name, Status, and Action Buttons */}
               <div className="flex items-start justify-between mb-4">
-                <div className="flex gap-3 items-center">
-                  <h1 className="font-bold text-2xl text-gray-900 leading-tight">Marriot Windows Installation <span className='text-gray-500 font-normal text-lg  ps-1'>(Testing Subtitle)</span></h1>
+                <div className="flex gap-2 items-start">
+                  <h1 className="font-bold text-2xl text-gray-900 leading-[25px]">Marriot Windows Installation
+                    <br />
+                    <span className='text-lg text-gray-500 font-normal'>
+                      Testing Subtitle
+                    </span>
+                  </h1>
+
                   <div className="font-bold text-xs text-blue-700 leading-5 px-2 py-1.5 rounded-full  bg-blue-100">
                     <p>PV90</p>
                   </div>
-                </div>
 
+                </div>
                 {/* Action Buttons */}
                 <div className="flex gap-2 items-center">
                   <Button
@@ -977,8 +983,9 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Primary Contact Person</p>
                       <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
-                      {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700 flex items-center">Testing Role<Dot /> {project.contactPerson.phone}</p>}
                       {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+
                     </div>
                   </div>
                 )}
@@ -989,7 +996,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                     <div>
                       <p className="text-xs text-gray-500 font-medium">Secondary Contact Person</p>
                       <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
-                      {project.contactPerson.phone && <p className="text-xs text-gray-700">{project.contactPerson.phone}</p>}
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700 flex items-center">Testing Role<Dot /> {project.contactPerson.phone}</p>}
                       {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
                     </div>
                   </div>

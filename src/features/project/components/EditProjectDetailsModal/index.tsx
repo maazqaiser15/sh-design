@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, Phone, Building, ChevronDown, PlusCircle, MinusCircle, Subtitles } from 'lucide-react';
+import { Calendar, User, Phone, Building, ChevronDown, PlusCircle, MinusCircle, Subtitles, MinusSquare } from 'lucide-react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Modal } from '../../../../common/components/Modal';
@@ -105,7 +105,7 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   </div>
                   Primary Contact Person
                 </div>
-                <Button variant='ghost' onClick={() => setIsShowSecondaryContact(!isShowSecondaryContact)}>{isShowSecondaryContact ? <MinusCircle /> : <PlusCircle />} </Button>
+              {!isShowSecondaryContact && <Button variant='ghost' onClick={() => setIsShowSecondaryContact(!isShowSecondaryContact)}>{<PlusCircle size={18}/>} </Button>}  
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField
@@ -124,8 +124,8 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   className='mb-0'
                 />
                 <FormField
-                  label="Role"
-                  name="role"
+                  label="Job title"
+                  name="jobtitle"
                   type="text"
                   placeholder="Enter Role"
                   className='mb-0'
@@ -134,11 +134,14 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
             </div>
 
             {isShowSecondaryContact && <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                <div className="p-1.5 bg-blue-100 rounded-md">
-                  <User className="w-4 h-4 text-blue-600" />
+              <h3 className="text-base flex justify-between  font-semibold text-gray-900  items-center gap-2 mb-3">
+                <div className='flex items-center gap-2'>
+                  <div className="p-1.5 bg-blue-100 rounded-md">
+                    <User className="w-4 h-4 text-blue-600" />
+                  </div>
+                  Secondary Contact Person
                 </div>
-                Secondary Contact Person
+              {isShowSecondaryContact && <Button variant='ghost' onClick={() => setIsShowSecondaryContact(!isShowSecondaryContact)}>{<MinusCircle size={18}/>} </Button>}  
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField
@@ -157,10 +160,10 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   className='mb-0'
                 />
                 <FormField
-                  label="Role"
-                  name="role"
+                  label="Job title"
+                  name="jobtitle"
                   type="text"
-                  placeholder="Enter Role"
+                  placeholder="Enter Job Title"
                   className='mb-0'
                 />
               </div>
@@ -171,15 +174,15 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                 <div className="p-1.5 bg-purple-100 rounded-md">
                   <Subtitles className="w-4 h-4 text-purple-600" />
                 </div>
-                Project Subtitle
+                Job Subtitle
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField
-                  label="Project Subtitle"
-                  name="projectSubtitle"
+                  label="Job Subtitle"
+                  name="jobSubtitle"
                   type="text"
                   className='mb-0'
-                  placeholder='Enter Project Subtitle'
+                  placeholder='Enter Job Subtitle'
                 />
               </div>
             </div>

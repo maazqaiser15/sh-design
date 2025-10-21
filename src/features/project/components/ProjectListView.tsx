@@ -72,6 +72,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                   <h3 className="text-lg font-semibold text-gray-900 leading-tight">
                     {project.title}
                   </h3>
+                  <p className='text-sm text-gray-500'>Testing subtitle</p>
                 </div>
 
                 {/* Status Badge and VIN Code */}
@@ -208,8 +209,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                 </div>
               </div>
             </div>
-            <div className='bg-white rounded-lg p-2 text-center text-xs flex justify-between'>
-              <div className='flex items-center gap-2'><Folder size={18}/>Associated Project</div>  <ArrowUpRight size={18}/> </div>
+          
           </Card>
         ))}
       </div>

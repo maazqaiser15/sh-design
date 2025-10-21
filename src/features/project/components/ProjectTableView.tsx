@@ -40,7 +40,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
     if (project.progress !== undefined) {
       return project.progress;
     }
-    
+
     // Fallback to status-based progress for backward compatibility
     switch (project.status) {
       case 'PV75':
@@ -96,30 +96,9 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
       cell: (row: ProjectListItem) => (
         <div className="whitespace-nowrap">
           {row.title}
-        </div>
-      ),
-    },
-    {
-      name: 'Subtitle',
-      selector: (row: ProjectListItem) => row.title,
-      sortable: true,
-      width: '250px',
-      cell: (row: ProjectListItem) => (
-        <div className="flex items-center whitespace-nowrap">
-          Testing subtitile
-        </div>
-      ),
-    },
-    {
-      name: 'Stage',
-      selector: (row: ProjectListItem) => row.status,
-      sortable: true,
-      width: '140px',
-      cell: (row: ProjectListItem) => (
-        <div className="flex flex-col space-y-1">
-          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap bg-gray-300`}>
-            Show
-          </span>
+          <div className="flex text-xs text-gray-500 items-center whitespace-nowrap">
+            Testing subtitile
+          </div>
         </div>
       ),
     },
@@ -171,7 +150,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
         </div>
       ),
     },
-   
+
 
     {
       name: 'Crew',
@@ -218,7 +197,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
       width: '200px',
       cell: (row: ProjectListItem) => (
         <div className={`flex items-center whitespace-nowrap py-1 px-2 rounded-full ${row.assignedTrailer ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'} `}>
-          <Truck className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
+          <Truck className={`w-4 h-4 mr-2 text-gray-500 flex-shrink-0 ${row.assignedTrailer ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'}`} />
           {row.assignedTrailer || 'Not Assigned'}
         </div>
       ),
@@ -247,19 +226,19 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
     <Card>
       {/* <div className='overflow-x-auto'> */}
       <CustomDataTable
-          title=""
-          columns={columns}
-          data={projects}
-          selectableRows={undefined}
-          pagination={true}
-          highlightOnHover={undefined}
-          striped={undefined}
-          onRowClicked={onProjectClick}
-          progressPending={undefined}
-          paginationPerPage={10}
-        />
+        title=""
+        columns={columns}
+        data={projects}
+        selectableRows={undefined}
+        pagination={true}
+        highlightOnHover={undefined}
+        striped={undefined}
+        onRowClicked={onProjectClick}
+        progressPending={undefined}
+        paginationPerPage={10}
+      />
       {/* </div> */}
-  
+
     </Card>
   );
 };
