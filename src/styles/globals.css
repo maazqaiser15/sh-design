@@ -73,4 +73,5 @@
   background-repeat: no-repeat;
   height: 100%;
   background-position: center,center;
+  min-height: 100vh;
 }

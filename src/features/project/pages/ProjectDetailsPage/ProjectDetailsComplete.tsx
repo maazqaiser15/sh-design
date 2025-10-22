@@ -276,7 +276,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
 
   // Handlers
   const handleCreateAssociatedProject = () => {
-    showToast('Create Associated Project functionality coming soon');
+   navigate(`/associatedProject`);
   };
 
   // Note handlers
@@ -437,7 +437,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                     onClick={handleCreateAssociatedProject}
                     className="px-3 py-2"
                   >
-                    Create Follow-up Project
+                    Create Associated Project
                   </Button>
                 </div>
               </div>

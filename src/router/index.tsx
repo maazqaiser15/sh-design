@@ -70,6 +70,15 @@ export const routes: RouteObject[] = [
             },
           },
           {
+            path: "associatedProject",
+            async lazy() {
+              const { default: AssociatedProject } = await import(
+                "../features/project/pages/AssociatedProject/AssociatedProject"
+              );
+              return { element: <AssociatedProject /> };
+            },
+          },
+          {
             path: "projects/:projectId",
             async lazy() {
               const { ProjectDetailsPage } = await import(

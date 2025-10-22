@@ -671,7 +671,7 @@ export const ProjectListPage: React.FC = () => {
                   : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                   }`}
               >
-                Archived
+                Closed Lost
               </button>
               {/* View Toggle - Icons Only */}
               <div className="flex bg-gray-100 rounded-lg p-1">

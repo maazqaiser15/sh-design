@@ -42,16 +42,9 @@ const CustomDataTable: React.FC<tableProps> = ({
 
   // Custom styles for the table and pagination
   const customStyles = {
-    tableWrapper: {
-      style: {
-        width: '100%',
-        overflowX: 'auto',      // ← horizontal scroll lives here
-      },
-    },
     table: {
       style: {
         backgroundColor: "transparent", // ✅ whole table background color
-        tableLayout: "fixed",
       },
     },
     headRow: {
@@ -71,14 +64,14 @@ const CustomDataTable: React.FC<tableProps> = ({
         fontWeight: 400,
         paddingLeft: "16px",
         paddingRight: "16px",
-        whiteSpace: "nowrap",
+        whiteSpace: "normal",
       },
     },
     cells: {
       style: {
         paddingLeft: "16px",
         paddingRight: "16px",
-        whiteSpace: "nowrap",
+        whiteSpace: "normal",
       },
     },
     rows: {
@@ -103,9 +96,7 @@ const CustomDataTable: React.FC<tableProps> = ({
     pagination: {
       style: {
         backgroundColor: 'transparent', // Pagination background color
-        borderTopStyle: 'solid',
-        borderTopWidth: '1px',
-        borderTopColor: '#d1d5db',
+        borderTop: '1px solid #d1d5db',
         minHeight: '56px',
       },
       pageButtonsStyle: {

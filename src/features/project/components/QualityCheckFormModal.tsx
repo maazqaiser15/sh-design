@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertCircle, FileText } from 'lucide-react';
+import { CheckCircle2, AlertCircle, FileText, Mail } from 'lucide-react';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
 import { Modal } from '../../../common/components/Modal';
@@ -50,12 +50,12 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
   const handleInputChange = (field: keyof QualityCheckFormData, value: string | boolean) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      
+
       // If QF is unchecked, automatically uncheck QC
       if (field === 'markQF' && value === false) {
         newData.markQC = false;
       }
-      
+
       return newData;
     });
   };
@@ -158,16 +158,16 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
           {/* PURPOSE Section */}
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-gray-900">PURPOSE</h3>
-            
+
             <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
               <p>
                 Safe Haven Defense US, LLC is a recognized leader in surety laminate solutions. We provide an exceptionally finished product installed by trained experts using our innovative installation technique. Our bullet resistant films are unique, lab tested, UL certified, and provide 1 Directional Bullet Resistance while restricting unauthorized access. We stand behind our work with comprehensive warranties.
               </p>
-              
+
               <p>
                 This form serves as your approval of our workmanship and the professionalism shown by our installation team. Please ensure windows are free from debris, particle dust exists, and note that 30 days or more of curing time is required. Conduct a quality walk at a 6'-0" distance, visually inspect our work areas and mainly at right angles, from a standing and/or seated position. Please sign below for approval of a successfully completed project.
               </p>
-              
+
               <p>
                 If you have any questions, comments or concerns, please contact us so we can find a solution. Thank you for your interest in our products and trust in contracting with Safe Haven Defense US.
               </p>
@@ -232,44 +232,46 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
                   Mark QF (Quality Form) - Mark this project for Quality Form review
                 </label>
               </div>
-              
-              <div className={`flex items-center space-x-3 p-4 rounded-lg border ${
-                !formData.markQF ? 'bg-gray-100 opacity-60' : 'bg-gray-50'
-              }`}>
+
+              <div className={`flex items-center space-x-3 bg-gray-50 p-4 rounded-lg border 
+              `}>
                 <input
                   type="checkbox"
                   id="markQC"
                   checked={formData.markQC}
                   onChange={(e) => handleInputChange('markQC', e.target.checked)}
-                  disabled={!formData.markQF}
+                  // disabled={!formData.markQF}
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 disabled:cursor-not-allowed"
                 />
-                <label htmlFor="markQC" className={`text-sm font-medium cursor-pointer ${
-                  !formData.markQF ? 'text-gray-400' : 'text-gray-700'
-                }`}>
+                <label htmlFor="markQC" className={`text-sm font-medium cursor-pointer ${'text-gray-700'
+                  }`}>
                   Mark QC (Quality Control) - Mark this project for Quality Control review
-                  {!formData.markQF && ' (QF must be marked first)'}
+                  {/* {!formData.markQF && ' (QF must be marked first)'} */}
                 </label>
               </div>
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
+          <div className="flex items-center justify-between gap-3 pt-6 border-t border-gray-200">
+            <Button icon={Mail} variant='ghost' className='bg-gray-50'>Send as an email</Button>
+            <div className='flex items-center gap-2'>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
               // disabled={(!formData.markQF && !formData}
-            >
-              Submit Quality Walk Form
-            </Button>
+              >
+                Submit Quality Walk Form
+              </Button>
+            </div>
+
           </div>
         </form>
       </div>
