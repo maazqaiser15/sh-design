@@ -396,6 +396,7 @@ const AssociatedProject = () => {
           title={''}
           columns={columns}
           data={ROLE3_MOCK_WINDOWS}
+            selectableRows={false}
           pagination={true}
            highlightOnHover={true}
            striped={true}
