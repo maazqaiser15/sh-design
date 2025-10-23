@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Users, Phone, Edit, Plane, Trash2, Truck, RefreshCw, Car, Hotel, CheckCircle, Plus, FileText, X } from 'lucide-react';
-import { Button } from '../../../../common/components/Button';
-import { Card } from '../../../../common/components/Card';
-import { AssignedTeam } from '../../types/projectDetails';
-import { TeamMember } from '../../types/teamMembers';
-import { TravelPlan } from '../../types/logisticsTravel';
-import { LogisticsCard } from '../LogisticsCard';
-import { AddTravelDetailsModal } from '../AddTravelDetailsModal';
-import { AddHotelReservationModal } from '../AddHotelReservationModal';
-import { UploadTakeOffSheetModal } from '../UploadTakeOffSheetModal';
-import { WindowManagementPage } from '../../pages/WindowManagementPage';
-import { Window } from '../../types/windows';
-import { useToast } from '../../../../contexts/ToastContext';
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  Users,
+  Phone,
+  Edit,
+  Plane,
+  Trash2,
+  Truck,
+  RefreshCw,
+  Car,
+  Hotel,
+  CheckCircle,
+  Plus,
+  FileText,
+  X,
+} from "lucide-react";
+import { Button } from "../../../../common/components/Button";
+import { Card } from "../../../../common/components/Card";
+import { AssignedTeam } from "../../types/projectDetails";
+import { TeamMember } from "../../types/teamMembers";
+import { TravelPlan } from "../../types/logisticsTravel";
+import { LogisticsCard } from "../LogisticsCard";
+import { AddTravelDetailsModal } from "../AddTravelDetailsModal";
+import { AddHotelReservationModal } from "../AddHotelReservationModal";
+import { UploadTakeOffSheetModal } from "../UploadTakeOffSheetModal";
+import { WindowManagementPage } from "../../pages/WindowManagementPage";
+import { Window } from "../../types/windows";
+import { useToast } from "../../../../contexts/ToastContext";
 
 interface KeyInfoSectionProps {
   assignedTeam: AssignedTeam | null;
@@ -61,9 +75,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   onRemoveReceipt,
   onMarkCompleted,
   onUpdatePreparationTask,
-  selectedStage = 'preparation',
+  selectedStage = "preparation",
   windows = [],
-  onWindowUpdate
+  onWindowUpdate,
 }) => {
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -72,16 +86,17 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   // Travel & Accommodation state management
   const [travelSetup, setTravelSetup] = useState({
     travelRequired: false,
-    travelType: null as 'road' | 'air' | null,
+    travelType: null as "road" | "air" | null,
     airTravelMembers: 1,
     roadTravelMembers: 1,
-    hotelRequired: false
+    hotelRequired: false,
   });
   const [isTravelExpanded, setIsTravelExpanded] = useState(false);
   const [isTravelEditing, setIsTravelEditing] = useState(false);
   const [isTravelSubmitted, setIsTravelSubmitted] = useState(false);
   const [showTravelDetailsModal, setShowTravelDetailsModal] = useState(false);
-  const [showHotelReservationModal, setShowHotelReservationModal] = useState(false);
+  const [showHotelReservationModal, setShowHotelReservationModal] =
+    useState(false);
   const [travelDetails, setTravelDetails] = useState<{
     travelFrom: string;
     travelTo: string;
@@ -98,34 +113,34 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   } | null>(null);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const getTeamStatusColor = (status: string) => {
     switch (status) {
-      case 'available':
-        return 'text-green-600 bg-green-50';
-      case 'busy':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'unavailable':
-        return 'text-red-600 bg-red-50';
+      case "available":
+        return "text-green-600 bg-green-50";
+      case "busy":
+        return "text-yellow-600 bg-yellow-50";
+      case "unavailable":
+        return "text-red-600 bg-red-50";
       default:
-        return 'text-gray-600 bg-gray-50';
+        return "text-gray-600 bg-gray-50";
     }
   };
 
   const getTeamStatusText = (status: string) => {
     switch (status) {
-      case 'available':
-        return 'Available';
-      case 'busy':
-        return 'Busy';
-      case 'unavailable':
-        return 'Unavailable';
+      case "available":
+        return "Available";
+      case "busy":
+        return "Busy";
+      case "unavailable":
+        return "Unavailable";
       default:
         return status;
     }
@@ -137,29 +152,29 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
     // Mock film inventory data
     const filmInventory = [
-      { type: 'BR', quantity: 15 },
-      { type: 'Riot+', quantity: 10 },
-      { type: 'Riot', quantity: 8 },
-      { type: 'Riot -', quantity: 5 },
-      { type: 'FER', quantity: 3 },
-      { type: 'Smash', quantity: 2 },
-      { type: 'Tint NI', quantity: 1 },
-      { type: 'Tint Incl', quantity: 1 }
+      { type: "BR", quantity: 15 },
+      { type: "Riot+", quantity: 10 },
+      { type: "Riot", quantity: 8 },
+      { type: "Riot -", quantity: 5 },
+      { type: "FER", quantity: 3 },
+      { type: "Smash", quantity: 2 },
+      { type: "Tint NI", quantity: 1 },
+      { type: "Tint Incl", quantity: 1 },
     ];
 
-    return filmInventory.filter(film => film.quantity > 0);
+    return filmInventory.filter((film) => film.quantity > 0);
   };
 
   // Travel & Accommodation handlers
   const handleTravelRequired = (checked: boolean) => {
-    setTravelSetup(prev => ({
+    setTravelSetup((prev) => ({
       ...prev,
       travelRequired: checked,
-      travelType: checked ? prev.travelType : null
+      travelType: checked ? prev.travelType : null,
     }));
 
     if (checked) {
-      showToast('Travel setup initiated - please select travel type');
+      showToast("Travel setup initiated - please select travel type");
       setIsTravelExpanded(true);
       setIsTravelEditing(true);
     } else {
@@ -167,37 +182,37 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
     }
   };
 
-  const handleTravelType = (type: 'road' | 'air') => {
-    setTravelSetup(prev => ({
+  const handleTravelType = (type: "road" | "air") => {
+    setTravelSetup((prev) => ({
       ...prev,
-      travelType: type
+      travelType: type,
     }));
   };
 
   const handleAirTravelMembers = (count: number) => {
-    setTravelSetup(prev => ({
+    setTravelSetup((prev) => ({
       ...prev,
-      airTravelMembers: Math.max(1, Math.min(50, count))
+      airTravelMembers: Math.max(1, Math.min(50, count)),
     }));
   };
 
   const handleRoadTravelMembers = (count: number) => {
-    setTravelSetup(prev => ({
+    setTravelSetup((prev) => ({
       ...prev,
-      roadTravelMembers: Math.max(1, Math.min(50, count))
+      roadTravelMembers: Math.max(1, Math.min(50, count)),
     }));
   };
 
   const handleHotelRequired = (checked: boolean) => {
-    setTravelSetup(prev => ({
+    setTravelSetup((prev) => ({
       ...prev,
-      hotelRequired: checked
+      hotelRequired: checked,
     }));
 
     if (checked) {
-      showToast('Reminder sent to house manager to do arrangement');
+      showToast("Reminder sent to house manager to do arrangement");
       onNotifyHouseManager();
-      onUpdatePreparationTask?.('Travel Setup', true);
+      onUpdatePreparationTask?.("Travel Setup", true);
       // Ensure we stay in editing mode to show the button
       setIsTravelEditing(true);
       setIsTravelExpanded(true);
@@ -205,15 +220,19 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   };
 
   const handleTravelConfirm = () => {
-    if (travelSetup.travelType === 'road') {
+    if (travelSetup.travelType === "road") {
       onNotifyHouseManager();
-      showToast(`Road travel arranged for ${travelSetup.roadTravelMembers} team members`);
-    } else if (travelSetup.travelType === 'air') {
+      showToast(
+        `Road travel arranged for ${travelSetup.roadTravelMembers} team members`
+      );
+    } else if (travelSetup.travelType === "air") {
       onNotifyHouseManager();
-      showToast(`Air travel arranged for ${travelSetup.airTravelMembers} team members`);
+      showToast(
+        `Air travel arranged for ${travelSetup.airTravelMembers} team members`
+      );
     }
 
-    onUpdatePreparationTask?.('Travel Setup', true);
+    onUpdatePreparationTask?.("Travel Setup", true);
     setIsTravelSubmitted(true);
     // Keep editing mode open to show the Add Travel Details button
   };
@@ -233,7 +252,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
   const handleSaveTravelDetails = (details: any) => {
     setTravelDetails(details);
-    showToast('Travel details saved successfully');
+    showToast("Travel details saved successfully");
   };
 
   const handleEditTravelDetails = () => {
@@ -250,7 +269,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
   const handleSaveHotelReservationDetails = (details: any) => {
     setHotelReservationDetails(details);
-    showToast('Hotel reservation details saved successfully!');
+    showToast("Hotel reservation details saved successfully!");
   };
 
   const handleEditHotelReservationDetails = () => {
@@ -259,7 +278,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
   // Handle removing team member
   const handleRemoveTeamMember = (memberId: string) => {
-    const member = assignedTeam?.members.find(m => m.id === memberId);
+    const member = assignedTeam?.members.find((m) => m.id === memberId);
     if (member) {
       showToast(`${member.name} removed from team`);
       onRemoveTeamMember(memberId);
@@ -273,7 +292,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
   // Handle upload take-off sheet
   const handleUploadTakeOffSheet = (file: File) => {
-    showToast(`Take-off sheet "${file.name}" uploaded successfully! Windows created.`);
+    showToast(
+      `Take-off sheet "${file.name}" uploaded successfully! Windows created.`
+    );
     setShowUploadModal(false);
     // Navigate to window management page
     if (projectId) {
@@ -295,7 +316,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
     // Simulate upload processing
     setTimeout(() => {
-      showToast('Take-off sheet uploaded successfully! Windows created.');
+      showToast("Take-off sheet uploaded successfully! Windows created.");
       setIsUploading(false);
       // Show window management interface instead of redirecting
       setShowWindowManagement(true);
@@ -304,7 +325,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 mb-6 items-stretch">
-      {selectedStage === 'wip' ? (
+      {selectedStage === "wip" ? (
         // Work in Progress stage - Show upload or window management
         <div className="lg:col-span-4">
           {showWindowManagement ? (
@@ -313,7 +334,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-2">
                   <FileText className="w-5 h-5 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Window Management</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Window Management
+                  </h3>
                 </div>
               </div>
               <div className="p-0">
@@ -329,9 +352,13 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <FileText className="w-5 h-5 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Project Setup</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Project Setup
+                  </h3>
                 </div>
-                <span className="text-sm font-medium text-gray-500">Ready to begin</span>
+                <span className="text-sm font-medium text-gray-500">
+                  Ready to begin
+                </span>
               </div>
 
               {isUploading ? (
@@ -346,11 +373,14 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                   </h4>
 
                   <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
-                    Creating window inventory and setting up project workspace...
+                    Creating window inventory and setting up project
+                    workspace...
                   </p>
 
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+                    <div
+                      className="bg-blue-600 h-2 rounded-full animate-pulse"
+                      style={{ width: "70%" }}></div>
                   </div>
 
                   <p className="text-xs text-gray-500">
@@ -369,8 +399,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                   </h4>
 
                   <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
-                    Upload your take-off sheet to create window inventory and start working on the project.
-                    This will help us track progress and manage the installation process.
+                    Upload your take-off sheet to create window inventory and
+                    start working on the project. This will help us track
+                    progress and manage the installation process.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -379,8 +410,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                       size="md"
                       icon={FileText}
                       onClick={handleDirectUpload}
-                      className="px-6 py-2"
-                    >
+                      className="px-6 py-2">
                       Upload Take-Off Sheet
                     </Button>
 
@@ -389,21 +419,22 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                       size="md"
                       icon={Edit}
                       onClick={() => {
-                        showToast('Manual window entry opened');
+                        showToast("Manual window entry opened");
                         // In a real app, this would open a modal for manual entry
                       }}
-                      className="px-6 py-2"
-                    >
+                      className="px-6 py-2">
                       Enter Manually
                     </Button>
                   </div>
 
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-500 mb-2">
-                      <strong>Supported formats:</strong> PDF, Excel (.xlsx, .xls), CSV
+                      <strong>Supported formats:</strong> PDF, Excel (.xlsx,
+                      .xls), CSV
                     </p>
                     <p className="text-xs text-gray-500">
-                      Once uploaded, we'll automatically create your window inventory and you can begin tracking progress.
+                      Once uploaded, we'll automatically create your window
+                      inventory and you can begin tracking progress.
                     </p>
                   </div>
                 </div>
@@ -418,11 +449,14 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <Users className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Assigned Team</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Assigned Team
+                </h3>
               </div>
               {assignedTeam && (
                 <span className="text-sm font-medium text-gray-500">
-                  {assignedTeam.count} member{assignedTeam.count !== 1 ? 's' : ''}
+                  {assignedTeam.count} member
+                  {assignedTeam.count !== 1 ? "s" : ""}
                 </span>
               )}
             </div>
@@ -432,25 +466,35 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                 {/* Team Members List - Scrollable */}
                 <div className="flex-1 overflow-y-auto space-y-2 mb-3 min-h-0">
                   {assignedTeam.members.map((member) => (
-                    <div key={member.id} className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                    <div
+                      key={member.id}
+                      className="bg-gray-50 rounded-lg p-2 border border-gray-200">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-sm font-medium text-blue-600">
-                            {member.name.split(' ').map(n => n[0]).join('')}
+                            {member.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">{member.name}</p>
-                            <p className="text-xs text-gray-500 truncate">{member.role}</p>
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {member.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {member.role}
+                            </p>
                             {member.location && (
-                              <p className="text-xs text-gray-400 truncate">{member.location}</p>
+                              <p className="text-xs text-gray-400 truncate">
+                                {member.location}
+                              </p>
                             )}
                           </div>
                         </div>
                         <button
                           onClick={() => handleRemoveTeamMember(member.id)}
                           className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                          title="Remove team member"
-                        >
+                          title="Remove team member">
                           <X className="w-4 h-4" />
                         </button>
                       </div>
@@ -464,8 +508,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     variant="primary"
                     size="sm"
                     onClick={onAssignTeam}
-                    className="w-full"
-                  >
+                    className="w-full">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Team Member
                   </Button>
@@ -474,13 +517,14 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             ) : (
               <div className="text-center py-6 flex-1 flex flex-col justify-center">
                 <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p className="text-sm text-gray-500 mb-4">No team assigned yet</p>
+                <p className="text-sm text-gray-500 mb-4">
+                  No team assigned yet
+                </p>
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={onAssignTeam}
-                  className="w-full mt-auto"
-                >
+                  className="w-full mt-auto">
                   Assign Team
                 </Button>
               </div>
@@ -492,15 +536,16 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <Truck className="w-5 h-5 text-amber-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Assign Trailer</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Assign Trailer
+                </h3>
               </div>
               {assignedTrailer && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={onAssignTrailer}
-                  icon={RefreshCw}
-                >
+                  icon={RefreshCw}>
                   Change
                 </Button>
               )}
@@ -520,17 +565,25 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Location:</span>
-                      <span className="text-sm text-gray-600">{assignedTrailer.location}</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Location:
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        {assignedTrailer.location}
+                      </span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Status:</span>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${assignedTrailer.status === 'available'
-                          ? 'bg-green-100 text-green-800'
-                          : assignedTrailer.status === 'in-use'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
+                      <span className="text-sm font-medium text-gray-700">
+                        Status:
+                      </span>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          assignedTrailer.status === "available"
+                            ? "bg-green-100 text-green-800"
+                            : assignedTrailer.status === "in-use"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
                         }`}>
                         {assignedTrailer.status}
                       </span>
@@ -538,12 +591,18 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                     {/* Film Inventory */}
                     <div className="mt-2">
-                      <span className="text-sm font-medium text-gray-700 mb-2 block">Films in Trailer:</span>
+                      <span className="text-sm font-medium text-gray-700 mb-2 block">
+                        Films in Trailer:
+                      </span>
                       <div className="space-y-1">
                         {getTrailerFilmInventory().map((film, index) => (
-                          <div key={index} className="flex items-center justify-between text-xs">
+                          <div
+                            key={index}
+                            className="flex items-center justify-between text-xs">
                             <span className="text-gray-600">{film.type}</span>
-                            <span className="text-gray-500">{film.quantity} sheets</span>
+                            <span className="text-gray-500">
+                              {film.quantity} sheets
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -551,8 +610,12 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
 
                     {assignedTrailer.notes && (
                       <div className="mt-3 pt-2 border-t border-gray-200">
-                        <span className="text-sm font-medium text-gray-700 block mb-2">Notes:</span>
-                        <p className="text-sm text-gray-600">{assignedTrailer.notes}</p>
+                        <span className="text-sm font-medium text-gray-700 block mb-2">
+                          Notes:
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          {assignedTrailer.notes}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -561,13 +624,14 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             ) : (
               <div className="text-center py-6 flex-1 flex flex-col justify-center">
                 <Truck className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p className="text-sm text-gray-500 mb-4">No trailer assigned yet</p>
+                <p className="text-sm text-gray-500 mb-4">
+                  No trailer assigned yet
+                </p>
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={onAssignTrailer}
-                  className="w-full mt-auto"
-                >
+                  className="w-full mt-auto">
                   Assign Trailer
                 </Button>
               </div>
@@ -589,7 +653,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <Plane className="w-5 h-5 text-green-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Travel & Accommodation</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Travel & Accommodation
+                </h3>
               </div>
             </div>
 
@@ -605,7 +671,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     onChange={(e) => handleTravelRequired(e.target.checked)}
                     className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                   />
-                  <label htmlFor="travel-required" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="travel-required"
+                    className="text-sm font-medium text-gray-700">
                     Travel Required
                   </label>
                 </div>
@@ -619,11 +687,13 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                           type="radio"
                           id="travel-road"
                           name="travel-type"
-                          checked={travelSetup.travelType === 'road'}
-                          onChange={() => handleTravelType('road')}
+                          checked={travelSetup.travelType === "road"}
+                          onChange={() => handleTravelType("road")}
                           className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
                         />
-                        <label htmlFor="travel-road" className="flex items-center space-x-2 text-sm text-gray-700">
+                        <label
+                          htmlFor="travel-road"
+                          className="flex items-center space-x-2 text-sm text-gray-700">
                           <Car className="w-4 h-4" />
                           <span>Travel by Road</span>
                         </label>
@@ -634,11 +704,13 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                           type="radio"
                           id="travel-air"
                           name="travel-type"
-                          checked={travelSetup.travelType === 'air'}
-                          onChange={() => handleTravelType('air')}
+                          checked={travelSetup.travelType === "air"}
+                          onChange={() => handleTravelType("air")}
                           className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
                         />
-                        <label htmlFor="travel-air" className="flex items-center space-x-2 text-sm text-gray-700">
+                        <label
+                          htmlFor="travel-air"
+                          className="flex items-center space-x-2 text-sm text-gray-700">
                           <Plane className="w-4 h-4" />
                           <span>Travel by Air</span>
                         </label>
@@ -646,10 +718,12 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     </div>
 
                     {/* Road Travel Input */}
-                    {travelSetup.travelType === 'road' && (
+                    {travelSetup.travelType === "road" && (
                       <div className="space-y-2">
                         <div>
-                          <label htmlFor="road-members" className="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            htmlFor="road-members"
+                            className="block text-sm font-medium text-gray-700 mb-1">
                             Number of team members requiring road travel
                           </label>
                           <input
@@ -658,7 +732,11 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                             min="1"
                             max="50"
                             value={travelSetup.roadTravelMembers}
-                            onChange={(e) => handleRoadTravelMembers(parseInt(e.target.value) || 1)}
+                            onChange={(e) =>
+                              handleRoadTravelMembers(
+                                parseInt(e.target.value) || 1
+                              )
+                            }
                             className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                           />
                         </div>
@@ -666,10 +744,12 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     )}
 
                     {/* Air Travel Input */}
-                    {travelSetup.travelType === 'air' && (
+                    {travelSetup.travelType === "air" && (
                       <div className="space-y-2">
                         <div>
-                          <label htmlFor="air-members" className="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            htmlFor="air-members"
+                            className="block text-sm font-medium text-gray-700 mb-1">
                             Number of team members requiring air travel
                           </label>
                           <input
@@ -678,7 +758,11 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                             min="1"
                             max="50"
                             value={travelSetup.airTravelMembers}
-                            onChange={(e) => handleAirTravelMembers(parseInt(e.target.value) || 1)}
+                            onChange={(e) =>
+                              handleAirTravelMembers(
+                                parseInt(e.target.value) || 1
+                              )
+                            }
                             className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                           />
                         </div>
@@ -691,27 +775,27 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                         variant="primary"
                         size="sm"
                         onClick={handleTravelConfirm}
-                        className="w-full"
-                      >
+                        className="w-full">
                         <CheckCircle className="w-4 h-4 mr-2" />
                         Submit Travel Arrangement
                       </Button>
                     )}
 
                     {/* Add Travel Details Button - shows after travel is submitted but before details are saved */}
-                    {isTravelSubmitted && travelSetup.travelType && !travelDetails && (
-                      <div className="mt-2">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={handleOpenTravelDetailsModal}
-                          className="w-full"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Travel Details
-                        </Button>
-                      </div>
-                    )}
+                    {isTravelSubmitted &&
+                      travelSetup.travelType &&
+                      !travelDetails && (
+                        <div className="mt-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={handleOpenTravelDetailsModal}
+                            className="w-full">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Travel Details
+                          </Button>
+                        </div>
+                      )}
                   </div>
                 )}
 
@@ -721,15 +805,16 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <FileText className="w-5 h-5 text-blue-600" />
-                        <h4 className="text-sm font-medium text-blue-900">Reservation Details Added</h4>
+                        <h4 className="text-sm font-medium text-blue-900">
+                          Reservation Details Added
+                        </h4>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleEditTravelDetails}
                         className="text-blue-600 hover:text-blue-800 p-2"
-                        title="Edit travel details"
-                      >
+                        title="Edit travel details">
                         <Edit className="w-4 h-4" />
                       </Button>
                     </div>
@@ -744,13 +829,15 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                       <div className="flex justify-between">
                         <span className="text-blue-700">Tickets:</span>
                         <span className="text-blue-900 font-medium">
-                          {travelDetails.numberOfTickets} ticket{travelDetails.numberOfTickets !== 1 ? 's' : ''}
+                          {travelDetails.numberOfTickets} ticket
+                          {travelDetails.numberOfTickets !== 1 ? "s" : ""}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-blue-700">Attachments:</span>
                         <span className="text-blue-900 font-medium">
-                          {travelDetails.attachments.length} file{travelDetails.attachments.length !== 1 ? 's' : ''}
+                          {travelDetails.attachments.length} file
+                          {travelDetails.attachments.length !== 1 ? "s" : ""}
                         </span>
                       </div>
                     </div>
@@ -766,7 +853,9 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     onChange={(e) => handleHotelRequired(e.target.checked)}
                     className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                   />
-                  <label htmlFor="hotel-required" className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="hotel-required"
+                    className="flex items-center space-x-2 text-sm font-medium text-gray-700">
                     <Hotel className="w-4 h-4" />
                     <span>Hotel Reservation Required</span>
                   </label>
@@ -779,8 +868,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                       variant="secondary"
                       size="sm"
                       onClick={handleOpenHotelReservationModal}
-                      className="w-full"
-                    >
+                      className="w-full">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Reservation Details
                     </Button>
@@ -793,15 +881,16 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <Hotel className="w-5 h-5 text-blue-600" />
-                        <h4 className="text-sm font-medium text-blue-900">Hotel Reservation Details Added</h4>
+                        <h4 className="text-sm font-medium text-blue-900">
+                          Hotel Reservation Details Added
+                        </h4>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleEditHotelReservationDetails}
                         className="text-blue-600 hover:text-blue-800 p-2"
-                        title="Edit hotel reservation details"
-                      >
+                        title="Edit hotel reservation details">
                         <Edit className="w-4 h-4" />
                       </Button>
                     </div>
@@ -809,26 +898,39 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span className="text-blue-700">Hotel:</span>
-                        <span className="text-blue-900 font-medium">{hotelReservationDetails.hotelName}</span>
+                        <span className="text-blue-900 font-medium">
+                          {hotelReservationDetails.hotelName}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-blue-700">Check-in:</span>
-                        <span className="text-blue-900 font-medium">{formatDate(hotelReservationDetails.checkInDate)}</span>
+                        <span className="text-blue-900 font-medium">
+                          {formatDate(hotelReservationDetails.checkInDate)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-blue-700">Check-out:</span>
-                        <span className="text-blue-900 font-medium">{formatDate(hotelReservationDetails.checkOutDate)}</span>
+                        <span className="text-blue-900 font-medium">
+                          {formatDate(hotelReservationDetails.checkOutDate)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-blue-700">Rooms:</span>
                         <span className="text-blue-900 font-medium">
-                          {hotelReservationDetails.numberOfRooms} room{hotelReservationDetails.numberOfRooms !== 1 ? 's' : ''}
+                          {hotelReservationDetails.numberOfRooms} room
+                          {hotelReservationDetails.numberOfRooms !== 1
+                            ? "s"
+                            : ""}
                         </span>
                       </div>
                       {hotelReservationDetails.reservationSlip && (
                         <div className="flex justify-between">
-                          <span className="text-blue-700">Reservation Slip:</span>
-                          <span className="text-blue-900 font-medium">1 file</span>
+                          <span className="text-blue-700">
+                            Reservation Slip:
+                          </span>
+                          <span className="text-blue-900 font-medium">
+                            1 file
+                          </span>
                         </div>
                       )}
                     </div>
@@ -845,8 +947,12 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
         isOpen={showTravelDetailsModal}
         onClose={handleCloseTravelDetailsModal}
         onSave={handleSaveTravelDetails}
-        travelType={travelSetup.travelType || 'air'}
-        numberOfMembers={travelSetup.travelType === 'air' ? travelSetup.airTravelMembers : travelSetup.roadTravelMembers}
+        travelType={travelSetup.travelType || "air"}
+        numberOfMembers={
+          travelSetup.travelType === "air"
+            ? travelSetup.airTravelMembers
+            : travelSetup.roadTravelMembers
+        }
       />
 
       {/* Add Hotel Reservation Modal */}

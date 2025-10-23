@@ -54,7 +54,9 @@ export const routes: RouteObject[] = [
           {
             index: true,
             async lazy() {
-              const { DashboardWrapper } = await import("../components/DashboardWrapper");
+              const { DashboardWrapper } = await import(
+                "../components/DashboardWrapper"
+              );
               return { element: <DashboardWrapper /> };
             },
           },
@@ -129,7 +131,9 @@ export const routes: RouteObject[] = [
               {
                 path: ":memberId",
                 async lazy() {
-                  const { TeamMemberDetail } = await import("../pages/Team/TeamMemberDetail");
+                  const { TeamMemberDetail } = await import(
+                    "../pages/Team/TeamMemberDetail"
+                  );
                   return { element: <TeamMemberDetail /> };
                 },
               },
@@ -150,7 +154,9 @@ export const routes: RouteObject[] = [
               {
                 path: "empty",
                 async lazy() {
-                  const { TrailerEmptyState } = await import("../pages/Trailers/TrailerEmptyState");
+                  const { TrailerEmptyState } = await import(
+                    "../pages/Trailers/TrailerEmptyState"
+                  );
                   return { element: <TrailerEmptyState /> };
                 },
               },
@@ -168,29 +174,35 @@ export const routes: RouteObject[] = [
           {
             path: "team-gantt-chart",
             async lazy() {
-              const { TeamGanttChart } = await import("../pages/TeamGanttChart");
+              const { TeamGanttChart } = await import(
+                "../pages/TeamGanttChart"
+              );
               return { element: <TeamGanttChart /> };
             },
           },
 
-        {
-          path: "design-system",
-          element: <DesignSystemLibrary />,
-        },
-        {
-          path: "project-details-demo",
-          async lazy() {
-            const { ProjectDetailsDemo } = await import("../pages/ProjectDetailsDemo");
-            return { element: <ProjectDetailsDemo /> };
+          {
+            path: "design-system",
+            element: <DesignSystemLibrary />,
           },
-        },
-        {
-          path: "project-date-setup-demo",
-          async lazy() {
-            const { ProjectDateSetupDemo } = await import("../pages/ProjectDateSetupDemo");
-            return { element: <ProjectDateSetupDemo /> };
+          {
+            path: "project-details-demo",
+            async lazy() {
+              const { ProjectDetailsDemo } = await import(
+                "../pages/ProjectDetailsDemo"
+              );
+              return { element: <ProjectDetailsDemo /> };
+            },
           },
-        },
+          {
+            path: "project-date-setup-demo",
+            async lazy() {
+              const { ProjectDateSetupDemo } = await import(
+                "../pages/ProjectDateSetupDemo"
+              );
+              return { element: <ProjectDateSetupDemo /> };
+            },
+          },
 
           // Settings Routes
           {
@@ -203,7 +215,9 @@ export const routes: RouteObject[] = [
               {
                 path: "profile",
                 async lazy() {
-                  const { ProfileSettings } = await import("../pages/ProfileSettings");
+                  const { ProfileSettings } = await import(
+                    "../pages/ProfileSettings"
+                  );
                   return { element: <ProfileSettings /> };
                 },
               },
