@@ -46,6 +46,7 @@ import { useToast } from "../../../../contexts/ToastContext";
 import { WindowDetailModal } from "../../components/WindowDetailModal";
 import { AddEditWindowModal } from "../../components/AddEditWindowModal";
 import { ProjectNotes } from "../../components/ProjectNotes";
+import { Modal } from "../../../../common/components/Modal";
 import {
   Window,
   TakeOffSheet,
@@ -566,6 +567,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
   const [editingWindow, setEditingWindow] = useState<Window | null>(null);
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
   const [updateCounter, setUpdateCounter] = useState(0);
+  const [showTravelDetailsModal, setShowTravelDetailsModal] = useState(false);
+  const [travelDetailsType, setTravelDetailsType] = useState<
+    "travel" | "hotel"
+  >("travel");
 
   // Card completion states
   const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
@@ -2112,7 +2117,14 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                   ? [
                       { id: "job-brief", label: "Window Management" },
                       { id: "team", label: "Team" },
-                      { id: "travel-hotel", label: "Travel & Hotel" },
+                      {
+                        id: "travel-accommodation",
+                        label: "Travel & Accommodation",
+                      },
+                      {
+                        id: "trailer-films",
+                        label: "Trailer & Films",
+                      },
                       { id: "document", label: "Document" },
                       { id: "notes", label: "Notes" },
                     ]
@@ -2651,7 +2663,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                             {member.name}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {member.role}. <span>({member.phone})</span>
+                            {member.role}{" "}
+                            <span className="bg-black rounded-full inline-block w-1 h-1 mx-1" />{" "}
+                            <span>({member.phone})</span>
                           </p>
                         </div>
                       </Card>
@@ -2661,11 +2675,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
               </div>
             )}
 
-            {activeTab === "travel-hotel" && (
+            {activeTab === "travel-accommodation" && (
               <div className="space-y-6">
                 <Card>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Travel & Hotel
+                    Travel & Accommodation
                   </h3>
                   <div className="space-y-6">
                     {/* Travel Details Section */}
@@ -2673,10 +2687,234 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                       <h4 className="text-sm font-medium text-gray-700 mb-3">
                         Travel details
                       </h4>
+                      <div className="space-y-4">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900">
+                              Lahore → Miami
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                              </svg>
+                              <span>2 attachments</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => {
+                                setTravelDetailsType("travel");
+                                setShowTravelDetailsModal(true);
+                              }}>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex-1 flex items-center gap-2">
+                            <p className="font-medium text-gray-900">
+                              Islamabad → New York
+                            </p>
+                            <p className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {" "}
+                              One Way
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                              </svg>
+                              <span>2 attachments</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => {
+                                setTravelDetailsType("travel");
+                                setShowTravelDetailsModal(true);
+                              }}>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex-1 flex items-center gap-2">
+                            <p className="font-medium text-gray-900">
+                              Miami → Lahore
+                            </p>
+                            <p className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              Round Trip
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                              </svg>
+                              <span>2 attachments</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => {
+                                setTravelDetailsType("travel");
+                                setShowTravelDetailsModal(true);
+                              }}>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hotel Reservation Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Hotel Reservation Details
+                      </h4>
                       <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">
-                            Lahore → Miami
+                            Hotel Picaso · Sep 25 → Sep 26, 2025
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
+                            Duration: 1 night
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                              />
+                            </svg>
+                            <span>3 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              setTravelDetailsType("hotel");
+                              setShowTravelDetailsModal(true);
+                            }}>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
+
+            {activeTab === "trailer-films" && (
+              <div className="space-y-6">
+                <Card>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Trailer & Films
+                  </h3>
+                  <div className="space-y-6">
+                    {/* Travel Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Trailer
+                      </h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            Beta Trailer
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
+                            <MapPin className="w-4 h-4" /> Location: Miami
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -2695,6 +2933,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                             </svg>
                             <span>2 attachments</span>
                           </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Download className="w-4 h-4" />
+                          </button>
                           <button className="text-gray-400 hover:text-gray-600">
                             <svg
                               className="w-4 h-4"
@@ -2716,12 +2957,12 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                     {/* Hotel Reservation Details Section */}
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-3">
-                        Hotel Reservation Details
+                        Films
                       </h4>
                       <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">
-                            Hotel Picaso · Sep 25 → Sep 26, 2025
+                            Shipment Receipt
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -2741,18 +2982,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                             <span>3 attachments</span>
                           </div>
                           <button className="text-gray-400 hover:text-gray-600">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                              />
-                            </svg>
+                            <Download className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -2870,42 +3100,6 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                         </button>
                       </div>
                     </div>
-                  </div>
-                </Card>
-
-                {/* Installation Guides Section */}
-                <Card>
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Installation Guides
-                      </h3>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Step-by-step installation procedures
-                      </p>
-                    </div>
-                    <Button
-                      variant="secondary"
-                      icon={Upload}
-                      onClick={() =>
-                        showToast(
-                          "Upload installation guide functionality coming soon"
-                        )
-                      }
-                      className="px-4 py-2">
-                      Upload document
-                    </Button>
-                  </div>
-
-                  <div className="text-center py-8">
-                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">
-                      No installation guides uploaded yet
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Upload guides to help your team with installation
-                      procedures
-                    </p>
                   </div>
                 </Card>
               </div>
@@ -3194,6 +3388,279 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
         trailer={selectedTrailer}
         existingTrailerNumbers={trailers.map((t) => t.trailerName)}
       />
+      {showTravelDetailsModal && (
+        <Modal
+          isOpen={showTravelDetailsModal}
+          onClose={() => setShowTravelDetailsModal(false)}
+          title={
+            travelDetailsType === "travel"
+              ? "Travel Details"
+              : "Hotel Reservation Details"
+          }
+          size="lg">
+          <div className="space-y-6">
+            {travelDetailsType === "travel" ? (
+              <>
+                {/* Travel Information */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Flight Information
+                  </h4>
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Route:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Lahore → Miami
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Departure:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Sep 25, 2025 - 10:30 AM
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Arrival:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Sep 25, 2025 - 6:45 PM
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">
+                        Flight Number:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        AA 1234
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Airline:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        American Airlines
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">
+                        Booking Reference:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        ABC123XYZ
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Passenger Details */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Passenger Details
+                  </h4>
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Name:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        John Doe
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">
+                        Seat Number:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        12A
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Class:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Business
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Attachments */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Attachments (2)
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-900">
+                          Flight Ticket.pdf
+                        </span>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Download
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-900">
+                          Boarding Pass.pdf
+                        </span>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Hotel Information */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Hotel Information
+                  </h4>
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Hotel Name:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Hotel Picaso
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Address:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        123 Ocean Drive, Miami, FL
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Check-in:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Sep 25, 2025 - 3:00 PM
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Check-out:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Sep 26, 2025 - 11:00 AM
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Room Type:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        Deluxe Suite
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">
+                        Reservation Number:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        HTL-789456
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guest Details */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Guest Details
+                  </h4>
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Guest Name:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        John Doe
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">
+                        Number of Guests:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        2 Adults
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Contact:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        +1 (555) 123-4567
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Amenities */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Included Amenities
+                  </h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <ul className="space-y-2 text-sm text-gray-900">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                        Free WiFi
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                        Breakfast Included
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                        Airport Shuttle
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                        Gym Access
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Attachments */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    Attachments (3)
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-900">
+                          Hotel Confirmation.pdf
+                        </span>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Download
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-900">
+                          Hotel Voucher.pdf
+                        </span>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Download
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-900">
+                          Hotel Map.pdf
+                        </span>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
