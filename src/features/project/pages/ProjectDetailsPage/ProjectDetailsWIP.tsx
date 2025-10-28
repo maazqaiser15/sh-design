@@ -31,6 +31,7 @@ import {
   FileCheck,
   Building,
   User,
+  File,
 } from "lucide-react";
 import { PieChart } from "../../../../common/components/PieChart";
 import {
@@ -73,6 +74,7 @@ import { getProgressBarColor } from "../../utils";
 import SearchField from "common/components/SearchField";
 import SelectField from "common/components/SelectField";
 import CustomDataTable from "common/components/CustomDataTable";
+import { SetupInventoryModal } from "../../components/SetupInventoryModal";
 
 interface ProjectDetailsWIPProps {
   projectStatus?: "WIP" | "QF" | "QC" | "Completed";
@@ -320,11 +322,10 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({
                             e.target.value
                           )
                         }
-                        className={`w-full px-2 py-1 border rounded text-sm ${
-                          errors[`building-${index}-name`]
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`w-full px-2 py-1 border rounded text-sm ${errors[`building-${index}-name`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}
                       />
                       {errors[`building-${index}-name`] && (
                         <p className="text-xs text-red-500 mt-0.5">
@@ -343,11 +344,10 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({
                             parseFloat(e.target.value) || 0
                           )
                         }
-                        className={`w-full px-2 py-1 border rounded text-sm ${
-                          errors[`building-${index}-width`]
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`w-full px-2 py-1 border rounded text-sm ${errors[`building-${index}-width`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}
                         min="0"
                         step="0.1"
                       />
@@ -368,11 +368,10 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({
                             parseFloat(e.target.value) || 0
                           )
                         }
-                        className={`w-full px-2 py-1 border rounded text-sm ${
-                          errors[`building-${index}-length`]
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`w-full px-2 py-1 border rounded text-sm ${errors[`building-${index}-length`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}
                         min="0"
                         step="0.1"
                       />
@@ -571,7 +570,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
   const [travelDetailsType, setTravelDetailsType] = useState<
     "travel" | "hotel"
   >("travel");
-
+const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
   // Card completion states
   const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
   const [isInventoryUpdated, setIsInventoryUpdated] = useState(false);
@@ -696,8 +695,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
       projectProgress === 100
         ? "Project Completed"
         : projectProgress > 0
-        ? "Window Installation"
-        : "Ready to Start",
+          ? "Window Installation"
+          : "Ready to Start",
     estimatedCompletion: "2024-02-15",
     teamOnSite: 4, // Team Assigned: 4
     windowsCompleted: 10, // Windows Completed: 10/300
@@ -851,11 +850,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
     console.log("Quality Check Form Data:", formData);
   };
 
-  const handleMarkQC = () => {
-    setQualityFormStatus("both-marked");
-    setProjectStatus("QC");
-    showToast("QC marked successfully - Project moved to QC status");
-  };
+  // const handleMarkQC = () => {
+  //   setQualityFormStatus("both-marked");
+  //   setProjectStatus("QC");
+  //   showToast("QC marked successfully - Project moved to QC status");
+  // };
 
   const handleMarkProjectAsCompleted = () => {
     setProjectStatus("Completed");
@@ -955,9 +954,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
       prev.map((note) =>
         note.id === noteId
           ? {
-              ...note,
-              attachments: [...(note.attachments || []), newAttachment],
-            }
+            ...note,
+            attachments: [...(note.attachments || []), newAttachment],
+          }
           : note
       )
     );
@@ -968,11 +967,11 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
       prev.map((note) =>
         note.id === noteId
           ? {
-              ...note,
-              attachments: (note.attachments || []).filter(
-                (att) => att.id !== attachmentId
-              ),
-            }
+            ...note,
+            attachments: (note.attachments || []).filter(
+              (att) => att.id !== attachmentId
+            ),
+          }
           : note
       )
     );
@@ -1014,9 +1013,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
             const isInterior = j <= windowRow.interiorLayer;
             layerInstallations.push({
               layerNumber: j,
-              layerName: `${isInterior ? "Interior" : "Exterior"} Layer ${
-                isInterior ? j : j - windowRow.interiorLayer
-              }`,
+              layerName: `${isInterior ? "Interior" : "Exterior"} Layer ${isInterior ? j : j - windowRow.interiorLayer
+                }`,
               status: Math.random() > 0.5 ? "Installed" : "Pending",
               installedBy: Math.random() > 0.5 ? "John Doe" : undefined,
               installedAt: Math.random() > 0.5 ? new Date() : undefined,
@@ -1279,34 +1277,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const getProgressPercentage = (project: ProjectListItem): number => {
-    // Use actual progress value from project data if available
-    if (project.progress !== undefined) {
-      return project.progress;
-    }
 
-    // Fallback to status-based progress for backward compatibility
-    switch (project.status) {
-      case "PV75":
-        return 5;
-      case "PV90":
-        return 15;
-      case "UB":
-        return 25;
-      case "WB":
-        return 40;
-      case "WIP":
-        return 75;
-      case "QF":
-        return 90;
-      case "Completed":
-        return 100;
-      case "Archived":
-        return 100;
-      default:
-        return 0;
-    }
-  };
 
   const columns = [
     {
@@ -1448,9 +1419,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                 onClick={() => {
                   getActionButton(row)?.action();
                 }}
-                className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${
-                  getActionButton(row)?.className
-                }`}>
+                className={`flex items-center gap-1 px-2 py-1 text-xs touch-manipulation ${getActionButton(row)?.className
+                  }`}>
                 <CheckCircle2 className="w-3 h-3" />
                 <span>{getActionButton(row)?.text || "Complete"}</span>
               </button>
@@ -1517,9 +1487,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                         .getElementById(`dropdown-${row.id}`)
                         ?.classList.add("hidden");
                     }}
-                    className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${
-                      getActionButton(row)?.className
-                    }`}>
+                    className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(row)?.className
+                      }`}>
                     <CheckCircle2 className="w-3 h-3" />
                     {getActionButton(row)?.text}
                   </button>
@@ -1569,20 +1538,29 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                       Marriot Windows Installation
                     </h1>
                     <span
-                      className={`px-2 py-1 rounded-md text-xs sm:text-sm font-semibold w-fit ${
-                        projectStatus === "WIP"
-                          ? "bg-blue-50 text-blue-700"
-                          : projectStatus === "QF"
+                      className={`px-2 py-1 rounded-md text-xs sm:text-sm font-semibold w-fit ${projectStatus === "WIP"
+                        ? "bg-blue-50 text-blue-700"
+                        : projectStatus === "QF"
                           ? "bg-orange-50 text-orange-700"
                           : projectStatus === "QC"
-                          ? "bg-indigo-50 text-indigo-700"
-                          : "bg-green-50 text-green-700"
-                      }`}>
+                            ? "bg-indigo-50 text-indigo-700"
+                            : "bg-green-50 text-green-700"
+                        }`}>
                       {projectStatus}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
+                <Button
+                    onClick={() => setShowSetupInventoryModal(true)}
+                    variant="ghost"
+                    size="sm"
+                    icon={File}
+
+                    className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                  >
+                     View Take Off Sheet
+                  </Button>
                   {projectStatus === "WIP" &&
                     user?.userType !== "execution-team" && (
                       <>
@@ -1738,17 +1716,15 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                   {/* Update Trailer Card */}
                   <div
-                    className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                      isTrailerUpdated
-                        ? "border-green-200 bg-green-50"
-                        : "border-gray-200 hover:shadow-md cursor-pointer"
-                    }`}>
+                    className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${isTrailerUpdated
+                      ? "border-green-200 bg-green-50"
+                      : "border-gray-200 hover:shadow-md cursor-pointer"
+                      }`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            isTrailerUpdated ? "bg-green-100" : "bg-blue-50"
-                          }`}>
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${isTrailerUpdated ? "bg-green-100" : "bg-blue-50"
+                            }`}>
                           {isTrailerUpdated ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
@@ -1790,17 +1766,15 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
 
                   {/* Update Inventory Card */}
                   <div
-                    className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                      isInventoryUpdated
-                        ? "border-green-200 bg-green-50"
-                        : "border-gray-200 hover:shadow-md cursor-pointer"
-                    }`}>
+                    className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${isInventoryUpdated
+                      ? "border-green-200 bg-green-50"
+                      : "border-gray-200 hover:shadow-md cursor-pointer"
+                      }`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            isInventoryUpdated ? "bg-green-100" : "bg-green-50"
-                          }`}>
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${isInventoryUpdated ? "bg-green-100" : "bg-green-50"
+                            }`}>
                           {isInventoryUpdated ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
@@ -1842,23 +1816,21 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
 
                   {/* Sign Quality Form Card */}
                   <div
-                    className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                      isQualityFormSigned
-                        ? qualityFormStatus === "both-marked"
-                          ? "border-green-200 bg-green-50"
-                          : "border-blue-200 bg-blue-50"
-                        : "border-gray-200 hover:shadow-md cursor-pointer"
-                    }`}>
+                    className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${isQualityFormSigned
+                      ? qualityFormStatus === "both-marked"
+                        ? "border-green-200 bg-green-50"
+                        : "border-blue-200 bg-blue-50"
+                      : "border-gray-200 hover:shadow-md cursor-pointer"
+                      }`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3 ">
                         <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            isQualityFormSigned
-                              ? qualityFormStatus === "both-marked"
-                                ? "bg-green-100"
-                                : "bg-blue-100"
-                              : "bg-purple-50"
-                          }`}>
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${isQualityFormSigned
+                            ? qualityFormStatus === "both-marked"
+                              ? "bg-green-100"
+                              : "bg-blue-100"
+                            : "bg-purple-50"
+                            }`}>
                           {isQualityFormSigned ? (
                             qualityFormStatus === "both-marked" ? (
                               <CheckCircle className="w-5 h-5 text-green-600" />
@@ -1883,12 +1855,12 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                       {!isQualityFormSigned
                         ? "Complete and sign the quality assurance form for project approval."
                         : qualityFormStatus === "both-marked"
-                        ? "QF & QC submitted successfully."
-                        : qualityFormStatus === "qf-marked"
-                        ? "QF is marked, waiting for QC to mark."
-                        : qualityFormStatus === "qc-marked"
-                        ? "QC is marked, quality control review completed."
-                        : "Quality assurance form has been signed successfully."}
+                          ? "QF & QC submitted successfully."
+                          : qualityFormStatus === "qf-marked"
+                            ? "QF is marked, waiting for QC to mark."
+                            : qualityFormStatus === "qc-marked"
+                              ? "QC is marked, quality control review completed."
+                              : "Quality assurance form has been signed successfully."}
                     </p>
                     {isQualityFormSigned ? (
                       qualityFormStatus === "qf-marked" ? (
@@ -1909,11 +1881,10 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                         </div>
                       ) : (
                         <div
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md ${
-                            qualityFormStatus === "both-marked"
-                              ? "text-green-700 bg-green-100"
-                              : "text-blue-700 bg-blue-100"
-                          }`}>
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md ${qualityFormStatus === "both-marked"
+                            ? "text-green-700 bg-green-100"
+                            : "text-blue-700 bg-blue-100"
+                            }`}>
                           {qualityFormStatus === "both-marked" ? (
                             <CheckCircle className="w-4 h-4" />
                           ) : (
@@ -2115,51 +2086,50 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
               <nav className="flex space-x-1 sm:space-x-4 lg:space-x-8 overflow-x-auto mobile-scroll">
                 {(projectStatus === "WIP"
                   ? [
-                      { id: "job-brief", label: "Window Management" },
-                      { id: "team", label: "Team" },
-                      {
-                        id: "travel-accommodation",
-                        label: "Travel & Accommodation",
-                      },
-                      {
-                        id: "trailer-films",
-                        label: "Trailer & Films",
-                      },
-                      { id: "document", label: "Document" },
-                      { id: "notes", label: "Notes" },
-                    ]
+                    { id: "job-brief", label: "Window Management" },
+                    { id: "team", label: "Team" },
+                    {
+                      id: "travel-accommodation",
+                      label: "Travel & Accommodation",
+                    },
+                    {
+                      id: "trailer-films",
+                      label: "Trailer & Films",
+                    },
+                    { id: "document", label: "Document" },
+                    { id: "notes", label: "Notes" },
+                  ]
                   : projectStatus === "QF"
-                  ? [
+                    ? [
                       { id: "quality-check", label: "Quality Check" },
                       { id: "issues", label: "Issues & Fixes" },
                       { id: "team", label: "Team" },
                       { id: "document", label: "Document" },
                       { id: "notes", label: "Notes" },
                     ]
-                  : projectStatus === "QC"
-                  ? [
-                      { id: "quality-control", label: "Quality Control" },
-                      { id: "final-review", label: "Final Review" },
-                      { id: "team", label: "Team" },
-                      { id: "document", label: "Document" },
-                      { id: "notes", label: "Notes" },
-                    ]
-                  : [
-                      { id: "completion-report", label: "Completion Report" },
-                      { id: "final-stats", label: "Final Stats" },
-                      { id: "team", label: "Team" },
-                      { id: "document", label: "Document" },
-                      { id: "notes", label: "Notes" },
-                    ]
+                    : projectStatus === "QC"
+                      ? [
+                        { id: "quality-control", label: "Quality Control" },
+                        { id: "final-review", label: "Final Review" },
+                        { id: "team", label: "Team" },
+                        { id: "document", label: "Document" },
+                        { id: "notes", label: "Notes" },
+                      ]
+                      : [
+                        { id: "completion-report", label: "Completion Report" },
+                        { id: "final-stats", label: "Final Stats" },
+                        { id: "team", label: "Team" },
+                        { id: "document", label: "Document" },
+                        { id: "notes", label: "Notes" },
+                      ]
                 ).map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-2 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
-                      activeTab === tab.id
-                        ? "border-blue-600 text-blue-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}>
+                    className={`py-2 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}>
                     {tab.label}
                   </button>
                 ))}
@@ -2313,20 +2283,18 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                           <div className="hidden sm:flex items-center gap-2 justify-center sm:justify-start">
                             <button
                               onClick={() => setViewMode("list")}
-                              className={`p-2 rounded-lg ${
-                                viewMode === "list"
-                                  ? "bg-[#0D76BF] text-white"
-                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                              }`}>
+                              className={`p-2 rounded-lg ${viewMode === "list"
+                                ? "bg-[#0D76BF] text-white"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                }`}>
                               <List className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => setViewMode("grid")}
-                              className={`p-2 rounded-lg ${
-                                viewMode === "grid"
-                                  ? "bg-[#0D76BF] text-white"
-                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                              }`}>
+                              className={`p-2 rounded-lg ${viewMode === "grid"
+                                ? "bg-[#0D76BF] text-white"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                }`}>
                               <Grid className="w-4 h-4" />
                             </button>
                           </div>
@@ -2444,10 +2412,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                                             e.stopPropagation();
                                             getActionButton(window)?.action();
                                           }}
-                                          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md touch-manipulation min-h-[32px] ${
-                                            getActionButton(window)
-                                              ?.mobileClassName
-                                          }`}>
+                                          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md touch-manipulation min-h-[32px] ${getActionButton(window)
+                                            ?.mobileClassName
+                                            }`}>
                                           <CheckCircle2 className="w-3.5 h-3.5" />
                                           <span>
                                             {getActionButton(window)?.text ||
@@ -2479,51 +2446,51 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                                         <div className="py-1">
                                           {user?.userType !==
                                             "execution-team" && (
-                                            <>
-                                              <button
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  handleViewWindow(window);
-                                                  document
-                                                    .getElementById(
-                                                      `dropdown-grid-${window.id}`
-                                                    )
-                                                    ?.classList.add("hidden");
-                                                }}
-                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation">
-                                                <Eye className="w-3 h-3" />
-                                                View Details
-                                              </button>
-                                              <button
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  handleEditWindow(window);
-                                                  document
-                                                    .getElementById(
-                                                      `dropdown-grid-${window.id}`
-                                                    )
-                                                    ?.classList.add("hidden");
-                                                }}
-                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation">
-                                                <Edit className="w-3 h-3" />
-                                                Edit Window
-                                              </button>
-                                              <button
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  handleDeleteWindow(window.id);
-                                                  document
-                                                    .getElementById(
-                                                      `dropdown-grid-${window.id}`
-                                                    )
-                                                    ?.classList.add("hidden");
-                                                }}
-                                                className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation">
-                                                <Trash2 className="w-3 h-3" />
-                                                Delete Window
-                                              </button>
-                                            </>
-                                          )}
+                                              <>
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleViewWindow(window);
+                                                    document
+                                                      .getElementById(
+                                                        `dropdown-grid-${window.id}`
+                                                      )
+                                                      ?.classList.add("hidden");
+                                                  }}
+                                                  className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation">
+                                                  <Eye className="w-3 h-3" />
+                                                  View Details
+                                                </button>
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEditWindow(window);
+                                                    document
+                                                      .getElementById(
+                                                        `dropdown-grid-${window.id}`
+                                                      )
+                                                      ?.classList.add("hidden");
+                                                  }}
+                                                  className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-gray-700 hover:bg-gray-100 touch-manipulation">
+                                                  <Edit className="w-3 h-3" />
+                                                  Edit Window
+                                                </button>
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteWindow(window.id);
+                                                    document
+                                                      .getElementById(
+                                                        `dropdown-grid-${window.id}`
+                                                      )
+                                                      ?.classList.add("hidden");
+                                                  }}
+                                                  className="flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs text-red-600 hover:bg-red-50 touch-manipulation">
+                                                  <Trash2 className="w-3 h-3" />
+                                                  Delete Window
+                                                </button>
+                                              </>
+                                            )}
                                           {getActionButton(window) && (
                                             <button
                                               onClick={(e) => {
@@ -2537,10 +2504,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                                                   )
                                                   ?.classList.add("hidden");
                                               }}
-                                              className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${
-                                                getActionButton(window)
-                                                  ?.className
-                                              }`}>
+                                              className={`flex items-center gap-2 w-full px-3 py-2 sm:py-1.5 text-xs touch-manipulation ${getActionButton(window)
+                                                ?.className
+                                                }`}>
                                               <CheckCircle2 className="w-3 h-3" />
                                               {getActionButton(window)?.text}
                                             </button>
@@ -2689,10 +2655,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                       </h4>
                       <div className="space-y-4">
                         <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">
-                              Lahore → Miami
-                            </p>
+                          <div>
+                            <p className="font-medium text-gray-900">John Doe</p>
+                            <div className="flex-1 flex items-center gap-2">
+                              <p className="font-medium text-gray-500 text-xs ">
+                                Islamabad → New York
+                              </p>
+                              <p className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                One Way
+                              </p>
+                            </div>
                           </div>
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -2735,14 +2707,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                           </div>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                          <div className="flex-1 flex items-center gap-2">
-                            <p className="font-medium text-gray-900">
-                              Islamabad → New York
-                            </p>
-                            <p className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              {" "}
-                              One Way
-                            </p>
+                          <div>
+                            <p className="font-medium text-gray-900">John Doe</p>
+                            <div className="flex-1 flex items-center gap-2">
+                              <p className="font-medium text-gray-500 text-xs ">
+                                Islamabad → New York
+                              </p>
+                              <p className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                One Way
+                              </p>
+                            </div>
                           </div>
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -2785,13 +2759,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                           </div>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                          <div className="flex-1 flex items-center gap-2">
-                            <p className="font-medium text-gray-900">
-                              Miami → Lahore
-                            </p>
-                            <p className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              Round Trip
-                            </p>
+                          <div>
+                            <p className="font-medium text-gray-900">John Doe</p>
+                            <div className="flex-1 flex items-center gap-2">
+                              <p className="font-medium text-gray-500 text-xs ">
+                                Miami → Lahore
+                              </p>
+                              <p className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Round Trip
+                              </p>
+                            </div>
                           </div>
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -2848,6 +2825,62 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                           </p>
                           <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
                             Duration: 1 night
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                              />
+                            </svg>
+                            <span>3 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              setTravelDetailsType("hotel");
+                              setShowTravelDetailsModal(true);
+                            }}>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rental Vehical */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Rental Vehical Details
+                      </h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            System Vehical Services
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
+                            Duration: Sep 25 → Sep 26, 2025
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -3661,6 +3694,14 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
           </div>
         </Modal>
       )}
+         <SetupInventoryModal
+              isOpen={showSetupInventoryModal}
+              onClose={() => setShowSetupInventoryModal(false)}
+              onSave={(items:any) => {
+                console.log('Inventory items saved:', items);
+                showToast('Inventory setup saved successfully');
+              }}
+            />
     </div>
   );
 };
