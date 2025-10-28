@@ -148,14 +148,14 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       cell: (row: any) => {
         const isUnavailable = row.status === 'unavailable' || row.status === 'low_stock';
         return (
-          <div className="flex flex-col space-y-1">
-            <span
-              className={`inline-flex w-min px-2 py-0.5 text-xs capitalize font-medium rounded-full ${getStatusColor(
+          <div className="">
+            <div
+              className={` inline-block px-2 py-0.5 text-xs capitalize font-medium rounded-full ${getStatusColor(
                 row.status
               )}`}
             >
               {row.status}
-            </span>
+            </div>
             <div> {isUnavailable && <p className='text-[10px] text-red-600'> Unavailable until  {formatDate(row.unavailableUntil) }</p>}</div>
           </div>
         )
@@ -163,7 +163,17 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
     },
 
     {
-      name: 'Location',
+      name: 'City',
+      selector: (row: any) => row.currentLocation,
+      cell: (row: any) => <div>
+        <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
+          <MapPin className="w-3 h-3 mr-1 text-gray-400 flex-shrink-0" />
+          <span className="truncate">{row.location || '—'}</span>
+        </div>
+      </div>
+    },
+    {
+      name: 'State',
       selector: (row: any) => row.currentLocation,
       cell: (row: any) => <div>
         <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
@@ -204,7 +214,9 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             <SelectField value={statusFilter} inputClassName={'border border-gray-300'} onChange={(e) => setStatusFilter(e.target.value as any)} placeholder={'All Status'} options={[{ value: '', label: 'All Status' }, { value: 'available', label: 'Available' }, { value: 'low_stock', label: 'Low Stock' }, { value: 'unavailable', label: 'Unavailable' }]} />
 
             {/* Location Filter */}
-            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Locations'} options={[uniqueLocations]} />
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'City'} options={[uniqueLocations]} />
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'State'} options={[uniqueLocations]} />
+
           </div>
         </div>
 
