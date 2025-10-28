@@ -170,7 +170,7 @@ src/
 - **UserRole** - Role definitions
 
 ### Status Types
-- **ProjectStatus**: PV75 | PV90 | UB | WB | WIP | QF | Completed | on-hold
+- **ProjectStatus**: D75 | PV90 | UB | WB | WIP | QF | Completed | on-hold
 - **ProjectStage**: preparation | execution | completion
 - **TrailerStatus**: available | low | unavailable
 - **MemberStatus**: available | busy | unavailable
@@ -187,7 +187,7 @@ src/
 ## 🚀 Key Features
 
 ### Project Management
-- **Project Lifecycle**: PV75 → PV90 → UB → WB → WIP → QF → Completed
+- **Project Lifecycle**: D75 → PV90 → UB → WB → WIP → QF → Completed
 - **Interactive Checklists**: Real-time task management
 - **Team Assignment**: Availability tracking and productivity metrics
 - **Trailer/Equipment Allocation**: Inventory management
@@ -312,7 +312,7 @@ src/
 ## 🎯 Business Logic
 
 ### Project Workflow
-1. **PV75/PV90**: Pre-validation stages
+1. **D75/PV90**: Pre-validation stages
 2. **UB**: Upcoming/Backlog (approved, not started)
 3. **WB**: Work-Bound (ready to start, planned)
 4. **WIP**: Work In Progress (execution ongoing)

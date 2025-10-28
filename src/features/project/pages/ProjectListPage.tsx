@@ -164,8 +164,8 @@ const mockProjects: SafeHavenProject[] = [
 
     description:
       "Complete security film installation for 15-story office complex downtown",
-    status: "PV75",
-    stage: "PV75",
+    status: "D75",
+    stage: "D75",
     startDate: "2025-09-15",
     endDate: "2025-09-30",
     createdAt: "2024-12-01T00:00:00Z",
@@ -581,7 +581,7 @@ export const ProjectListPage: React.FC = () => {
 
     const totalProjects = projectListItems.length;
     const activeProjects = projectListItems.filter((p) =>
-      ["PV75", "PV90", "UB", "WB", "WIP", "QF", "QC"].includes(p.status)
+      ["D75", "PV90", "UB", "WB", "WIP", "QF", "QC"].includes(p.status)
     ).length;
     const completedProjects = projectListItems.filter(
       (p) => p.status === "Completed"
@@ -636,7 +636,7 @@ export const ProjectListPage: React.FC = () => {
 
   const handleProjectClick = (project: ProjectListItem) => {
     // Check if user is executive or project coordinator and project status requires coordinator assignment
-    // if ((isExecutive || isProjectCoordinator) && ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)) {
+    // if ((isExecutive || isProjectCoordinator) && ['D75', 'PV90', 'UB', 'WB'].includes(project.status)) {
     //   setProjectForCoordinatorAssignment(project);
     //   setIsCoordinatorModalOpen(true);
     // } else {
@@ -714,7 +714,7 @@ export const ProjectListPage: React.FC = () => {
                 ...(user?.userType
                   ? getAvailableProjectStatuses(user.userType)
                   : [
-                      "PV75",
+                      "D75",
                       "PV90",
                       "UB",
                       "WB",

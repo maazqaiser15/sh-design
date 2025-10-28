@@ -23,8 +23,8 @@ export const ProjectListWithDateSetup: React.FC<ProjectListWithDateSetupProps> =
   // This function can be passed to child components to handle project clicks
   const handleProjectClick = (project: Project) => {
     if (requiresDateSetup(project.status)) {
-      // Open date setup modal for PV75, PV90, UB, WB statuses
-      openDateSetupModal(project.id, project.name, project.status as 'PV75' | 'PV90' | 'UB' | 'WB');
+      // Open date setup modal for D75, PV90, UB, WB statuses
+      openDateSetupModal(project.id, project.name, project.status as 'D75' | 'PV90' | 'UB' | 'WB');
     } else {
       // Navigate directly to project details for other statuses
       if (onProjectClick) {
@@ -44,7 +44,7 @@ export const ProjectListWithDateSetup: React.FC<ProjectListWithDateSetupProps> =
         onClose={closeDateSetupModal}
         onSave={handleDateSetup}
         projectName={selectedProject?.name || ''}
-        projectStatus={selectedProject?.status || 'PV75'}
+        projectStatus={selectedProject?.status || 'D75'}
       />
     </>
   );

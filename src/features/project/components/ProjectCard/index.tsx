@@ -22,8 +22,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectClic
 
   const handleCardClick = () => {
     if (requiresDateSetup(project.status)) {
-      // Open date setup modal for PV75, PV90, UB, WB statuses
-      openDateSetupModal(project.id, project.name, project.status as 'PV75' | 'PV90' | 'UB' | 'WB');
+      // Open date setup modal for D75, PV90, UB, WB statuses
+      openDateSetupModal(project.id, project.name, project.status as 'D75' | 'PV90' | 'UB' | 'WB');
     } else {
       // Navigate directly to project details for other statuses
       if (onProjectClick) {
@@ -117,7 +117,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectClic
         onClose={closeDateSetupModal}
         onSave={handleDateSetup}
         projectName={selectedProject?.name || ''}
-        projectStatus={selectedProject?.status || 'PV75'}
+        projectStatus={selectedProject?.status || 'D75'}
       />
     </>
   );

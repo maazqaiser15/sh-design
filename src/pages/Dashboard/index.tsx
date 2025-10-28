@@ -751,7 +751,7 @@ export const Dashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="w-4 h-4 bg-blue-500 rounded-full mr-3"></div>
-                    <span className="text-sm text-gray-600">PV75 (Pre-Planning)</span>
+                    <span className="text-sm text-gray-600">D75 (Pre-Planning)</span>
                   </div>
                   <span className="text-sm font-medium">8 projects</span>
                 </div>

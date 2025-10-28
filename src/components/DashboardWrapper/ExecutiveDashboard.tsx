@@ -27,7 +27,7 @@ const mockProjects = [
   {
     id: '1',
     name: 'Downtown Office Complex',
-    status: 'PV75',
+    status: 'D75',
     qualityScore: 95,
     successRate: 98,
     saleEstimate: 250000,
@@ -354,7 +354,7 @@ const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) => {
     }, {} as Record<string, number>);
     
     return [
-      { status: 'PV75', count: counts['PV75'] || 0, color: 'bg-blue-500', label: 'Pre-Planning' },
+      { status: 'D75', count: counts['D75'] || 0, color: 'bg-blue-500', label: 'Pre-Planning' },
       { status: 'PV90', count: counts['PV90'] || 0, color: 'bg-teal-500', label: 'Planning' },
       { status: 'UB', count: counts['UB'] || 0, color: 'bg-amber-500', label: 'Under Review' },
       { status: 'WIP', count: counts['WIP'] || 0, color: 'bg-purple-500', label: 'Work in Progress' },

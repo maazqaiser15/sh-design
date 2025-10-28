@@ -1,7 +1,7 @@
 import { Project } from '../../types';
 
 // Safe Haven Defense Project Stages
-export type ProjectStage = 'PV75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed' | 'Archived';
+export type ProjectStage = 'D75' | 'PV90' | 'UB' | 'WB' | 'WIP' | 'QF' | 'QC' | 'Completed' | 'Archived';
 
 // Safe Haven Defense Project Status (same as stages for this implementation)
 export type ProjectStatus = ProjectStage;
@@ -52,7 +52,7 @@ export interface ProjectViewMode {
 
 // Status color mapping for Safe Haven Defense
 export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
-  'PV75': 'bg-gray-200 text-gray-700',      // Gray for initial planning
+  'D75': 'bg-gray-200 text-gray-700',      // Gray for initial planning
   'PV90': 'bg-purple-100 text-purple-700',  // Purple for planning phase
   'UB': 'bg-cyan-100 text-cyan-700',        // Blue for unbooked
   'WB': 'bg-yellow-100 text-yellow-700',    // Yellow for waiting for booking
@@ -65,7 +65,7 @@ export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
 
 // Status descriptions
 export const PROJECT_STATUS_DESCRIPTIONS: Record<ProjectStatus, string> = {
-  'PV75': 'PV75',
+  'D75': 'D75',
   'PV90': 'PV90',
   'UB': 'UB',
   'WB': 'WB',
@@ -88,7 +88,7 @@ export interface StatusPrerequisites {
 }
 
 export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = {
-  'PV75': {
+  'D75': {
     canAssignTeam: false,
     canAssignTrailer: false,
     canSetupLogistics: false,
@@ -173,7 +173,7 @@ export const STATUS_PREREQUISITES: Record<ProjectStatus, StatusPrerequisites> = 
 
 // Valid status transitions
 export const STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
-  'PV75': ['PV90'],
+  'D75': ['PV90'],
   'PV90': ['UB'],
   'UB': ['WB'],
   'WB': ['WIP'],

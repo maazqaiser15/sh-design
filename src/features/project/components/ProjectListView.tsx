@@ -47,7 +47,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
 
     // Fallback to status-based progress for backward compatibility
     switch (project.status) {
-      case "PV75":
+      case "D75":
         return 5;
       case "PV90":
         return 15;

@@ -1,4 +1,4 @@
-export type ProjectStatus = 'PV75' | 'PV90' | 'UB' | 'WB' | 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED' | 'QC';
+export type ProjectStatus = 'D75' | 'PV90' | 'UB' | 'WB' | 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED' | 'QC';
 
 export interface Project {
   id: string;
@@ -16,7 +16,7 @@ export interface Project {
  * Determines if a project with the given status requires date setup
  */
 export const requiresDateSetup = (status: ProjectStatus): boolean => {
-  return ['PV75', 'PV90', 'UB', 'WB'].includes(status);
+  return ['D75', 'PV90', 'UB', 'WB'].includes(status);
 };
 
 /**
@@ -24,8 +24,8 @@ export const requiresDateSetup = (status: ProjectStatus): boolean => {
  */
 export const getStatusDisplayName = (status: ProjectStatus): string => {
   switch (status) {
-    case 'PV75':
-      return 'PV75 (75% Complete)';
+    case 'D75':
+      return 'D75 (75% Complete)';
     case 'PV90':
       return 'PV90 (90% Complete)';
     case 'UB':
@@ -52,7 +52,7 @@ export const getStatusDisplayName = (status: ProjectStatus): string => {
  */
 export const getStatusColorClass = (status: ProjectStatus): string => {
   switch (status) {
-    case 'PV75':
+    case 'D75':
       return 'bg-yellow-100 text-yellow-800';
     case 'PV90':
       return 'bg-orange-100 text-orange-800';

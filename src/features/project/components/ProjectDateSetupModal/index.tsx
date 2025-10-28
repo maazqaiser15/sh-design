@@ -7,7 +7,7 @@ interface ProjectDateSetupModalProps {
   onClose: () => void;
   onSave: (startDate: string, endDate: string) => void;
   projectName: string;
-  projectStatus: 'PV75' | 'PV90' | 'UB' | 'WB';
+  projectStatus: 'D75' | 'PV90' | 'UB' | 'WB';
 }
 
 export const ProjectDateSetupModal: React.FC<ProjectDateSetupModalProps> = ({
@@ -23,7 +23,7 @@ export const ProjectDateSetupModal: React.FC<ProjectDateSetupModalProps> = ({
 
   const getStatusDisplayName = (status: string) => {
     switch (status) {
-      case 'PV75': return 'PV75 (75% Complete)';
+      case 'D75': return 'D75 (75% Complete)';
       case 'PV90': return 'PV90 (90% Complete)';
       case 'UB': return 'UB (Under Budget)';
       case 'WB': return 'WB (Within Budget)';

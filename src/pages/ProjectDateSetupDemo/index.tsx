@@ -8,7 +8,7 @@ const demoProjects: Project[] = [
   {
     id: '1',
     name: 'Website Redesign Project',
-    status: 'PV75',
+    status: 'D75',
   },
   {
     id: '2',
@@ -56,13 +56,13 @@ export const ProjectDateSetupDemo: React.FC = () => {
             Project Date Setup Demo
           </h1>
           <p className="text-lg text-gray-600 mb-6">
-            Click on project cards to see the date setup modal in action. Projects with PV75, PV90, UB, and WB statuses will open a modal to set up dates.
+            Click on project cards to see the date setup modal in action. Projects with D75, PV90, UB, and WB statuses will open a modal to set up dates.
           </p>
           
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <h3 className="text-sm font-medium text-blue-800 mb-2">How it works:</h3>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• <strong>PV75, PV90, UB, WB</strong> projects → Opens date setup modal</li>
+              <li>• <strong>D75, PV90, UB, WB</strong> projects → Opens date setup modal</li>
               <li>• <strong>Other statuses</strong> → Navigates directly to project details</li>
               <li>• Fill in start and end dates in the modal</li>
               <li>• Click "Save & Continue" to proceed to project details</li>
@@ -102,7 +102,7 @@ export const ProjectDateSetupDemo: React.FC = () => {
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="font-semibold text-gray-900">{project.name}</h3>
                     <span className={`px-2 py-1 rounded text-xs ${
-                      ['PV75', 'PV90', 'UB', 'WB'].includes(project.status)
+                      ['D75', 'PV90', 'UB', 'WB'].includes(project.status)
                         ? 'bg-blue-100 text-blue-800'
                         : 'bg-gray-100 text-gray-800'
                     }`}>
@@ -110,7 +110,7 @@ export const ProjectDateSetupDemo: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-sm text-gray-600">
-                    {['PV75', 'PV90', 'UB', 'WB'].includes(project.status)
+                    {['D75', 'PV90', 'UB', 'WB'].includes(project.status)
                       ? 'Click to set up project dates'
                       : 'Click to view project details'
                     }

@@ -2,12 +2,12 @@
 
 ## Overview
 
-I've implemented a comprehensive solution for handling PV75, PV90, UB, and WB project statuses with a popup modal for setting up project dates. When users click on project cards with these statuses, a modal opens asking for project start and end dates, and then navigates to the project details screen.
+I've implemented a comprehensive solution for handling D75, PV90, UB, and WB project statuses with a popup modal for setting up project dates. When users click on project cards with these statuses, a modal opens asking for project start and end dates, and then navigates to the project details screen.
 
 ## Components Created
 
 ### 1. ProjectDateSetupModal (`src/features/project/components/ProjectDateSetupModal/index.tsx`)
-- Modal component that opens when clicking on PV75, PV90, UB, WB projects
+- Modal component that opens when clicking on D75, PV90, UB, WB projects
 - Includes form fields for start date and end date
 - Built-in validation (dates required, end date must be after start date)
 - Clean, accessible UI with proper error handling
@@ -38,7 +38,7 @@ I've implemented a comprehensive solution for handling PV75, PV90, UB, and WB pr
 ## Key Features
 
 ### Status-Based Logic
-- **PV75, PV90, UB, WB**: Trigger date setup modal
+- **D75, PV90, UB, WB**: Trigger date setup modal
 - **Other statuses**: Navigate directly to project details
 
 ### Modal Functionality

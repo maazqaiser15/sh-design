@@ -6,7 +6,7 @@ interface ProjectDateSetupState {
   selectedProject: {
     id: string;
     name: string;
-    status: 'PV75' | 'PV90' | 'UB' | 'WB';
+    status: 'D75' | 'PV90' | 'UB' | 'WB';
   } | null;
 }
 
@@ -17,7 +17,7 @@ export const useProjectDateSetup = () => {
   });
   const navigate = useNavigate();
 
-  const openDateSetupModal = (projectId: string, projectName: string, projectStatus: 'PV75' | 'PV90' | 'UB' | 'WB') => {
+  const openDateSetupModal = (projectId: string, projectName: string, projectStatus: 'D75' | 'PV90' | 'UB' | 'WB') => {
     setState({
       isModalOpen: true,
       selectedProject: {

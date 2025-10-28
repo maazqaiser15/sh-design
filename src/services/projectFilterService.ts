@@ -6,10 +6,10 @@ import { ProjectStatus } from '../features/project/types';
  */
 
 // Project statuses that Execution Team should not see
-const EXECUTION_TEAM_HIDDEN_STATUSES: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB'];
+const EXECUTION_TEAM_HIDDEN_STATUSES: ProjectStatus[] = ['D75', 'PV90', 'UB', 'WB'];
 
 // Project statuses that Lead Supervisor should not see
-const LEAD_SUPERVISOR_HIDDEN_STATUSES: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB'];
+const LEAD_SUPERVISOR_HIDDEN_STATUSES: ProjectStatus[] = ['D75', 'PV90', 'UB', 'WB'];
 
 /**
  * Check if a project status should be visible to a specific user type
@@ -25,11 +25,11 @@ export function isProjectStatusVisibleToUser(status: ProjectStatus, userType: Us
       return true;
     
     case 'lead-supervisor':
-      // Lead Supervisors cannot see PV75, PV90, UB, WB statuses
+      // Lead Supervisors cannot see D75, PV90, UB, WB statuses
       return !LEAD_SUPERVISOR_HIDDEN_STATUSES.includes(status);
     
     case 'execution-team':
-      // Execution Team cannot see PV75, PV90, UB, WB statuses
+      // Execution Team cannot see D75, PV90, UB, WB statuses
       return !EXECUTION_TEAM_HIDDEN_STATUSES.includes(status);
     
     default:
@@ -54,7 +54,7 @@ export function filterProjectsByUserRole<T extends { status: ProjectStatus }>(
  * Get available project statuses for a user type
  */
 export function getAvailableProjectStatuses(userType: UserType): ProjectStatus[] {
-  const allStatuses: ProjectStatus[] = ['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'];
+  const allStatuses: ProjectStatus[] = ['D75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'];
   
   return allStatuses.filter(status => 
     isProjectStatusVisibleToUser(status, userType)

@@ -10,7 +10,7 @@ import { ProjectDetailsComplete } from './ProjectDetailsComplete';
 
 /**
  * ProjectDetailsRouter - Routes to different project detail layouts based on status
- * - PV75, PV90, UB, WB: Shows preparation stage layout
+ * - D75, PV90, UB, WB: Shows preparation stage layout
  * - WIP: Shows work-in-progress layout
  * - QF: Shows quality check layout
  * - Completed: Shows completion layout
@@ -33,7 +33,7 @@ export const ProjectDetailsRouter: React.FC = () => {
   ], [projectId, projectTitle, project.title]);
 
   // Determine which layout to show based on status
-  const isPreparationStage = ['PV75', 'PV90', 'UB', 'WB'].includes(projectStatus);
+  const isPreparationStage = ['D75', 'PV90', 'UB', 'WB'].includes(projectStatus);
   const isWorkInProgressStage = projectStatus === 'WIP';
   const isQualityCheckStage = projectStatus === 'QF';
   const isCompletedStage = projectStatus === 'Completed';

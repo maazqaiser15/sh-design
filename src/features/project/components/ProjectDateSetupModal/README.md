@@ -1,10 +1,10 @@
 # Project Date Setup Modal
 
-This component provides a modal interface for setting up project dates when clicking on projects with specific statuses (PV75, PV90, UB, WB).
+This component provides a modal interface for setting up project dates when clicking on projects with specific statuses (D75, PV90, UB, WB).
 
 ## Features
 
-- Modal popup for projects with PV75, PV90, UB, WB statuses
+- Modal popup for projects with D75, PV90, UB, WB statuses
 - Date validation (start date must be before end date)
 - Automatic navigation to project details after date setup
 - Clean, accessible UI with proper error handling
@@ -41,7 +41,7 @@ function MyComponent() {
         onClose={closeDateSetupModal}
         onSave={handleDateSetup}
         projectName={selectedProject?.name || ''}
-        projectStatus={selectedProject?.status || 'PV75'}
+        projectStatus={selectedProject?.status || 'D75'}
       />
     </>
   );
@@ -81,7 +81,7 @@ import { ProjectListView } from './ProjectListView';
 | `onClose` | `() => void` | Called when modal is closed |
 | `onSave` | `(startDate: string, endDate: string) => void` | Called when dates are saved |
 | `projectName` | `string` | Name of the project |
-| `projectStatus` | `'PV75' \| 'PV90' \| 'UB' \| 'WB'` | Status of the project |
+| `projectStatus` | `'D75' \| 'PV90' \| 'UB' \| 'WB'` | Status of the project |
 
 ### useProjectDateSetup Hook
 
@@ -97,7 +97,7 @@ Returns an object with:
 
 The following project statuses trigger the date setup modal:
 
-- **PV75**: 75% Complete
+- **D75**: 75% Complete
 - **PV90**: 90% Complete  
 - **UB**: Under Budget
 - **WB**: Within Budget

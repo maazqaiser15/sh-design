@@ -264,7 +264,7 @@ export const ProjectGanttView: React.FC<ProjectGanttViewProps> = ({
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-3">Filter by Status</h4>
               <div className="flex flex-wrap gap-2">
-                {['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'].map((status) => (
+                {['D75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'].map((status) => (
                   <button
                     key={status}
                     onClick={() => handleStatusFilter(status as ProjectStatus)}

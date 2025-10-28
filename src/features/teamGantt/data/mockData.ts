@@ -184,7 +184,7 @@ export const MOCK_TEAM_MEMBERS: TeamMember[] = [
       {
         projectId: 'proj-11',
         projectName: 'Ocean View Apartments',
-        status: 'PV75',
+        status: 'D75',
         startDate: '2025-10-15',
         endDate: '2025-11-05',
         role: 'Project Director'
@@ -320,7 +320,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
       {
         projectId: 'proj-6',
         projectName: 'Airport Security Upgrade',
-        projectStatus: 'PV75',
+        projectStatus: 'D75',
         startDate: '2025-10-10',
         endDate: '2025-10-17',
         role: 'Primary Equipment'
@@ -406,7 +406,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
       {
         projectId: 'proj-11',
         projectName: 'Ocean View Apartments',
-        projectStatus: 'PV75',
+        projectStatus: 'D75',
         startDate: '2025-10-15',
         endDate: '2025-11-05',
         role: 'Support Equipment'
@@ -435,7 +435,7 @@ export const MOCK_TRAILERS: TrailerView[] = [
 // Status Color Mappings
 export const PROJECT_STATUS_COLORS = {
   'PV90': 'bg-gray-200 text-gray-800 border-gray-300',
-  'PV75': 'bg-green-200 text-green-800 border-green-300',
+  'D75': 'bg-green-200 text-green-800 border-green-300',
   'UB': 'bg-blue-200 text-blue-800 border-blue-300',
   'WB': 'bg-teal-200 text-teal-800 border-teal-300',
   'WIP': 'bg-amber-200 text-amber-800 border-amber-300',

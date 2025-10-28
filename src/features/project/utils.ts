@@ -122,7 +122,7 @@ export const formatProjectDuration = (startDate: string, endDate: string): strin
 
 export const getProgressBarColor = (status: string): string => {
   switch (status) {
-    case 'PV75':
+    case 'D75':
       return 'bg-gray-500';
     case 'PV90':
       return 'bg-purple-500';

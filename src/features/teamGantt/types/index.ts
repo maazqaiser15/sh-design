@@ -10,7 +10,7 @@ export interface TeamMember {
 export interface Project {
   projectId: string;
   projectName: string;
-  status: "PV75" | "PV90" | "UB" | "WB" | "WIP" | "QF" | "Completed";
+  status: "D75" | "PV90" | "UB" | "WB" | "WIP" | "QF" | "Completed";
   startDate: string; // ISO format
   endDate: string;   // ISO format
   role: string;      // Role in the project

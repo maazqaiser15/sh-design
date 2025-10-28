@@ -215,7 +215,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
               >
                 <option value="">All Status</option>
-                {['PV75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'].map((status) => (
+                {['D75', 'PV90', 'UB', 'WB', 'WIP', 'QF', 'QC', 'Completed'].map((status) => (
                   <option key={status} value={status}>
                     {status}
                   </option>

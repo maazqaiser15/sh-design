@@ -4,7 +4,7 @@ import { ProjectBar } from './ProjectBar';
 
 const PROJECT_STATUS_COLORS = {
   'PV90': 'bg-green-200 text-green-800 border-green-300',
-  'PV75': 'bg-green-100 text-green-700 border-green-200',
+  'D75': 'bg-green-100 text-green-700 border-green-200',
   'UB': 'bg-amber-200 text-amber-800 border-amber-300',
   'WB': 'bg-teal-200 text-teal-800 border-teal-300',
   'WIP': 'bg-blue-200 text-blue-800 border-blue-300',

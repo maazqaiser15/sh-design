@@ -43,7 +43,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
 
     // Fallback to status-based progress for backward compatibility
     switch (project.status) {
-      case 'PV75':
+      case 'D75':
         return 5;
       case 'PV90':
         return 15;
@@ -66,7 +66,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
 
   const getProgressBarColor = (status: string): string => {
     switch (status) {
-      case 'PV75':
+      case 'D75':
         return 'bg-gray-500';
       case 'PV90':
         return 'bg-purple-500';
