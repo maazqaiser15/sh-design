@@ -32,6 +32,9 @@ import {
   Building,
   User,
   File,
+  Dot,
+  Plane,
+  DollarSign,
 } from "lucide-react";
 import { PieChart } from "../../../../common/components/PieChart";
 import {
@@ -48,6 +51,8 @@ import { WindowDetailModal } from "../../components/WindowDetailModal";
 import { AddEditWindowModal } from "../../components/AddEditWindowModal";
 import { ProjectNotes } from "../../components/ProjectNotes";
 import { Modal } from "../../../../common/components/Modal";
+import TravelDetailsContent from "./TravelDetailsContent";
+import HotelReservationDetailsContent from "./HotelReservationDetailsContent";
 import {
   Window,
   TakeOffSheet,
@@ -75,6 +80,8 @@ import SearchField from "common/components/SearchField";
 import SelectField from "common/components/SelectField";
 import CustomDataTable from "common/components/CustomDataTable";
 import { SetupInventoryModal } from "../../components/SetupInventoryModal";
+// Removed unused Formik imports after modal content extraction
+import FormField from "common/components/FormField";
 
 interface ProjectDetailsWIPProps {
   projectStatus?: "WIP" | "QF" | "QC" | "Completed";
@@ -567,10 +574,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
   const [selectedWindow, setSelectedWindow] = useState<Window | null>(null);
   const [updateCounter, setUpdateCounter] = useState(0);
   const [showTravelDetailsModal, setShowTravelDetailsModal] = useState(false);
-  const [travelDetailsType, setTravelDetailsType] = useState<
-    "travel" | "hotel"
-  >("travel");
-const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
+  const [showHotelDetailsModal, setShowHotelDetailsModal] = useState(false);
+  const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
   // Card completion states
   const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
   const [isInventoryUpdated, setIsInventoryUpdated] = useState(false);
@@ -1551,7 +1556,7 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
-                <Button
+                  <Button
                     onClick={() => setShowSetupInventoryModal(true)}
                     variant="ghost"
                     size="sm"
@@ -1559,7 +1564,7 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
 
                     className="px-3 py-1.5 rounded-md font-semibold text-sm leading-5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
                   >
-                     View Take Off Sheet
+                    View Take Off Sheet
                   </Button>
                   {projectStatus === "WIP" &&
                     user?.userType !== "execution-team" && (
@@ -2688,7 +2693,6 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                             <button
                               className="text-gray-400 hover:text-gray-600"
                               onClick={() => {
-                                setTravelDetailsType("travel");
                                 setShowTravelDetailsModal(true);
                               }}>
                               <svg
@@ -2740,7 +2744,6 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                             <button
                               className="text-gray-400 hover:text-gray-600"
                               onClick={() => {
-                                setTravelDetailsType("travel");
                                 setShowTravelDetailsModal(true);
                               }}>
                               <svg
@@ -2792,7 +2795,6 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                             <button
                               className="text-gray-400 hover:text-gray-600"
                               onClick={() => {
-                                setTravelDetailsType("travel");
                                 setShowTravelDetailsModal(true);
                               }}>
                               <svg
@@ -2849,8 +2851,7 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                           <button
                             className="text-gray-400 hover:text-gray-600"
                             onClick={() => {
-                              setTravelDetailsType("hotel");
-                              setShowTravelDetailsModal(true);
+                              setShowHotelDetailsModal(true);
                             }}>
                             <svg
                               className="w-4 h-4"
@@ -2905,7 +2906,6 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                           <button
                             className="text-gray-400 hover:text-gray-600"
                             onClick={() => {
-                              setTravelDetailsType("hotel");
                               setShowTravelDetailsModal(true);
                             }}>
                             <svg
@@ -2943,32 +2943,15 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
                       </h4>
                       <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">
-                            Beta Trailer
+                          <p className="font-medium text-gray-900 flex">
+                            Beta Trailer <Dot /> ABCD7643826
                           </p>
                           <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
                             <MapPin className="w-4 h-4" /> Location: Miami
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                              />
-                            </svg>
-                            <span>2 attachments</span>
-                          </div>
-                          <button className="text-gray-400 hover:text-gray-600">
-                            <Download className="w-4 h-4" />
-                          </button>
+
                           <button className="text-gray-400 hover:text-gray-600">
                             <svg
                               className="w-4 h-4"
@@ -3425,283 +3408,28 @@ const [showSetupInventoryModal, setShowSetupInventoryModal] = useState(false);
         <Modal
           isOpen={showTravelDetailsModal}
           onClose={() => setShowTravelDetailsModal(false)}
-          title={
-            travelDetailsType === "travel"
-              ? "Travel Details"
-              : "Hotel Reservation Details"
-          }
+          title={"Travel Details"}
           size="lg">
-          <div className="space-y-6">
-            {travelDetailsType === "travel" ? (
-              <>
-                {/* Travel Information */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Flight Information
-                  </h4>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Route:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Lahore → Miami
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Departure:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Sep 25, 2025 - 10:30 AM
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Arrival:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Sep 25, 2025 - 6:45 PM
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Flight Number:
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        AA 1234
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Airline:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        American Airlines
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Booking Reference:
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        ABC123XYZ
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Passenger Details */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Passenger Details
-                  </h4>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Name:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        John Doe
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Seat Number:
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        12A
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Class:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Business
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Attachments */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Attachments (2)
-                  </h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-900">
-                          Flight Ticket.pdf
-                        </span>
-                      </div>
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        Download
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-900">
-                          Boarding Pass.pdf
-                        </span>
-                      </div>
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        Download
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Hotel Information */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Hotel Information
-                  </h4>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Hotel Name:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Hotel Picaso
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Address:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        123 Ocean Drive, Miami, FL
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Check-in:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Sep 25, 2025 - 3:00 PM
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Check-out:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Sep 26, 2025 - 11:00 AM
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Room Type:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        Deluxe Suite
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Reservation Number:
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        HTL-789456
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Guest Details */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Guest Details
-                  </h4>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Guest Name:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        John Doe
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Number of Guests:
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        2 Adults
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Contact:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        +1 (555) 123-4567
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Amenities */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Included Amenities
-                  </h4>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <ul className="space-y-2 text-sm text-gray-900">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        Free WiFi
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        Breakfast Included
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        Airport Shuttle
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        Gym Access
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Attachments */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    Attachments (3)
-                  </h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-900">
-                          Hotel Confirmation.pdf
-                        </span>
-                      </div>
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        Download
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-900">
-                          Hotel Voucher.pdf
-                        </span>
-                      </div>
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        Download
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-900">
-                          Hotel Map.pdf
-                        </span>
-                      </div>
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        Download
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          <TravelDetailsContent />
         </Modal>
       )}
-         <SetupInventoryModal
-              isOpen={showSetupInventoryModal}
-              onClose={() => setShowSetupInventoryModal(false)}
-              onSave={(items:any) => {
-                console.log('Inventory items saved:', items);
-                showToast('Inventory setup saved successfully');
-              }}
-            />
+      {showHotelDetailsModal && (
+        <Modal
+          isOpen={showHotelDetailsModal}
+          onClose={() => setShowHotelDetailsModal(false)}
+          title={"Hotel Reservation Details"}
+          size="lg">
+          <HotelReservationDetailsContent />
+        </Modal>
+      )}
+      <SetupInventoryModal
+        isOpen={showSetupInventoryModal}
+        onClose={() => setShowSetupInventoryModal(false)}
+        onSave={(items: any) => {
+          console.log('Inventory items saved:', items);
+          showToast('Inventory setup saved successfully');
+        }}
+      />
     </div>
   );
 };

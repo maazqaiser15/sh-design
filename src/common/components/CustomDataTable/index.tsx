@@ -7,7 +7,8 @@ interface tableProps {
   title: string;
   columns: any[];
   data: any;
-  selectableRows: any;
+  selectableRows?: boolean;
+  onSelectedRowsChange?: (selected: any) => void;
   pagination: boolean;
   highlightOnHover: any;
   striped: any;
@@ -21,6 +22,7 @@ const CustomDataTable: React.FC<tableProps> = ({
   columns,
   data,
   selectableRows,
+  onSelectedRowsChange,
   progressPending,
   paginationPerPage,
   pagination,
@@ -42,6 +44,12 @@ const CustomDataTable: React.FC<tableProps> = ({
 
   // Custom styles for the table and pagination
   const customStyles = {
+    tableWrapper: {
+      style: {
+        width: '100%',
+        overflowX: 'auto',      // ← horizontal scroll lives here
+      },
+    },
     table: {
       style: {
         backgroundColor: "transparent", // ✅ whole table background color
@@ -65,6 +73,7 @@ const CustomDataTable: React.FC<tableProps> = ({
         paddingLeft: "16px",
         paddingRight: "16px",
         whiteSpace: "normal",
+        wordBreak: 'break-word',
       },
     },
     cells: {
@@ -72,6 +81,7 @@ const CustomDataTable: React.FC<tableProps> = ({
         paddingLeft: "16px",
         paddingRight: "16px",
         whiteSpace: "normal",
+        wordBreak: 'break-word',
       },
     },
     rows: {
@@ -96,7 +106,9 @@ const CustomDataTable: React.FC<tableProps> = ({
     pagination: {
       style: {
         backgroundColor: 'transparent', // Pagination background color
-        borderTop: '1px solid #d1d5db',
+        borderTopStyle: 'solid',
+        borderTopWidth: '1px',
+        borderTopColor: '#d1d5db',
         minHeight: '56px',
       },
       pageButtonsStyle: {
@@ -148,6 +160,7 @@ const CustomDataTable: React.FC<tableProps> = ({
           columns={columns}
           data={data}
           selectableRows={selectableRows}
+          onSelectedRowsChange={onSelectedRowsChange}
           pagination={pagination}
           highlightOnHover={highlightOnHover}
           striped={striped}

@@ -29,6 +29,7 @@ export interface ProjectDetails {
   industry?: string;
   contactPerson?: {
     name: string;
+    email?: string;
     phone: string;
   };
   billingContact?: {
