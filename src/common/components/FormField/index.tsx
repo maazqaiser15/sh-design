@@ -18,7 +18,24 @@ interface formFieldProps {
   autoComplete?: string;
 }
 
-const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", placeholder, className = "", isLeftIcon, isRightIcon, ...rest }) => {
+const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", onChange, placeholder, className = "", isLeftIcon, isRightIcon, ...rest }) => {
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value; // e.g. "2025-10-29"
+    if (type === "date" && value) {
+      const [year, month, day] = value.split("-");
+      const formatted = `${month}/${day}/${year}`; // MM/DD/YYYY
+      // Create synthetic event so Formik receives correct value
+      const syntheticEvent = {
+        ...e,
+        target: { ...e.target, value: formatted }
+      };
+      onChange?.(syntheticEvent as React.ChangeEvent<HTMLInputElement>);
+    } else {
+      onChange?.(e);
+    }
+  };
+  
   return (
     <div className={`flex flex-col  ${className ? className : 'mb-4'}`}>
       {label && (
@@ -44,6 +61,7 @@ const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", place
             ${isLeftIcon ? "pl-10" : ""}
             ${isRightIcon ? "pr-10" : ""}`}
           {...rest}
+          onChange={handleDateChange}
         />
 
         {/* Right Icon */}

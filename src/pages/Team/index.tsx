@@ -78,7 +78,7 @@ export const Team: React.FC = () => {
     };
   }, [canManageTeam]);
 
- 
+
 
   const handleViewMember = (memberId: string) => {
     navigate(`/team/${memberId}`);
@@ -90,6 +90,11 @@ export const Team: React.FC = () => {
       name: 'Name',
       selector: (row: any) => row.name,
     },
+    {
+      name: 'Role',
+      selector: (row: any) => row.role,
+    },
+  
     {
       name: 'Role',
       selector: (row: any) => row.role,
@@ -116,6 +121,14 @@ export const Team: React.FC = () => {
     {
       name: 'Email',
       selector: (row: any) => row.email,
+    },
+    {
+      name: 'City',
+      selector: (row: any) => row.city || '-',
+    },
+    {
+      name: 'State',
+      selector: (row: any) => row.state || '-',
     },
     {
       name: 'Actions',
@@ -171,6 +184,10 @@ export const Team: React.FC = () => {
             <div className="relative flex-1 max-w-md">
               <SearchField className={""} iconSize={20} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={"Search"} inputClassName={""} />
             </div>
+
+            <SelectField className={""} label={""} value={selectedMembers} onChange={()=>console.log('click')} placeholder={"City"} options={[]} />
+
+            <SelectField className={""} label={""} value={selectedMembers} onChange={()=>console.log('click')} placeholder={"State"} options={[]} />
 
             <SelectField className={""} label={""} value={selectedMembers} onChange={(e) => setSelectedMembers(e.target.value)} placeholder={""} options={[
               { value: "all", label: "All Roles" },

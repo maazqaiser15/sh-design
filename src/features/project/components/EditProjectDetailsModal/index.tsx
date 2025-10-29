@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Calendar, User, Phone, Building, ChevronDown, PlusCircle, MinusCircle, Subtitles, MinusSquare } from 'lucide-react';
 import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import FormField from '../../../../common/components/FormField';
@@ -18,6 +17,7 @@ interface EditProjectDetailsModalProps {
 interface FormData {
   contactPersonName: string;
   contactPersonPhone: string;
+  contactPersonJobTitle: string;
   startDate: string;
   endDate: string;
   coordinatorId: string;
@@ -25,26 +25,13 @@ interface FormData {
 
 // Mock coordinator data
 const MOCK_COORDINATORS = [
-  { label: 'Jennifer White', value: 'jennifer.white@company.com' },
-  { label: 'Michael Rodriguez', value: 'michael.rodriguez@company.com' },
-  { label: 'Sarah Johnson', value: 'sarah.johnson@company.com' },
-  { label: 'David Lee', value: 'david.lee@company.com' },
-  { label: 'Lisa Wilson', value: 'lisa.wilson@company.com' },
+  { id: 'coord-1', name: 'Jennifer White', email: 'jennifer.white@company.com', phone: '+1-555-0130', label: 'Jennifer White', value: 'coord-1' },
+  { id: 'coord-2', name: 'Michael Rodriguez', email: 'michael.rodriguez@company.com', phone: '+1-555-0131', label: 'Michael Rodriguez', value: 'coord-2' },
+  { id: 'coord-3', name: 'Sarah Johnson', email: 'sarah.johnson@company.com', phone: '+1-555-0132', label: 'Sarah Johnson', value: 'coord-3' },
+  { id: 'coord-4', name: 'David Lee', email: 'david.lee@company.com', phone: '+1-555-0133', label: 'David Lee', value: 'coord-4' },
+  { id: 'coord-5', name: 'Lisa Wilson', email: 'lisa.wilson@company.com', phone: '+1-555-0134', label: 'Lisa Wilson', value: 'coord-5' },
 ];
 
-// Validation schema
-const validationSchema = Yup.object({
-  contactPersonName: Yup.string(),
-  contactPersonPhone: Yup.string().matches(
-    /^[\+]?[1-9][\d]{0,15}$/,
-    'Please enter a valid phone number'
-  ),
-  startDate: Yup.date(),
-  endDate: Yup.date().when('startDate', (startDate, schema) => {
-    return startDate ? schema.min(startDate, 'End date must be after start date') : schema;
-  }),
-  coordinatorId: Yup.string().required('Please select a coordinator'),
-});
 
 export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = ({
   isOpen,
@@ -55,47 +42,51 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
   const initialValues: FormData = {
     contactPersonName: project.contactPerson?.name || '',
     contactPersonPhone: project.contactPerson?.phone || '',
+    contactPersonJobTitle: '',
     startDate: project.startDate,
     endDate: project.endDate,
     coordinatorId: project.assignedCoordinator?.id || ''
   };
 
   const [isShowSecondaryContact, setIsShowSecondaryContact] = useState(false)
+  const [isConfirming, setIsConfirming] = useState(false)
+  const [pendingValues, setPendingValues] = useState<FormData | null>(null)
 
-  const handleSubmit = (values: FormData) => {
-    const selectedCoordinator = MOCK_COORDINATORS.find(c => c.id === values.coordinatorId);
-
-    const updatedProject: ProjectDetails = {
-      ...project,
-      contactPerson: {
-        name: values.contactPersonName,
-        phone: values.contactPersonPhone
-      },
-      startDate: values.startDate,
-      endDate: values.endDate,
-      assignedCoordinator: selectedCoordinator ? {
-        id: selectedCoordinator.id,
-        name: selectedCoordinator.name,
-        email: selectedCoordinator.email,
-        phone: '+1-555-0200' // Default phone for coordinators
-      } : undefined,
-      updatedAt: new Date().toISOString()
-    };
-
-    onSave(updatedProject);
-    onClose();
+  const handleRequestSubmit = (values: FormData) => {
+    setPendingValues(values);
+    setIsConfirming(true);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" title="Edit Project Details">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        {({ isSubmitting, values, setFieldValue }) => (
-          <Form className="space-y-6 max-h-[80vh] overflow-y-auto">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" title={isConfirming ? "Update Project Dates" : "Edit Project Details"}>
+      {isConfirming ? (
+        <div className="space-y-6">
+          <p className="text-sm text-gray-700">
+            Changing the project dates will unassign all crew members and the trailer linked to this schedule. Are you sure you want to continue?
+          </p>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <Button type="button" variant="secondary" onClick={() => setIsConfirming(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Formik
+          initialValues={initialValues}
+          onSubmit={handleRequestSubmit}
+          enableReinitialize
+        >
+          {({ isSubmitting, values, setFieldValue }) => (
+            <Form className="space-y-6 max-h-[80vh] overflow-y-auto">
             {/* Contact Person Section */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-base flex justify-between  font-semibold text-gray-900  items-center gap-2 mb-3">
@@ -124,10 +115,10 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   className='mb-0'
                 />
                 <FormField
-                  label="Job title"
-                  name="jobtitle"
+                  label="Job Title"
+                  name="contactPersonJobTitle"
                   type="text"
-                  placeholder="Enter Role"
+                  placeholder="Enter job title"
                   className='mb-0'
                 />
               </div>
@@ -160,10 +151,10 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
                   className='mb-0'
                 />
                 <FormField
-                  label="Job title"
-                  name="jobtitle"
+                  label="Job Title"
+                  name="contactPersonJobTitle"
                   type="text"
-                  placeholder="Enter Job Title"
+                  placeholder="Enter job title"
                   className='mb-0'
                 />
               </div>
@@ -223,25 +214,26 @@ export const EditProjectDetailsModal: React.FC<EditProjectDetailsModalProps> = (
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
-          </Form>
-        )}
-      </Formik>
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      )}
     </Modal>
   );
 };
