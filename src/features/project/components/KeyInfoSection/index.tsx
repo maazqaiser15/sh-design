@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../../common/components/Button";
 import { Card } from "../../../../common/components/Card";
+import { formatDateMMDDYYYY } from "../../../../utils/dateUtils";
 import { AssignedTeam } from "../../types/projectDetails";
 import { TeamMember } from "../../types/teamMembers";
 import { TravelPlan } from "../../types/logisticsTravel";
@@ -113,11 +114,7 @@ export const KeyInfoSection: React.FC<KeyInfoSectionProps> = ({
   } | null>(null);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    return formatDateMMDDYYYY(dateString);
   };
 
   const getTeamStatusColor = (status: string) => {

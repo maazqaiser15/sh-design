@@ -21,9 +21,11 @@ import {
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
 import { StatusBadge } from "../../common/components/StatusBadge";
+import { DatePicker } from "../../common/components/DatePicker";
 import { MOCK_TEAM_MEMBERS } from "../../features/project/types/teamMembers";
 import CustomDataTable from "common/components/CustomDataTable";
 import SearchField from "common/components/SearchField";
+import { formatDateMMDDYYYY } from "../../utils/dateUtils";
 
 // Mock data for demonstration
 const mockTimeLogs = [
@@ -268,35 +270,26 @@ export const TeamMemberDetail: React.FC = () => {
   const renderTimeLogTab = () => (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-        <h3 className="text-lg font-semibold text-gray-900 flex gap-2 items-center">Daily Time Logs <span className="text-sm text-gray-600 flex gap-2 items-center"><RefreshCcw size={16}/>  {new Date().toLocaleDateString('en-US', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit'
-                    })}</span></h3>
+        <h3 className="text-lg font-semibold text-gray-900 flex gap-2 items-center">Daily Time Logs <span className="text-sm text-gray-600 flex gap-2 items-center"><RefreshCcw size={16}/>  {formatDateMMDDYYYY(new Date())}</span></h3>
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2">
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="date"
-                placeholder="From date"
+            <div className="w-full sm:w-40">
+              <DatePicker
                 value={timeLogDateFrom}
-                onChange={(e) => setTimeLogDateFrom(e.target.value)}
-                className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={(value) => setTimeLogDateFrom(value)}
+                placeholder="From date"
+                showLabel={false}
+                className="mb-0"
               />
             </div>
             <span className="text-gray-500">to</span>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="date"
-                placeholder="To date"
+            <div className="w-full sm:w-40">
+              <DatePicker
                 value={timeLogDateTo}
-                onChange={(e) => setTimeLogDateTo(e.target.value)}
-                className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={(value) => setTimeLogDateTo(value)}
+                placeholder="To date"
+                showLabel={false}
+                className="mb-0"
               />
             </div>
             {(timeLogDateFrom || timeLogDateTo) && (
@@ -329,11 +322,7 @@ export const TeamMemberDetail: React.FC = () => {
               <div key={log.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-medium text-gray-900">
-                    {new Date(log.date).toLocaleDateString('en-US', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
+                    {formatDateMMDDYYYY(log.date)}
                   </h4>
                   <span className="text-sm font-medium text-blue-600">{log.totalHours}</span>
                 </div>
@@ -382,7 +371,7 @@ export const TeamMemberDetail: React.FC = () => {
                     <h5 className="font-medium text-gray-900">{project.name}</h5>
                     <p className="text-sm text-gray-600">Role: {project.role}</p>
                     <p className="text-sm text-gray-600">
-                      Started: {new Date(project.startDate).toLocaleDateString()}
+                      Started: {formatDateMMDDYYYY(project.startDate)}
                     </p>
                   </div>
                   {getStatusBadge(project.status)}
@@ -420,10 +409,10 @@ export const TeamMemberDetail: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <span className="font-medium">Start:</span> {new Date(project.startDate).toLocaleDateString()}
+                        <span className="font-medium">Start:</span> {formatDateMMDDYYYY(project.startDate)}
                       </div>
                       <div>
-                        <span className="font-medium">End:</span> {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'Ongoing'}
+                        <span className="font-medium">End:</span> {project.endDate ? formatDateMMDDYYYY(project.endDate) : 'Ongoing'}
                       </div>
                     </div>
                   </div>
@@ -452,25 +441,23 @@ export const TeamMemberDetail: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900">Leave History</h3>
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="date"
-                  placeholder="From date"
+              <div className="w-full sm:w-40">
+                <DatePicker
                   value={leaveDateFrom}
-                  onChange={(e) => setLeaveDateFrom(e.target.value)}
-                  className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(value) => setLeaveDateFrom(value)}
+                  placeholder="From date"
+                  showLabel={false}
+                  className="mb-0"
                 />
               </div>
               <span className="text-gray-500">to</span>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="date"
-                  placeholder="To date"
+              <div className="w-full sm:w-40">
+                <DatePicker
                   value={leaveDateTo}
-                  onChange={(e) => setLeaveDateTo(e.target.value)}
-                  className="w-full sm:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(value) => setLeaveDateTo(value)}
+                  placeholder="To date"
+                  showLabel={false}
+                  className="mb-0"
                 />
               </div>
               {(leaveDateFrom || leaveDateTo) && (
@@ -497,8 +484,8 @@ export const TeamMemberDetail: React.FC = () => {
               <AlertCircle className="w-5 h-5 text-yellow-600 mr-2" />
               <p className="text-sm text-yellow-800">
                 <strong>Upcoming Leave:</strong> This user will be on leave from{' '}
-                {new Date(futureLeaves[0].fromDate).toLocaleDateString()} to{' '}
-                {new Date(futureLeaves[0].toDate).toLocaleDateString()}
+                {formatDateMMDDYYYY(futureLeaves[0].fromDate)} to{' '}
+                {formatDateMMDDYYYY(futureLeaves[0].toDate)}
               </p>
             </div>
           </div>
@@ -522,10 +509,10 @@ export const TeamMemberDetail: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                     <div>
-                      <span className="font-medium">From:</span> {new Date(leave.fromDate).toLocaleDateString()}
+                      <span className="font-medium">From:</span> {formatDateMMDDYYYY(leave.fromDate)}
                     </div>
                     <div>
-                      <span className="font-medium">To:</span> {new Date(leave.toDate).toLocaleDateString()}
+                      <span className="font-medium">To:</span> {formatDateMMDDYYYY(leave.toDate)}
                     </div>
                   </div>
                 </div>
@@ -561,11 +548,7 @@ export const TeamMemberDetail: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900">{activity.action}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {new Date(activity.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  {formatDateMMDDYYYY(activity.date)}
                 </p>
               </div>
             </div>

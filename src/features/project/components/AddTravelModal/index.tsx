@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Plane, Users } from 'lucide-react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 import { TravelPlan, TravelType, AddTravelModalProps } from '../../types/logisticsTravel';
 
 export const AddTravelModal: React.FC<AddTravelModalProps> = ({
@@ -184,34 +185,21 @@ export const AddTravelModal: React.FC<AddTravelModalProps> = ({
 
           {/* Dates */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Departure Date *
-              </label>
-              <input
-                type="date"
-                value={formData.departureDate}
-                onChange={(e) => handleInputChange('departureDate', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.departureDate ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.departureDate && (
-                <p className="mt-1 text-xs text-red-600">{errors.departureDate}</p>
-              )}
-            </div>
+            <DatePicker
+              label="Departure Date"
+              value={formData.departureDate}
+              onChange={(value) => handleInputChange('departureDate', value)}
+              required
+              error={errors.departureDate}
+              className="mb-0"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Return Date (Optional)
-              </label>
-              <input
-                type="date"
-                value={formData.returnDate}
-                onChange={(e) => handleInputChange('returnDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+            <DatePicker
+              label="Return Date (Optional)"
+              value={formData.returnDate}
+              onChange={(value) => handleInputChange('returnDate', value)}
+              className="mb-0"
+            />
           </div>
 
           {/* Assigned Team Members */}

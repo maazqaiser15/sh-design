@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Plus, Trash2, Upload, FileText } from 'lucide-react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 
 
 interface TravelDetails {
@@ -178,23 +179,15 @@ export const AddTravelDetailsModal: React.FC<AddTravelDetailsModalProps> = ({
 
           {/* Travel Date and Number of Tickets */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="travelDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Travel Date *
-              </label>
-              <input
-                type="date"
-                id="travelDate"
-                value={travelDetails.travelDate}
-                onChange={(e) => handleInputChange('travelDate', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.travelDate ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.travelDate && (
-                <p className="mt-1 text-sm text-red-600">{errors.travelDate}</p>
-              )}
-            </div>
+            <DatePicker
+              label="Travel Date"
+              value={travelDetails.travelDate}
+              onChange={(value) => handleInputChange('travelDate', value)}
+              required
+              error={errors.travelDate}
+              id="travelDate"
+              className="mb-0"
+            />
 
             <div>
               <label htmlFor="numberOfTickets" className="block text-sm font-medium text-gray-700 mb-1">

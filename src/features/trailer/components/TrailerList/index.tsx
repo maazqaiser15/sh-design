@@ -11,6 +11,7 @@ import {
   USA_STATES,
 } from "../../utils/trailerUtils";
 import CustomDataTable from "common/components/CustomDataTable";
+import { formatDateMMDDYYYY } from "../../../../utils/dateUtils";
 
 interface TrailerListProps {
   trailers: Trailer[];
@@ -185,7 +186,7 @@ export const TrailerList: React.FC<TrailerListProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <Truck className="w-4 h-4" />
-                  <span>Last updated: {new Date(trailer.updatedAt).toLocaleDateString()}</span>
+                  <span>Last updated: {formatDateMMDDYYYY(trailer.updatedAt)}</span>
                 </div>
               </div>
               <div className="flex items-center justify-end mt-4 gap-2">

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Avatar } from '../../../../common/components/Avatar';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 import { Plane, Hotel, Car } from 'lucide-react';
 import FormField from 'common/components/FormField';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 export interface TravelAccommodationRequestData {
   travelRequired: boolean;
@@ -428,33 +430,21 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
               {/* Rental Vehicle Details Form */}
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* From Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-orange-700 mb-2">
-                      From Date
-                    </label>
-                    <input
-                      type="date"
-                      value={rentalVehicleDetails.fromDate}
-                      onChange={(e) => handleRentalVehicleDetailsChange('fromDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-orange-200 rounded-lg outline-none"
-                      required
-                    />
-                  </div>
+                  <DatePicker
+                    label="From Date"
+                    value={rentalVehicleDetails.fromDate}
+                    onChange={(value) => handleRentalVehicleDetailsChange('fromDate', value)}
+                    required
+                    className="mb-0"
+                  />
 
-                  {/* To Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-orange-700 mb-2">
-                      To Date
-                    </label>
-                    <input
-                      type="date"
-                      value={rentalVehicleDetails.toDate}
-                      onChange={(e) => handleRentalVehicleDetailsChange('toDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-orange-200 rounded-lg outline-none"
-                      required
-                    />
-                  </div>
+                  <DatePicker
+                    label="To Date"
+                    value={rentalVehicleDetails.toDate}
+                    onChange={(value) => handleRentalVehicleDetailsChange('toDate', value)}
+                    required
+                    className="mb-0"
+                  />
                 </div>
 
 
@@ -493,7 +483,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                 {rentalVehicleDetails.fromDate && rentalVehicleDetails.toDate && (
                   <div className="mt-3 p-3 bg-orange-100 rounded-lg">
                     <p className="text-sm text-orange-800 font-medium">
-                      {rentalVehicleDetails.numberOfCars} car{rentalVehicleDetails.numberOfCars > 1 ? 's' : ''} needed from {new Date(rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(rentalVehicleDetails.toDate).toLocaleDateString()}
+                      {rentalVehicleDetails.numberOfCars} car{rentalVehicleDetails.numberOfCars > 1 ? 's' : ''} needed from {formatDateMMDDYYYY(rentalVehicleDetails.fromDate)} to {formatDateMMDDYYYY(rentalVehicleDetails.toDate)}
                       {rentalVehicleDetails.pickupLocation && (
                         <span className="block mt-1">
                           Pickup from: {rentalVehicleDetails.pickupLocation}

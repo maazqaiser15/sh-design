@@ -9,6 +9,7 @@ import SelectField from 'common/components/SelectField';
 import CustomDataTable from 'common/components/CustomDataTable';
 import { Card } from 'common/components/Card';
 import { getProjectStatusColor, getStatusColor } from '../../utils';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 interface AssignTeamModalProps {
   isOpen: boolean;
@@ -102,7 +103,7 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-GB');
+    return formatDateMMDDYYYY(dateString);
   };
 
   const selectedCount = selectedMembers.length;

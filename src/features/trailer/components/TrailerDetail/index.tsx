@@ -6,6 +6,7 @@ import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { Trailer, CartInventoryItem, CaulkingInventoryItem, TrailerInventoryItem, FilmInventoryItem } from '../../../../types';
 import CustomDataTable from 'common/components/CustomDataTable';
 import { cartItemData, caulkingItemData, tailerItemData } from './tabledata';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 interface TrailerDetailProps {
   trailer: Trailer;
@@ -30,13 +31,7 @@ export const TrailerDetail: React.FC<TrailerDetailProps> = ({
   const [trailer, setTrailer] = useState<Trailer>(initialTrailer);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatDateMMDDYYYY(dateString);
   };
 
   const handleRestock = () => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ProjectNote } from '../types/projectDetails';
+import { formatDateMMDDYYYY } from '../../../utils/dateUtils';
 
 interface NotesTabViewProps {
   notes: ProjectNote[];
@@ -64,13 +65,7 @@ const NotesTabView: React.FC<NotesTabViewProps> = ({
   ];
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDateMMDDYYYY(dateString);
   };
 
   const getRelativeTime = (dateString: string) => {

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { PROJECT_STATUS_COLORS, PROJECT_STATUS_DESCRIPTIONS, ProjectListItem } from '../types';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
+import { DatePicker } from '../../../common/components/DatePicker';
 
 interface ProjectCoordinatorModalProps {
   isOpen: boolean;
@@ -163,32 +164,22 @@ export const ProjectCoordinatorModal: React.FC<ProjectCoordinatorModalProps> = (
                 Project Dates {userRole === 'project-coordinator' ? '(Required)' : '(Optional)'}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="startDate" className="block text-sm text-gray-500 mb-1">
-                    Start Date {userRole === 'project-coordinator' && <span className="text-red-500">*</span>}
-                  </label>
-                  <input
-                    id="startDate"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    required={userRole === 'project-coordinator'}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="endDate" className="block text-sm text-gray-500 mb-1">
-                    End Date {userRole === 'project-coordinator' && <span className="text-red-500">*</span>}
-                  </label>
-                  <input
-                    id="endDate"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    required={userRole === 'project-coordinator'}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                <DatePicker
+                  label="Start Date"
+                  value={startDate}
+                  onChange={(value) => setStartDate(value)}
+                  required={userRole === 'project-coordinator'}
+                  id="startDate"
+                  className="mb-0"
+                />
+                <DatePicker
+                  label="End Date"
+                  value={endDate}
+                  onChange={(value) => setEndDate(value)}
+                  required={userRole === 'project-coordinator'}
+                  id="endDate"
+                  className="mb-0"
+                />
               </div>
             </div>
           </div>

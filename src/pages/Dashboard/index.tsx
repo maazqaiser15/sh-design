@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
+import { formatDateMMDDYYYY } from "../../utils/dateUtils";
 import { DashboardStats, Activity } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { ExecutiveDashboard } from "../../components/DashboardWrapper/ExecutiveDashboard";
@@ -448,7 +449,7 @@ export const Dashboard: React.FC = () => {
                 <div className="flex items-center">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-text-muted mr-2 flex-shrink-0" />
                   <span className="text-sm sm:text-base text-text-secondary">
-                    {new Date(role3CurrentAssignment.startDate).toLocaleDateString()} - {new Date(role3CurrentAssignment.endDate).toLocaleDateString()}
+                    {formatDateMMDDYYYY(role3CurrentAssignment.startDate)} - {formatDateMMDDYYYY(role3CurrentAssignment.endDate)}
                   </span>
                 </div>
                 <div className="flex items-start sm:items-center">
@@ -528,7 +529,7 @@ export const Dashboard: React.FC = () => {
                       </div>
                       <div className="flex items-center">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
-                        <span>{new Date(project.startDate).toLocaleDateString()}</span>
+                        <span>{formatDateMMDDYYYY(project.startDate)}</span>
                       </div>
                       <div className="flex items-center">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />

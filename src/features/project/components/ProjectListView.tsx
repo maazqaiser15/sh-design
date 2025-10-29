@@ -20,6 +20,7 @@ import { formatProjectDuration, getProgressBarColor } from "../utils";
 import { PieChart } from "../../../common/components/PieChart";
 import { Avatar } from "../../../common/components/Avatar";
 import { Card } from "common/components/Card";
+import { formatDateMMDDYYYY } from "../../../utils/dateUtils";
 
 interface ProjectListViewProps {
   projects: ProjectListItem[];
@@ -172,15 +173,11 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                       </div>
                       <div className="text-sm font-medium">
                         <span>
-                          {new Date(project.startDate).toLocaleDateString(
-                            "en-GB"
-                          )}
+                          {formatDateMMDDYYYY(project.startDate)}
                         </span>
                         <span className="mx-2 text-gray-400">→</span>
                         <span>
-                          {new Date(project.endDate).toLocaleDateString(
-                            "en-GB"
-                          )}
+                          {formatDateMMDDYYYY(project.endDate)}
                         </span>
                       </div>
                     </div>

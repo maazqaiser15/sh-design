@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { CheckCircle, Upload, FileText, X, Package } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 interface FilmRequirement {
   sheetType: string;
@@ -212,7 +213,7 @@ export const LogisticsCard: React.FC<LogisticsCardProps> = ({
                     <FileText className="w-3 h-3 text-green-600" />
                     <span className="text-xs text-green-800 truncate">{receipt.fileName}</span>
                     <span className="text-xs text-green-600">
-                      ({new Date(receipt.uploadedAt).toLocaleDateString()})
+                      ({formatDateMMDDYYYY(receipt.uploadedAt)})
                     </span>
                   </div>
                   <Button

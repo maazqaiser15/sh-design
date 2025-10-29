@@ -12,6 +12,7 @@ import { Modal } from "../../../../common/components/Modal";
 import { Button } from "../../../../common/components/Button";
 import { useToast } from "../../../../contexts/ToastContext";
 import { useAuth } from "../../../../contexts/AuthContext";
+import { formatDateMMDDYYYY } from "../../../../utils/dateUtils";
 import {
   Window as WindowType,
   LayerInstallation,
@@ -395,9 +396,9 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
               </span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
-              <span>Created {editedWindow.createdAt.toLocaleDateString()}</span>
+              <span>Created {formatDateMMDDYYYY(editedWindow.createdAt)}</span>
               <span className="hidden sm:inline">•</span>
-              <span>Updated {editedWindow.updatedAt.toLocaleDateString()}</span>
+              <span>Updated {formatDateMMDDYYYY(editedWindow.updatedAt)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -620,7 +621,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4 flex-shrink-0" />
                               <span>
-                                {layer.installedAt.toLocaleDateString()}
+                                {formatDateMMDDYYYY(layer.installedAt)}
                               </span>
                             </div>
                           </>
@@ -640,7 +641,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                               <div className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4 flex-shrink-0" />
                                 <span>
-                                  {layer.reinstallationMarkedAt.toLocaleDateString()}
+                                  {formatDateMMDDYYYY(layer.reinstallationMarkedAt)}
                                 </span>
                               </div>
                             </>
@@ -661,7 +662,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                               <div className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4 flex-shrink-0" />
                                 <span>
-                                  {layer.reinstallationCompletedAt.toLocaleDateString()}
+                                  {formatDateMMDDYYYY(layer.reinstallationCompletedAt)}
                                 </span>
                               </div>
                             </>
@@ -729,7 +730,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4 flex-shrink-0" />
                               <span>
-                                {layer.reinstallationMarkedAt.toLocaleDateString()}
+                                {formatDateMMDDYYYY(layer.reinstallationMarkedAt)}
                               </span>
                             </div>
                           </>
