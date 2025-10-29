@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MapPin, Truck, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { Card } from '../../../../common/components/Card';
 import { Trailer, TrailerStatus } from '../../../../types';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 interface MapCardProps {
   trailers: Trailer[];
@@ -95,12 +96,7 @@ const getStatusIcon = (status: TrailerStatus) => {
 
 const formatUnavailableUntil = (dateString?: string): string => {
   if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  return formatDateMMDDYYYY(dateString);
 };
 
 export const MapCard: React.FC<MapCardProps> = ({

@@ -10,6 +10,7 @@ import { MOCK_TEAM_MEMBERS, TeamMember } from '../../types/teamMembers';
 import { LogisticsItem, TravelPlan } from '../../types/logisticsTravel';
 import { ProjectDateModal } from '../../components/ProjectDateModal';
 import { AssignTrailerModal } from '../../components/AssignTrailerModal';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 import { TrailerLogisticsCard } from '../../components/TrailerLogisticsCard';
 import { AssignedTeamCard } from '../../components/AssignedTeamCard';
 import { TravelAccommodationModal, TravelAccommodationData } from '../../components/TravelAccommodationModal';
@@ -1224,7 +1225,7 @@ export const ProjectDetailsPrep: React.FC = () => {
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-sm">
                                       <span className="text-gray-700">
-                                        <strong>Duration:</strong> {new Date(travelAccommodationRequestData.rentalVehicleDetails.fromDate).toLocaleDateString()} to {new Date(travelAccommodationRequestData.rentalVehicleDetails.toDate).toLocaleDateString()}
+                                        <strong>Duration:</strong> {formatDateMMDDYYYY(travelAccommodationRequestData.rentalVehicleDetails.fromDate)} to {formatDateMMDDYYYY(travelAccommodationRequestData.rentalVehicleDetails.toDate)}
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm">

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Upload, FileText, Trash2 } from 'lucide-react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 
 interface HotelReservationDetails {
   hotelName: string;
@@ -180,41 +181,25 @@ export const AddHotelReservationModal: React.FC<AddHotelReservationModalProps> =
 
           {/* Check-in and Check-out Dates */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Check-in Date *
-              </label>
-              <input
-                type="date"
-                id="checkInDate"
-                value={reservationDetails.checkInDate}
-                onChange={(e) => handleInputChange('checkInDate', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.checkInDate ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.checkInDate && (
-                <p className="mt-1 text-sm text-red-600">{errors.checkInDate}</p>
-              )}
-            </div>
+            <DatePicker
+              label="Check-in Date"
+              value={reservationDetails.checkInDate}
+              onChange={(value) => handleInputChange('checkInDate', value)}
+              required
+              error={errors.checkInDate}
+              id="checkInDate"
+              className="mb-0"
+            />
 
-            <div>
-              <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Check-out Date *
-              </label>
-              <input
-                type="date"
-                id="checkOutDate"
-                value={reservationDetails.checkOutDate}
-                onChange={(e) => handleInputChange('checkOutDate', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.checkOutDate ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.checkOutDate && (
-                <p className="mt-1 text-sm text-red-600">{errors.checkOutDate}</p>
-              )}
-            </div>
+            <DatePicker
+              label="Check-out Date"
+              value={reservationDetails.checkOutDate}
+              onChange={(value) => handleInputChange('checkOutDate', value)}
+              required
+              error={errors.checkOutDate}
+              id="checkOutDate"
+              className="mb-0"
+            />
           </div>
 
           {/* Hotel Cost */}

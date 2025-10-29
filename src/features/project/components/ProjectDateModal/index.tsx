@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Modal } from '../../../../common/components/Modal';
+import { DatePicker } from '../../../../common/components/DatePicker';
 import { ProjectStatus } from '../../types';
 
 interface ProjectDateModalProps {
@@ -113,42 +113,26 @@ export const ProjectDateModal: React.FC<ProjectDateModalProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
-              Project Start Date *
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                id="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className={`w-full px-3 py-2 border ${errors.startDate ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-            </div>
-            {errors.startDate && <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>}
-          </div>
+          <DatePicker
+            label="Project Start Date"
+            value={startDate}
+            onChange={(value) => setStartDate(value)}
+            min={new Date().toISOString().split('T')[0]}
+            required
+            error={errors.startDate}
+            id="startDate"
+          />
 
-          <div>
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
-              Project End Date *
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                id="endDate"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                min={getMinEndDate()}
-                disabled={!startDate}
-                className={`w-full px-3 py-2 border ${errors.endDate ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${!startDate ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-              />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-            </div>
-            {errors.endDate && <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>}
-          </div>
+          <DatePicker
+            label="Project End Date"
+            value={endDate}
+            onChange={(value) => setEndDate(value)}
+            min={getMinEndDate()}
+            disabled={!startDate}
+            required
+            error={errors.endDate}
+            id="endDate"
+          />
         </div>
 
         {duration && (

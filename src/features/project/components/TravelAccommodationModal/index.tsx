@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check, Building, FileText } from 'lucide-react';
 import SelectField from 'common/components/SelectField';
 import FormField from 'common/components/FormField';
@@ -501,36 +502,22 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                           <FormField isLeftIcon={<Hotel />} label={'Number of Rooms *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.numberOfRooms} name={'hotelName'} type={'text'} />
 
                         {/* Check-in Date */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Check-in Date *
-                          </label>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <input
-                              type="date"
-                              value={hotel.checkInDate}
-                              onChange={(e) => updateHotel(hotelIndex, 'checkInDate', e.target.value)}
-                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                            />
-                          </div>
-                        </div>
+                        <DatePicker
+                          label="Check-in Date"
+                          value={hotel.checkInDate}
+                          onChange={(value) => updateHotel(hotelIndex, 'checkInDate', value)}
+                          required
+                          className="mb-0"
+                        />
 
                         {/* Check-out Date */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Check-out Date *
-                          </label>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <input
-                              type="date"
-                              value={hotel.checkOutDate}
-                              onChange={(e) => updateHotel(hotelIndex, 'checkOutDate', e.target.value)}
-                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                            />
-                          </div>
-                        </div>
+                        <DatePicker
+                          label="Check-out Date"
+                          value={hotel.checkOutDate}
+                          onChange={(value) => updateHotel(hotelIndex, 'checkOutDate', value)}
+                          required
+                          className="mb-0"
+                        />
 
                         {/* Hotel Cost */}
                         <div>
@@ -726,36 +713,20 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                 </div>
 
                 {/* From Date */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    From Date
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="date"
-                      value={vehicle.fromDate}
-                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'fromDate', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-                    />
-                  </div>
-                </div>
+                <DatePicker
+                  label="From Date"
+                  value={vehicle.fromDate}
+                  onChange={(value) => updateRentalVehicle(vehicleIndex, 'fromDate', value)}
+                  className="mb-0"
+                />
 
                 {/* To Date */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    To Date
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="date"
-                      value={vehicle.toDate}
-                      onChange={(e) => updateRentalVehicle(vehicleIndex, 'toDate', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-                    />
-                  </div>
-                </div>
+                <DatePicker
+                  label="To Date"
+                  value={vehicle.toDate}
+                  onChange={(value) => updateRentalVehicle(vehicleIndex, 'toDate', value)}
+                  className="mb-0"
+                />
               </div>
 
               {/* Attach Booking Slips */}

@@ -5,6 +5,7 @@ import { Card } from '../../../../common/components/Card';
 import { AttachmentUpload } from '../../../../common/components/AttachmentUpload';
 import { ProjectNote } from '../../types/projectDetails';
 import { NoteAttachment } from '../../../../types';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 interface ProjectNotesProps {
   notes: ProjectNote[];
@@ -37,13 +38,7 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
   const [showAddNote, setShowAddNote] = useState(false);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDateMMDDYYYY(dateString);
   };
 
   const handleAddNote = () => {

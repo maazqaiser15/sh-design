@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Package } from 'lucide-react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 import { LogisticsItem, LogisticsType, AddLogisticsModalProps } from '../../types/logisticsTravel';
 
 export const AddLogisticsModal: React.FC<AddLogisticsModalProps> = ({
@@ -210,22 +211,14 @@ export const AddLogisticsModal: React.FC<AddLogisticsModalProps> = ({
           </div>
 
           {/* Expected Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Expected Date *
-            </label>
-            <input
-              type="date"
-              value={formData.expectedDate}
-              onChange={(e) => handleInputChange('expectedDate', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 ${
-                errors.expectedDate ? 'border-red-300' : 'border-gray-300'
-              }`}
-            />
-            {errors.expectedDate && (
-              <p className="mt-1 text-xs text-red-600">{errors.expectedDate}</p>
-            )}
-          </div>
+          <DatePicker
+            label="Expected Date"
+            value={formData.expectedDate}
+            onChange={(value) => handleInputChange('expectedDate', value)}
+            required
+            error={errors.expectedDate}
+            className="mb-0"
+          />
         </div>
 
         {/* Footer */}

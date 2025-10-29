@@ -33,6 +33,7 @@ import { ProjectNotes } from '../../components/ProjectNotes';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { StatusBadge } from '../../../../common/components/StatusBadge';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 import { useToast } from '../../../../contexts/ToastContext';
 import { useSidebar } from '../../../../contexts/SidebarContext';
 import { useAuth } from '../../../../contexts/AuthContext';
@@ -753,7 +754,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                                 <td className="py-4 px-4">
                                   <div>
                                     <div className="font-medium text-gray-900">{window.windowName}</div>
-                                    <div className="text-sm text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</div>
+                                    <div className="text-sm text-gray-500">Created {window.createdAt ? formatDateMMDDYYYY(window.createdAt) : 'Unknown'}</div>
                                   </div>
                                 </td>
                                 <td className="py-4 px-4">
@@ -887,7 +888,7 @@ export const ProjectDetailsQF: React.FC<ProjectDetailsQFProps> = ({ projectStatu
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex-1 min-w-0">
                                 <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">{window.windowName}</h4>
-                                <p className="text-xs sm:text-sm text-gray-500">Created {window.createdAt?.toLocaleDateString() || 'Unknown'}</p>
+                                <p className="text-xs sm:text-sm text-gray-500">Created {window.createdAt ? formatDateMMDDYYYY(window.createdAt) : 'Unknown'}</p>
                               </div>
                               <StatusBadge status={window.status} />
                             </div>

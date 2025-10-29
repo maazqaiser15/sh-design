@@ -5,6 +5,7 @@ import { ProjectDateSetupModal } from '../ProjectDateSetupModal';
 import { useProjectDateSetup } from '../../hooks/useProjectDateSetup';
 import { Project, requiresDateSetup, getStatusDisplayName, getStatusColorClass } from '../../utils/projectStatusUtils';
 import { Building2, Briefcase, Calendar } from 'lucide-react';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 interface ProjectCardProps {
   project: Project;
@@ -78,22 +79,22 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectClic
               <div className="text-sm">
                 {project.startDate && project.endDate ? (
                   <>
-                    <span className="font-medium">{new Date(project.startDate).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatDateMMDDYYYY(project.startDate)}</span>
                     <span className="mx-2 text-gray-400">→</span>
-                    <span className="font-medium">{new Date(project.endDate).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatDateMMDDYYYY(project.endDate)}</span>
                   </>
                 ) : (
                   <>
                     {project.startDate && (
                       <div className="flex justify-between">
                         <span>Start:</span>
-                        <span className="font-medium">{new Date(project.startDate).toLocaleDateString()}</span>
+                        <span className="font-medium">{formatDateMMDDYYYY(project.startDate)}</span>
                       </div>
                     )}
                     {project.endDate && (
                       <div className="flex justify-between">
                         <span>End:</span>
-                        <span className="font-medium">{new Date(project.endDate).toLocaleDateString()}</span>
+                        <span className="font-medium">{formatDateMMDDYYYY(project.endDate)}</span>
                       </div>
                     )}
                   </>

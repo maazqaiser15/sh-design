@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
+import { DatePicker } from '../../../../common/components/DatePicker';
 
 interface ProjectDateSetupModalProps {
   isOpen: boolean;
@@ -82,41 +83,25 @@ export const ProjectDateSetupModal: React.FC<ProjectDateSetupModalProps> = ({
         </div>
 
         <div className="space-y-4">
-          <div>
-            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-              Project Start Date *
-            </label>
-            <input
-              type="date"
-              id="startDate"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.startDate ? 'border-red-300' : 'border-gray-300'
-              }`}
-            />
-            {errors.startDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>
-            )}
-          </div>
+          <DatePicker
+            label="Project Start Date"
+            value={startDate}
+            onChange={(value) => setStartDate(value)}
+            required
+            error={errors.startDate}
+            id="startDate"
+            className="mb-0"
+          />
 
-          <div>
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-              Project End Date *
-            </label>
-            <input
-              type="date"
-              id="endDate"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.endDate ? 'border-red-300' : 'border-gray-300'
-              }`}
-            />
-            {errors.endDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>
-            )}
-          </div>
+          <DatePicker
+            label="Project End Date"
+            value={endDate}
+            onChange={(value) => setEndDate(value)}
+            required
+            error={errors.endDate}
+            id="endDate"
+            className="mb-0"
+          />
         </div>
 
         <div className="flex justify-end space-x-3 mt-6">

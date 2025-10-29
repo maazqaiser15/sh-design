@@ -4,6 +4,7 @@ import { ProjectListItem, PROJECT_STATUS_COLORS, PROJECT_STATUS_DESCRIPTIONS, Pr
 import { formatProjectDuration } from '../utils';
 import CustomDataTable from '../../../common/components/CustomDataTable';
 import { Card } from 'common/components/Card';
+import { formatDateMMDDYYYY } from '../../../utils/dateUtils';
 
 interface ProjectTableViewProps {
   projects: ProjectListItem[];
@@ -19,11 +20,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   onSort,
 }) => {
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+    return formatDateMMDDYYYY(dateString);
   };
 
   const getInitials = (name: string): string => {
@@ -212,9 +209,9 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
           <Calendar className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
           <div>
             <div className="text-sm font-medium">
-              <span>{new Date(row.startDate).toLocaleDateString('en-GB')}</span>
+              <span>{formatDateMMDDYYYY(row.startDate)}</span>
               <span className="mx-2 text-gray-400">→</span>
-              <span>{new Date(row.endDate).toLocaleDateString('en-GB')}</span>
+              <span>{formatDateMMDDYYYY(row.endDate)}</span>
             </div>
           </div>
         </div>

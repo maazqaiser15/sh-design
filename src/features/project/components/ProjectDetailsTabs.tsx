@@ -5,6 +5,7 @@ import TeamTabView from './TeamTabView';
 import TravelTabView from './TravelTabView';
 import DocumentTabView from './DocumentTabView';
 import NotesTabView from './NotesTabView';
+import { formatDateMMDDYYYY } from '../../../utils/dateUtils';
 
 interface ProjectDetailsTabsProps {
   project: ProjectDetails;
@@ -115,11 +116,11 @@ const ProjectDetailsTabs: React.FC<ProjectDetailsTabsProps> = ({
                       </div>
                       <div className="flex justify-between">
                         <span>Start Date:</span>
-                        <span className="font-medium">{new Date(project.startDate).toLocaleDateString()}</span>
+                        <span className="font-medium">{formatDateMMDDYYYY(project.startDate)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>End Date:</span>
-                        <span className="font-medium">{new Date(project.endDate).toLocaleDateString()}</span>
+                        <span className="font-medium">{formatDateMMDDYYYY(project.endDate)}</span>
                       </div>
                     </div>
                   </div>
@@ -203,7 +204,7 @@ const ProjectDetailsTabs: React.FC<ProjectDetailsTabsProps> = ({
                       <path d="M6.66667 1.66667V4.16667M13.3333 1.66667V4.16667M2.91667 7.5H17.0833M17.5 7.5V15.8333C17.5 16.2754 17.3244 16.6993 17.0118 17.0118C16.6993 17.3244 16.2754 17.5 15.8333 17.5H4.16667C3.72464 17.5 3.30072 17.3244 2.98816 17.0118C2.67559 16.6993 2.5 16.2754 2.5 15.8333V7.5H17.5ZM2.5 7.5V5.83333C2.5 5.39131 2.67559 4.96738 2.98816 4.65482C3.30072 4.34226 3.72464 4.16667 4.16667 4.16667H15.8333C16.2754 4.16667 16.6993 4.34226 17.0118 4.65482C17.3244 4.96738 17.5 5.39131 17.5 5.83333V7.5H2.5Z" stroke="#667085" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <p className="font-normal text-xs text-[#475467] leading-5">
-                      {new Date(project.startDate).toLocaleDateString()} – {new Date(project.endDate).toLocaleDateString()}
+                      {formatDateMMDDYYYY(project.startDate)} – {formatDateMMDDYYYY(project.endDate)}
                     </p>
                   </div>
                 </div>

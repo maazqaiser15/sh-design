@@ -46,6 +46,7 @@ import { NoteAttachment } from "../../../../types";
 import { Button } from "../../../../common/components/Button";
 import { Card } from "../../../../common/components/Card";
 import { StatusBadge } from "../../../../common/components/StatusBadge";
+import { formatDateMMDDYYYY } from "../../../../utils/dateUtils";
 import { useToast } from "../../../../contexts/ToastContext";
 import { WindowDetailModal } from "../../components/WindowDetailModal";
 import { AddEditWindowModal } from "../../components/AddEditWindowModal";
@@ -1296,7 +1297,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
             {row.windowName}
           </div>
           <div className="text-xs text-gray-500">
-            {row.createdAt?.toLocaleDateString() || "Unknown"}
+            {row.createdAt ? formatDateMMDDYYYY(row.createdAt) : "Unknown"}
           </div>
         </div>
       ),
@@ -2344,8 +2345,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                                       </h4>
                                       <p className="text-xs text-gray-500">
                                         Created{" "}
-                                        {window.createdAt?.toLocaleDateString() ||
-                                          "Unknown"}
+                                        {window.createdAt ? formatDateMMDDYYYY(window.createdAt) : "Unknown"}
                                       </p>
                                     </div>
                                     <div className="flex items-center gap-2">

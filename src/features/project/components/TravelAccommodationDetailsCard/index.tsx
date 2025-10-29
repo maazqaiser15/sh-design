@@ -2,6 +2,7 @@ import React from 'react';
 import { Plus, CheckCircle, Maximize2, Paperclip, Plane, Hotel, Calendar, Clock, User, Download, Car, Phone, Check } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from 'common/components/Card';
+import { formatDateMMDDYYYY } from '../../../../utils/dateUtils';
 
 export interface TicketDetails {
   id: string;
@@ -58,11 +59,7 @@ export const TravelAccommodationDetailsCard: React.FC<TravelAccommodationDetails
   isCompleted = false
 }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    return formatDateMMDDYYYY(dateString);
   };
 
   const formatTime = (timeString: string) => {
@@ -76,7 +73,7 @@ export const TravelAccommodationDetailsCard: React.FC<TravelAccommodationDetails
   const formatDateRange = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    return `${formatDateMMDDYYYY(startDate)} → ${formatDateMMDDYYYY(endDate)}`;
   };
 
   const hasData = travelAccommodationData && (

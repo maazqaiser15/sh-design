@@ -158,13 +158,5 @@ export const getStatusColor = (status: string): string => {
 };
 
 
-export const formatDate = (dateInput: string | Date): string => {
-  const date = new Date(dateInput);
-  if (isNaN(date.getTime())) return ''; // handle invalid dates
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
+export { formatDate } from '../../utils/dateUtils';
 

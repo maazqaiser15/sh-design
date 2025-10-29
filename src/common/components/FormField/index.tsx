@@ -1,6 +1,7 @@
 // components/FormikInput.js
 import { Field, ErrorMessage } from "formik";
 import React from "react";
+import { DatePicker } from "../DatePicker";
 
 
 interface formFieldProps {
@@ -16,31 +17,85 @@ interface formFieldProps {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   value?: string | number | readonly string[];
   autoComplete?: string;
+  min?: string;
+  max?: string;
+  disabled?: boolean;
+  required?: boolean;
 }
 
-const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", onChange, placeholder, className = "", isLeftIcon, isRightIcon, ...rest }) => {
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value; // e.g. "2025-10-29"
-    if (type === "date" && value) {
-      const [year, month, day] = value.split("-");
-      const formatted = `${month}/${day}/${year}`; // MM/DD/YYYY
-      // Create synthetic event so Formik receives correct value
-      const syntheticEvent = {
-        ...e,
-        target: { ...e.target, value: formatted }
-      };
-      onChange?.(syntheticEvent as React.ChangeEvent<HTMLInputElement>);
-    } else {
-      onChange?.(e);
-    }
-  };
+// Custom component for date fields to work with Formik
+const DatePickerField: React.FC<{ field: any; form: any; label?: string; className?: string; min?: string; max?: string; disabled?: boolean; required?: boolean; placeholder?: string }> = ({
+  field,
+  form,
+  label,
+  className,
+  min,
+  max,
+  disabled,
+  required,
+  placeholder,
+}) => {
+  const error = form.touched[field.name] && form.errors[field.name];
   
+  return (
+    <DatePicker
+      value={field.value || ''}
+      onChange={(value) => form.setFieldValue(field.name, value)}
+      onBlur={() => form.setFieldTouched(field.name, true)}
+      name={field.name}
+      id={field.name}
+      label={label}
+      placeholder={placeholder}
+      className={className}
+      min={min}
+      max={max}
+      disabled={disabled}
+      required={required}
+      error={error as string}
+      showLabel={false}
+    />
+  );
+};
+
+const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", placeholder, className = "", isLeftIcon, isRightIcon, min, max, disabled, required, ...rest }) => {
+  // Use DatePicker for date type fields
+  if (type === "date") {
+    return (
+      <div className={`flex flex-col  ${className ? className : 'mb-4'}`}>
+        {label && (
+          <label htmlFor={name} className="mb-1 text-sm font-medium text-gray-700">
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )}
+
+        <Field
+          name={name}
+          component={DatePickerField}
+          label={label}
+          className={className}
+          min={min}
+          max={max}
+          disabled={disabled}
+          required={required}
+          placeholder={placeholder}
+        />
+
+        <ErrorMessage
+          name={name}
+          component="div"
+          className="text-red-500 text-sm mt-1"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`flex flex-col  ${className ? className : 'mb-4'}`}>
       {label && (
         <label htmlFor={name} className="mb-1 text-sm font-medium text-gray-700">
           {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
@@ -61,7 +116,7 @@ const FormField: React.FC<formFieldProps> = ({ label, name, type = "text", onCha
             ${isLeftIcon ? "pl-10" : ""}
             ${isRightIcon ? "pr-10" : ""}`}
           {...rest}
-          onChange={handleDateChange}
+
         />
 
         {/* Right Icon */}
