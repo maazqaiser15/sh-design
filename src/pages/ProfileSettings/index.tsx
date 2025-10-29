@@ -148,7 +148,7 @@ export const ProfileSettings: React.FC = () => {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-text-primary mb-3">User Profile</h1>
-        <p className="text-lg text-text-muted">Review your profile and manage password settings</p>
+        <p className="text-lg text-text-muted">Manage your account information and security settings</p>
       </div>
 
       {/* Main Content - Single Column Layout */}
@@ -232,7 +232,7 @@ export const ProfileSettings: React.FC = () => {
             throw new Error('Function not implemented.');
           }}>
             <Form>
-              <FormField label={'Current Password'} name={'currentPassword'} type={'password'}/>
+              <FormField label={'Current Password'} name={'currentPassword'} type={'password'}git p/>
               <FormField label={'New Password'} name={'currentPassword'} type={'password'} />
               <FormField label={'Confirm New Password'} name={'currentPassword'} type={'password'} />
               <div className='flex justify-end gap-2'>
