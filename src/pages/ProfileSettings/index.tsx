@@ -4,6 +4,9 @@ import { Button } from '../../common/components/Button';
 import { Card } from '../../common/components/Card';
 import { useToast } from '../../contexts/ToastContext';
 import { Eye, EyeOff, Save, User, Mail, Shield, Building, Users, Calendar, Phone } from 'lucide-react';
+import { Modal } from 'common/components/Modal';
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik';
+import FormField from 'common/components/FormField';
 
 interface PasswordChangeData {
   currentPassword: string;
@@ -145,7 +148,7 @@ export const ProfileSettings: React.FC = () => {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-text-primary mb-3">User Profile</h1>
-        <p className="text-lg text-text-muted">Review your profile and manage password settings</p>
+        <p className="text-lg text-text-muted">Manage your account information and security settings</p>
       </div>
 
       {/* Main Content - Single Column Layout */}
@@ -162,7 +165,7 @@ export const ProfileSettings: React.FC = () => {
                 <div>
                   <h2 className="text-2xl text-start font-bold text-text-primary">{user.name || 'Unknown User'}</h2>
                   <p className="text-lg text-start text-text-muted">{getRoleDisplayName(user.userType || 'execution-team')}</p>
-          
+
                 </div>
               </div>
               <Button
@@ -181,7 +184,7 @@ export const ProfileSettings: React.FC = () => {
               {/* Email */}
               <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                 <Mail size={24} className="text-primary" />
-                
+
                 <div className="text-left">
                   <p className="text-sm font-medium text-text-primary">Email Address</p>
                   <p className="text-text-muted">{user.email || 'No email provided'}</p>
@@ -219,11 +222,30 @@ export const ProfileSettings: React.FC = () => {
                 </div>
               )}
 
-      
+
             </div>
           </div>
         </Card>
 
+        <Modal isOpen={isChangingPassword} onClose={() => setIsChangingPassword(false)} title={'Change Password'} >
+          <Formik initialValues={undefined} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+            throw new Error('Function not implemented.');
+          }}>
+            <Form>
+              <FormField label={'Current Password'} name={'currentPassword'} type={'password'}git p/>
+              <FormField label={'New Password'} name={'currentPassword'} type={'password'} />
+              <FormField label={'Confirm New Password'} name={'currentPassword'} type={'password'} />
+              <div className='flex justify-end gap-2'>
+                <Button variant='secondary' onClick={() => setIsChangingPassword(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => setIsChangingPassword(false)}>
+                  Change Password
+                </Button>
+              </div>
+            </Form>
+          </Formik>
+        </Modal>
       </div>
     </div>
   );
