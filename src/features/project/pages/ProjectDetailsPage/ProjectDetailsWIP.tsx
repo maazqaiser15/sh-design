@@ -13,9 +13,6 @@ import {
   Plus,
   Eye,
   Download,
-  Search,
-  ChevronDown,
-  X,
   MoreVertical,
   ArrowLeft,
   Square,
@@ -25,24 +22,25 @@ import {
   List,
   Upload,
   Trash2,
-  Settings,
-  Package,
   ClipboardCheck,
-  FileCheck,
   Building,
   User,
   File,
   Dot,
   Plane,
   DollarSign,
+  Package,
+  FileCheck,
 } from "lucide-react";
 import { PieChart } from "../../../../common/components/PieChart";
 import {
   ProjectDetails,
   MOCK_PROJECT_DETAILS,
   ProjectNote,
+  MOCK_PREPARATION_DATA,
+  PreparationStageData,
 } from "../../types/projectDetails";
-import { NoteAttachment } from "../../../../types";
+import { NoteAttachment, TeamMember } from "../../../../types";
 import { Button } from "../../../../common/components/Button";
 import { Card } from "../../../../common/components/Card";
 import { StatusBadge } from "../../../../common/components/StatusBadge";
@@ -56,13 +54,12 @@ import TravelDetailsContent from "./TravelDetailsContent";
 import HotelReservationDetailsContent from "./HotelReservationDetailsContent";
 import {
   Window,
-  TakeOffSheet,
-  MOCK_WINDOWS,
-  MOCK_TEAM_MEMBERS,
+  // MOCK_TEAM_MEMBERS,
   LayerInstallation,
   FilmType,
   WindowStatus,
 } from "../../types/windowManagement";
+import { MOCK_TEAM_MEMBERS } from '../../types/teamMembers';
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useSidebar } from "../../../../contexts/SidebarContext";
 import { ROLE3_MOCK_WINDOWS } from "../../data/role3MockWindows";
@@ -83,6 +80,10 @@ import CustomDataTable from "common/components/CustomDataTable";
 import { SetupInventoryModal } from "../../components/SetupInventoryModal";
 // Removed unused Formik imports after modal content extraction
 import FormField from "common/components/FormField";
+import { AssignTeamModal } from "../../components/AssignTeamModal";
+import { AssignTrailerModal } from "../../components/AssignTrailerModal";
+import { getAvailableTrailersForAssignment } from "../../utils/trailerDataUtils";
+import { TrailerForAssignment } from "../../types/trailers";
 
 interface ProjectDetailsWIPProps {
   projectStatus?: "WIP" | "QF" | "QC" | "Completed";
@@ -165,7 +166,9 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({
     ],
   });
 
+  const [showEditTeamModal, setShowEditTeamModal] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [preparationData, setPreparationData] = useState<PreparationStageData>(MOCK_PREPARATION_DATA);
 
   const handleBuildingChange = (
     buildingId: string,
@@ -240,6 +243,8 @@ const SetupBuildingsForm: React.FC<SetupBuildingsFormProps> = ({
       onSave(formData);
     }
   };
+
+
 
   return (
     <div className="w-full space-y-6">
@@ -581,10 +586,12 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
   const [isTrailerUpdated, setIsTrailerUpdated] = useState(false);
   const [isInventoryUpdated, setIsInventoryUpdated] = useState(false);
   const [isQualityFormSigned, setIsQualityFormSigned] = useState(false);
+  const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
+   const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
   const [qualityFormStatus, setQualityFormStatus] = useState<
     "none" | "qf-marked" | "qc-marked" | "both-marked"
   >("none");
-
+  const [showEditTeamModal, setShowEditTeamModal] = useState(false);
   // Check if all cards are completed
   const allCardsCompleted =
     isTrailerUpdated &&
@@ -786,8 +793,8 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
   // Filter windows based on search and filters
   const filteredWindows = windows.filter((window) => {
     const matchesSearch = (window.windowName || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      ?.toLowerCase()
+      .includes(searchTerm?.toLowerCase());
     const matchesFilmType =
       filters.filmType === "all" || window.filmType === filters.filmType;
     const matchesStatus =
@@ -1287,7 +1294,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
 
   const columns = [
     {
-      name: <div className="text-sm ">WINDOW</div>,
+      name: <div className="text-sm ">Window</div>,
       selector: (row: any) => {
         row.name;
       },
@@ -1301,94 +1308,94 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
           </div>
         </div>
       ),
-      width: "100px",
+      // width: "100px",
     },
     {
-      name: <div className="text-sm ">WIDTH</div>,
+      name: <div className="text-sm ">Width</div>,
       selector: (row: any) => {
         row.length;
       },
       cell: (row: any) => <div>{row.width}</div>,
-      width: "80px",
+      // width: "80px",
     },
     {
-      name: <div className="text-sm "> LENGTH</div>,
+      name: <div className="text-sm "> Length</div>,
       selector: (row: any) => {
         row.width;
       },
       cell: (row: any) => <div>{row.width}</div>,
-      width: "92px",
+      // width: "92px",
     },
     {
-      name: <div className="text-sm ">PRODUCT</div>,
+      name: <div className="text-sm ">Product</div>,
       selector: (row: any) => {
         row.filmType;
       },
       cell: (row: any) => <div>{row.filmType}</div>,
-      width: "100px",
+      // width: "100px",
     },
     {
-      name: <div className="text-sm "> INT</div>,
+      name: <div className="text-sm "> Int</div>,
       selector: (row: any) => {
         row.interiorCount;
       },
       cell: (row: any) => <div>{row.interiorCount || 0}</div>,
-      width: "55px",
+      // width: "55px",
     },
     {
-      name: <div className="text-sm ">EXT </div>,
+      name: <div className="text-sm ">Ext</div>,
       selector: (row: any) => {
         row.exteriorCount;
       },
       cell: (row: any) => <div>{row.exteriorCount || 0}</div>,
-      width: "57px",
+      // width: "67px",
     },
     {
-      name: <div className="text-sm ">TOTAL </div>,
+      name: <div className="text-sm ">Total </div>,
       selector: (row: any) => {
         row.total;
       },
       cell: (row: any) => (
         <div>{(row.interiorCount || 0) + (row.exteriorCount || 0)}</div>
       ),
-      width: "74px",
+      // width: "94px",
     },
     {
-      name: <div className="text-sm ">COLOR</div>,
+      name: <div className="text-sm ">Color</div>,
       selector: (row: any) => {
         row.color;
       },
       cell: (row: any) => <div>{row.color || "N/A"}</div>,
-      width: "80px",
+      // width: "80px",
     },
     {
-      name: <div className="text-sm "> TINT</div>,
+      name: <div className="text-sm "> Tint</div>,
       selector: (row: any) => {
         row.tint;
       },
       cell: (row: any) => <div>{row.tint || "N/A"}</div>,
-      width: "65px",
+      // width: "65px",
     },
     {
-      name: <div className="text-sm ">STRIP</div>,
+      name: <div className="text-sm ">Striping</div>,
       selector: (row: any) => {
         row.stripping;
       },
       cell: (row: any) => <div> {row.stripping ? "Yes" : "No"}</div>,
-      width: "72px",
+      // width: "72px",
     },
     {
-      name: <div className="text-sm ">STATUS</div>,
+      name: <div className="text-sm ">Status</div>,
       selector: (row: any) => {
         row.status;
       },
       cell: (row: any) => (
         <StatusBadge key={`${row.id}-${updateCounter}`} status={row.status} />
       ),
-      width: "93px",
+      // width: "93px",
     },
     {
-      name: <div className="text-sm ">ACTIONS</div>,
+      name: <div className="text-sm ">Actions</div>,
       selector: (row: any) => {
         row.name;
       },
@@ -1687,27 +1694,29 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                     </div>
                   </div>
                 )}
+
                 {/* Contact Person */}
                 {project.contactPerson && (
                   <div className="flex items-start gap-2 pr-6">
                     <User className="w-4 h-4 text-blue-600" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">
-                        Contact Person
-                      </p>
-                      <p className="text-sm text-gray-900 font-medium">
-                        {project.contactPerson.name}
-                      </p>
-                      {project.contactPerson.phone && (
-                        <p className="text-xs text-gray-700">
-                          {project.contactPerson.phone}
-                        </p>
-                      )}
-                      {project.contactPerson?.email && (
-                        <p className="text-xs text-gray-700">
-                          {project.contactPerson.email}
-                        </p>
-                      )}
+                      <p className="text-xs text-gray-500 font-medium">Primary Contact Person</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700 flex items-center">Testing Role<Dot /> {project.contactPerson.phone}</p>}
+                      {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
+
+                    </div>
+                  </div>
+                )}
+
+                {project.contactPerson && (
+                  <div className="flex items-start gap-2 pr-6">
+                    <User className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">Secondary Contact Person</p>
+                      <p className="text-sm text-gray-900 font-medium">{project.contactPerson.name}</p>
+                      {project.contactPerson.phone && <p className="text-xs text-gray-700 flex items-center">Testing Role<Dot /> {project.contactPerson.phone}</p>}
+                      {project.contactPerson?.email && <p className="text-xs text-gray-700">{project.contactPerson.email}</p>}
                     </div>
                   </div>
                 )}
@@ -1954,7 +1963,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                     </span>
                   </div>
                   <span className="text-xs sm:text-sm font-medium text-gray-600 text-start">
-                    Windows Completed
+                    Layers Completed
                   </span>
                 </div>
 
@@ -2107,9 +2116,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                   ]
                   : projectStatus === "QF"
                     ? [
-                      { id: "quality-check", label: "Quality Check" },
-                      { id: "issues", label: "Issues & Fixes" },
+                      { id: "job-brief", label: "Window Management" },
                       { id: "team", label: "Team" },
+                      {
+                        id: "travel-accommodation",
+                        label: "Travel & Accommodation",
+                      },
+                      {
+                        id: "trailer-films",
+                        label: "Trailer & Films",
+                      },
                       { id: "document", label: "Document" },
                       { id: "notes", label: "Notes" },
                     ]
@@ -2582,9 +2598,16 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
             {activeTab === "team" && (
               <div className="space-y-6">
                 <Card className="">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Team Members
-                  </h3>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Team Members
+                    </h3>
+                    <button onClick={() => setShowEditTeamModal(true)} className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
+                      <Edit size={18} className="text-gray-600" />
+                    </button>
+
+                  </div>
+
                   <div className="space-y-4">
                     {[
                       {
@@ -2933,7 +2956,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
               <div className="space-y-6">
                 <Card>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Trailer & Films
+                    Trailer & Films hahah
                   </h3>
                   <div className="space-y-6">
                     {/* Travel Details Section */}
@@ -2951,7 +2974,9 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
-
+                          <Button variant="secondary" onClick={() => setShowAssignTrailerModal(true)}>
+                            Change Trailer
+                          </Button>
                           <button className="text-gray-400 hover:text-gray-600">
                             <svg
                               className="w-4 h-4"
@@ -3121,7 +3146,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
               </div>
             )}
 
-            {activeTab === "quality-check" && (
+            {/* {activeTab === "quality-check" && (
               <div className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -3155,7 +3180,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             {activeTab === "issues" && (
               <div className="space-y-6">
@@ -3372,6 +3397,23 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
         onClose={() => setShowAddEditModal(false)}
         windowItem={editingWindow}
         onSave={handleSaveWindow}
+      />
+
+      <AssignTeamModal
+        isOpen={showEditTeamModal}
+        onClose={() => setShowEditTeamModal(false)}
+        onAssignTeam={() => { console.log('heheheh') }}
+        availableMembers={MOCK_TEAM_MEMBERS}
+        projectDetails={project}
+      />
+
+
+      <AssignTrailerModal
+        isOpen={showAssignTrailerModal}
+        onClose={() => setShowAssignTrailerModal(false)}
+        onAssignTrailer={() => console.log('click')}
+        availableTrailers={availableTrailers}
+        assignedTrailerId={availableTrailers?.id}
       />
 
       <WindowDetailModal

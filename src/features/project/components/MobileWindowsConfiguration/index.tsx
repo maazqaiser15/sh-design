@@ -678,21 +678,7 @@ export const MobileWindowsConfiguration: React.FC<
             Windows Configuration
           </h2>
           <div className="flex items-center gap-2">
-            {showSetupButton ? (
-              <Button
-                variant="primary"
-                onClick={handleSave}
-                className="w-full sm:w-auto mobile-touch-target">
-                Setup Windows
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={handleSave}
-                className="w-full sm:w-auto mobile-touch-target">
-                <Trash2 size={18} /> Remove
-              </Button>
-            )}
+           
             <Button
               variant="secondary"
               icon={Plus}
@@ -747,6 +733,24 @@ export const MobileWindowsConfiguration: React.FC<
       ) : (
         <DesktopTableView />
       )}
+      <div className="mt-4 flex justify-between gap-3 items-center ">
+        <p className="text-sm text-gray-600 font-normal mb-0"> Complete your window setup details, then click Setup Windows to move forward with the project. </p>
+        {showSetupButton ? (
+              <Button
+                variant="primary"
+                onClick={handleSave}
+                className="w-full sm:w-auto mobile-touch-target">
+                Setup Windows
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={handleSave}
+                className="w-full sm:w-auto mobile-touch-target">
+                <Trash2 size={18} /> Remove
+              </Button>
+            )}
+      </div>
     </div>
   );
 };

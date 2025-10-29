@@ -17,6 +17,9 @@ import {
   Send,
   FolderSync,
   RefreshCcw,
+  LocateIcon,
+  MapPin,
+  Dot,
 } from "lucide-react";
 import { Card } from "../../common/components/Card";
 import { Button } from "../../common/components/Button";
@@ -623,9 +626,11 @@ export const TeamMemberDetail: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
                   <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   <span className="text-sm text-gray-600 truncate">{member.email}</span>
+                  <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0"/>
+                  <span className="text-sm text-gray-600 truncate">Avondale, Arizona</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />

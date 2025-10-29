@@ -3,6 +3,8 @@ import { CheckCircle2, AlertCircle, FileText, Mail } from 'lucide-react';
 import { Button } from '../../../common/components/Button';
 import { Card } from '../../../common/components/Card';
 import { Modal } from '../../../common/components/Modal';
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik';
+import FormField from 'common/components/FormField';
 
 interface QualityCheckFormModalProps {
   isOpen: boolean;
@@ -60,7 +62,7 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
     });
   };
 
-
+  const [isShowEmailField, setIsShowEmailField] = useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
@@ -82,8 +84,44 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl" title="Quality Walk Form">
-      <div className="w-full max-h-[80vh] overflow-y-auto">
+    <Modal isOpen={isOpen} onClose={handleClose} size="xl" title={`${isShowEmailField ? 'Send QF Form via Email' : 'Quality Walk Form'} `}>
+      {isShowEmailField ? <div>
+        <h3 className='text-gray-600 text-lg font-normal mb-5'>Enter the recipient’s email address to send the QF form directly to their inbox.</h3>
+
+        <Formik
+          initialValues={{
+            email: "",
+          }}
+          onSubmit={(
+            values: FormikValues,
+            formikHelpers: FormikHelpers<FormikValues>
+          ) => {
+            console.log(values);
+            formikHelpers.setSubmitting(false);
+          }}
+        >
+          <Form>
+            <FormField
+              label="Email"
+              name="email"
+              placeholder="Enter email address"
+              type="text"
+
+
+            />
+
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="secondary" type="button" onClick={()=>setIsShowEmailField(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit" onClick={handleClose}>
+                Send Form
+              </Button>
+            </div>
+          </Form>
+        </Formik>
+
+      </div> : <div className="w-full max-h-[80vh] overflow-y-auto">
         {/* Header with Safe Haven Defense Branding */}
         <div className="bg-blue-600 text-white p-6">
           <div className="flex items-center justify-between">
@@ -254,7 +292,7 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
 
           {/* Form Actions */}
           <div className="flex items-center justify-between gap-3 pt-6 border-t border-gray-200">
-            <Button icon={Mail} variant='ghost' className='bg-gray-50'>Send as an email</Button>
+            <Button icon={Mail} variant='ghost' className='bg-gray-50' onClick={() => setIsShowEmailField(true)}>Send as an email</Button>
             <div className='flex items-center gap-2'>
               <Button
                 type="button"
@@ -274,7 +312,8 @@ export const QualityCheckFormModal: React.FC<QualityCheckFormModalProps> = ({
 
           </div>
         </form>
-      </div>
+      </div>}
+
     </Modal>
   );
 };

@@ -109,16 +109,18 @@ export const AddUsageModal: React.FC<AddUsageModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
-      <div className="w-full">
+    <Modal isOpen={isOpen} onClose={handleClose} size="xl" title={'Update Inventory'} >
+      <div className="w-full max-h-[80vh] overflow-y-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">Update Inventory</h2>
-        </div>
+        {/* <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900"></h2>
+        </div> */}
+
+        
 
         {/* Project Inventory Table */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Project Inventory</h3>
+        <div className="space-y-4 ">
+          {/* <h3 className="text-lg font-medium text-gray-900">Project Inventory</h3> */}
           
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg">

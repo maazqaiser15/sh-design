@@ -52,9 +52,9 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
   // Filter members based on search and filters
   const filteredMembers = useMemo(() => {
     return availableMembers.filter(member => {
-      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.phone?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = member.name?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+        member.role?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
+        member.phone?.toLowerCase().includes(searchQuery?.toLowerCase());
       const matchesRole = !roleFilter || member.role === roleFilter;
       const matchesStatus = !statusFilter || member.status === statusFilter;
       const matchesLocation = !locationFilter || member.location === locationFilter;
@@ -160,7 +160,17 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
     },
 
     {
-      name: 'Location',
+      name: 'City',
+      selector: (row: any) => row.name,
+      cell: (row: any) => <div>
+        <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
+          <MapPin className="w-3 h-3 mr-1 text-gray-400 flex-shrink-0" />
+          <span className="truncate">{row.location || '—'}</span>
+        </div>
+      </div>
+    },
+    {
+      name: 'State',
       selector: (row: any) => row.name,
       cell: (row: any) => <div>
         <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
@@ -228,7 +238,9 @@ export const AssignTeamModal: React.FC<AssignTeamModalProps> = ({
               value: 'Unavailable', label: 'Unavailable'
             }
             ]} />
-            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'All Locations'} options={availableLocations} />
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Select City'} options={availableLocations} />
+            <SelectField value={locationFilter} inputClassName={'border border-gray-300'} onChange={(e) => setLocationFilter(e.target.value)} placeholder={'Select States'} options={availableLocations} />
+
           </div>
         </div>
 

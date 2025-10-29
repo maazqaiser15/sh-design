@@ -183,9 +183,9 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
           <Calendar className="w-4 h-4 text-blue-600" />
           <h3 className="text-sm font-medium text-blue-900">Project Duration</h3>
           <span className="text-sm text-blue-800">
-            <span className="font-medium">{formatDate(filteredTrailers[0].lastMaintenance)}</span>
+            <span className="font-medium">{formatDate(filteredTrailers[0]?.lastMaintenance)}</span>
             <span className="mx-2">→</span>
-            <span className="font-medium">{formatDate(filteredTrailers[0].nextMaintenance)}</span>
+            <span className="font-medium">{formatDate(filteredTrailers[0]?.nextMaintenance)}</span>
           </span>
         </div>
       </div>
