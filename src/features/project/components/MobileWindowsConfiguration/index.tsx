@@ -677,57 +677,33 @@ export const MobileWindowsConfiguration: React.FC<
           <h2 className="text-lg font-semibold text-gray-900">
             Windows Configuration
           </h2>
-          {showSetupButton ? (
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              className="w-full sm:w-auto mobile-touch-target">
-              Setup Windows
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              onClick={handleSave}
-              className="w-full sm:w-auto mobile-touch-target">
-              <Trash2 size={18} /> Remove
-            </Button>
-          )}
-            <Button
-              variant="secondary"
-              icon={Plus}
-              onClick={addWindow}
-              className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto">
-              Add Window
-            </Button>
-        </div>
-
-        <div className="flex flex-col items-center justify-between sm:flex-row gap-2 sm:gap-3">
-          {/* <div className="flex-1">
-            <Formik
-              initialValues={{ building: "" }}
-              onSubmit={(vals) => console.log(vals)}>
-              <Form>
-                <FormField
-                  className="mb-0"
-                  label=""
-                  name="building"
-                  type="text"
-                  placeholder="Enter building name (e.g., Main Building, Office Block, etc.)"
-                />
-              </Form>
-            </Formik>
-          </div> */}
-
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            {showSetupButton ? (
+              <Button
+                variant="primary"
+                onClick={handleSave}
+                className="w-full sm:w-auto mobile-touch-target">
+                Setup Windows
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={handleSave}
+                className="w-full sm:w-auto mobile-touch-target">
+                <Trash2 size={18} /> Remove
+              </Button>
+            )}
             <Button
               variant="secondary"
               icon={Plus}
               onClick={addWindow}
-              className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto">
+              className="text-sm mobile-touch-target w-full sm:w-auto">
               Add Window
             </Button>
           </div>
+
         </div>
+
       </div>
 
       {/* Error Display */}
