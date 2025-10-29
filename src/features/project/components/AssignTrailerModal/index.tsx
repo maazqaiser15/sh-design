@@ -98,20 +98,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
     }
   };
 
-  const getInventorySummary = (trailer: TrailerForAssignment) => {
-    const totalFilm = trailer.inventory.filmSheets.reduce((sum, film) => sum + film.available, 0);
-    const goodTools = trailer.inventory.tools.filter(tool => tool.available > 0).length;
-    const totalTools = trailer.inventory.tools.length;
 
-    return {
-      filmSqFt: totalFilm,
-      toolsStatus: goodTools === totalTools ? 'good' : 'needs_attention'
-    };
-  };
-
-  const isTrailerSelectable = (trailer: TrailerForAssignment) => {
-    return trailer.status === 'available';
-  };
 
 
   const columns = [
@@ -146,7 +133,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
       name: 'Status',
       selector: (row: any) => row.status,
       cell: (row: any) => {
-        const isUnavailable = row.status === 'unavailable' || row.status === 'low_stock';
+        const isUnavailable = row.status.toLowerCase() === 'unavailable';
         return (
           <div className="">
             <div
@@ -156,7 +143,7 @@ export const AssignTrailerModal: React.FC<AssignTrailerModalProps> = ({
             >
               {row.status}
             </div>
-            <div> {isUnavailable && <p className='text-[10px] text-red-600'> Unavailable until  {formatDate(row.unavailableUntil) }</p>}</div>
+            <div> {isUnavailable && <p className='text-[10px] text-gray-600 mt-1 ps-1'> Until  {formatDate(row.unavailableUntil)}</p>}</div>
           </div>
         )
       }

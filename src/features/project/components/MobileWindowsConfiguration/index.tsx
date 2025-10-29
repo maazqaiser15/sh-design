@@ -692,10 +692,17 @@ export const MobileWindowsConfiguration: React.FC<
               <Trash2 size={18} /> Remove
             </Button>
           )}
+            <Button
+              variant="secondary"
+              icon={Plus}
+              onClick={addWindow}
+              className="text-sm py-[11px] mobile-touch-target w-full sm:w-auto">
+              Add Window
+            </Button>
         </div>
 
         <div className="flex flex-col items-center justify-between sm:flex-row gap-2 sm:gap-3">
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <Formik
               initialValues={{ building: "" }}
               onSubmit={(vals) => console.log(vals)}>
@@ -709,7 +716,7 @@ export const MobileWindowsConfiguration: React.FC<
                 />
               </Form>
             </Formik>
-          </div>
+          </div> */}
 
           <div className="flex gap-2">
             <Button
