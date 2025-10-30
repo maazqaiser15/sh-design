@@ -368,8 +368,8 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-      <div className="p-4 sm:p-6">
+    <Modal isOpen={isOpen} onClose={onClose} title={`Edit Project`} size="xl">
+      <div className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6 gap-4">
           <div className="flex-1 min-w-0">
@@ -429,14 +429,14 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-6">
           {/* Basic Info */}
-          <div className="space-y-4">
+          <div className="space-y-">
             <h3 className="text-lg font-semibold text-gray-900">
               Basic Information
             </h3>
 
-            <div className="space-y-4">
+            <div className=" grid gap-3 grid-cols-3  ">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Film Type
@@ -455,13 +455,13 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                     ))}
                   </select>
                 ) : (
-                  <p className="text-gray-900 text-sm sm:text-base">
+                  <p className="text-gray-900 mb-0 text-sm sm:text-base">
                     {editedWindow.filmType}
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* <div className=""> */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Length (cm)
@@ -506,7 +506,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                     </p>
                   )}
                 </div>
-              </div>
+              {/* </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -530,11 +530,10 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
             {editedWindow.layers.map((layer, index) => (
               <div
                 key={index}
-                className={`border border-gray-200 rounded-lg p-3 sm:p-4 ${
-                  layer.status === "Reinstallation Needed"
-                    ? "bg-orange-50 border-orange-200"
-                    : ""
-                }`}>
+                className={`border border-gray-200 rounded-lg p-3 sm:p-4 ${layer.status === "Reinstallation Needed"
+                  ? "bg-orange-50 border-orange-200"
+                  : ""
+                  }`}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3 w-full">
                     {layerCaulkingState[index]?.caulkingCompleted ? (
@@ -560,17 +559,15 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                               !layerCaulkingState[index]?.caulkingRequired
                             )
                           }
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            layerCaulkingState[index]?.caulkingRequired
-                              ? "bg-green-600"
-                              : "bg-gray-300"
-                          }`}>
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${layerCaulkingState[index]?.caulkingRequired
+                            ? "bg-green-600"
+                            : "bg-gray-300"
+                            }`}>
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                              layerCaulkingState[index]?.caulkingRequired
-                                ? "translate-x-6"
-                                : "translate-x-1"
-                            }`}
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${layerCaulkingState[index]?.caulkingRequired
+                              ? "translate-x-6"
+                              : "translate-x-1"
+                              }`}
                           />
                         </button>
                       </div>
@@ -692,11 +689,10 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                               disabled={
                                 layerCaulkingState[index]?.caulkingCompleted
                               }
-                              className={`px-3 py-2 text-sm mobile-touch-target ${
-                                layerCaulkingState[index]?.caulkingCompleted
-                                  ? "bg-gray-400 cursor-not-allowed"
-                                  : "bg-blue-600 hover:bg-blue-700"
-                              } text-white`}>
+                              className={`px-3 py-2 text-sm mobile-touch-target ${layerCaulkingState[index]?.caulkingCompleted
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700"
+                                } text-white`}>
                               <CheckCircle className="w-4 h-4 mr-1" />
                               {layerCaulkingState[index]?.caulkingCompleted
                                 ? "Caulking Completed"
@@ -770,15 +766,15 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
 
                   return shouldShowButton;
                 })() && (
-                  <div className="mt-3 flex justify-end">
-                    <Button
-                      onClick={() => handleMarkLayerComplete(index)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 text-sm mobile-touch-target">
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Mark Layer as Complete
-                    </Button>
-                  </div>
-                )}
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        onClick={() => handleMarkLayerComplete(index)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 text-sm mobile-touch-target">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Mark Layer as Complete
+                      </Button>
+                    </div>
+                  )}
               </div>
             ))}
           </div>
