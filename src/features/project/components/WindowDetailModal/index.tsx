@@ -7,6 +7,8 @@ import {
   AlertCircle,
   Clock,
   Edit3,
+  Dot,
+  TimerIcon,
 } from "lucide-react";
 import { Modal } from "../../../../common/components/Modal";
 import { Button } from "../../../../common/components/Button";
@@ -573,12 +575,6 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                       </div>
                     )}
                   </div>
-                  {/* <div className="flex items-center gap-3">
-                    {getLayerStatusIcon(layer.status)}
-                    <span className="font-medium text-gray-900 text-sm sm:text-base">
-                      {layer.layerName}
-                    </span>
-                  </div> */}
                   {isEditing && (
                     <select
                       value={layer.status}
@@ -604,10 +600,6 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                   )}
                 </div>
 
-
-
-
-
                 {layer.status === "Installed" && layer.installedBy && (
                   <div className="space-y-3">
                     <div className="space-y-2">
@@ -623,6 +615,10 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                               <Calendar className="w-4 h-4 flex-shrink-0" />
                               <span>
                                 {formatDateMMDDYYYY(layer.installedAt)}
+                              </span>
+                              <TimerIcon className="w-4 h-4 flex-shrink-0" />
+                              <span>
+                                3:15 PM
                               </span>
                             </div>
                           </>
@@ -683,6 +679,10 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                                 <Calendar className="w-4 h-4 flex-shrink-0" />
                                 <span>
                                   {formatDateMMDDYYYY(layer.installedAt)}
+                                </span>
+                                <TimerIcon className="w-4 h-4 flex-shrink-0" />
+                                <span>
+                                  3:15 PM
                                 </span>
                               </div>
                             </>
