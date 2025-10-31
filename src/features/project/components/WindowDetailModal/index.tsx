@@ -368,7 +368,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Edit Project`} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} title={`Window Details`} size="xl">
       <div className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6 gap-4">
@@ -464,7 +464,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
               {/* <div className=""> */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Length (cm)
+                  Length (Inch)
                 </label>
                 {isEditing ? (
                   <input
@@ -486,7 +486,7 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Width (cm)
+                  Width (Inch)
                 </label>
                 {isEditing ? (
                   <input
@@ -604,6 +604,10 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                   )}
                 </div>
 
+
+
+
+
                 {layer.status === "Installed" && layer.installedBy && (
                   <div className="space-y-3">
                     <div className="space-y-2">
@@ -666,6 +670,25 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                           )}
                         </div>
                       )}
+                      {layerCaulkingState[index]?.caulkingCompleted && (<div>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 flex-shrink-0" />
+                            <span>Caulking by {layer.installedBy}</span>
+                          </div>
+                          {layer.installedAt && (
+                            <>
+                              <span className="hidden sm:inline">•</span>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 flex-shrink-0" />
+                                <span>
+                                  {formatDateMMDDYYYY(layer.installedAt)}
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>)}
                     </div>
                     <div className="flex justify-end items-center gap-2">
                       {!isEditing && user?.userType === "execution-team" && (
@@ -703,6 +726,10 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
                     </div>
                   </div>
                 )}
+
+
+
+
 
                 {layer.status === "Reinstallation Needed" && (
                   <div className="space-y-3">
