@@ -462,50 +462,50 @@ export const WindowDetailModal: React.FC<WindowDetailModalProps> = ({
               </div>
 
               {/* <div className=""> */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Length (cm)
-                  </label>
-                  {isEditing ? (
-                    <input
-                      type="number"
-                      value={editedWindow.length}
-                      onChange={(e) =>
-                        handleFieldChange(
-                          "length",
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
-                    />
-                  ) : (
-                    <p className="text-gray-900 text-sm sm:text-base">
-                      {editedWindow.length}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Width (cm)
-                  </label>
-                  {isEditing ? (
-                    <input
-                      type="number"
-                      value={editedWindow.width}
-                      onChange={(e) =>
-                        handleFieldChange(
-                          "width",
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
-                    />
-                  ) : (
-                    <p className="text-gray-900 text-sm sm:text-base">
-                      {editedWindow.width}
-                    </p>
-                  )}
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Length (cm)
+                </label>
+                {isEditing ? (
+                  <input
+                    type="number"
+                    value={editedWindow.length}
+                    onChange={(e) =>
+                      handleFieldChange(
+                        "length",
+                        parseInt(e.target.value) || 0
+                      )
+                    }
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
+                  />
+                ) : (
+                  <p className="text-gray-900 text-sm sm:text-base">
+                    {editedWindow.length}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Width (cm)
+                </label>
+                {isEditing ? (
+                  <input
+                    type="number"
+                    value={editedWindow.width}
+                    onChange={(e) =>
+                      handleFieldChange(
+                        "width",
+                        parseInt(e.target.value) || 0
+                      )
+                    }
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mobile-touch-target"
+                  />
+                ) : (
+                  <p className="text-gray-900 text-sm sm:text-base">
+                    {editedWindow.width}
+                  </p>
+                )}
+              </div>
               {/* </div> */}
 
               <div>

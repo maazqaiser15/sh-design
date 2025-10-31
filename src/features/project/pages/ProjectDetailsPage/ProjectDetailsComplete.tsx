@@ -16,6 +16,8 @@ import {
   User,
   Building,
   Dot,
+  Edit,
+  MapPin,
 } from 'lucide-react';
 import { PieChart } from "../../../../common/components/PieChart";
 import { ProjectDetails, MOCK_PROJECT_DETAILS, ProjectNote } from '../../types/projectDetails';
@@ -27,6 +29,13 @@ import { StatusBadge } from '../../../../common/components/StatusBadge';
 import { PDFViewerModal } from '../../../../common/components/PDFViewerModal';
 import { useToast } from '../../../../contexts/ToastContext';
 import { generateProjectReportPDF, ProjectReportData } from '../../../../utils/pdfReportGenerator';
+import { AssignTeamModal } from '../../components/AssignTeamModal';
+import { MOCK_TEAM_MEMBERS } from '../../types/teamMembers';
+import { AssignTrailerModal } from '../../components/AssignTrailerModal';
+import { TrailerForAssignment } from '../../types/trailers';
+import { getAvailableTrailersForAssignment } from '../../utils/trailerDataUtils';
+import { Modal } from 'common/components/Modal';
+import TravelDetailsContent from './TravelDetailsContent';
 
 interface ProjectDetailsCompleteProps {
   projectStatus?: 'WIP' | 'QF' | 'Completed';
@@ -40,7 +49,10 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
+  const [showEditTeamModal, setShowEditTeamModal] = useState(false);
+  const [showAssignTrailerModal, setShowAssignTrailerModal] = useState(false);
+  const [availableTrailers] = useState<TrailerForAssignment[]>(getAvailableTrailersForAssignment());
+  const [showTravelDetailsModal, setShowTravelDetailsModal] = useState(false);
   // Notes State
   const [notes, setNotes] = useState<ProjectNote[]>([]);
 
@@ -497,7 +509,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                 </div>
               </div>
 
-           
+
 
               <div className="grid grid-cols-2 mt-3 sm:grid-cols-5 gap-3 sm:gap-4">
                 <div className="flex-shrink-0   flex items-center gap-3 justify-start">
@@ -563,10 +575,17 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
               <nav className="flex space-x-8">
                 {[
                   { id: 'project-report', label: 'Project Report' },
-                  { id: 'issues', label: 'Quality Issues' },
                   { id: 'team', label: 'Team' },
-                  { id: 'document', label: 'Documents' },
-                  { id: 'notes', label: 'Project Notes' }
+                  {
+                    id: "travel-accommodation",
+                    label: "Travel & Accommodation",
+                  },
+                  {
+                    id: "trailer-films",
+                    label: "Trailer & Films",
+                  },
+                  { id: "document", label: "Document" },
+                  { id: 'notes', label: 'Notes' }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -805,6 +824,372 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
               </div>
             )}
 
+
+            {activeTab === "trailer-films" && (
+              <div className="space-y-6">
+                <Card>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Trailer & Films hahah
+                  </h3>
+                  <div className="space-y-6">
+                    {/* Travel Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Trailer
+                      </h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900 flex">
+                            Beta Trailer <Dot /> ABCD7643826
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
+                            <MapPin className="w-4 h-4" /> Location: Miami
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <Button variant="secondary" onClick={() => setShowAssignTrailerModal(true)}>
+                            Change Trailer
+                          </Button>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hotel Reservation Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Films
+                      </h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            Shipment Receipt
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                              />
+                            </svg>
+                            <span>3 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Download className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
+
+
+            {activeTab === "travel-accommodation" && (
+              <div className="space-y-6">
+                <Card>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Travel & Accommodation
+                  </h3>
+                  <div className="space-y-6">
+                    {/* Travel Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Travel details
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-gray-900">John Doe</p>
+                            <div className="flex-1 flex items-center gap-2">
+                              <p className="font-medium text-gray-500 text-xs ">
+                                Islamabad → New York
+                              </p>
+                              <p className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                One Way
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                              </svg>
+                              <span>2 attachments</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => {
+                                setShowTravelDetailsModal(true);
+                              }}>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-gray-900">John Doe</p>
+                            <div className="flex-1 flex items-center gap-2">
+                              <p className="font-medium text-gray-500 text-xs ">
+                                Islamabad → New York
+                              </p>
+                              <p className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                One Way
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                              </svg>
+                              <span>2 attachments</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => {
+                                setShowTravelDetailsModal(true);
+                              }}>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-gray-900">John Doe</p>
+                            <div className="flex-1 flex items-center gap-2">
+                              <p className="font-medium text-gray-500 text-xs ">
+                                Miami → Lahore
+                              </p>
+                              <p className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Round Trip
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                />
+                              </svg>
+                              <span>2 attachments</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() => {
+                                setShowTravelDetailsModal(true);
+                              }}>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hotel Reservation Details Section */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Hotel Reservation Details
+                      </h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            Hotel Picaso · Sep 25 → Sep 26, 2025
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
+                            Duration: 1 night
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                              />
+                            </svg>
+                            <span>3 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              setShowHotelDetailsModal(true);
+                            }}>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rental Vehical */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                        Rental Vehical Details
+                      </h4>
+                      <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            System Vehical Services
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1.5">
+                            Duration: Sep 25 → Sep 26, 2025
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                              />
+                            </svg>
+                            <span>3 attachments</span>
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              setShowTravelDetailsModal(true);
+                            }}>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
+
             {activeTab === 'issues' && (
               <div className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -823,194 +1208,190 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
               </div>
             )}
 
-            {activeTab === 'team' && (
+
+            {activeTab === "team" && (
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Members</h3>
+                <Card className="">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Team Members
+                    </h3>
+                    <button onClick={() => setShowEditTeamModal(true)} className="bg-white border border-[#d0d5dd] border-dashed text-[#475467] w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
+                      <Edit size={18} className="text-gray-600" />
+                    </button>
+
+                  </div>
+
                   <div className="space-y-4">
-                    {projectReport.teamMembers.map((member) => (
-                      <div key={member.id} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg">
+                    {[
+                      {
+                        name: "John Smith",
+                        role: "Lead Supervisor",
+                        phone: "+1-555-0123",
+                      },
+                      {
+                        name: "Ayesha Khan",
+                        role: "Crew Leader",
+                        phone: "+1-555-0124",
+                      },
+                      {
+                        name: "Mike Lee",
+                        role: "Senior Installer",
+                        phone: "+1-555-0125",
+                      },
+                      {
+                        name: "Sarah Johnson",
+                        role: "Installer",
+                        phone: "+1-555-0126",
+                      },
+                      {
+                        name: "David Chen",
+                        role: "Installer",
+                        phone: "+1-555-0127",
+                      },
+                      {
+                        name: "Emily Rodriguez",
+                        role: "Safety Coordinator",
+                        phone: "+1-555-0128",
+                      },
+                    ].map((member, index) => (
+                      <Card
+                        key={index}
+                        className="flex items-center gap-3  bg-white">
                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                           <span className="text-sm font-medium text-gray-600">
-                            {member.name.split(' ').map(n => n[0]).join('')}
+                            {member.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </span>
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">{member.name}</p>
-                          <p className="text-sm text-gray-500">{member.role}</p>
+                          <p className="font-medium text-gray-900">
+                            {member.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {member.role}{" "}
+                            <span className="bg-black rounded-full inline-block w-1 h-1 mx-1" />{" "}
+                            <span>({member.phone})</span>
+                          </p>
                         </div>
-                        <div className="text-sm text-gray-600">
-                          {member.layersInstalled} layers installed
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {member.layersReinstalled} layers reinstalled
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {member.hoursWorked} hours worked
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {member.qualityScore}% quality
-                        </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
-                </div>
+                </Card>
               </div>
             )}
-
-            {activeTab === 'document' && (
+            {activeTab === "document" && (
               <div className="space-y-6">
                 {/* Project Documents Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <Card>
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Project Documents</h3>
-                      <p className="text-sm text-gray-500 mt-1">4 documents</p>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Project Documents
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">2 documents</p>
                     </div>
                     <Button
                       variant="secondary"
                       icon={Upload}
-                      onClick={() => showToast('Document upload will be available soon')}
-                      className="px-4 py-2"
-                    >
-                      Add Document
+                      onClick={() =>
+                        showToast("Upload document functionality coming soon")
+                      }
+                      className="px-4 py-2">
+                      Upload document
                     </Button>
                   </div>
 
                   <div className="space-y-4">
-                    {/* Final Project Report */}
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xs font-medium text-green-600">FPR</span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">Final Project Report.pdf</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>3.2 MB</span>
-                            <span>•</span>
-                            <span>Jan 20, 2024, 04:00 PM</span>
-                            <span>•</span>
-                            <span className="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Sarah Johnson</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => showToast('Downloading Final Project Report.pdf')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => showToast('Document deletion will be available soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Client Satisfaction Survey */}
+                    {/* Document 1 */}
                     <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">CSS</span>
+                          <span className="text-xs font-medium text-blue-600">
+                            DOC
+                          </span>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">Client Satisfaction Survey.pdf</p>
+                          <p className="font-medium text-gray-900">
+                            Site Map - Floor Plan.pdf
+                          </p>
                           <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>1.1 MB</span>
+                            <span>1.95 MB</span>
                             <span>•</span>
-                            <span>Jan 19, 2024, 02:30 PM</span>
+                            <span>Jan 15, 2024, 02:00 PM</span>
                             <span>•</span>
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Emily Rodriguez</span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                              John Doe
+                            </span>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => showToast('Downloading Client Satisfaction Survey.pdf')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
-                        >
+                          onClick={() =>
+                            showToast("Downloading Site Map - Floor Plan.pdf")
+                          }
+                          className="p-2 text-gray-400 hover:text-gray-600">
                           <Download className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => showToast('Document deletion will be available soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
-                        >
+                          onClick={() =>
+                            showToast(
+                              "Delete document functionality coming soon"
+                            )
+                          }
+                          className="p-2 text-gray-400 hover:text-red-600">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
 
-                    {/* Project Documentation */}
+                    {/* Document 2 */}
                     <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-600">DOC</span>
+                          <span className="text-xs font-medium text-gray-600">
+                            TXT
+                          </span>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">Project Documentation Final.pdf</p>
+                          <p className="font-medium text-gray-900">
+                            Architectural Plan.txt
+                          </p>
                           <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>4.8 MB</span>
+                            <span>1.95 MB</span>
                             <span>•</span>
-                            <span>Jan 18, 2024, 11:00 AM</span>
+                            <span>Jan 15, 2024, 02:00 PM</span>
                             <span>•</span>
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Ayesha Khan</span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                              Ema Will
+                            </span>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => showToast('Downloading Project Documentation Final.pdf')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
-                        >
+                          onClick={() =>
+                            showToast("Downloading Architectural Plan.txt")
+                          }
+                          className="p-2 text-gray-400 hover:text-gray-600">
                           <Download className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => showToast('Document deletion will be available soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Quality Inspection Report */}
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xs font-medium text-orange-600">QIR</span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">Quality Inspection Report.pdf</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>2.1 MB</span>
-                            <span>•</span>
-                            <span>Jan 20, 2024, 11:15 AM</span>
-                            <span>•</span>
-                            <span className="px-2 py-1 bg-orange-100 text-orange-600 rounded-full text-xs">John Smith</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => showToast('Downloading Quality Inspection Report.pdf')}
-                          className="p-2 text-gray-400 hover:text-gray-600"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => showToast('Document deletion will be available soon')}
-                          className="p-2 text-gray-400 hover:text-red-600"
-                        >
+                          onClick={() =>
+                            showToast(
+                              "Delete document functionality coming soon"
+                            )
+                          }
+                          className="p-2 text-gray-400 hover:text-red-600">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card>
               </div>
             )}
 
@@ -1085,6 +1466,34 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
           </div>
         </div>
       </div>
+
+      <AssignTrailerModal
+        isOpen={showAssignTrailerModal}
+        onClose={() => setShowAssignTrailerModal(false)}
+        onAssignTrailer={() => console.log('click')}
+        availableTrailers={availableTrailers}
+        assignedTrailerId={availableTrailers?.id}
+      />
+
+
+         {showTravelDetailsModal && (
+              <Modal
+                isOpen={showTravelDetailsModal}
+                onClose={() => setShowTravelDetailsModal(false)}
+                title={"Travel Details"}
+                size="lg">
+                <TravelDetailsContent />
+              </Modal>
+            )}
+            
+
+      <AssignTeamModal
+        isOpen={showEditTeamModal}
+        onClose={() => setShowEditTeamModal(false)}
+        onAssignTeam={() => { console.log('heheheh') }}
+        availableMembers={MOCK_TEAM_MEMBERS}
+        projectDetails={project}
+      />
 
       {/* PDF Viewer Modal */}
       <PDFViewerModal

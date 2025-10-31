@@ -3146,42 +3146,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
               </div>
             )}
 
-            {/* {activeTab === "quality-check" && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Quality Check Results
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                      <h4 className="font-medium text-green-900">
-                        Passed Quality Check
-                      </h4>
-                      <p className="text-green-700 mt-1">
-                        13 out of 15 windows passed quality inspection
-                      </p>
-                    </div>
-                    <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
-                      <h4 className="font-medium text-orange-900">
-                        Needs Reinstallation
-                      </h4>
-                      <p className="text-orange-700 mt-1">
-                        2 windows require reinstallation due to minor defects
-                      </p>
-                    </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <h4 className="font-medium text-gray-900">
-                        Quality Inspector
-                      </h4>
-                      <p className="text-gray-600 mt-1">
-                        John Smith - Senior Quality Inspector
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )} */}
-
+      
             {activeTab === "issues" && (
               <div className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
