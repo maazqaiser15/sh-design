@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { TeamGanttProps, ViewMode } from '../types';
 import { TimelineHeader } from './TimelineHeader';
 import { TeamRow } from './TeamRow';
+import SelectField from 'common/components/SelectField';
+import SearchField from 'common/components/SearchField';
 
 export const TeamGantt: React.FC<TeamGanttProps> = ({
   teamMembers,
@@ -39,7 +41,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
 
     // Filter by search term
     if (searchTerm.trim()) {
-      filtered = filtered.filter(member => 
+      filtered = filtered.filter(member =>
         member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         member.role.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -63,7 +65,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 rounded-lg">
       {/* Header with View Controls */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -73,7 +75,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
               {filteredTeamMembers.length} team member{filteredTeamMembers.length !== 1 ? 's' : ''} scheduled
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {/* View Mode Switcher */}
             <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
@@ -81,11 +83,10 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
                 <button
                   key={mode}
                   onClick={() => onViewModeChange(mode)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                    viewMode === mode
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === mode
                       ? 'bg-white text-gray-900 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                    }`}
                 >
                   {label}
                 </button>
@@ -99,18 +100,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
                 </svg>
               </div>
-              <select
-                value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
-                className="block w-48 pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
-              >
-                <option value="">All Projects</option>
-                {availableProjects.map((project) => (
-                  <option key={project} value={project}>
-                    {project}
-                  </option>
-                ))}
-              </select>
+              <SelectField value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)} placeholder={"All Projects"} options={availableProjects} />
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -122,20 +112,7 @@ export const TeamGantt: React.FC<TeamGanttProps> = ({
 
         {/* Search Bar */}
         <div className="mt-4 max-w-md">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search team members..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-            />
-          </div>
+          <SearchField iconSize={20} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={'Search team members...'}/>
         </div>
       </div>
 

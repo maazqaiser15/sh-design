@@ -157,7 +157,7 @@ const mockTrailers: Trailer[] = [
 ];
 
 // Mock data for Safe Haven Defense projects
-const mockProjects: SafeHavenProject[] = [
+export const mockProjects: SafeHavenProject[] = [
   {
     id: "1",
     title: "Downtown Office Complex Security",
@@ -621,8 +621,8 @@ export const ProjectListPage: React.FC = () => {
     const archivedFilteredProjects =
       filters.status.length === 0 || !filters.status.includes("Archived")
         ? roleFilteredProjects.filter(
-            (project) => project.status !== "Archived"
-          )
+          (project) => project.status !== "Archived"
+        )
         : roleFilteredProjects;
 
     // Then apply other filters (search, status, assigned users)
@@ -642,12 +642,16 @@ export const ProjectListPage: React.FC = () => {
     // } else {
     // Route based on project status - all statuses now go to the same route
     // The ProjectDetailsRouter will handle showing the appropriate layout
-    navigate(
-      `/projects/${project.id}?status=${
-        project.status
-      }&title=${encodeURIComponent(project.title)}`
-    );
-    // }
+    if (project.title.toLowerCase()
+      .includes("quality assurance")) {
+      navigate(`/projects/${project.id}?status=WIP&title=${encodeURIComponent(project.title)}`)
+    }
+    else {
+      navigate(
+        `/projects/${project.id}?status=${project.status
+        }&title=${encodeURIComponent(project.title)}`
+      );
+    }
   };
 
   const handleAssignCoordinator = (
@@ -714,15 +718,15 @@ export const ProjectListPage: React.FC = () => {
                 ...(user?.userType
                   ? getAvailableProjectStatuses(user.userType)
                   : [
-                      "D75",
-                      "PV90",
-                      "UB",
-                      "WB",
-                      "WIP",
-                      "QF",
-                      "QC",
-                      "Completed",
-                    ]),
+                    "D75",
+                    "PV90",
+                    "UB",
+                    "WB",
+                    "WIP",
+                    "QF",
+                    "QC",
+                    "Completed",
+                  ]),
               ].map((status) => (
                 <button
                   key={status}
@@ -734,13 +738,12 @@ export const ProjectListPage: React.FC = () => {
                       assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
                     });
                   }}
-                  className={`py-4 px-3  sm:px-1 font-medium text-sm flex items-center space-x-2 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
-                    (status === "All" && filters.status.length === 0) ||
+                  className={`py-4 px-3  sm:px-1 font-medium text-sm flex items-center space-x-2 transition-all duration-200 whitespace-nowrap flex-shrink-0 ${(status === "All" && filters.status.length === 0) ||
                     (status !== "All" &&
                       filters.status.includes(status as ProjectStatus))
-                      ? "border-blue-500 text-blue-600 border-b-2 "
-                      : "text-gray-600 hover:border-b-gray-400 hover:border-b-2"
-                  }`}>
+                    ? "border-blue-500 text-blue-600 border-b-2 "
+                    : "text-gray-600 hover:border-b-gray-400 hover:border-b-2"
+                    }`}>
                   <div className="flex gap-2">
                     {status}{" "}
                     <span className="bg-gray-300 rounded-full p-1 text-sx w-[20px] h-[20px] flex justify-center items-center">
@@ -794,42 +797,38 @@ export const ProjectListPage: React.FC = () => {
                     assignedUsers: filters.assignedUsers, // Preserve existing assignedUsers
                   });
                 }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  filters.status.includes("Archived")
-                    ? "bg-gray-600 text-white shadow-sm"
-                    : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-                }`}>
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${filters.status.includes("Archived")
+                  ? "bg-gray-600 text-white shadow-sm"
+                  : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                  }`}>
                 Closed Lost
               </button>
               {/* View Toggle - Icons Only */}
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode({ type: "list" })}
-                  className={`p-2 rounded-md transition-colors ${
-                    viewMode.type === "list"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
+                  className={`p-2 rounded-md transition-colors ${viewMode.type === "list"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                    }`}
                   title="Card-based project view">
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode({ type: "table" })}
-                  className={`p-2 rounded-md transition-colors ${
-                    viewMode.type === "table"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
+                  className={`p-2 rounded-md transition-colors ${viewMode.type === "table"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                    }`}
                   title="Detailed project table">
                   <List className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode({ type: "gantt" })}
-                  className={`p-2 rounded-md transition-colors ${
-                    viewMode.type === "gantt"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
+                  className={`p-2 rounded-md transition-colors ${viewMode.type === "gantt"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                    }`}
                   title="Timeline and resource view">
                   <Calendar className="w-4 h-4" />
                 </button>

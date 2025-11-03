@@ -59,41 +59,36 @@ export const TravelDetailsContent: React.FC = () => {
         <h4 className="text-sm font-semibold text-gray-700 mb-3">Vehical details Details</h4>
         <div className="bg-gray-50 p-4 rounded-lg space-y-3">
           <div className="flex justify-between">
-            <span className="text-sm text-gray-600">Company Name:</span>
+            <span className="text-sm text-gray-600">Passenger Name:</span>
             <span className="text-sm font-medium text-gray-900">John Doe</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-gray-600">Booking Name:</span>
-            <span className="text-sm font-medium text-gray-900">12A</span>
+            <span className="text-sm text-gray-600">Departure Date:</span>
+            <span className="text-sm font-medium text-gray-900">05/12/2025</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-gray-600">Booked By:</span>
-            <span className="text-sm font-medium text-gray-900">Business</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">Company Contact Number            :</span>
-            <span className="text-sm font-medium text-gray-900">Business</span>
+            <span className="text-sm text-gray-600">Departure Time:</span>
+            <span className="text-sm font-medium text-gray-900">4:00 Pm</span>
           </div>
 
           <div className="flex justify-between">
-            <span className="text-sm text-gray-600">Company Contact Number            :</span>
-            <span className="text-sm font-medium text-gray-900">Business</span>
+            <span className="text-sm text-gray-600">Arrival Date            :</span>
+            <span className="text-sm font-medium text-gray-900">05/12/2025</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-sm text-gray-600">Arrival Time            :</span>
+            <span className="text-sm font-medium text-gray-900">5:00 Pm</span>
           </div>
 
         <div className="flex justify-between">
-            <span className="text-sm text-gray-600">Rental Cost :</span>
-            <span className="text-sm font-medium text-gray-900">From Date
+            <span className="text-sm text-gray-600">Airline :</span>
+            <span className="text-sm font-medium text-gray-900">Fly Jinnah
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-gray-600">From Date:</span>
-            <span className="text-sm font-medium text-gray-900">From Date
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">To Date:</span>
-            <span className="text-sm font-medium text-gray-900">To Date
+            <span className="text-sm text-gray-600">Ticket Cost:</span>
+            <span className="text-sm font-medium text-gray-900">$100
             </span>
           </div>
         </div>

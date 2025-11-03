@@ -352,7 +352,7 @@ export const ProjectGanttView: React.FC<ProjectGanttViewProps> = ({
       </div>
 
       {/* Fixed Legend */}
-      <div className="fixed bottom-0 left-64 right-0 bg-white border-t border-gray-200 p-3 shadow-lg z-50">
+      <div className="fixed bottom-0 left-65 right-0 bg-white border-t border-gray-200 p-3 shadow-lg z-50">
         <div className="max-w-full mx-auto px-4">
           <h3 className="text-sm font-medium text-gray-900 mb-3">Project Status Legend</h3>
           <div className="flex flex-wrap gap-4">
