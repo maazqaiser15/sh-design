@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../../../common/components/Modal';
 import { Button } from '../../../../common/components/Button';
 import { DatePicker } from '../../../../common/components/DatePicker';
-import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check, Building, FileText } from 'lucide-react';
+import { Plane, Hotel, Upload, Calendar, Users, MapPin, Clock, Plus, Trash2, User, Car, Phone, DollarSign, Check, Building, FileText, Bus } from 'lucide-react';
 import SelectField from 'common/components/SelectField';
 import FormField from 'common/components/FormField';
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik';
@@ -78,6 +78,9 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
   // Ticket form state
   const [tickets, setTickets] = useState<TicketDetails[]>([]);
 
+  // Bus ticket form state (separate from flight tickets)
+  const [busTickets, setBusTickets] = useState<TicketDetails[]>([]);
+
   // Accommodation form state
   const [hotels, setHotels] = useState<HotelDetails[]>([]);
 
@@ -126,6 +129,39 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
     }
   };
 
+  // Bus ticket management functions
+  const addBusTicket = () => {
+    const newTicket: TicketDetails = {
+      id: Date.now().toString(),
+      passengerName: '',
+      isRoundTrip: false,
+      departureDate: '',
+      departureTime: '',
+      arrivalDate: '',
+      arrivalTime: '',
+      airline: '',
+      cost: '',
+    };
+    setBusTickets(prev => [...prev, newTicket]);
+  };
+
+  const removeBusTicket = (ticketId: string) => {
+    setBusTickets(prev => prev.filter(ticket => ticket.id !== ticketId));
+  };
+
+  const updateBusTicket = (ticketId: string, field: keyof TicketDetails, value: string | number | boolean | File) => {
+    setBusTickets(prev => prev.map(ticket =>
+      ticket.id === ticketId ? { ...ticket, [field]: value } : ticket
+    ));
+  };
+
+  const handleBusTicketFileUpload = (ticketId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      updateBusTicket(ticketId, 'attachment', file);
+    }
+  };
+
   // Rental Vehicle management functions
   const addRentalVehicle = () => {
     const newVehicle: RentalVehicleDetails = {
@@ -145,7 +181,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
     setRentalVehicles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const updateRentalVehicle = (index: number, field: keyof RentalVehicleDetails, value: string | File[]) => {
+  const updateRentalVehicle = (index: number, field: keyof RentalVehicleDetails, value: string | number | File[]) => {
     setRentalVehicles(prev => prev.map((vehicle, i) =>
       i === index ? { ...vehicle, [field]: value } : vehicle
     ));
@@ -282,13 +318,13 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                       <input
                         type="checkbox"
                         checked={ticket.isRoundTrip}
-                        onChange={(e) => updateTicket(ticket.id, 'isRoundTrip', e.target.checked)}
+                        onChange={(e) => updateBusTicket(ticket.id, 'isRoundTrip', e.target.checked)}
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-gray-700">Round Trip</span>
                     </label>
                     <button
-                      onClick={() => removeTicket(ticket.id)}
+                      onClick={() => removeBusTicket(ticket.id)}
                       className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -296,34 +332,33 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                   </div>
                 </div>
 
-                <Formik initialValues={null} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                <Formik initialValues={{}} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
                   throw new Error('Function not implemented.');
                 }}>
                   <Form>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {/* Passenger Selection */}
-                      <SelectField value={ticket.passengerName} label='Passenger *' onChange={(e) => updateTicket(ticket.id, 'passengerName', e.target.value)} inputClassName={'border border-gray-300'} placeholder={'Select passenger'} options={MOCK_PASSENGERS} />
+                      <SelectField value={ticket.passengerName} label='Passenger *' onChange={(e) => updateBusTicket(ticket.id, 'passengerName', e.target.value)} inputClassName={'border border-gray-300'} placeholder={'Select passenger'} options={MOCK_PASSENGERS} />
 
 
-                      <FormField label={' Departure Date *'} onChange={(e) => updateTicket(ticket.id, 'departureDate', e.target.value)} value={ticket.departureDate} name={'departureDate'} type={'date'} />
+                      <FormField label={' Departure Date *'} onChange={(e) => updateBusTicket(ticket.id, 'departureDate', e.target.value)} value={ticket.departureDate} name={'departureDate'} type={'date'} />
 
                       {/* Departure Time */}
-                      <FormField label={'Departure Time *'} onChange={(e) => updateTicket(ticket.id, 'departureTime', e.target.value)} value={ticket.departureTime} name={'departureTime'} type={'time'} />
+                      <FormField label={'Departure Time *'} onChange={(e) => updateBusTicket(ticket.id, 'departureTime', e.target.value)} value={ticket.departureTime} name={'departureTime'} type={'time'} />
                       {/* Arrival Date */}
 
-                      <FormField label={'Arrival Date *'} onChange={(e) => updateTicket(ticket.id, 'arrivalDate', e.target.value)} value={ticket.arrivalDate} name={'arrivalDate'} type={'date'} />
+                      <FormField label={'Arrival Date *'} onChange={(e) => updateBusTicket(ticket.id, 'arrivalDate', e.target.value)} value={ticket.arrivalDate} name={'arrivalDate'} type={'date'} />
 
                       {/* Arrival Time */}
 
-                      <FormField label={'Arrival Time *'} onChange={(e) => updateTicket(ticket.id, 'arrivalTime', e.target.value)} value={ticket.arrivalTime} name={'arrivalTime'} type={'time'} />
+                      <FormField label={'Arrival Time *'} onChange={(e) => updateBusTicket(ticket.id, 'arrivalTime', e.target.value)} value={ticket.arrivalTime} name={'arrivalTime'} type={'time'} />
 
-                      {/* Airline */}
-
-                      <FormField isLeftIcon={<Plane />} placeholder='Enter airline name' label={'Airline *'} onChange={(e) => updateTicket(ticket.id, 'airline', e.target.value)} value={ticket.airline} name={'airline'} type={'text'} />
+                      {/* Bus Operator */}
+                      <FormField isLeftIcon={<Bus />} placeholder='Enter bus operator name' label={'Bus Operator *'} onChange={(e) => updateBusTicket(ticket.id, 'airline', e.target.value)} value={ticket.airline} name={'airline'} type={'text'} />
 
                       {/* Ticket Cost */}
 
-                      <FormField isLeftIcon={<DollarSign />} placeholder='0.00' label={'Ticket Cost *'} onChange={(e) => updateTicket(ticket.id, 'cost', e.target.value)} value={ticket.cost} name={'cost'} type={'number'} />
+                      <FormField isLeftIcon={<DollarSign />} placeholder='0.00' label={'Ticket Cost *'} onChange={(e) => updateBusTicket(ticket.id, 'cost', e.target.value)} value={ticket.cost} name={'cost'} type={'number'} />
 
                       {/* Ticket Upload */}
                       <div>
@@ -335,7 +370,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                             type="file"
                             id={`ticket-${ticket.id}`}
                             accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                            onChange={(e) => handleTicketFileUpload(ticket.id, e)}
+                            onChange={(e) => handleBusTicketFileUpload(ticket.id, e)}
                             className="hidden"
                           />
                           <label
@@ -362,32 +397,32 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                       <Check className="w-4 h-4 text-green-600" />
                       <h5 className="font-medium text-gray-900">Return Ticket Details</h5>
                     </div>
-                    <Formik initialValues={undefined} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                    <Formik initialValues={{}} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
                       throw new Error('Function not implemented.');
                     }}>
                       <Form>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {/* Return Date */}
-                          <FormField isLeftIcon={<Calendar />} label={'Return Date *'} onChange={(e) => updateTicket(ticket.id, 'returnDate', e.target.value)} value={ticket.returnDate} name={'returnDate'} type={'date'} />
+                          <FormField isLeftIcon={<Calendar />} label={'Return Date *'} onChange={(e) => updateBusTicket(ticket.id, 'returnDate', e.target.value)} value={ticket.returnDate} name={'returnDate'} type={'date'} />
 
                           {/* Return Time */}
-                          <FormField isLeftIcon={<Clock />} label={'Return Time *'} onChange={(e) => updateTicket(ticket.id, 'returnTime', e.target.value)} value={ticket.returnTime} name={'returnTime'} type={'time'} />
+                          <FormField isLeftIcon={<Clock />} label={'Return Time *'} onChange={(e) => updateBusTicket(ticket.id, 'returnTime', e.target.value)} value={ticket.returnTime} name={'returnTime'} type={'time'} />
 
                           {/* Return Arrival Date */}
 
-                          <FormField isLeftIcon={<Calendar />} label={'Return Arrival Date *'} onChange={(e) => updateTicket(ticket.id, 'returnArrivalDate', e.target.value)} value={ticket.returnArrivalDate} name={'returnArrivalDate'} type={'date'} />
+                          <FormField isLeftIcon={<Calendar />} label={'Return Arrival Date *'} onChange={(e) => updateBusTicket(ticket.id, 'returnArrivalDate', e.target.value)} value={ticket.returnArrivalDate} name={'returnArrivalDate'} type={'date'} />
                           {/* Return Arrival Time */}
 
-                          <FormField isLeftIcon={<Clock />} label={'Return Arrival Date *'} onChange={(e) => updateTicket(ticket.id, 'returnArrivalTime', e.target.value)} value={ticket.returnArrivalTime} name={'returnArrivalTime'} type={'time'} />
+                          <FormField isLeftIcon={<Clock />} label={'Return Arrival Time *'} onChange={(e) => updateBusTicket(ticket.id, 'returnArrivalTime', e.target.value)} value={ticket.returnArrivalTime} name={'returnArrivalTime'} type={'time'} />
 
                           {/* Return Airline */}
 
-                          <FormField isLeftIcon={<Plane />} label={'Return Airline *'} onChange={(e) => updateTicket(ticket.id, 'returnAirline', e.target.value)} value={ticket.returnAirline} name={'returnAirline'} type={'text'} />
+                          <FormField isLeftIcon={<Bus />} label={'Return Bus Operator *'} onChange={(e) => updateBusTicket(ticket.id, 'returnAirline', e.target.value)} value={ticket.returnAirline} name={'returnAirline'} type={'text'} />
 
                           {/* Return Cost */}
 
-                          <FormField isLeftIcon={<DollarSign />} label={'Return Cost *'} onChange={(e) => updateTicket(ticket.id, 'returnCost', e.target.value)} value={ticket.returnCost} name={'returnCost'} type={'number'} />
+                          <FormField isLeftIcon={<DollarSign />} label={'Return Cost *'} onChange={(e) => updateBusTicket(ticket.id, 'returnCost', e.target.value)} value={ticket.returnCost} name={'returnCost'} type={'number'} />
 
                           {/* Return Ticket Upload */}
                           <div>
@@ -402,7 +437,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                                 onChange={(e) => {
                                   const file = e.target.files?.[0];
                                   if (file) {
-                                    updateTicket(ticket.id, 'returnAttachment', file);
+                                    updateBusTicket(ticket.id, 'returnAttachment', file);
                                   }
                                 }}
                                 className="hidden"
@@ -436,6 +471,192 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
             )}
           </div>
         </div>
+
+
+
+        {/* Bus ticket management */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900">Bus Tickets</h4>
+              <p className="text-sm text-gray-600">
+                {busTickets.length} ticket{busTickets.length !== 1 ? 's' : ''} configured
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={addBusTicket}
+              icon={Plus}
+            >
+              Add Ticket
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            {busTickets.map((ticket, index) => (
+              <div key={ticket.id} className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span className="font-medium text-gray-900">Ticket {index + 1}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={ticket.isRoundTrip}
+                        onChange={(e) => updateBusTicket(ticket.id, 'isRoundTrip', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Round Trip</span>
+                    </label>
+                    <button
+                      onClick={() => removeBusTicket(ticket.id)}
+                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <Formik initialValues={{}} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                  throw new Error('Function not implemented.');
+                }}>
+                  <Form>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Passenger Selection */}
+                      <SelectField value={ticket.passengerName} label='Passenger *' onChange={(e) => updateBusTicket(ticket.id, 'passengerName', e.target.value)} inputClassName={'border border-gray-300'} placeholder={'Select passenger'} options={MOCK_PASSENGERS} />
+
+
+                      <FormField label={' Departure Date *'} onChange={(e) => updateBusTicket(ticket.id, 'departureDate', e.target.value)} value={ticket.departureDate} name={'departureDate'} type={'date'} />
+
+                      {/* Departure Time */}
+                      <FormField label={'Departure Time *'} onChange={(e) => updateBusTicket(ticket.id, 'departureTime', e.target.value)} value={ticket.departureTime} name={'departureTime'} type={'time'} />
+                      {/* Arrival Date */}
+
+                      <FormField label={'Arrival Date *'} onChange={(e) => updateBusTicket(ticket.id, 'arrivalDate', e.target.value)} value={ticket.arrivalDate} name={'arrivalDate'} type={'date'} />
+
+                      {/* Arrival Time */}
+
+                      <FormField label={'Arrival Time *'} onChange={(e) => updateBusTicket(ticket.id, 'arrivalTime', e.target.value)} value={ticket.arrivalTime} name={'arrivalTime'} type={'time'} />
+
+                      {/* Bus Operator */}
+                      <FormField isLeftIcon={<Bus />} placeholder='Enter bus operator name' label={'Bus Operator *'} onChange={(e) => updateBusTicket(ticket.id, 'airline', e.target.value)} value={ticket.airline} name={'airline'} type={'text'} />
+
+                      {/* Ticket Cost */}
+
+                      <FormField isLeftIcon={<DollarSign />} placeholder='0.00' label={'Ticket Cost *'} onChange={(e) => updateBusTicket(ticket.id, 'cost', e.target.value)} value={ticket.cost} name={'cost'} type={'number'} />
+
+                      {/* Ticket Upload */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Ticket Upload
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="file"
+                            id={`ticket-${ticket.id}`}
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                            onChange={(e) => handleBusTicketFileUpload(ticket.id, e)}
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor={`ticket-${ticket.id}`}
+                            className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                          >
+                            <Upload className="w-4 h-4 text-gray-400 mr-2" />
+                            <span className="text-sm text-gray-600">
+                              {ticket.attachment ? ticket.attachment.name : 'Upload ticket'}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </Form>
+                </Formik>
+
+
+
+                {/* Return Ticket Details - Only show when round trip is checked */}
+                {ticket.isRoundTrip && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Check className="w-4 h-4 text-green-600" />
+                      <h5 className="font-medium text-gray-900">Return Ticket Details</h5>
+                    </div>
+                    <Formik initialValues={{}} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                      throw new Error('Function not implemented.');
+                    }}>
+                      <Form>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {/* Return Date */}
+                          <FormField isLeftIcon={<Calendar />} label={'Return Date *'} onChange={(e) => updateBusTicket(ticket.id, 'returnDate', e.target.value)} value={ticket.returnDate} name={'returnDate'} type={'date'} />
+
+                          {/* Return Time */}
+                          <FormField isLeftIcon={<Clock />} label={'Return Time *'} onChange={(e) => updateBusTicket(ticket.id, 'returnTime', e.target.value)} value={ticket.returnTime} name={'returnTime'} type={'time'} />
+
+                          {/* Return Arrival Date */}
+
+                          <FormField isLeftIcon={<Calendar />} label={'Return Arrival Date *'} onChange={(e) => updateBusTicket(ticket.id, 'returnArrivalDate', e.target.value)} value={ticket.returnArrivalDate} name={'returnArrivalDate'} type={'date'} />
+                          {/* Return Arrival Time */}
+
+                          <FormField isLeftIcon={<Clock />} label={'Return Arrival Time *'} onChange={(e) => updateBusTicket(ticket.id, 'returnArrivalTime', e.target.value)} value={ticket.returnArrivalTime} name={'returnArrivalTime'} type={'time'} />
+
+                          {/* Return Airline */}
+
+                          <FormField isLeftIcon={<Bus />} label={'Return Bus Operator *'} onChange={(e) => updateBusTicket(ticket.id, 'returnAirline', e.target.value)} value={ticket.returnAirline} name={'returnAirline'} type={'text'} />
+
+                          {/* Return Cost */}
+
+                          <FormField isLeftIcon={<DollarSign />} label={'Return Cost *'} onChange={(e) => updateBusTicket(ticket.id, 'returnCost', e.target.value)} value={ticket.returnCost} name={'returnCost'} type={'number'} />
+
+                          {/* Return Ticket Upload */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Return Ticket Upload
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="file"
+                                id={`return-ticket-${ticket.id}`}
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    updateBusTicket(ticket.id, 'returnAttachment', file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                              <label
+                                htmlFor={`return-ticket-${ticket.id}`}
+                                className="flex items-center justify-center w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                              >
+                                <Upload className="w-4 h-4 text-gray-400 mr-2" />
+                                <span className="text-sm text-gray-600">
+                                  {ticket.returnAttachment ? ticket.returnAttachment.name : 'Upload return ticket'}
+                                </span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </Form>
+                    </Formik>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {busTickets.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Bus className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>No bus tickets added yet. Click "Add Ticket" to get started.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
 
         {/* Accommodation Details Section */}
         <div className="bg-gray-50 rounded-lg p-6">
@@ -475,7 +696,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                       Remove
                     </button>
                   </div>
-                  <Formik initialValues={undefined} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
+                  <Formik initialValues={{}} onSubmit={function (values: FormikValues, formikHelpers: FormikHelpers<FormikValues>): void | Promise<any> {
                     throw new Error('Function not implemented.');
                   }}>
 
@@ -483,8 +704,8 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Hotel Name */}
-                  
-                          <FormField isLeftIcon={<Hotel />} label={'Hotel Name *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.hotelName} name={'hotelName'} type={'text'} />
+
+                        <FormField isLeftIcon={<Hotel />} label={'Hotel Name *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.hotelName} name={'hotelName'} type={'text'} />
 
                         {/* Number of Rooms */}
                         {/* <div>
@@ -499,7 +720,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
                           />
                         </div> */}
-                          <FormField isLeftIcon={<Hotel />} label={'Number of Rooms *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.numberOfRooms} name={'hotelName'} type={'text'} />
+                        <FormField isLeftIcon={<Hotel />} label={'Number of Rooms *'} onChange={(e) => updateHotel(hotelIndex, 'hotelName', e.target.value)} value={hotel.numberOfRooms} name={'hotelName'} type={'text'} />
 
                         {/* Check-in Date */}
                         <DatePicker

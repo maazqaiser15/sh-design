@@ -198,7 +198,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Plane className="w-5 h-5 text-blue-600" />
+              {/* <Plane className="w-5 h-5 text-blue-600" /> */}
               <h3 className="text-lg font-semibold text-blue-900">Travel Required</h3>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">

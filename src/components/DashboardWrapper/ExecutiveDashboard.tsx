@@ -2,14 +2,14 @@ import React, { useState, useMemo } from 'react';
 import { Card } from '../../common/components/Card';
 import { Button } from '../../common/components/Button';
 import { MapCard } from '../../features/trailer/components/MapCard';
-import { 
-  BarChart3, 
-  PieChart, 
-  MapPin, 
-  TrendingUp, 
-  Users, 
-  FolderOpen, 
-  CheckCircle, 
+import {
+  BarChart3,
+  PieChart,
+  MapPin,
+  TrendingUp,
+  Users,
+  FolderOpen,
+  CheckCircle,
   AlertTriangle,
   Clock,
   DollarSign,
@@ -21,6 +21,10 @@ import {
   Filter,
   ChevronDown
 } from 'lucide-react';
+import { ProjectStatusChart } from './ProjectStatusChart';
+import { ProjectTypeChart } from './ProjectTypeCharts';
+import { TotalTrailersChart } from './TotalTrailersChart';
+import { TotalUsersChart } from './TotalUsersChart';
 
 // Mock data for executive dashboard
 const mockProjects = [
@@ -104,73 +108,47 @@ const mockProjects = [
   }
 ];
 
-const mockTrailers = [
+const mockAttentions = [
   {
-    id: '1',
-    trailerName: 'Alpha Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10001',
-    parkingAddress: '123 Main Street',
-    city: 'Los Angeles',
-    state: 'California',
-    status: 'available' as const,
-    inventory: {
-      tools: [],
-      filmSheets: []
-    },
-    activityLogs: [],
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-16T14:20:00Z'
+    icon: <Users />,
+    title: 'Need to Assign project coordinator on',
+    btnText: 'Downtown Office Complex ',
+
   },
   {
-    id: '2',
-    trailerName: 'Beta Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10002',
-    parkingAddress: '456 Industrial Blvd',
-    city: 'Houston',
-    state: 'Texas',
-    status: 'unavailable' as const,
-    unavailableUntil: '2024-12-25T00:00:00Z',
-    inventory: {
-      tools: [],
-      filmSheets: []
-    },
-    activityLogs: [],
-    createdAt: '2024-01-14T09:15:00Z',
-    updatedAt: '2024-01-14T09:15:00Z'
+    icon: <Users />,
+    title: 'This project is delayed from its ending time',
+    btnText: 'Ohio School building',
+
   },
   {
-    id: '3',
-    trailerName: 'Gamma Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10003',
-    parkingAddress: '789 Service Road',
-    city: 'Chicago',
-    state: 'Illinois',
-    status: 'available' as const,
-    inventory: {
-      tools: [],
-      filmSheets: []
-    },
-    activityLogs: [],
-    createdAt: '2024-01-13T16:45:00Z',
-    updatedAt: '2024-01-13T16:45:00Z'
+    icon: <Users />,
+    title: 'QC is pending on Project',
+    btnText: 'Retail Security Upgrade',
+
   },
   {
-    id: '4',
-    trailerName: 'Delta Trailer',
-    registrationNumber: 'TXDA-SJ1BR1-EETUSC01-P10004',
-    parkingAddress: '321 Oak Avenue',
-    city: 'Miami',
-    state: 'Florida',
-    status: 'low' as const,
-    inventory: {
-      tools: [],
-      filmSheets: []
-    },
-    activityLogs: [],
-    createdAt: '2024-01-12T08:30:00Z',
-    updatedAt: '2024-01-12T08:30:00Z'
-  }
-];
+    icon: <Users />,
+    title: 'Need to Assign project coordinator on ',
+    btnText: 'Corporate Headquarters',
+  },
+  {
+    icon: <Users />,
+    title: 'Quality review required for completed project',
+    btnText: 'Industrial Complex Security',
+  },
+  {
+    icon: <Users />,
+    title: 'Quality review required for completed project',
+    btnText: 'Industrial Complex Security',
+  },
+  {
+    icon: <Users />,
+    title: 'Quality review required for completed project',
+    btnText: 'Industrial Complex Security',
+  },
+
+]
 
 const mockTeamMembers = [
   { id: '1', name: 'John Smith', status: 'Available', role: 'Lead Supervisor' },
@@ -274,7 +252,7 @@ const ProjectFilter: React.FC<{
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:bg-gray-50"
+        className="flex items-center space-x-2 bg-white px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:bg-gray-50"
       >
         <Filter className="w-4 h-4 text-gray-500" />
         <span className="text-gray-700">
@@ -282,7 +260,7 @@ const ProjectFilter: React.FC<{
         </span>
         <ChevronDown className="w-4 h-4 text-gray-500" />
       </button>
-      
+
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
           <div className="py-1">
@@ -291,9 +269,8 @@ const ProjectFilter: React.FC<{
                 onProjectChange('all');
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                selectedProject === 'all' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-              }`}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${selectedProject === 'all' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                }`}
             >
               All Projects
             </button>
@@ -304,9 +281,8 @@ const ProjectFilter: React.FC<{
                   onProjectChange(project.id);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                  selectedProject === project.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                }`}
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${selectedProject === project.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                  }`}
               >
                 {project.name}
               </button>
@@ -346,56 +322,7 @@ const StatsWidget: React.FC<{
 );
 
 // Project Status Horizontal Bar Chart Component
-const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) => {
-  const statusCounts = useMemo(() => {
-    const counts = projects.reduce((acc, project) => {
-      acc[project.status] = (acc[project.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
-    return [
-      { status: 'D75', count: counts['D75'] || 0, color: 'bg-blue-500', label: 'Pre-Planning' },
-      { status: 'PV90', count: counts['PV90'] || 0, color: 'bg-teal-500', label: 'Planning' },
-      { status: 'UB', count: counts['UB'] || 0, color: 'bg-amber-500', label: 'Under Review' },
-      { status: 'WIP', count: counts['WIP'] || 0, color: 'bg-purple-500', label: 'Work in Progress' },
-      { status: 'QF', count: counts['QF'] || 0, color: 'bg-indigo-500', label: 'Quality Review' },
-      { status: 'Completed', count: counts['Completed'] || 0, color: 'bg-green-500', label: 'Completed' }
-    ];
-  }, [projects]);
 
-  const maxCount = Math.max(...statusCounts.map(s => s.count), 1);
-
-  return (
-    <Card className="p-6 h-96 flex flex-col">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-        <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
-        Project Status Distribution
-      </h3>
-      <div className="flex-1 overflow-y-auto space-y-4">
-        {statusCounts.map(({ status, count, color, label }) => (
-          <div key={status} className="space-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${color}`}></div>
-                <span className="text-sm font-medium text-gray-900">{status}</span>
-              </div>
-              <span className="text-sm font-semibold text-gray-900">{count}</span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-3">
-              <div 
-                className={`${color} h-3 rounded-full transition-all duration-700 ease-out`}
-                style={{ 
-                  width: `${(count / maxCount) * 100}%`,
-                  minWidth: count > 0 ? '8px' : '0px'
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-};
 
 // Project Estimates Horizontal Bar Chart Component
 const ProjectEstimatesChart: React.FC<{ projects: any[] }> = ({ projects }) => {
@@ -405,7 +332,7 @@ const ProjectEstimatesChart: React.FC<{ projects: any[] }> = ({ projects }) => {
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-        <BarChart3 className="w-5 h-5 mr-2 text-green-600" />
+        {/* <BarChart3 className="w-5 h-5 mr-2 text-green-600" /> */}
         Project Estimates Comparison
       </h3>
       <div className="space-y-4">
@@ -417,7 +344,7 @@ const ProjectEstimatesChart: React.FC<{ projects: any[] }> = ({ projects }) => {
                 <div className="w-24 text-xs text-gray-600">Sales Estimate</div>
                 <div className="flex-1 mx-2">
                   <div className="w-full bg-gray-200 rounded-full h-4">
-                    <div 
+                    <div
                       className="bg-blue-500 h-4 rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
                       style={{ width: `${(project.saleEstimate / maxEstimate) * 100}%` }}
                     >
@@ -430,7 +357,7 @@ const ProjectEstimatesChart: React.FC<{ projects: any[] }> = ({ projects }) => {
                 <div className="w-24 text-xs text-gray-600">Ops Estimate</div>
                 <div className="flex-1 mx-2">
                   <div className="w-full bg-gray-200 rounded-full h-4">
-                    <div 
+                    <div
                       className="bg-green-500 h-4 rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
                       style={{ width: `${(project.opsEstimate / maxEstimate) * 100}%` }}
                     >
@@ -459,135 +386,9 @@ const ProjectEstimatesChart: React.FC<{ projects: any[] }> = ({ projects }) => {
 
 
 // Team Allocation Pie Chart Component
-const TeamAllocationChart: React.FC = () => {
-  const teamStats = useMemo(() => {
-    const total = mockTeamMembers.length;
-    const available = mockTeamMembers.filter(m => m.status === 'Available').length;
-    const unavailable = mockTeamMembers.filter(m => m.status === 'Unavailable').length;
-    const onLeave = unavailable; // Assuming unavailable means on leave
-    
-    return {
-      total,
-      available,
-      unavailable,
-      onLeave,
-      allocated: Math.floor(available * 0.8), // 80% of available are allocated
-      unallocated: Math.floor(available * 0.2) // 20% of available are unallocated
-    };
-  }, []);
 
-  const pieData = [
-    { label: 'Allocated', value: teamStats.allocated, color: '#3B82F6', percentage: Math.round((teamStats.allocated / teamStats.total) * 100) },
-    { label: 'Unallocated', value: teamStats.unallocated, color: '#8B5CF6', percentage: Math.round((teamStats.unallocated / teamStats.total) * 100) },
-    { label: 'On Leave', value: teamStats.onLeave, color: '#F59E0B', percentage: Math.round((teamStats.onLeave / teamStats.total) * 100) }
-  ];
 
-  return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-        <PieChart className="w-5 h-5 mr-2 text-indigo-600" />
-        Team Allocation Status
-      </h3>
-      <div className="flex items-center justify-center mb-8">
-        <div className="relative w-40 h-40">
-          <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
-            {pieData.map((item, index) => {
-              const startAngle = pieData.slice(0, index).reduce((sum, d) => sum + (d.value / teamStats.total) * 360, 0);
-              const endAngle = startAngle + (item.value / teamStats.total) * 360;
-              const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
-              
-              const x1 = 50 + 40 * Math.cos((startAngle * Math.PI) / 180);
-              const y1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180);
-              const x2 = 50 + 40 * Math.cos((endAngle * Math.PI) / 180);
-              const y2 = 50 + 40 * Math.sin((endAngle * Math.PI) / 180);
-              
-              const pathData = [
-                `M 50 50`,
-                `L ${x1} ${y1}`,
-                `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                'Z'
-              ].join(' ');
-              
-              return (
-                <path
-                  key={item.label}
-                  d={pathData}
-                  fill={item.color}
-                  stroke="white"
-                  strokeWidth="2"
-                />
-              );
-            })}
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{teamStats.total}</div>
-              <div className="text-sm text-gray-600">Total</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="space-y-3">
-        {pieData.map((item) => (
-          <div key={item.label} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div className="flex items-center">
-              <div 
-                className="w-4 h-4 rounded-full mr-3" 
-                style={{ backgroundColor: item.color }}
-              ></div>
-              <span className="text-sm font-medium text-gray-700">{item.label}</span>
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-bold text-gray-900">{item.value}</div>
-              <div className="text-xs text-gray-500">{item.percentage}%</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-};
 
-// Action Items Widget Component
-const ActionItemsWidget: React.FC = () => {
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'assignment': return Users;
-      case 'delay': return Clock;
-      case 'allocation': return Target;
-      case 'travel': return MapPin;
-      case 'quality': return CheckCircle;
-      default: return AlertTriangle;
-    }
-  };
-
-  return (
-    <Card className="p-6 h-96 flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <Activity className="w-5 h-5 mr-2 text-orange-600" />
-          Action Items
-        </h3>
-      </div>
-      <div className="flex-1 overflow-y-auto space-y-3">
-        {actionItems.slice(0, 5).map((item) => {
-          const Icon = getTypeIcon(item.type);
-          return (
-            <div key={item.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="p-2 bg-white rounded-lg">
-                <Icon className="w-4 h-4 text-gray-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">{item.title}</p>
-                <p className="text-xs text-gray-600 mt-1">Project: {item.project}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </Card>
-  );
-};
 
 // Main Executive Dashboard Component
 export const ExecutiveDashboard: React.FC = () => {
@@ -628,8 +429,8 @@ export const ExecutiveDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Executive Dashboard</h1>
-          <p className="text-gray-600 mt-1">Comprehensive overview of operations, performance metrics, and strategic insights</p>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">Comprehensive overview of operations, performance metrics, and strategic insights.</p>
         </div>
         <div className="flex items-center space-x-4">
           <DateRangeFilter
@@ -646,111 +447,62 @@ export const ExecutiveDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Top Row: KPI, Project Status, Action Items */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Key Performance Indicators */}
-        <Card className="p-6 h-96 flex flex-col">
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <FolderOpen className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Total Projects</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.totalProjects}</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-xs text-green-600">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  <span>+12%</span>
-                </div>
-              </div>
 
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Avg Quality Score of team</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.avgQualityScore}%</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-xs text-green-600">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  <span>+3.2%</span>
-                </div>
-              </div>
+      <div className='grid grid-cols-3 gap-6'>
 
-              <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <TrendingUp className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Projects Success Rate</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.avgSuccessRate}%</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-xs text-green-600">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  <span>+2.1%</span>
-                </div>
-              </div>
+        <Card className='flex  flex-col items-start justify-center'>
+          <h5 className='text-sm text-[#242424] font-normal '>Active Projects</h5>
+          <h6 className='text-lg text-[#242424] font-medium'>40</h6>
+        </Card>
 
-              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Target className="w-4 h-4 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Associated Projects</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.associatedProjects}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <AlertTriangle className="w-4 h-4 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Warranty Claims</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.totalWarrantyClaims}</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-xs text-red-600">
-                  <TrendingUp className="w-3 h-3 mr-1 rotate-180" />
-                  <span>-15%</span>
-                </div>
-              </div>
-
+        <Card className='flex  flex-col items-start justify-center'>
+          <h5 className='text-sm text-[#242424] font-normal'>Labor Efficiency </h5>
+          <div className='flex items-center gap-2'>
+            <h6 className='text-lg text-[#242424] font-medium mb-0'>38%</h6>
+            <div className='text-[#4B5563] text-xs border-r border-gray-300 pr-2'>3,800 Estimated Hrs</div>
+            <div className='text-[#4B5563] text-xs '>
+              4000 Actual Hrs
             </div>
           </div>
         </Card>
 
+        <Card className='flex  flex-col items-start justify-center'>
+          <h5 className='text-sm text-[#242424] font-normal mb-2'>Reinstallation Rate </h5>
+          <div className='flex items-center gap-2'>
+            <h6 className='text-lg text-[#242424] font-medium border-r border-gray-300 pr-2'>38%</h6>
+            <div className='text-[#4B5563] text-xs'>3,800 Sq ft.</div>
+          </div>
+        </Card>
+      </div>
+      {/* Top Row: KPI, Project Status, Action Items */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Key Performance Indicators */}
+
+
         {/* Project Status Distribution */}
         <ProjectStatusChart projects={filteredProjects} />
 
-        {/* Action Items */}
-        <ActionItemsWidget />
-      </div>
+        <ProjectTypeChart projects={filteredProjects} />
+        <Card className=' row-span-2'>
+          <h5 className='text-[#101827] text-lg font-normal mb-4'>Require Attentions</h5>
+          <div>
+            {mockAttentions.map((attention) => (
+              <div key={attention.title} className='flex gap-3 items-center mb-6 border-b pb-4 border-gray-300'>
+                <div>
+                  <div className='bg-blue-50 text-blue-500 p-2 rounded-lg '>{attention.icon}</div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ProjectEstimatesChart projects={filteredProjects} />
-        <TeamAllocationChart />
-      </div>
+                </div>
+                <div>
+                  <h6 className='text-sm text-[#101827] font-normal mb-2'>{attention.title}</h6>
+                  <button className='border-gray-300 border text-xs text-gray-600 bg-gray-100 rounded-md py-1 px-3'>{attention.btnText}</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
 
-      {/* Map Row */}
-      <div className="grid grid-cols-1 gap-6">
-        <MapCard 
-          trailers={mockTrailers}
-          onTrailerClick={(trailer) => console.log('Trailer clicked:', trailer)}
-        />
+        <TotalTrailersChart projects={filteredProjects} />
+        <TotalUsersChart projects={filteredProjects} />
       </div>
     </div>
   );

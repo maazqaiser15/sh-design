@@ -51,6 +51,11 @@ const navigation: NavigationItem[] = [
     permission: 'trailers',
   },
   {
+    name: 'Reports',
+    href: '/reports',
+    icon: BarChart3,
+  },
+  {
     name: 'Settings',
     href: '/settings',
     icon: Settings,

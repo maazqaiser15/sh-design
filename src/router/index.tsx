@@ -181,6 +181,15 @@ export const routes: RouteObject[] = [
             },
           },
 
+          // Reports Route
+          {
+            path: "reports",
+            async lazy() {
+              const { Reports } = await import("../pages/Reports");
+              return { element: <Reports /> };
+            },
+          },
+
           {
             path: "design-system",
             element: <DesignSystemLibrary />,
