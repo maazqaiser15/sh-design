@@ -145,7 +145,7 @@ export const ProjectOverviewCard: React.FC<ProjectOverviewCardProps> = ({
               </div>
               <span className="text-xl font-semibold text-gray-700">{progressData.issuesReported}</span>
             </div>
-            <span className="text-sm font-medium text-gray-600">Issues Reported</span>
+            <span className="text-sm font-medium text-gray-600">Layers Installed</span>
           </div>
         </div>
       </div>

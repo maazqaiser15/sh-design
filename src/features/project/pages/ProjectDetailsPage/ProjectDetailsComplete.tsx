@@ -1044,7 +1044,7 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                                 <p className="font-semibold text-gray-900">{member.layersInstalled}</p>
                               </div>
                               <div className="text-center">
-                                <p className="text-sm text-gray-600">Issues Reported</p>
+                                <p className="text-sm text-gray-600">Layers Installed</p>
                                 <p className="font-semibold text-gray-900">{member.layersReinstalled}</p>
                               </div>
                               <div className="text-center">
