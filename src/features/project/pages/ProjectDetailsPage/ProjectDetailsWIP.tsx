@@ -689,7 +689,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
     return {
       completed: 10, // Windows Completed
       started: 24, // Windows Started
-      reinstallation: 4, // Issues Reported
+      reinstallation: 4, // Layers Installed
       total: 300, // Total Windows
       totalLayers: 340, // Total Layers
       completedLayers: 40, // Layers Completed
@@ -1978,7 +1978,7 @@ export const ProjectDetailsWIP: React.FC<ProjectDetailsWIPProps> = ({
                     </span>
                   </div>
                   <span className="text-xs sm:text-sm font-medium text-gray-600 text-start">
-                    Issues Reported
+                    Layers Installed
                   </span>
                 </div>
               </div>

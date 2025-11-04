@@ -45,13 +45,13 @@ export const TodayProgressCard: React.FC<TodayProgressCardProps> = ({ data }) =>
           <div className="text-xs text-gray-500">Windows Completed</div>
         </div>
 
-        {/* Issues Reported */}
+        {/* Layers Installed */}
         <div className="text-center">
           <div className="w-10 h-10 mx-auto mb-1.5 bg-red-100 rounded-full flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-red-600" />
           </div>
           <div className="text-xl font-bold text-gray-900">{data.issuesReported}</div>
-          <div className="text-xs text-gray-500">Issues Reported</div>
+          <div className="text-xs text-gray-500">Layers Installed</div>
         </div>
       </div>
     </Card>
