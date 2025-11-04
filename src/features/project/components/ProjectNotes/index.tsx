@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Plus, Edit2, Trash2, User, Paperclip, Download, X, File, PlusCircle, PlusIcon, MinusIcon } from 'lucide-react';
+import { MessageSquare, Plus, Edit2, Trash2, User, Paperclip, Download, X, File, PlusCircle, PlusIcon, MinusIcon, Cross } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { AttachmentUpload } from '../../../../common/components/AttachmentUpload';
@@ -225,8 +225,8 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
                                 key={attachment.id}
                                 className="p-2 bg-gray-200 rounded-lg"
                               >
-                                <div className=" flex">
-                                  <div className='bg-blue-100 p-2 rounded-lg mr-2 flex items-center justify-center'>
+                                <div className=" flex gap-2">
+                                  <div className='bg-blue-100 p-2 rounded-lg  flex items-center justify-center'>
                                     <File size={30} className=" text-blue-500" />
                                   </div>
                                   <div className='flex flex-col'>
@@ -237,6 +237,9 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
                                       ({(attachment.size / 1024).toFixed(1)} KB)
                                     </span>
                                   </div>
+                                  <Button variant='ghost' className=' w-5 h-5' style={{padding: 0}}>
+                                    <X />
+                                  </Button>
                                 </div>
                               </div>
                             ))}

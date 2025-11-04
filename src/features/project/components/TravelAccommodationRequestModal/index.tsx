@@ -153,8 +153,8 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
     }));
 
     // Update selected members if this member is already selected
-    setSelectedTeamMembers(prev => prev.map(member => 
-      member.id === memberId 
+    setSelectedTeamMembers(prev => prev.map(member =>
+      member.id === memberId
         ? { ...member, travelMethod: method }
         : member
     ));
@@ -250,7 +250,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                               </div>
                               <div className="flex items-center gap-1 mt-1">
                                 <svg width="20" height="20" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M6 1C4.34 1 3 2.34 3 4C3 6.5 6 9 6 9C6 9 9 6.5 9 4C9 2.34 7.66 1 6 1ZM6 5.25C5.45 5.25 5 4.8 5 4.25C5 3.7 5.45 3.25 6 3.25C6.55 3.25 7 3.7 7 4.25C7 4.8 6.55 5.25 6 5.25Z" fill="#6B7280"/>
+                                  <path d="M6 1C4.34 1 3 2.34 3 4C3 6.5 6 9 6 9C6 9 9 6.5 9 4C9 2.34 7.66 1 6 1ZM6 5.25C5.45 5.25 5 4.8 5 4.25C5 3.7 5.45 3.25 6 3.25C6.55 3.25 7 3.7 7 4.25C7 4.8 6.55 5.25 6 5.25Z" fill="#6B7280" />
                                 </svg>
                                 <p className="text-xs text-gray-600 truncate">
                                   {projectLocation} → {projectLocation}
@@ -399,7 +399,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                   </div>
                 )}
               </div>
-              
+
               <p className="text-sm text-green-700">
                 Accommodation details can be added later after the request is approved.
               </p>
@@ -493,7 +493,7 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
                   </div>
                 )}
               </div>
-              
+
               <p className="text-sm text-orange-700">
                 Vehicle details can be added later after the request is approved.
               </p>
@@ -502,21 +502,35 @@ export const TravelAccommodationRequestModal: React.FC<TravelAccommodationReques
         </div>
 
         {/* Modal Footer */}
-        <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
-          <Button
-            variant="secondary"
-            onClick={handleCancel}
-            className="px-6 py-2"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!isFormValid()}
-            className="px-6 py-2"
-          >
-            Submit Request
-          </Button>
+        <div className="flex justify-between gap-3 pt-6 border-t border-gray-200">
+          <div>
+            <Button
+              variant="secondary"
+              onClick={handleCancel}
+              className="px-6 py-2"
+            >
+              Not Required
+            </Button>
+
+          </div>
+
+          <div className='flex gap-3'>
+            <Button
+              variant="secondary"
+              onClick={handleCancel}
+              className="px-6 py-2"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid()}
+              className="px-6 py-2"
+            >
+              Submit Request
+            </Button>
+          </div>
+
         </div>
       </div>
     </Modal>
