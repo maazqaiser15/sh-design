@@ -1006,7 +1006,7 @@ export const TravelAccommodationModal: React.FC<TravelAccommodationModalProps> =
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!isFormValid()}
+            // disabled={!isFormValid()}
             className="px-6 py-2"
           >
             Submit Details
