@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Plus, Edit2, Trash2, User, Paperclip, Download, X, File, PlusCircle, PlusIcon, MinusIcon, Cross } from 'lucide-react';
+import { MessageSquare, Plus, Edit2, Trash2, X, File, PlusIcon, MinusIcon, FileText, Image } from 'lucide-react';
 import { Button } from '../../../../common/components/Button';
 import { Card } from '../../../../common/components/Card';
 import { AttachmentUpload } from '../../../../common/components/AttachmentUpload';
@@ -97,6 +97,26 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
     new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
 
+  const getFileIcon = (type: string) => {
+    if (type.startsWith('image/')) {
+      return <Image className="w-4 h-4 text-blue-500" />;
+    } else if (type.includes('pdf') || type.includes('document')) {
+      return <FileText className="w-4 h-4 text-red-500" />;
+    } else {
+      return <File className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+
   return (
     <Card>
       <div className="flex items-center justify-between mb-6">
@@ -124,23 +144,75 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
             />
           </div>
 
-          <div className='flex justify-end gap-2'>
-            <AttachmentUpload
-              attachments={newNoteAttachments}
-              onAddAttachment={handleAddAttachment}
-              onRemoveAttachment={handleRemoveNewAttachment}
-              onDownloadAttachment={handleDownloadNewAttachment}
-            />
-            <Button
-              variant="primary"
-              size="md"
-              icon={Plus}
-              onClick={handleAddNote}
-              disabled={!newNote.trim()}
-              className="self-start"
-            >
-              Submit
-            </Button>
+          <div className='flex flex-col gap-2'>
+            <div className='flex gap-2 justify-end'>
+              <AttachmentUpload
+                attachments={newNoteAttachments}
+                onAddAttachment={handleAddAttachment}
+                onRemoveAttachment={handleRemoveNewAttachment}
+                onDownloadAttachment={handleDownloadNewAttachment}
+              />
+              <Button
+                variant="primary"
+                size="md"
+                icon={Plus}
+                onClick={handleAddNote}
+                disabled={!newNote.trim()}
+                className="self-start"
+              >
+                Submit
+              </Button>
+            </div>
+
+
+            {newNoteAttachments.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-gray-700">Attachments ({newNoteAttachments.length})</h4>
+                <div className="space-y-2">
+                  {newNoteAttachments.map((attachment) => (
+                    <div
+                      key={attachment.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+                    >
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        {getFileIcon(attachment.type)}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {attachment.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(attachment.size)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        {/* <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={Download}
+                    onClick={() => onDownloadAttachment(attachment)}
+                    className="p-1 text-gray-400 hover:text-gray-600"
+                  >
+                    <span className="sr-only">Download</span>
+                  </Button> */}
+                        {/* {!disabled && ( */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon={X}
+                          onClick={() => handleRemoveNewAttachment(attachment.id)}
+                          className="p-1 text-gray-400 hover:text-red-600"
+                        >
+                          <span className="sr-only">Remove</span>
+                        </Button>
+                        {/* )} */}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
@@ -237,7 +309,7 @@ export const ProjectNotes: React.FC<ProjectNotesProps> = ({
                                       ({(attachment.size / 1024).toFixed(1)} KB)
                                     </span>
                                   </div>
-                                  <Button variant='ghost' className=' w-5 h-5' style={{padding: 0}}>
+                                  <Button variant='ghost' className=' w-5 h-5' style={{ padding: 0 }}>
                                     <X />
                                   </Button>
                                 </div>

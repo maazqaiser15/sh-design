@@ -77,8 +77,9 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
   return (
     <div className="space-y-3">
       {/* Upload Area */}
+    
       <div
-        className={`rounded-lg outline-none bg-gray-300 py-1.5 px-3 transition-colors ${
+        className={`rounded-lg max-w-[200px] outline-none bg-gray-300 py-1.5 px-3 transition-colors ${
           isDragOver
             ? 'border-blue-400 bg-blue-50'
             : 'border-gray-300 hover:border-gray-400'
@@ -104,10 +105,11 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
           disabled={disabled}
           accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx"
         />
+          {/* Attachments List */}
+   
       </div>
 
-      {/* Attachments List */}
-      {attachments.length > 0 && (
+      {/* {attachments.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700">Attachments ({attachments.length})</h4>
           <div className="space-y-2">
@@ -154,7 +156,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
             ))}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
