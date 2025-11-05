@@ -71,9 +71,17 @@ export const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) 
               border: {
                 display: true,
               },
+              min: 0,
+              max: totalProjects || 1,
               ticks: {
                 display: true,
                 color: '#6B7280',
+                stepSize: (totalProjects || 1) / 4,
+                callback: (value: any) => {
+                  const t = totalProjects || 1;
+                  const pct = Math.round((Number(value) / t) * 100);
+                  return String(pct); // 0, 25, 50, 75, 100
+                },
               },
             },
         },
@@ -90,7 +98,7 @@ export const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) 
                 backgroundColor: labels.map((s) => (s === 'QC' ? '#FF891E' : '#60A5FA')),
                 borderRadius: 4,
                 barThickness: 22,
-                categoryPercentage: 0.6,
+                categoryPercentage: 1,
                 barPercentage: 0.6,
             },
         ],
