@@ -88,8 +88,10 @@ export const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) 
                 label: 'Projects',
                 data: labels.map((s) => countsByStatus[s] || 0),
                 backgroundColor: labels.map((s) => (s === 'QC' ? '#FF891E' : '#60A5FA')),
-                borderRadius: 10,
-                barThickness: 32,
+                borderRadius: 4,
+                barThickness: 22,
+                categoryPercentage: 0.6,
+                barPercentage: 0.6,
             },
         ],
     };
@@ -99,7 +101,7 @@ export const ProjectStatusChart: React.FC<{ projects: any[] }> = ({ projects }) 
             <div className="text-sm font-normal text-[#4B5563] mb-2">
                 Total Projects by Status
             </div>
-            <h6 className="text-3xl text-[#101827] font-semibold mb-5">{totalProjects}</h6>
+            <h6 className="text-lg text-[#101827] font-semibold mb-5">{totalProjects}</h6>
             <div className="relative flex-1 overflow-y-auto">
                 <Bar options={options as any} data={data} />
                 {/* Overlay avatars to match mock */}

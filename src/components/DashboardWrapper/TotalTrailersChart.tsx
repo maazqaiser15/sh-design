@@ -19,7 +19,7 @@ export const TotalTrailersChart: React.FC<{ projects: any[] }> = ({ projects }) 
                 backgroundColor: ['#60A5FA', '#0E73B7'],
                 borderWidth: 0,
                 hoverOffset: 2,
-                borderRadius: 12, // rounded ends
+                borderRadius: 4, // rounded ends
                 spacing: 8,
             },
         ],
@@ -39,7 +39,7 @@ export const TotalTrailersChart: React.FC<{ projects: any[] }> = ({ projects }) 
                 },
             },
         },
-        cutout: '70%',
+        cutout: '82%',
         rotation: -90, // start at top
         circumference: 180, // half donut
         animation: { animateRotate: true },
@@ -50,7 +50,7 @@ export const TotalTrailersChart: React.FC<{ projects: any[] }> = ({ projects }) 
             <div className="text-sm font-normal text-[#4B5563] mb-2">
                 Total Trailers
             </div>
-            <h6 className="text-3xl text-[#101827] font-semibold mb-5">{total}</h6>
+            <h6 className="text-lg text-[#101827] font-semibold mb-5">{total}</h6>
             <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="relative w-full max-w-xl">
                     <Doughnut data={data} options={options as any} />

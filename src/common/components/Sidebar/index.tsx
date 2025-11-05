@@ -55,12 +55,12 @@ const navigation: NavigationItem[] = [
     href: '/reports',
     icon: BarChart3,
   },
-  {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings,
-    permission: 'settings',
-  },
+  // {
+  //   name: 'Settings',
+  //   href: '/settings',
+  //   icon: Settings,
+  //   permission: 'settings',
+  // },
   {
     name: 'Resource Planning',
     href: '/team-gantt-chart',

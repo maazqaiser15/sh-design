@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Card } from 'common/components/Card';
 import { Calendar, Download, ChevronDown, X } from 'lucide-react';
+import CustomDataTable from 'common/components/CustomDataTable';
 
 export const Reports: React.FC = () => {
   type TabKey = 'recut' | 'travel' | 'labour' | 'salesOps';
@@ -24,8 +25,30 @@ export const Reports: React.FC = () => {
     []
   );
 
+  const columns = [
+    {
+      name: 'Project Name',
+      selector: (row: any) => row.projectName,
+    },
+    {
+      name: 'Film Used',
+      selector: (row: any) => row.filmUsed,
+    },
+    {
+      name: 'Recut',
+      selector: (row: any) => row.recut,
+    },
+    {
+      name: 'Wastage',
+      selector: (row: any) => row.wastage,
+    },
+  ];
+
+  const data = [
+    ...recutRows as any,
+  ];
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <Card className="">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -53,8 +76,8 @@ export const Reports: React.FC = () => {
 
       {/* <Card className="p-0"> */}
         {/* Tabs header */}
-        <div className="px-4 pt-4">
-          <nav className="flex flex-wrap items-center gap-6" aria-label="Reports Tabs">
+        <div className="px-2 pt-4">
+          <nav className="flex flex-wrap mb-6 items-center gap-6" aria-label="Reports Tabs">
             {tabs.map((t) => (
               <button
                 key={t.key}
@@ -75,29 +98,10 @@ export const Reports: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-6">
+        <div className="">
           {activeTab === 'recut' && (
-            <div className="overflow-hidden rounded-xl border border-gray-200">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Project Name</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Film Used</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Recut</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Wastage</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-100">
-                  {recutRows.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-700">{row.projectName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{row.filmUsed}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{row.recut}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{row.wastage}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="">
+              <CustomDataTable title={''} columns={columns} data={data} pagination={true} highlightOnHover={undefined} striped={undefined} onRowClicked={undefined} progressPending={undefined} paginationPerPage={undefined}/>
             </div>
           )}
 
@@ -114,7 +118,7 @@ export const Reports: React.FC = () => {
           )}
         </div>
       {/* </Card> */}
-    </div>
+    </Card>
   );
 };
 

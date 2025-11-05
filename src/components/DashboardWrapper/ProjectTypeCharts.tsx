@@ -41,8 +41,11 @@ export const ProjectTypeChart: React.FC<{ projects: any[] }> = ({ projects }) =>
                 backgroundColor: ['#0E73B7', '#60A5FA', '#34D399'],
                 hoverOffset: 4,
                 borderWidth: 0,
-                borderRadius: 12,
-                spacing: 8
+                borderRadius: 4,
+                spacing: 8,
+                categoryPercentage: 0.6,
+                barPercentage: 0.6,
+                
 
             },
         ],
@@ -51,7 +54,7 @@ export const ProjectTypeChart: React.FC<{ projects: any[] }> = ({ projects }) =>
     const options = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '70%',
+        cutout: '78%',
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -60,6 +63,9 @@ export const ProjectTypeChart: React.FC<{ projects: any[] }> = ({ projects }) =>
                 displayColors: false,
             },
         },
+        barThickness: 5,
+        categoryPercentage: 0.6,
+        barPercentage: 0.6,
     }), []);
 
     return (
@@ -67,28 +73,28 @@ export const ProjectTypeChart: React.FC<{ projects: any[] }> = ({ projects }) =>
             <div className="text-sm font-normal text-[#4B5563] mb-2">
                 Total Projects by Type
             </div>
-            <h6 className="text-3xl text-[#101827] font-semibold mb-5">{totalProjects}</h6>
+            <h6 className="text-lg text-[#101827] font-semibold mb-5">{totalProjects}</h6>
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                 {/* Left legend */}
                 <div className="space-y-6">
                     <div className="flex items-center gap-3">
                         <span className="w-4 h-4 rounded-md inline-block" style={{ backgroundColor: '#0E73B7' }} />
                         <div>
-                            <div className="text-lg font-semibold text-gray-900">New</div>
+                            <div className="text-sm font-medium text-gray-900">New</div>
                             <div className="text-sm text-gray-500">{percentages.New}%</div>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
                         <span className="w-4 h-4 rounded-md inline-block" style={{ backgroundColor: '#60A5FA' }} />
                         <div>
-                            <div className="text-lg font-semibold text-gray-900">Rework</div>
+                            <div className="text-sm font-medium text-gray-900">Rework</div>
                             <div className="text-sm text-gray-500">{percentages.Rework}%</div>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
                         <span className="w-4 h-4 rounded-md inline-block" style={{ backgroundColor: '#34D399' }} />
                         <div>
-                            <div className="text-lg font-semibold text-gray-900">Warranty</div>
+                            <div className="text-sm font-medium text-gray-900">Warranty</div>
                             <div className="text-sm text-gray-500">{percentages.Warranty}%</div>
                         </div>
                     </div>

@@ -18,15 +18,15 @@ export const TotalUsersChart: React.FC<{ projects: any[] }> = ({ projects }) => 
             <div className="text-sm font-normal text-[#4B5563] mb-2">
                 Total Users
             </div>
-            <h6 className="text-3xl text-[#101827] font-semibold mb-5">{total}</h6>
+            <h6 className="text-lg text-[#101827] font-semibold mb-5">{total}</h6>
             <div className="flex-1 flex flex-col justify-center">
                 <div className="border-l border-gray-200 pl-6 space-y-8">
                     {rows.map((r) => (
                         <div key={r.label} className="grid grid-cols-[120px_1fr_60px] items-center gap-4">
                             <div className="text-base text-gray-700">{r.label}</div>
-                            <div className="h-5 rounded-full bg-gray-200/70 overflow-hidden">
+                            <div className="h-5 rounded-md bg-gray-200/70 overflow-hidden">
                                 <div
-                                    className="h-full rounded-full"
+                                    className="h-full rounded-md"
                                     style={{ width: `${r.percent}%`, backgroundColor: r.color }}
                                 />
                             </div>

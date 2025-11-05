@@ -998,11 +998,11 @@ export const ProjectDetailsComplete: React.FC<ProjectDetailsCompleteProps> = ({ 
                             <span className="font-semibold text-gray-900">${projectReport.travelAccommodation.hotelCost.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Flight Cost To Job</span>
+                            <span className="text-sm text-gray-600">Travel Cost To Job</span>
                             <span className="font-semibold text-blue-600">${projectReport.travelAccommodation.flightCostToJob.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span className="text-sm text-gray-600">Flight Cost From Job</span>
+                            <span className="text-sm text-gray-600">Travel Cost From Job</span>
                             <span className="font-semibold text-blue-600">${projectReport.travelAccommodation.flightCostFromJob.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-gray-100">
