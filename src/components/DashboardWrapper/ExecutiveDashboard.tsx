@@ -427,7 +427,7 @@ export const ExecutiveDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center sm:flex-row flex-col justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600 mt-1">Comprehensive overview of operations, performance metrics, and strategic insights.</p>
@@ -448,9 +448,9 @@ export const ExecutiveDashboard: React.FC = () => {
       </div>
 
 
-      <div className='grid grid-cols-3 gap-6'>
+      <div className='grid  sm:grid-cols-3 grid-cols-1 gap-6'>
 
-        <Card className='flex  flex-col items-start justify-center'>
+        <Card className='flex sm:flex-row flex-col items-start justify-center'>
           <h5 className='text-sm text-[#242424] font-normal '>Active Projects</h5>
           <h6 className='text-lg text-[#242424] font-medium'>40</h6>
         </Card>

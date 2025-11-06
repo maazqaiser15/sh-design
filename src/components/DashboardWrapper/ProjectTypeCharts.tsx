@@ -69,7 +69,7 @@ export const ProjectTypeChart: React.FC<{ projects: any[] }> = ({ projects }) =>
     }), []);
 
     return (
-        <Card className="p-6 h-96 flex flex-col">
+        <Card className="p-6 sm:h-96 h-auto flex flex-col">
             <div className="text-sm font-normal text-[#4B5563] mb-2">
                 Total Projects by Type
             </div>

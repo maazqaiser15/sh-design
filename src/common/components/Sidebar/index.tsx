@@ -242,7 +242,7 @@ export const Sidebar: React.FC = () => {
                 isCollapsed ? 'w-16' : 'w-64'
               }`
           } 
-          bg-transparent  flex flex-col
+          sm:bg-transparent  bg-white flex flex-col
         `}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}

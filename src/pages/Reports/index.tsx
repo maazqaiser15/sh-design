@@ -105,6 +105,14 @@ export const Reports: React.FC = () => {
       selector: (row: any) => row.flightCostFromJob,
     },
     {
+      name: 'Bus Cost To Job',
+      selector: (row: any) => row.flightCostFromJob,
+    },
+    {
+      name: 'Bus Cost From Job',
+      selector: (row: any) => row.flightCostFromJob,
+    },
+    {
       name: 'Rental Car Y/N',
       selector: (row: any) => row.rentalCar,
     },
